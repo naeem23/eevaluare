@@ -2,6 +2,7 @@ import ast
 import json
 import datetime
 from json.decoder import JSONDecodeError
+from django import template
 import requests
 from decimal import Decimal
 from django.contrib.auth import get_user_model
@@ -19,6 +20,7 @@ from xhtml2pdf import pisa
 
 from dashboard.forms import * 
 from dashboard.models import *
+from valuationform.templatetags.my_filters import area_diff
 User = get_user_model()
 
 
@@ -780,3 +782,72 @@ def test(request):
 	# 	'sub': sub,
 	# }
 	# return render(request, 'dashboard/test.html', context)
+
+
+
+# =========================================================================
+# ============================== Modules ===============================
+# =========================================================================
+
+@login_required(login_url='/signin/')
+def modules_list(request):
+	template_name = 'dashboard/modules_list.html'
+
+	if request.session.get('success'):
+		msg = 'deleted'
+		try:
+			del request.session['success']
+		except KeyError:
+			pass
+	elif request.session.get('failed'):
+		msg = 'not_deleted'
+		try:
+			del request.session['failed']
+		except KeyError:
+			pass
+	elif request.session.get('added'):
+		msg = 'added'
+		try:
+			del request.session['added']
+		except KeyError:
+			pass
+	elif request.session.get('not_added'):
+		msg = 'not_added'
+		try:
+			del request.session['not_added']
+		except KeyError:
+			pass
+	else:
+		msg = None
+
+#	modules = ['Area','City','PropertyType','CompartmentType','Status','ValuationPurpose','ValuationApproach','StradaType','Transport','ConformType','StructureType','FoundationType','FloorType','ClouserType','SubcompartmentType','RoofType','InvelitoareType','MobilaType','PropertyRightType','HeatingSystem','FinishType']
+	modules = { 'property-type':'PropertyType','status':'Status','valuation-purpose':'ValuationPurpose'}
+	context = {
+		'modules': modules, 
+		'segment': 'settings',
+	}
+	return render(request, template_name, context)
+
+from django.http import JsonResponse
+from valuation.models import Area, Status
+def go_module(request, key):
+	template_name = 'dashboard/go_module.html'
+	area = None
+	status = None
+	if key=="property-type":
+		area = Area.objects.all()
+	elif key=="status":
+		status = Status.objects.all()
+
+	modules = { 'property-type':'PropertyType','status':'Status','valuation-purpose':'ValuationPurpose'}
+	context = {
+		'modules': modules, 
+		'area':area,
+		'status':status,
+	}
+	return render(request, template, context)
+
+
+
+
+

@@ -56,4 +56,9 @@ urlpatterns = [
     path('detalii-comparabile/<int:id>/', valuation_view.comparable_details, name="comparable_details"),
     path('edit-comparabile/<int:id>/', valuation_view.edit_comparable, name="edit_comparable"),
     path('api/delete-comparabile/', valuation_view.delete_comparable, name="delete_comparable"),
+
+    # modules
+    path('modules/', views.modules_list, name='modules'),
+    path('modules/<str:key>', views.go_module, name='go_module_view'),
+
 ]
