@@ -1,0 +1,47 @@
+{% extends "base-fullscreen.html" %}
+
+{% block title %} Signin {% endblock %} 
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}
+    <style type="text/css">
+        p {
+            margin-top: 1rem;
+        }
+    </style>
+{% endblock stylesheets %}
+
+{% block content %}
+    <div class="d-flex align-items-center justify-content-center mb-3">
+        <i class="fa fa-lock auth-icon text-white" aria-hidden="true"></i>
+    </div>
+
+    <h3 class="text-center mb-2">Set new password</h3>
+    {% if msg %}
+        <p class="text-center text-danger">{{ msg }}</p>
+    {% else %}
+        <p class="text-center">Set the new password for your account so you can login and access all the features.</p>
+    {% endif %}
+    
+    <form method="post" class="login-form mt-4">
+        {% csrf_token %}     
+        <div class="form-group">
+            <div class="icon d-flex align-items-center justify-content-center"><span class="fa fa-lock"></span></div>
+           	{{ form.new_password1 }}
+        </div>
+        <span class="text-danger">{{ form.new_password1.errors }}</span>
+
+        <div class="form-group">
+            <div class="icon d-flex align-items-center justify-content-center"><span class="fa fa-lock"></span></div>
+            {{ form.new_password2 }}
+        </div>
+        <span class="text-danger">{{ form.new_password2.errors }}</span>
+
+        <div class="form-group mt-4">
+            <button type="submit" class="btn form-control btn-primary rounded submit px-3">Reset Password</button>
+        </div>
+    </form>
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}{% endblock javascripts %} 

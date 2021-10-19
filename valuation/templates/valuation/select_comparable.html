@@ -1,0 +1,173 @@
+{% extends "base.html" %}
+
+{% block title %} Comparabile Selection {% endblock %} 
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}
+    {% load static %}
+    <style>
+        .table td {
+            border-bottom: none!important;
+            padding-top: 8px!important;
+            height: 40px!important;
+        }
+        #location {
+            width: 40%;
+            display: inline-block;
+        }
+        .radius {
+            width: 20%;
+            display: inline-block;
+        }
+        .search-btn {
+            display: inline-block;
+            width: 10%;
+            background: #6861ce!important;
+            cursor: pointer;
+        }
+        .search-result {
+            display: none;
+        }
+        #search-result-tbl {
+            display: none;
+        }
+        .required {
+            border-color: #F25961 !important;
+            color: #F25961 !important;
+        }
+        .nr_warning {
+            display: none;
+        }
+    </style>
+{% endblock stylesheets %}
+
+{% block content %}
+
+    <div class="content">
+        <div class="page-inner">
+            <div class="page-header">
+                <h4 class="page-title">Comparabile Selection</h4>
+                <ul class="breadcrumbs">
+                    <li class="nav-home">
+                        <a href="#">
+                            <i class="flaticon-home"></i>
+                        </a>
+                    </li>
+                    <li class="separator">
+                        <i class="flaticon-right-arrow"></i>
+                    </li>
+                    <li class="nav-item">
+                        <a href="">Comparabile Selection</a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="card search">
+                <div class="card-header">
+                    <div class="card-title">Comparable Selection</div>
+                </div>
+
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div>
+                                <input type="text" class="form-control" value="{{valuation.street}}" id="location">
+                                <input type="number" placeholder="Redius in km" class="form-control radius">
+                                <input type="button" value="Search" class="form-control search-btn">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <form method="POST" id="comp_form">
+                    {% csrf_token %}
+                    <div class="card-body">
+                        <div class="row search-result">
+                            <div class="col-md-12">
+                                <h4 class="mt-5 mb-3 text-light">Search results</h4>
+                                <p class="text-danger search-warning" style="display: none;">No match found</p>
+                                <table class="table table-hover" id="search-result-tbl">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">ID</th>
+                                            <th scope="col">Location</th>
+                                            <th scope="col">Surface area</th>
+                                            <th scope="col">Camara</th>
+                                            <th scope="col">Construction Year</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group" style="width: 30%;">
+                                    <label for="nr_comparatii">Nr comparatii</label>
+                                    <input type="number" class="form-control" id="nr_comparatii" name="nr_comapratii">
+                                    <small class="form-text text-danger nr_warning">This field is required</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+
+                <div class="card-action pt-0" style="border-top: 0px!important;">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <button class="btn btn-success" id="submitbtn">Next</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+    <script type="text/javascript">
+        $(".search-btn").on('click', function() {
+            var location = $('#location').val()
+            var radius = $('.radius').val()
+            $.ajax({
+                url: "{% url 'valuation:search_comparable' %}",
+                type: "GET",
+                data: {'location': location, 'radius': radius},
+                success: function(e) {
+                    var comp = e.comparable
+                    if (comp.length > 0) {
+                        $('.search-result').css('display', 'block')
+                        $('#search-result-tbl').css('display', 'block')
+                        for(let i=0; i<comp.length; i++) {
+                            var tr = '<tr><td><div class="form-check"><label class="form-check-label"><input class="form-check-input" type="checkbox" name="comp[]" value="'+comp[i][0]+'"><span class="form-check-sign text-light">ID '+comp[i][0]+'</span></label></div></td><td>'+comp[i][1]+'</td><td>'+comp[i][3]+'</td><td>'+comp[i][2]+'</td><td>'+comp[i][4]+'</td></tr>';
+                            $('#search-result-tbl tbody').append(tr);
+                        }
+                    } else {
+                        $('.search-result').css('display', 'block')
+                        $('.search-warning').css('display', 'block')
+                    }
+                }
+            }).done(function() {
+                var $checkboxes = $('#search-result-tbl td input[type="checkbox"]');
+                $checkboxes.change(function(){
+                    console.log('click')
+                    var countCheckedCheckboxes = $checkboxes.filter(':checked').length;
+                    $('#nr_comparatii').val(countCheckedCheckboxes);
+                });
+            })
+        })
+
+        $('#submitbtn').on('click', function() {
+            var ids = $("input[name='comp[]']").map(function(){return $(this).val();}).get();
+            var nr_comp = $('#nr_comparatii').val();
+            if(ids.length > 0 || nr_comp.length > 0) {
+                $('#comp_form').submit();
+            } else if (ids.length == 0 && nr_comp.length == 0) {
+                $('#nr_comparatii').addClass('required')
+                $('.nr_warning').css('display', 'block')
+            }
+        })
+    </script>
+{% endblock javascripts %}  

@@ -1,0 +1,1054 @@
+{% extends "base.html" %}
+
+{% block title %} Add Agent {% endblock %} 
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}
+    {% load static %}
+    <!-- Load Leaflet from CDN -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+    integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+    crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+    integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+    crossorigin=""></script>
+
+    <!-- order image -->
+    <link rel="stylesheet" href="{% static 'dashboard/css/jquery-ui.css' %}">
+
+    <!-- dropzone file upload -->
+    <script src="{% static 'dashboard/js/dropzone.js' %}"></script>
+    <link rel="stylesheet" href="{% static 'dashboard/css/dropzone.css' %}">
+
+    <!-- multiple select  -->
+    <link rel="stylesheet" href="https://unpkg.com/multiple-select@1.5.2/dist/multiple-select.min.css">
+    
+    <link rel="stylesheet" type="text/css" href="{% static 'dashboard/css/valuation_details.css' %}">
+
+    <style>
+        /* multiple select css  */
+        .ms-choice {
+            background: #1a2035!important;
+            border: none;
+            height: 19px;
+            color: #fff!important;
+        }
+        .ms-choice>span {
+            color: #fff;
+            top: 5px;
+            left: 8px;
+        }
+        .ms-drop {
+            left: 0;
+        }
+        .ms-drop span {
+            color: #1a2035!important;
+        }
+    </style>
+{% endblock stylesheets %}
+
+{% block content %}
+    <div class="content">
+        <div class="page-inner">
+            <div class="page-header">
+                <h4 class="page-title">{% if valuation.status == 'completed' %} Evaluare Completă{% else %}Evaluare Incompletă{% endif %}</h4>
+                <ul class="breadcrumbs">
+                    <li class="nav-home">
+                        <a href="#">
+                            <i class="flaticon-home"></i>
+                        </a>
+                    </li>
+                    <li class="separator">
+                        <i class="flaticon-right-arrow"></i>
+                    </li>
+                    <li class="nav-item">
+                        {% if valuation.status == 'completed' %}
+                            <a href="{% url 'dashboard:complete' %}">Evaluare completă</a>
+                        {% else %}
+                            <a href="{% url 'dashboard:incomplete' %}">Evaluare incompletă</a>
+                        {% endif %}
+                    </li>
+                    <li class="separator">
+                        <i class="flaticon-right-arrow"></i>
+                    </li>
+                    <li class="nav-item">
+                        <a href="">Detalii de evaluare</a>
+                    </li>
+                </ul>
+            </div>
+
+            {% load my_filters %}
+            <!-- =========================================================================== -->
+            <!-- =========================== address and basic ============================= -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="d-flex align-items-center">
+                        <div class="card-title">
+                            {% if valuation.title %}
+                            {{ valuation.title }}
+                            {% else %}
+                            {{ valuation.get_property_type_display }} cu {{camere.camere|floatformat:0}} si dependinte
+                            {% endif %}
+                        </div>
+                        <!-- {% if comparable_tbl %}
+                        <a class="btn btn-primary btn-round ml-auto text-white"><i class="fas fa-file-pdf mr-2"></i>PDF</a>
+                        {% else %} -->
+                        <button type="button" class="btn btn-primary btn-round ml-auto text-white" data-toggle="modal" data-target="#addComparabile"><i class="fa fa-plus mr-2"></i>Add Comparabile</button>
+                        <!-- {% endif %} -->
+                    </div>
+                </div>
+
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-7">
+                            <div class="row mb-1">
+                                <div class="col-md-6 mt-2">
+                                    <b class="text-light mr-2"># EPI-{{valuation.reference_no}}-{{valuation.inspection_date|date:"dmy"}}</b>
+                                </div>
+                                <div class="col-md-6">
+                                    <b class="text-light mr-2">Valuation Status:</b>
+                                    <div class="btn-group status">
+                                        <button class="btn status {% if valuation.status == 'progress' %}btn-outline-info {% elif valuation.status == 'completed' %} btn-outline-success {% elif valuation.status == 'suspended' %} btn-outline-warning{% else %} btn-outline-danger {% endif %} btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            {{valuation.get_status_display }}
+                                        </button>
+                                        <div class="dropdown-menu">
+                                            {% for key, value in status.items %}
+                                                {% if valuation.status != key %}
+                                                    <a class="dropdown-item" href="{% url 'dashboard:change_status' status=key id=valuation.id %}">{{value}}</a>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row mb-4">
+                                <div class="col-md-6">
+                                    <b class="text-light mr-2">Inspector Name:</b>
+                                    {% if valuation.valuatate_by %}
+                                        {{ valuation.valuatate_by.get_full_name }} 
+                                    {% else %}
+                                        Not Assigned
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-6">
+                                    {% if valuation.valuatate_by.certification_number %}
+                                    <b class="text-light mr-2">Certification Nr.:</b>
+                                        {{ valuation.valuatate_by.certification_number }}
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <!-- property details -->
+                            <div class="row mb-2">
+                                <div class="col-md-12">
+                                    <b class="text-light">Property Details</b>
+                                </div>
+                            </div>
+
+                            <div class="row mb-2">
+                                <div class="col-md-6"><b class="text-light mr-2">Tipul proprietate:</b>  {{valuation.get_property_type_display}}</div>
+                                <div class="col-md-6">
+                                    <b class="text-light mr-2">Compartimetare:</b>  
+                                    {% if valuation.apartment_type %}{{valuation.get_apartment_type_display}}{% endif %}
+                                </div>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col-md-6">
+                                    {% if summary.amav %}
+                                    <b class="text-light mr-2">Abordare:</b> Prin piata 
+                                    {% elif summary.aiav %} 
+                                    <b class="text-light mr-2">Abordare:</b> Prin venit
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-6">
+                                    {% if summary.amav %}
+                                    <b class="text-light mr-2">Property Value: </b> {{summary.amav}} EUR
+                                    {% elif summary.aiav %}
+                                    <b class="text-light mr-2">Property Value: </b> {{summary.aiav}} EUR
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col-md-12"><b class="text-light mr-2">Address:</b> {{valuation.street}}, {{valuation.city.name}}, {{valuation.city.area.name}}</div>
+                            </div>
+                            <div class="row mb-4">
+                                <div class="col-md-6"><b class="text-light mr-2">Locatie:</b>{% if valuation.locatie %}{{ valuation.locatie|get_locatie }}{% endif %}</div>
+                                <div class="col-md-6"><b class="text-light mr-2">Proprietar:</b> {{valuation.owner}}</div>
+                            </div>
+                            <!-- property details -->
+                        </div>
+                        <div class="col-md-5">
+                            <div id="mapid"></div>
+                        </div>
+                    </div>
+
+                    <div class="row mt-3">
+                        <div class="col-md-12">
+                            <!-- client detais  -->
+                            <div class="row mb-2">
+                                <div class="col-md-12">
+                                    <b class="text-light mr-2">Client Details</b>  <br>
+                                </div>
+                            </div>
+
+                            <div class="row mb-4">
+                                <div class="col-md-4">
+                                    <b class="text-light mr-2">Name: </b>{{valuation.nume_client}}
+                                </div>
+                                <div class="col-md-4">
+                                    <b class="text-light mr-2">Address: </b>{{valuation.ct_address}}
+                                </div>
+                                <div class="col-md-4">
+                                    <b class="text-light mr-2">CUI: </b>{{valuation.cui}}
+                                </div>
+                            </div>
+                            <!-- client details -->
+
+                            <!-- recipient details  -->
+                            <div class="row mb-2">
+                                <div class="col-md-12">
+                                    <b class="text-light">Utilizator de semnat Details</b>
+                                </div>
+                            </div>
+
+                            <div class="row mb-4">
+                                <div class="col-md-4">
+                                    {% if valuation.report_recipient %}
+                                    <b class="text-light mr-2">Name:</b> {{valuation.report_recipient}}
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-4">
+                                    {% if valuation.rp_address %}
+                                    <b class="text-light mr-2">Address:</b> {{valuation.rp_address}}
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <!-- recipient details  -->
+
+                            <!-- date  -->
+                            <div class="row mb-2">
+                                <div class="col-md-12">
+                                    <b class="text-light">Data evaluarii</b>
+                                </div>
+                            </div>
+
+                            <div class="row mb-1">
+                                <div class="col-md-4">
+                                    <b class="text-light mr-2">Inspection Date:</b> {{valuation.inspection_date}}
+                                </div>
+                                <div class="col-md-4">
+                                    <b class="text-light mr-2">Valuation Date:</b> {{valuation.valuation_date}}
+                                </div>
+                                <div class="col-md-4">
+                                    <b class="text-light mr-2">Report Date:</b> {{valuation.report_date}}
+                                </div>
+                            </div>
+                            <!-- date  -->
+
+                            <div class="row mt-4">
+                                <div class="col-md-12">
+                                    <a class="btn btn-secondary" href="{% url 'dashboard:edit_valuation' id=valuation.id %}">
+                                        <i class="fas fa-pencil-alt mr-2"></i>EDIT
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- =========================================================================== -->
+            <!-- ============================ comparable table ============================= -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="d-flex align-items-center">
+                        <div class="card-title">Comparable Table</div>
+
+                        <a href="{% url 'valuation:select_comparable' id=valuation.id %}" class="ml-auto btn btn-icon btn-round btn-primary" data-toggle="tooltip" data-placement="top" title="Add comparable">
+                            <i class="fa fa-plus text-light" style="margin-top: 0.8rem;"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="card-body">
+                    <div class="row">
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- =========================================================================== -->
+            <!-- ================================ cover photos ============================= -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="d-flex align-items-center">
+                        <h4 class="card-title">Cover Fotografii</h4>
+                        {% if not cover %}
+                        <button type="button" class="ml-auto btn btn-icon btn-round btn-primary" id="addCoverPhotos" data-toggle="collapse" data-target="#cover-photo" aria-expanded="false" aria-controls="cover-photo">
+                            <i class="fa fa-plus"></i>
+                        </button>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="card-body">
+                    <div class="row">
+                        {% if cover %}
+                        <div class="col-md-12">
+                            <div id="gallery">
+                                <div id="image-container">
+                                    <div id="txtresponse" >Images order is updated</div>
+                                    <ul id="image-list" class="mb-4">
+                                        {% for c in cover %}
+                                            {% if c.refer_to == 'cover' %}
+                                            <li id="image_{{ c.id }}" >
+                                                <img src="{{ c.image.url }}" alt="Cover photo">
+                                            </li>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </ul>
+                                    <button class="btn btn-secondary re-order">REORDER</button>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                        <div class="col-md-12 collapse" id="cover-photo" aria-labelledby="addCoverPhotos">
+                            <form action="{% url 'dashboard:save_cover_photos' %}" class="dropzone dz-clickable" id="coverPhotoDropzone">
+                                {% csrf_token %}
+                                <input type="hidden" name="cover_vid" id="cover_vid" value="{{valuation.id}}">
+                                <input type="hidden" name="order" id="image-order" value="">
+                                <input type="hidden" name="refer_to" value="cover">
+                                <div class="dz-message" data-dz-message="">
+                                    <div class="icon">
+                                        <i class="flaticon-file"></i>
+                                    </div>
+                                    <h4 class="message">Drag and Drop files here</h4>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- =========================================================================== -->
+            <!-- =========================== valuation summary ============================= -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="d-flex align-items-center">
+                        <h4 class="card-title">Rezumatul Evaluarii</h4>
+                        {% if summary is not None %}
+                            <button type="button" class="ml-auto btn btn-icon btn-round btn-primary" id="edit_summary" data-toggle="tooltip" data-placement="top" title="Edit summary">
+                                <i class="fas fa-pencil-alt"></i>
+                            </button>
+                        {% else %}
+                            <button type="button" class="ml-auto btn btn-icon btn-round btn-primary" id="add_summary" data-toggle="tooltip" data-placement="top" title="Add summary">
+                                <i class="fa fa-plus"></i>
+                            </button>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                {% if summary is not None %}
+                <div class="card-body">
+                    {% if summary_photo %}
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h4 class="text-light">Rezumantul Fotografii</h4>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div id="summary-gallery">
+                                <div id="summary-image-container">
+                                    <div id="summary-txtresponse" >Images order is updated</div>
+                                    <ul id="summary-image-list" class="mb-4">
+                                        {% for c in summary_photo %}
+                                            {% if c.refer_to == 'summary' %}
+                                            <li id="summary_image_{{ c.id }}" >
+                                                <img src="{{ c.image.url }}" alt="Summary photo">
+                                            </li>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </ul>
+                                    <button class="btn btn-secondary summary-reorder">REORDER</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <div class="row mt-4">
+                        <div class="col-md-4">
+                            <b class="text-light mr-2">Scopul Evaluarii:</b> {{ summary.get_purpose_display }}
+                        </div>
+                        <div class="col-md-4">
+                            <b class="text-light mr-2">Abordarea de Evaluare:</b> {{ summary.get_approach_display }}
+                        </div>
+                        <div class="col-md-4">
+                            <b class="text-light mr-2">Curs valutar:</b> 1 EUR = {{ summary.fer }} RON
+                        </div>
+                    </div>
+
+                    <p class="mt-3 text-light" style="font-size: 18px;">Valori rezultate</p>
+                    <table class="table table-hover">
+                        <tbody>
+                            <tr>
+                                <td><b>Valoarea de {% if summary.approach == 'market' %}piata{% else %}venit{% endif %} proprietate </b></td>
+                                <td>
+                                    <b>
+                                        {% if summary.approach == 'market' %}{{ mav_total }} EUR{% else %}{{ iav_total }} EUR{% endif %}<br>
+                                    </b>
+                                    <b>
+                                        {% if summary.approach == 'market' %}
+                                            {{ mav_ron }} RON
+                                        {% else %}
+                                            {{ iav_ron }} RON
+                                        {% endif %}
+                                    </b>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Apartament</td>
+                                <td><b>{% if summary.approach == 'market' %}{{ summary.amav }} EUR{% else %}{{ summary.aiav }} EUR{% endif %}</b></td>
+                            </tr>
+                            {% for s in vattrs %}
+                                {% if summary.approach == 'market' and s.mav > 0.00 %}
+                                    <tr>
+                                        <td>{{s.attr_id.name}} nr. {{s.attr_value}}</td>
+                                        <td><b>{{ s.mav }} EUR</b></td>
+                                    </tr>
+                                {% endif %}
+                                {% if summary.approach == 'income' and s.iav > 0.00 %}
+                                    <tr>
+                                        <td>{{s.attr_id.name}} nr. {{s.attr_value}}</td>
+                                        <td><b>{{ s.iav }} EUR</b></td>
+                                    </tr>
+                                {% endif %}
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% endif %}
+            </div>
+
+
+            <!-- =========================================================================== -->
+            <!-- ============================= characteristics ============================= -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="d-flex align-items-center">
+                        <h4 class="card-title">Compartimentare</h4>
+                        {% if vattrs %}
+                        <button type="button" class="ml-auto btn btn-icon btn-round btn-primary" id="edit_caracteristici" data-toggle="tooltip" data-placement="top" title="Edit caracteristici">
+                            <i class="fas fa-pencil-alt"></i>
+                        </button>
+                        {% else %}
+                        <button type="button" class="ml-auto btn btn-icon btn-round btn-primary" id="add_caracteristici" data-toggle="tooltip" data-placement="top" title="Add caracteristici">
+                            <i class="fa fa-plus"></i>
+                        </button>
+                        {% endif %}
+                    </div>
+                </div>
+
+                {% if vattrs %}
+                <div class="card-body values">
+                    {% for vattr in vattrs %}
+                        <div class="mb-3">
+                            {% if vattr.attr_value != 'none' %} 
+                                <p class="mb-2"><span class="text-white mr-2"><b>Nr. {{ vattr.attr_id.name }}:</b></span> {{ vattr.attr_value }}</p>
+                            {% else %}                                
+                                <p class="mb-2 text-white"><b>{{ vattr.attr_id.name }}</b></p>
+                            {% endif %}
+
+                            <div class="images">
+                                {% for img in vattr.attr_id.files.all %}
+                                    {% if img.file_name and img.ref_no == vattr.ref_no %}
+                                        <img src="{{ img.file_name.url }}" style="margin-right: 10px; margin-bottom: 10px; padding: 0.25rem; border: 1px solid #a9afbb;" width="100" height="100">
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <hr style="border-color: #ebecec; opacity: 0.1;">
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+
+
+            <!-- =========================================================================== -->
+            <!-- ============================== Custom fields ============================== -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="d-flex align-items-center">
+                        <h4 class="card-title">Câmpuri customizate</h4>
+                        {% if custom %}
+                        <button type="button" class="ml-auto btn btn-icon btn-round btn-primary" id="edit_custom" data-toggle="tooltip" data-placement="top" title="Edit customizate">
+                            <i class="fas fa-pencil-alt"></i>
+                        </button>
+                        {% else %}
+                        <button type="button" class="ml-auto btn btn-icon btn-round btn-primary" id="add_custom" data-toggle="tooltip" data-placement="top" title="Add customizate">
+                            <i class="fa fa-plus"></i>
+                        </button>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                {% if custom %}
+                <div class="card-body custom-values">
+                    {% for cattr in custom %}
+                        <div class="mb-3">
+                            <p class="mb-2"><span class="text-white mr-2"><b>Nr. {{ cattr.attr_name }}:</b></span> {{ cattr.attr_value }}</p>
+
+                            <div class="images">
+                                {% for img in cattr.cfiles.all %}
+                                    {% if img.file_name and img.ref_no == cattr.ref_no %}
+                                        <img src="{{ img.file_name.url }}" style="margin-right: 10px; margin-bottom: 10px; padding: 0.25rem; border: 1px solid #a9afbb;" width="100" height="100">
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <hr style="border-color: #ebecec; opacity: 0.1;">
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+            
+            <!-- =========================================================================== -->
+            <!-- ============================= Presentation data =========================== -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="d-flex align-items-center">
+                        <h4 class="card-title">Prezentarea Datelor</h4>
+                        {% if pdata is not None %}
+                            <button type="button" class="ml-auto btn btn-icon btn-round btn-primary" id="edit_pdata" data-toggle="tooltip" data-placement="top" title="Edit prezentarea datelor">
+                                <i class="fas fa-pencil-alt"></i>
+                            </button>
+                        {% else %}
+                            <button type="button" class="ml-auto btn btn-icon btn-round btn-primary" id="add_pdata" data-toggle="tooltip" data-placement="top" title="Add Prezentarea Datelor">
+                                <i class="fa fa-plus"></i>
+                            </button>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                {% if pdata is not None %}
+                <div class="card-body presentation-data">
+                    {% if summary is not None %}
+                    <div class="row mb-3">
+                        <div class="col-md-12 text-light">
+                            <p class="text-light mb-1"><b>Identificarea proprietății subiect</b></p>
+                            {% if pdata.sub_identi %}
+                            <p class="text-justify text-muted">{{ pdata.sub_identi }}</p> 
+                            {% else %}
+                            <p class="text-justify text-muted">Dreptul deplin de proprietate asupra apartamentului cu nr. {{valuation.apartment_no}}, compus din {{camere.camere|floatformat:"0"}} camere si dependinte cu o suprafata utila de {{ utila.utila }} mp si trei balcoane cu suprafata lor totala de {{ totala.totala|sub:utila.utila }}, rezultand suprafata utila totala de {{ totala.totala }} mp, impreuna cu dreptul de proprietate asupra cotei indivize de 56.72 mp din partile si dependintele comune ale imobilului si dreptul de proprietate asupra terenului in suprafata de indiviza de 53.59 mp. Apartamentul are numarul cadastral {{pdata.cadastral_no}} si este intabulat in Cartea Funciara numarul {{pdata.land_book_no}}.</p> 
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endif %}
+                    {% if src_doc %}
+                    <div class="row mb-3">
+                        <div class="col-md-12 text-light">
+                            <p class="text-light mb-1"><b>Sursă de informații</b></p>
+                            {% for src in src_doc %}
+                                <p class="mb-0">- &emsp; {{ src.source }}</p>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+                    {% if sp_hypo %}
+                    <div class="row mb-3">
+                        <div class="col-md-12 text-light">
+                            <p class="text-light"><b>Special Hypothesis</b></p>
+                            {{ pdata.sp_hypo|linebreaks }}
+                        </div>
+                    </div>
+                    {% endif %}
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <p class="text-light"><b>Puncte de interes</b></p>
+                            {% for place in pdata.poi|covertlist %}
+                                <button class="btn btn-secondary btn-round mr-1 tag-btn mb-2">{{ place }}</button>
+                            {% endfor %}
+                        </div>
+                        <div class="col-md-6">
+                            <p class="text-light"><b>Legaturi transport public</b></p>
+                            {% for p in pdata.pt|speciallist %}
+                            <button class="btn btn-secondary btn-round mr-1 tag-btn">{{ p }}</button>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    {% if pdata.legal_doc %}
+                    <div class="row mb-3">
+                        <div class="col-md-12 text-light">
+                            <p class="text-light mb-1"><b>Proprietar si situatia juridica</b></p>
+                            {% for src in src_doc %}
+                                {% if src.id|stringformat:"i" in pdata.legal_doc %}
+                                <p class="mb-0">- &emsp; {{ src.source }}</p>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <span><b class="text-light">Cadastral nr.: </b>{{ pdata.cadastral_no }}</span>
+                        </div>
+                        <div class="col-md-4">
+                            <span><b class="text-light">Land book nr.: </b>{{ pdata.land_book_no }}</span>
+                        </div>
+                        <div class="col-md-4">
+                            <span><b class="text-light">UAT: </b>{{ pdata.uat }}</span>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <span><b class="text-light">Charges: </b>{{ pdata.get_charges_display }} {% if pdata.charges == 'yes' %}in favoarea {{ pdata.sarcini }}{% endif %}</span>
+                        </div>
+                        <div class="col-md-4">
+                            <span><b class="text-light">Current use: </b>{{ pdata.get_current_use_display }}</span>
+                        </div>
+                        <div class="col-md-4">
+                            <span><b class="text-light">Identification: </b>{{ pdata.get_identification_display }}</span>
+                        </div>
+                    </div>
+
+                    {% if pdata.history %}
+                    <div class="row">
+                        <div class="col-md-12">
+                            <p class="text-light"><b>History</b></p>
+                            {{ pdata.history }}
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+            
+
+            <!-- =========================================================================== -->
+            <!-- ============================= Contruction data =========================== -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="d-flex align-items-center">
+                        <h4 class="card-title">Constructia</h4>
+                        {% if const is not None %}
+                            <button type="button" class="ml-auto btn btn-icon btn-round btn-primary" id="edit_const" data-toggle="tooltip" data-placement="top" title="Edit Constructia">
+                                <i class="fas fa-pencil-alt"></i>
+                            </button>
+                        {% else %}
+                            <button type="button" class="ml-auto btn btn-icon btn-round btn-primary" id="add_const" data-toggle="tooltip" data-placement="top" title="Add Constructia">
+                                <i class="fa fa-plus"></i>
+                            </button>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                {% if const is not None %}
+                <div class="card-body construction">
+                    {% load my_filters %}
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <span><b class="text-light">Etaj: </b>{{ const.etaj }}</span>
+                        </div>
+                        <div class="col-md-4">
+                            <span><b class="text-light">
+                                Anul construcție: </b>{{ const.build_in }}</span>
+                        </div>
+                        <div class="col-md-4">
+                            <span><b class="text-light">Structure: </b>{{ const.get_structure_display }}</span>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <span><b class="text-light">Foundation: </b>{{ const.get_foundation_display }}</span>
+                        </div>
+                        <div class="col-md-4">
+                            <span><b class="text-light">Closure: </b>{{ const.get_closure_display }}</span>
+                        </div>
+                        <div class="col-md-4">
+                            <span><b class="text-light">Sub-compartment: </b>{{ const.get_subcompartment_display }}</span>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <span><b class="text-light">Roof: </b>{{ const.get_roof_display }}</span>
+                        </div>
+                        <div class="col-md-4">
+                            <span><b class="text-light">Heating: </b>{{ const.get_heating_display }}</span>
+                        </div>
+                        <div class="col-md-4">
+                            <span><b class="text-light">Finisaje: </b>{{ const.get_finish_display }}</span>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        {% if const.walls %}
+                        <div class="col-md-6">
+                            <p class="text-light mb-1"><b>Walls</b></p>
+                            {{ const.walls }}
+                        </div>
+                        {% endif %}
+                        {% if const.interior_carpentry %}
+                        <div class="col-md-6">
+                            <p class="text-light mb-1"><b>Interior carpentry</b></p>
+                            {{ const.interior_carpentry }}
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="row mb-3">
+                        {% if const.ceiling %}
+                        <div class="col-md-6">
+                            <p class="text-light mb-1"><b>Ceiling</b></p>
+                            {{ const.ceiling }}
+                        </div>
+                        {% endif %}
+                        {% if const.exterior_finishes %}
+                        <div class="col-md-6">
+                            <p class="text-light mb-1"><b>Exterior finishes</b></p>
+                            {{ const.exterior_finishes }}
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="row mb-3">
+                        {% if const.exterior_carpentry %}
+                        <div class="col-md-6">
+                            <p class="text-light mb-1"><b>Exterior carpentry</b></p>
+                            {{ const.exterior_carpentry }}
+                        </div>
+                        {% endif %}
+                        <div class="col-md-6">
+                            <p class="text-light mb-1"><b>Pardoseli</b></p>
+                            Pardoseli placate cu gresie in {{floor_data}}, placate cu parchet laminat in restul incaperilor.
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        {% if const.utilities %}
+                        <div class="col-md-6">
+                            <p class="text-light mb-2"><b>Utilities</b></p>
+                                {% for u in const.utilities|speciallist %}
+                                    <button class="btn btn-secondary tag-btn btn-round mr-1 mb-2">
+                                        {% if u == 'gas' %}
+                                            Gaze naturale
+                                        {% elif u == 'electricity' %}
+                                            Energie electrica 
+                                        {% elif u == 'apa' %}
+                                            Apa
+                                        {% elif u == 'sewerage' %}
+                                            Canalizare
+                                        {% endif %}
+                                    </button>
+                                {% endfor %}
+                        </div>
+                        {% endif %}
+                        {% if const.additional_equipment %}
+                        <div class="col-md-6">
+                            <p class="text-light mb-2"><b>Dotari suplimentare</b></p>
+                                {% for u in const.additional_equipment|speciallist %}
+                                    <button class="btn btn-secondary tag-btn btn-round mr-1 mb-2">
+                                        {% if u == 'ac' %}
+                                            Air conditioning
+                                        {% elif u == 'ngp' %}
+                                            Conducta de gaze naturale
+                                        {% elif u == 'mobilat' %}
+                                            Mobilat
+                                        {% endif %}
+                                    </button>
+                                {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% if const.comments %}
+                    <div class="row">
+                        <div class="col-md-12">
+                            <p class="text-light"><b>Comments</b></p>
+                            {{ const.comments }}
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+                {% endif %}
+
+                {% if s_utila %}
+                <div class="card-header">
+                    <div class="card-title">Suprafete</div>
+                </div>
+                <div class="card-body">
+                    <table class="table table-hover" style="width: 100%!important;">
+                        <thead>
+                            <tr>
+                                <th scope="col" width="15%">Nr. Crt.</th>
+                                <th scope="col" width="25%">Denumire incapere</th>
+                                <th scope="col" width="30%">Suprafata (mp)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for s in s_utila %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td>{{ s.room_name }}</td>
+                                <td>{{ s.area }}</td>
+                            </tr>
+                            {% endfor %}
+                            <tr>
+                                <td colspan="2" align="center"><b class="text-light">Suprafata utila</b></td>
+                                <td><b class="text-light">{{ utila.utila }}</b></td>
+                            </tr>
+                            {% for s in s_neutila %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td>{{ s.room_name }}</td>
+                                <td>{{ s.area }}</td>
+                            </tr>
+                            {% endfor %}
+                            <tr>
+                                <td colspan="2" align="center"><b class="text-light">Suprafata totala</b></td>
+                                <td><b class="text-light">{{ totala.totala }}</b></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+  
+    <!-- Modal -->
+    <div class="modal fade" id="addComparabile" tabindex="-1" role="dialog" aria-labelledby="addComparabileTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Proprietati comparabile</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form action="{% url 'dashboard:add_comptable' id=valuation.id %}" method="POST">
+                    {% csrf_token %}
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="id_properties" style="color:#495057!important;">Proprietati comparabile</label>
+                            <select multiple="multiple" id="id_properties" class="form-control" name="properties[]">
+                                {% for p in cp %}
+                                <option value="{{p.id}}">ID-{{p.id}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+    <!-- re-order photo -->
+    <script src="{% static 'dashboard/js/jquery-ui.js' %}" type="text/javascript"></script>
+    <!-- multiple select  -->
+    <script src="https://unpkg.com/multiple-select@1.5.2/dist/multiple-select.min.js"></script>
+
+    <script type="text/javascript">
+        // ====================================================================
+        // ========================== map management ==========================
+        var lat = '{{ valuation.latitude }}'
+        var lng = '{{ valuation.longitude }}'
+        var map = L.map('mapid').setView([lat, lng], 14);
+
+        L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibmFlZW0yMyIsImEiOiJja2lyNmpzdjUwMHVrMnRreXZyNHdubHptIn0.X3OwhHNVTJG_SzVzHEeLnQ', {
+            attribution: '&copy; <a href="https://osm.org/copyright">OpenStreetMap</a> contributors',
+            maxZoom: 18,
+            id: 'mapbox/streets-v11',
+            tileSize: 512,
+            zoomOffset: -1,
+            accessToken: 'pk.eyJ1IjoibmFlZW0yMyIsImEiOiJja2lyNmpzdjUwMHVrMnRreXZyNHdubHptIn0.X3OwhHNVTJG_SzVzHEeLnQ'
+        }).addTo(map);
+
+        var marker = L.marker([lat, lng]).addTo(map)
+        marker.on('click', function(e) {
+            var latlng = [e.target.getLatLng()];
+            var markerbounds = L.latLngBounds(latlng);
+            map.fitBounds(markerbounds);
+        })
+
+
+        // ====================================================================
+        // ========================= re-order photos ==========================
+        var cdropIndex;
+        $("#image-list").sortable({
+            update: function(event, ui) { 
+                dropIndex = ui.item.index();
+            }
+        });
+
+        // summary photo
+        var sdropIndex;
+        $("#summary-image-list").sortable({
+            update: function(event, ui) { 
+                sdropIndex = ui.item.index();
+            }
+        });
+
+        // cover photo
+        $('.re-order').click(function (e) {
+            $("#image-list").sortable('destroy');
+            var h = [];
+            $("#image-list li").each(function() {
+                h.push($(this).attr('id').substr(6));
+            });
+            $.ajax({
+                url: "{% url 'dashboard:reorder_image' %}",
+                type: 'POST',
+                data: {ids: " " + h + "", csrfmiddlewaretoken:'{{csrf_token}}'},
+                success: function (e) {
+                    $("#txtresponse").css('display', 'inline-block');
+                    if(e.response == 'true'){
+                        $("#txtresponse").text('Images order is updated');
+                    } else {
+                        $("#txtresponse").text('Problem changing image order');
+                    }
+                }
+            });
+            e.preventDefault();
+        });
+
+        // summary photo
+        $('.summary-reorder').click(function (e) {
+            $("#summary-image-list").sortable('destroy');
+            var sh = [];
+            $("#summary-image-list li").each(function() {
+                sh.push($(this).attr('id').substr(14));
+            });
+            $.ajax({
+                url: "{% url 'dashboard:reorder_image' %}",
+                type: 'POST',
+                data: {ids: " " + sh + "", csrfmiddlewaretoken:'{{csrf_token}}'},
+                success: function (e) {
+                    $("#summary-txtresponse").css('display', 'inline-block');
+                    if(e.response == 'true'){
+                        $("#summary-txtresponse").text('Images order is updated');
+                    } else {
+                        $("#summary-txtresponse").text('Problem changing image order');
+                    }
+                }
+            });
+            e.preventDefault();
+        });
+
+
+        // ====================================================================
+        // ======================== add cover photos ==========================
+        var order = 1;
+        $("#coverPhotoDropzone").click(function () {
+            $('#image-order').val(order);
+            order++;
+        })
+        Dropzone.options.coverPhotoDropzone = {
+            maxFiles: 4,
+            init: function() {
+                this.on("maxfilesexceeded", function(file){
+                    alert("No more files please!");
+                });
+            }
+        };
+
+
+        // ====================================================================
+        // ======================= create notifications =======================
+        var msg = "{% if msg %}{{msg}}{% endif %}"
+        if(msg !== "") {
+            var content = {};
+            if (msg=='status') {
+                var state = "success";
+                content.message = 'Status updated successfully';
+                content.title = 'Success!';
+            } else if (msg == 'not_status') {
+                var state = "danger";
+                content.message = 'Problem updating status';
+                content.title = 'Error!';
+            } else if (msg == 'marked') {
+                var state = "success";
+                content.message = 'Valuation marked as completed.';
+                content.title = 'Success!';
+            }
+
+            content.icon = 'fa fa-bell';
+            $.notify(content,{
+                type: state,
+                placement: {
+                    from: 'top',
+                    align: 'right'
+                },
+                time: 1000,
+                delay: 0,
+            });
+            // closing notification
+            setTimeout(function(){
+                $('.close').trigger('click');
+            }, 4000);
+        }
+
+
+        // ====================================================================
+        // ======================= add and edit summary =======================
+        $("#add_summary").on('click', function() {
+            window.location.href = "{% url 'dashboard:add_summary' id=1234 %}".replace('1234', '{{valuation.id}}')
+        })
+        $("#edit_summary").on('click', function() {
+            window.location.href = "{% url 'dashboard:edit_summary' id=1234 %}".replace('1234', '{{valuation.id}}')
+        });
+
+
+        // ====================================================================
+        // =================== add and edit caracteristici ====================
+        $("#add_caracteristici").on('click', function() {
+            window.location.href = "{% url 'dashboard:add_compartment' id=1234 %}".replace('1234', '{{valuation.id}}')
+        })
+        $("#edit_caracteristici").on('click', function() {
+            window.location.href = "{% url 'dashboard:edit_compartment' id=1234 %}".replace('1234', '{{valuation.id}}')
+        })
+
+
+        // ====================================================================
+        // ==================== add and edit custom field =====================
+        $("#add_custom").on('click', function() {
+            window.location.href = "{% url 'dashboard:add_customfield' id=1234 %}".replace('1234', '{{valuation.id}}')
+        })
+        $("#edit_custom").on('click', function() {
+            window.location.href = "{% url 'dashboard:edit_customattrs' id=1234 %}".replace('1234', '{{valuation.id}}')
+        })
+
+
+        // ====================================================================
+        // ================== add and edit presentation data ==================
+        $("#add_pdata").on("click", function() {
+            window.location.href = "{% url 'dashboard:add_presentation_data' id=1234 %}".replace('1234', '{{ valuation.id }}')
+        })
+        $("#edit_pdata").on("click", function() {
+            window.location.href = "{% url 'dashboard:edit_presentation' id=1234 %}".replace('1234', '{{ valuation.id }}')
+        })  
+        
+        // ====================================================================
+        // ================= add and edit construction data ===================
+        $("#add_const").on("click", function() {
+            window.location.href = "{% url 'dashboard:add_construction' id=1234 %}".replace('1234', '{{ valuation.id }}')
+        })
+        $("#edit_const").on("click", function() {
+            window.location.href = "{% url 'dashboard:edit_construction' id=1234 %}".replace('1234', '{{ valuation.id }}')
+        })
+
+        // add comparabile 
+        $(function () {
+            $('#id_properties').multipleSelect()
+        })
+    </script>
+{% endblock javascripts %}  

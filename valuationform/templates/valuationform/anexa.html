@@ -1,0 +1,122 @@
+{% extends "base-form.html" %}
+
+{% block title %} Add Anexa {% endblock %} 
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}
+    {% load static %}
+    <!-- dropzone file upload -->
+    <script src="{% static 'dashboard/js/dropzone.js' %}"></script>
+    <link rel="stylesheet" href="{% static 'dashboard/css/dropzone.css' %}">
+    <style>
+        .dropzone {
+            padding: 20px 60px 20px!important;
+        }
+        .dropzone h4 {
+            font-size: 26px!important;
+        }
+    </style>
+{% endblock stylesheets %}
+
+{% block content %}
+
+    <div class="content">
+        <div class="page-inner">
+            <div class="page-header">
+                <h4 class="page-title">Add Anexa</h4>
+                <ul class="breadcrumbs">
+                    <li class="nav-home">
+                        <a href="#">
+                            <i class="flaticon-home"></i>
+                        </a>
+                    </li>
+                    <li class="separator">
+                        <i class="flaticon-right-arrow"></i>
+                    </li>
+                    <li class="nav-item">
+                        <a href="">Valuation Form</a>
+                    </li>
+                    <li class="separator">
+                        <i class="flaticon-right-arrow"></i>
+                    </li>
+                    <li class="nav-item">
+                        <a href="">Anexa</a>
+                    </li>
+                </ul>
+            </div>
+        
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">Anexa</div>
+                </div>
+                
+                <div class="card-body">
+                    <div class="row mb-4">
+                        <div class="col-md-12">
+                            <p class="text-light" style="font-size:16px;">Hartalocalizare</p>
+                            <form action="{% url 'dashboard:save_anexa' %}" class="dropzone dz-clickable">
+                                {% csrf_token %}
+                                <input type="hidden" name="refer_to" value="map">
+                                <input type="hidden" name="vid" value="{{ valuation_id }}">
+                                <div class="dz-message" data-dz-message="">
+                                    <div class="icon">
+                                        <i class="flaticon-file"></i>
+                                    </div>
+                                    <h4 class="message">Drag and Drop files here</h4>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-md-12">
+                            <p class="text-light" style="font-size:16px;">Fotografii</p>
+                            <form action="{% url 'dashboard:save_anexa' %}" class="dropzone dz-clickable">
+                                {% csrf_token %}
+                                <input type="hidden" name="refer_to" value="photography">
+                                <input type="hidden" name="vid" value="{{ valuation_id }}">
+                                <div class="dz-message" data-dz-message="">
+                                    <div class="icon">
+                                        <i class="flaticon-file"></i>
+                                    </div>
+                                    <h4 class="message">Drag and Drop files here</h4>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <p class="text-light" style="font-size:16px;">Documente</p>
+                            <form action="{% url 'dashboard:save_anexa' %}" class="dropzone dz-clickable">
+                                {% csrf_token %}
+                                <input type="hidden" name="refer_to" value="document">
+                                <input type="hidden" name="vid" value="{{ valuation_id }}">
+                                <div class="dz-message" data-dz-message="">
+                                    <div class="icon">
+                                        <i class="flaticon-file"></i>
+                                    </div>
+                                    <h4 class="message">Drag and Drop files here</h4>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-action">
+                    <button class="btn btn-success" id="submit-btn">{% if 'details' in pre_url %}SAVE{% else %}FINISH{% endif %}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+    <script>
+        $("#submit-btn").on('click', function(){
+            window.location.href = "{% url 'dashboard:details' id=valuation_id %}"
+        })
+    </script>
+{% endblock javascripts %}  

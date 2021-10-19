@@ -1,0 +1,67 @@
+		<!-- Sidebar -->
+		<div class="sidebar sidebar-style-2" data-background-color="dark2">	
+			<div class="sidebar-wrapper scrollbar scrollbar-inner">
+				<div class="sidebar-content">
+
+				{% if request.user.is_authenticated %}	
+					<ul class="nav nav-primary">
+						<li class="nav-item {% if 'inspection' in segment %} active {% endif %}">
+							<a href="{% url 'dashboard:add_valuation' %}">
+								<p>Inspection</p>
+							</a>
+						</li>
+
+						<li class="nav-item {% if 'compartment' in segment %} active {% endif %}">
+							<a href="{% if valuation_id %}{% url 'dashboard:add_compartment' id=valuation_id %}{% endif %}">
+								<p>Compartimentare</p>
+							</a>
+						</li>
+
+						<li class="nav-item {% if 'customattrs' in segment %} active {% endif %}">
+							<a href="{% if valuation_id %}{% url 'dashboard:add_customfield' id=valuation_id %}{% endif %}">
+								<p>Câmpuri customizate</p>
+							</a>
+						</li>
+
+						<li class="nav-item {% if 'cover' in segment %} active {% endif %}">
+							<a href="{% if valuation_id %}{% url 'dashboard:add_coverphoto' id=valuation_id %}{% endif %}">
+								<p>Cover Fotografii</p>
+							</a>
+						</li>
+
+						<li class="nav-item {% if 'summary' in segment %} active {% endif %}">
+							<a href="{% if valuation_id %}{% url 'dashboard:add_summary' id=valuation_id %}{% endif %}">
+								<p>Rezumatul Evaluarii</p>
+							</a>
+						</li>
+
+						<li class="nav-item {% if 'presentation' in segment %} active {% endif %}">
+							<a href="{% if valuation_id %}{% url 'dashboard:add_presentation_data' id=valuation_id %}{% endif %}">
+								<p>Prezentarea Datelor</p>
+							</a>
+						</li>
+
+						<li class="nav-item {% if 'construction' in segment %} active {% endif %}">
+							<a href="{% if valuation_id %}{% url 'dashboard:add_construction' id=valuation_id %}{% endif %}">
+								<p>Constructia</p>
+							</a>
+						</li>
+						
+						<li class="nav-item {% if 'comparable' in segment %} active {% endif %}">
+							<a href="{% if valuation_id %}{% url 'dashboard:sub_comparable' id=valuation_id %}{% endif %}">
+								<p>Date comparabile</p>
+							</a>
+						</li>
+
+						<li class="nav-item {% if 'anexa' in segment %} active {% endif %}">
+							<a href="{% if valuation_id %}{% url 'dashboard:add_anexa' id=valuation_id %}{% endif %}">
+								<p>Anexa</p>
+							</a>
+						</li>
+					</ul>
+				{% endif %}	
+				</div>
+			</div>
+		</div>
+        <!-- End Sidebar -->
+        

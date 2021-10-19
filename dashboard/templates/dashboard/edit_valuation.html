@@ -1,0 +1,327 @@
+{% extends "base.html" %}
+
+{% block title %} Edit Valuation {% endblock %} 
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}
+    {% load static %}
+    <!-- Load Leaflet from CDN -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+    integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+    crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+    integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+    crossorigin=""></script>
+
+    <!-- Load Esri Leaflet from CDN -->
+    <script src="https://unpkg.com/esri-leaflet@3.0.2/dist/esri-leaflet.js"
+    integrity="sha512-myckXhaJsP7Q7MZva03Tfme/MSF5a6HC2xryjAM4FxPLHGqlh5VALCbywHnzs2uPoF/4G/QVXyYDDSkp5nPfig=="
+    crossorigin=""></script>
+
+    <!-- Load Esri Leaflet Geocoder from CDN -->
+    <link rel="stylesheet" href="https://unpkg.com/esri-leaflet-geocoder@3.1.1/dist/esri-leaflet-geocoder.css"
+    integrity="sha512-IM3Hs+feyi40yZhDH6kV8vQMg4Fh20s9OzInIIAc4nx7aMYMfo+IenRUekoYsHZqGkREUgx0VvlEsgm7nCDW9g=="
+    crossorigin="">
+    <script src="https://unpkg.com/esri-leaflet-geocoder@3.1.1/dist/esri-leaflet-geocoder.js"
+    integrity="sha512-enHceDibjfw6LYtgWU03hke20nVTm+X5CRi9ity06lGQNtC9GkBNl/6LoER6XzSudGiXy++avi1EbIg9Ip4L1w=="
+    crossorigin=""></script>
+
+
+    <!-- select2 js -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@ttskch/select2-bootstrap4-theme@x.x.x/dist/select2-bootstrap4.min.css">
+
+    <style>
+        #mapid { 
+            height: 400px;
+            width: 100%; 
+        }
+        .msg {
+            padding-left: 10px;
+        }
+        .select2-container--bootstrap4.select2-container--focus .select2-selection {
+            border-color: #2f374b; 
+            -webkit-box-shadow: none;
+            box-shadow: none;
+        }
+        .select2-container--bootstrap4 .select2-selection {
+            background: #1a2035;
+            border-color: #2f374b;
+            border-radius: 4px;
+            height: 40px!important;
+        }
+        .select2-container--bootstrap4 .select2-selection--single .select2-selection__rendered {
+            color: #fff;
+        }
+    </style>
+{% endblock stylesheets %}
+
+{% block content %}
+
+    <div class="content">
+        <div class="page-inner">
+            <div class="page-header">
+                <h4 class="page-title">Edit Valuation</h4>
+                <ul class="breadcrumbs">
+                    <li class="nav-home">
+                        <a href="#">
+                            <i class="flaticon-home"></i>
+                        </a>
+                    </li>
+                    <li class="separator">
+                        <i class="flaticon-right-arrow"></i>
+                    </li>
+                    <li class="nav-item">
+                        <a href="">Edit Valuation</a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">Adresa și Tipul Proprietatii</div>
+                </div>
+
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div id="mapid"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-action">
+                    {% if msg %}
+                    <p class="text-danger mb-3">{{ msg }}</p>
+                    {% endif %}
+                    <form method="POST" action="">
+                        {% csrf_token %}
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="form-group">
+                                    <label for="id_title">Titlul raportului <span class="required-label">*</span></label>
+                                    {{ form.title }}
+                                </div>
+                            </div>    
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="id_street">Street <span class="required-label">*</span></label>
+                                    {{ form.street }}
+                                    {{ form.latitude }}
+                                    {{ form.longitude }}
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="id_city">Zona/Oraș<span class="required-label">*</span></label>
+                                    <select id="id_city" class="js-example-basic-single form-control" name="city">
+                                        <option value="{{ valuation.city.id }}">{{valuation.city.name}}</option>
+                                        {% for a in areas %}
+                                        <optgroup label="Judetul {{ a.name }}" data-select2-id="{{ a.auto }}">
+                                            {% for city in a.city_set.all %}
+                                            <option value="{{ city.id }}" data-select2-id="{{ city.id }}">{{ city.name }}</option>
+                                            {% endfor %}
+                                        </optgroup>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="id_locatie">Locatie</label>
+                                    {{ form.locatie }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mt-2">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="id_property_type">Tipul Proprietatii <span class="required-label">*</span></label>
+                                    {{ form.property_type }}
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="id_owner">Proprietar <span class="required-label">*</span></label>
+                                    {{ form.owner }}
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="id_valuatate_by">Inspector Name</label>
+                                    {{ form.valuatate_by }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mt-2">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="id_nume_client">Nume Client <span class="required-label">*</span></label>
+                                    {{ form.nume_client }}
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="id_ct_address">Client Address</label>
+                                    {{ form.ct_address }}
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="id_cui">CUI</label>
+                                    {{ form.cui }}
+                                    <small class="form-text text-muted">Only for business Client</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="id_report_recipient">Utilizator semnat</label>
+                                    {{ form.report_recipient }}
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="id_rp_address">Recipient Address</label>
+                                    {{ form.rp_address }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mt-2">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="id_inspection_date">Inspection Date</label>
+                                    {{ form.inspection_date }}
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="id_valuation_date">Valuation Date</label>
+                                    {{ form.valuation_date }}
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="id_report_date">Report Date</label>
+                                    {{ form.report_date }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mt-3">
+                            <div class="col-md">
+                                <button class="btn btn-success step-one-next" type="submit">UPDATE</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+    <script src="{% static 'dashboard/js/select2.min.js' %}"></script>
+    <script type="text/javascript">
+        // select2 js
+        $(document).ready(function() {
+            $('#id_city').select2({
+                theme: "bootstrap4"
+            });
+        });
+    </script>
+    <script type="text/javascript">
+        // map management 
+        var lat = '{{ valuation.latitude }}'
+        var lng = '{{ valuation.longitude }}'
+        var map = L.map('mapid').setView([lat, lng], 13);
+
+        L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibmFlZW0yMyIsImEiOiJja2lyNmpzdjUwMHVrMnRreXZyNHdubHptIn0.X3OwhHNVTJG_SzVzHEeLnQ', {
+            attribution: '&copy; <a href="https://osm.org/copyright">OpenStreetMap</a> contributors',
+            maxZoom: 18,
+            id: 'mapbox/streets-v11',
+            tileSize: 512,
+            zoomOffset: -1,
+            accessToken: 'pk.eyJ1IjoibmFlZW0yMyIsImEiOiJja2lyNmpzdjUwMHVrMnRreXZyNHdubHptIn0.X3OwhHNVTJG_SzVzHEeLnQ'
+        }).addTo(map);
+
+        var searchControl = L.esri.Geocoding.geosearch({
+            position: 'topright',
+            placeholder: 'Search for places and addresses',
+            useMapBounds: false,
+            providers: [L.esri.Geocoding.arcgisOnlineProvider({
+                apikey: 'AAPK5f52374845404757a5eb02c2b5bc9e1cbjcT5ty0oXBKBseoCLCC_JhCLvbOLn1nXEgiuOcKaUUK8yLa7hmuYQd0fVtKOfoy',
+            })]
+        }).addTo(map);
+
+        var marker = L.marker([lat, lng], {draggable:true}).addTo(map)
+        marker.on('click', function(e) {
+            var latlng = [e.target.getLatLng()];
+            var markerbounds = L.latLngBounds(latlng);
+            map.fitBounds(markerbounds);
+        })
+
+        searchControl.on('results', function (data) {
+            $('#id_address').val(data.text)
+            map.removeLayer(marker)
+            for (var i = data.results.length - 1; i >= 0; i--) {
+                marker = L.marker(data.results[i].latlng, {draggable:'true'}).addTo(map);
+                marker.on('dragend', function(event){
+                    var marker = event.target;
+                    var position = marker.getLatLng();
+                    marker.setLatLng(new L.LatLng(position.lat, position.lng),{draggable:'true'});
+                    map.panTo(new L.LatLng(position.lat, position.lng))
+                    $('#id_latitude').val(position.lat.toFixed(6)) 
+                    $('#id_longitude').val(position.lng.toFixed(6))
+                });
+                var lat = data.results[i].latlng.lat
+                var lng = data.results[i].latlng.lng
+                $('#id_latitude').val(lat.toFixed(6)) 
+                $('#id_longitude').val(lng.toFixed(6))
+            }
+        });
+        
+        function onMapClick(e) {
+            map.removeLayer(marker);
+            marker = L.marker([e.latlng.lat, e.latlng.lng], {draggable:'true'}).addTo(map);
+            marker.on('dragend', function(event){
+                var marker = event.target;
+                var position = marker.getLatLng();
+                marker.setLatLng(new L.LatLng(position.lat, position.lng),{draggable:'true'});
+                map.panTo(new L.LatLng(position.lat, position.lng))
+                $('#id_latitude').val(position.lat.toFixed(6))
+                $('#id_longitude').val(position.lng.toFixed(6))
+            });
+            var lat = e.latlng.lat 
+            var lng = e.latlng.lng 
+            $('#id_latitude').val(lat.toFixed(6))
+            $('#id_longitude').val(lng.toFixed(6))
+        }
+        map.on('click', onMapClick);
+
+        marker.on('dragend', function (e) {
+            $('#id_latitude').val(marker.getLatLng().lat.toFixed(6))
+            $('#id_longitude').val(marker.getLatLng().lng.toFixed(6))
+        });
+        // map management
+    </script>
+{% endblock javascripts %}  

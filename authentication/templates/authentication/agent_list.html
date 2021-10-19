@@ -1,0 +1,191 @@
+{% extends "base.html" %}
+
+{% block title %} Agent List {% endblock %} 
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}
+    <style type="text/css">
+        #delete {
+            cursor: pointer;
+        }
+        #delete-modal {
+            display: none;
+        }
+    </style>
+{% endblock stylesheets %}
+
+{% block content %}
+    <div class="content">
+        <div class="page-inner">
+            <div class="page-header">
+                <h4 class="page-title">Settings</h4>
+                <ul class="breadcrumbs">
+                    <li class="nav-home">
+                        <a href="#">
+                            <i class="flaticon-home"></i>
+                        </a>
+                    </li>
+                    <li class="separator">
+                        <i class="flaticon-right-arrow"></i>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'authentication:agents' %}">Agents</a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+					<div class="card">
+						<div class="card-header">
+							<div class="d-flex align-items-center">
+								<h4 class="card-title">Agents</h4>
+								<a class="btn btn-primary btn-round ml-auto" href="{% url 'authentication:add_agent' %}">
+									<i class="fa fa-plus mr-2"></i>
+									Add Agent
+								</a>
+							</div>
+						</div>
+						<div class="card-body">
+							<div class="table-responsive">
+								<table id="agent_table" class="display table table-striped table-hover" >
+									<thead>
+										<tr>
+											<th>ID</th>
+											<th>Username</th>
+											<th>Full Name</th>
+											<th>Email</th>
+											<th>Status</th>
+											<th>Super Admin</th>
+											<th>Last Login</th>
+											<th style="width: 10%">Action</th>
+										</tr>
+									</thead>
+									<tbody>
+										{% for agent in agents %}
+										<tr>
+											<td>
+ 												<span class="text-light">{{agent.id}}</span>
+											</td>
+											<td>
+ 												<a href="{% url 'authentication:agent_details' id=agent.id %}"><span class="text-light">{{agent.username}}</span></a>
+											</td>
+											<td>
+												<a href="{% url 'authentication:agent_details' id=agent.id %}"><span class="text-light">{{agent.get_full_name}}</span></a>
+											</td>
+											<td>
+												<a href="{% url 'authentication:agent_details' id=agent.id %}"><span class="text-light">{{agent.email}}
+                                                    </span></a>
+											</td>
+											<td>
+                                                {% if agent.is_active %}
+                                                    <button class="btn btn-success btn-sm btn-border">Active</button>
+                                                {% else %}
+                                                    <button class="btn btn-warning btn-sm btn-border">Inactive</button>
+                                                {% endif %}
+											</td>
+											<td>
+                                                {% if agent.is_superuser %}
+                                                    <button class="btn btn-success btn-sm btn-border">Yes</button>
+                                                {% else %}
+                                                    <button class="btn btn-warning btn-sm btn-border">No</button>
+                                                {% endif %}
+											</td>
+											<td>
+                                                <span class="text-light">{{ agent.last_login|date:"d-m-Y" }}</span>
+											</td>
+											<td>
+                                                <span class="mr-3 text-light" href="" id="delete" onclick="delete_modal('{{agent.id}}')" data-toggle="tooltip" data-placement="top" title="Delete"><i class="la flaticon-remove-user"></i></span>
+                                                <a href="{% url 'authentication:agent_details' id=agent.id %}" data-toggle="tooltip" data-placement="top" title="View Details"><i class="text-light la flaticon-user-5"></i></a>
+											</td>
+										</tr>
+										{% endfor %}
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="swal-overlay swal-overlay--show-modal" tabindex="-1" id="delete-modal">
+        <div class="swal-modal" role="dialog" aria-modal="true">
+            <div class="swal-title" style="">Are you sure?</div>
+            <div class="swal-text" style="">You won't be able to revert this!</div>
+            <div class="swal-footer">
+                <div class="swal-button-container">
+                    <a class="swal-button swal-button--confirm btn btn-success" href="">Yes, delete it!</a>
+                </div>
+
+                <div class="swal-button-container">
+                    <button class="swal-button swal-button--cancel btn btn-danger">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+    <script type="text/javascript">
+		$(document).ready(function() {
+			$('#agent_table').DataTable({
+				"pageLength": 10,
+				"order": [[ 0, "desc" ]]
+			});
+		});
+
+        function delete_modal(id) {
+            $("#delete-modal").css('display', 'block')
+            var url = "/agent/delete/" + id
+            $(".swal-button--confirm").attr('href', url)
+        }
+
+        // for sweet alert
+        $(".swal-button--cancel").click(function(e) {
+            $("#delete-modal").css('display', 'none')
+        });
+
+        // creating notification
+        var msg = "{% if msg %}{{msg}}{% endif %}"
+        if(msg !== "") {
+            var content = {};
+            if(msg=='deleted') {
+                var state = "success";
+                content.message = 'Agent deleted successfully';
+                content.title = 'Deleted!';
+            } else if (msg=='not_deleted') {
+                var state = "danger";
+                content.message = 'Problem deleting agent';
+                content.title = 'Error!';
+            } else if (msg=='added') {
+                var state = "success";
+                content.message = 'Agent added successfully';
+                content.title = 'Success!';
+            } else if (msg=='not_added') {
+                var state = "danger";
+                content.message = 'Problem adding agent';
+                content.title = 'Error!';
+            }
+
+            content.icon = 'fa fa-bell';
+
+            $.notify(content,{
+                type: state,
+                placement: {
+                    from: 'top',
+                    align: 'right'
+                },
+                time: 1000,
+                delay: 0,
+            });
+            // closing notification
+            setTimeout(function(){
+                $('.close').trigger('click');
+            }, 4000);
+        }
+    </script>
+{% endblock javascripts %}

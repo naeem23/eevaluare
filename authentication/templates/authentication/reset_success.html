@@ -1,0 +1,29 @@
+{% extends "base-fullscreen.html" %}
+
+{% block title %} Signin {% endblock %} 
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}
+    <style type="text/css">
+        p {
+            margin-top: 1rem;
+        }
+    </style>
+{% endblock stylesheets %}
+
+{% block content %}
+    <div class="verify-icon text-center mb-3">
+        <i class="fa fa-unlock-alt auth-icon text-white" aria-hidden="true"></i>
+    </div>
+
+    <h3 class="text-center mb-2 verify-title">Password Reset</h3>
+    <p class="text-center verify-text">Your password has been changed. You can now use your new password to sign in to your account.</p>
+
+    <div class="form-group verify-btn mb-0 mt-5">
+        <a href="{% url 'authentication:signin' %}" class="btn form-control btn-primary rounded submit px-3">Sign In</a>
+    </div>
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}{% endblock javascripts %} 
+

@@ -1,0 +1,316 @@
+{% extends "base.html" %}
+
+{% block title %} Inspector Details {% endblock %} 
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}
+	<style type="text/css">
+		.change_password {
+			display: none
+		}
+		.password {
+			cursor: pointer;
+			color: #b689b0!important;
+		}
+		.msg {
+			padding-left: 10px;
+		}
+		.view-profile label {
+			background: #6861ce!important;
+		    border-color: #6861ce!important;
+		    padding: 0.65rem 1.4rem;
+		    font-size: 14px;
+		    opacity: 1;
+		    border-radius: 3px;
+		    display: block;
+		    width: 100%;
+		    cursor: pointer;
+		}
+	</style>
+{% endblock stylesheets %}
+
+{% block content %}
+    <div class="content">
+        <div class="page-inner">
+            <div class="page-header">
+                <h4 class="page-title">Settings</h4>
+                <ul class="breadcrumbs">
+                    <li class="nav-home">
+                        <a href="#">
+                            <i class="flaticon-home"></i>
+                        </a>
+                    </li>
+                    <li class="separator">
+                        <i class="flaticon-right-arrow"></i>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'authentication:inspectors' %}">Inspector</a>
+                    </li>
+                    <li class="separator">
+                        <i class="flaticon-right-arrow"></i>
+                    </li>
+                    <li class="nav-item">
+                        <a href="">Inspector Details</a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="row">
+            	<div class="col-md-8">
+		            <div class="card">
+		                <div class="card-header">
+							<div class="d-flex align-items-center">
+								<h4 class="card-title" onclick="details_card()" style="cursor: pointer;">Inspector Details</h4>
+								<a class="ml-auto text-uppercase password" onclick="change_password_card()">Change Password</a>
+							</div>
+		                </div>
+		                <div class="card-body details">
+		                	{% if msg %}
+		                	<div class="msg mb-2">
+		                		<span class="text-danger">{{ msg }}</span>
+		                	</div>
+		                	{% endif %}
+
+	                        <form method="post" action="" enctype="multipart/form-data">
+	                            {% csrf_token %}
+
+			                    <div class="row mt-3">
+			                        <div class="col-md-6">
+			                            <div class="form-group form-group-default">
+			                                <label>Username</label>
+			                                {{form.username}}
+			                            </div>
+			                        	<span class="text-danger">{{form.username.errors}}</span>
+			                        </div>
+
+			                        <div class="col-md-6">
+			                            <div class="form-group form-group-default">
+			                                <label>Email</label>
+			                                {{form.email}}
+			                            </div>
+			                        	<span class="text-danger">{{form.email.errors}}</span>
+			                        </div>
+			                    </div>
+
+			                    <div class="row mt-3">
+			                        <div class="col-md-6">
+			                            <div class="form-group form-group-default">
+			                                <label>First Name</label>
+			                                {{form.first_name}}
+			                            </div>
+			                        	<span class="text-danger">{{form.first_name.errors}}</span>
+			                        </div>
+
+			                        <div class="col-md-6">
+			                            <div class="form-group form-group-default">
+			                                <label>Last Name</label>
+			                                {{form.last_name}}
+			                            </div>
+			                        	<span class="text-danger">{{form.last_name.errors}}</span>
+			                        </div>
+			                    </div>
+
+			                    <div class="row mt-3">
+			                        <div class="col-md-6">
+			                            <div class="form-group form-group-default">
+			                                <label>Certification Text</label>
+			                                {{form.certification_text}}
+			                            </div>
+			                        	<span class="text-danger">{{form.certification_text.errors}}</span>
+
+			                            <div class="form-group form-group-default">
+			                                <label>Certification Number</label>
+			                                {{form.certification_number}}
+			                            </div>
+			                        	<span class="text-danger">{{form.certification_number.errors}}</span>
+			                        </div>
+
+			                        <div class="col-md-6">
+			                            <div class="form-group form-group-default">
+			                                <label>Stamp</label>
+			                                {% if inspector.stamp %}
+			                                <img src="{{ inspector.stamp.url }}" width="150" height="150" alt="Inspector Stamp" id="stamp">
+			                                {% endif %}
+			                                {{form.stamp}}
+			                            </div>
+			                        	<span class="text-danger">{{form.stamp.errors}}</span>
+			                        </div>
+			                    </div>
+
+			                    <input type="hidden" name="form_value" value="details_form">
+
+			                    <div class="text-right mt-3 mb-3">
+			                        <button class="btn btn-success" type="submit">Update</button>
+			                    </div>
+			                </form>
+		                </div>
+
+		                <div class="card-body change_password">
+	                        <form method="post" action="">
+	                            {% csrf_token %}
+                                <div class="row">
+                                    <div class="col-md-8 col-lg-6">
+			                            <div class="form-group form-group-default">
+			                                <label>New Password</label>
+			                                {{ password_form.password1 }}
+			                            </div>
+			                        	<span class="text-danger">{{password_form.password1.errors}}</span>
+
+			                            <div class="form-group form-group-default">
+			                                <label>Confirm New Password</label>
+			                                {{ password_form.password2 }}
+			                            </div>
+			                        	<span class="text-danger">{{password_form.password2.errors}}</span>
+
+			                        	<input type="hidden" name="form_value" value="password_form">
+
+					                    <div class="text-right mt-3 mb-3">
+					                        <button class="btn btn-success" type="submit">Update Password</button>
+					                    </div>
+					                </div>
+					            </div>
+			                </form>
+		                </div>
+		            </div>
+		        </div>
+
+		        <div class="col-md-4">
+		            <div class="card card-profile">
+		                <div class="card-header" style="background-image: url('https://appsrv1-147a1.kxcdn.com/atlantis-pro/img/blogpost.jpg')">
+		                    <div class="profile-picture">
+		                        <div class="avatar avatar-xl">
+		                        	{% if inspector.profile_picture %}
+		                        		<img src="{{inspector.profile_picture.url}}" alt="Inspector Profile Picture" class="avatar-img rounded-circle" id="profile_picture">
+		                        	{% else %}
+		                            	<img src="https://appsrv1-147a1.kxcdn.com/atlantis-pro/img/profile.jpg" alt="Inspector Profile Avatar" class="avatar-img rounded-circle" id="profile_picture">
+		                        	{% endif %}
+		                        </div>
+		                    </div>
+		                </div>
+		                <div class="card-body">
+		                    <div class="user-profile text-center">
+		                        <div class="name">
+		                            {{ inspector.get_full_name }}
+		                        </div>
+		                        <div class="job">Inspector</div>
+		                        <div class="view-profile mt-3">
+									<input type="file" id="actual-btn" name="profile" hidden/>
+									<label for="actual-btn">Change Picture</label>
+		                        </div>
+		                    </div>
+		                </div>
+		            </div>
+		        </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+	<script type="text/javascript">
+		// creating notification
+        var msg = "{% if update %}{{update}}{% endif %}"
+        console.log(msg)
+        if(msg !== "") {
+            var content = {};
+            if(msg=='success') {
+                var state = "success";
+                content.message = 'Inspector updated successfully';
+                content.title = 'Updated!';
+            } else if (msg=='failed') {
+                var state = "danger";
+                content.message = 'Problem updating inspector';
+                content.title = 'Error!';
+            }
+            content.icon = 'fa fa-bell';
+
+            $.notify(content,{
+                type: state,
+                placement: {
+                    from: 'top',
+                    align: 'right'
+                },
+                time: 1000,
+                delay: 0,
+            });
+            // closing notification
+            setTimeout(function(){
+                $('.close').trigger('click');
+            }, 4000);
+        }
+
+        function change_password_card() {
+        	$('.details').css('display', 'none')
+        	$('.change_password').css('display', 'block')
+        }
+
+        function details_card() {
+        	$('.change_password').css('display', 'none')
+        	$('.details').css('display', 'block')
+        }
+
+        var tab_name = '{{ tab_name }}'
+        if (tab_name == 'password') {
+        	$('.details').css('display', 'none')
+        	$('.change_password').css('display', 'block')
+        }
+
+        id_stamp.onchange = evt => {
+        	const [file] = id_stamp.files
+        	if (file) {
+        		stamp.src = URL.createObjectURL(file)
+        	}
+        }
+
+        var id = "{{ inspector.id }}"
+		const actualBtn = document.getElementById('actual-btn');
+        actualBtn.addEventListener('change', function(){
+		 	const file = this.files
+		 	if (file[0]) {
+        		profile_picture.src = URL.createObjectURL(file[0])
+			    var gfg = new FormData();
+				gfg.append('file', file[0]);
+				gfg.append('id', id);
+				gfg.append('csrfmiddlewaretoken', '{{csrf_token}}');
+
+        		$.ajax({
+        			url: "{% url 'authentication:change_picture' %}",
+        			type: "POST",
+				    processData: false,
+				    contentType: false,
+				    dataType: 'json',
+				    data: gfg,
+        			success: function(e) {
+        				if(e.success==='true') {
+        					var content = {};
+			                var state = "success";
+			                content.message = 'Profile picture updated successfully';
+			                content.title = 'Updated!';
+        				} else {
+			                var state = "danger";
+			                content.message = 'Problem updating profile picture';
+			                content.title = 'Error!';
+        				}
+
+			            content.icon = 'fa fa-bell';
+			            $.notify(content,{
+			                type: state,
+			                placement: {
+			                    from: 'top',
+			                    align: 'right'
+			                },
+			                time: 1000,
+			                delay: 0,
+			            });
+			            // closing notification
+			            setTimeout(function(){
+			                $('.close').trigger('click');
+			            }, 4000);
+        			}
+        		})
+		 	}
+		})
+	</script>
+{% endblock javascripts %}

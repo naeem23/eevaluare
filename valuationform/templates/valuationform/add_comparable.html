@@ -1,0 +1,294 @@
+{% extends "base.html" %}
+
+{% block title %} {% if instance %} Edit Comparabile {% else %} Add Comparabile {% endif %} {% endblock %} 
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}
+    {% load static %}
+    <!-- bootstrap datepicker  -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.2.0/css/datepicker.min.css" rel="stylesheet">
+
+    <style>
+        .ms-choice {
+            background: transparent;
+            border: none;
+            height: 19px;
+        }
+        .ms-choice>span {
+            color: #fff;
+            top: 5px;
+            left: 8px;
+        }
+        .ms-drop {
+            left: 0;
+        }
+        .ms-drop span {
+            color: #1a2035!important;
+        }
+        .table td {
+            border-bottom: none!important;
+            height: 40px!important;
+            padding-top: 8px!important;
+        }
+    </style>
+{% endblock stylesheets %}
+
+{% block content %}
+
+    <div class="content">
+        <div class="page-inner">
+            <div class="page-header">
+                <h4 class="page-title"> {% if instance %} Edit Comparabile {% else %} Add Comparabile {% endif %} </h4>
+                <ul class="breadcrumbs">
+                    <li class="nav-home">
+                        <a href="#">
+                            <i class="flaticon-home"></i>
+                        </a>
+                    </li>
+                    <li class="separator">
+                        <i class="flaticon-right-arrow"></i>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'dashboard:comparable_list' %}">Proprietati Comparabile</a>
+                    </li>
+                    <li class="separator">
+                        <i class="flaticon-right-arrow"></i>
+                    </li>
+                    <li class="nav-item">
+                        <a href=""> {% if instance %} Edit Comparabile {% else %} Add Comparabile {% endif %} </a>
+                    </li>
+                </ul>
+            </div>
+            
+            {% load my_filters %}
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title"> {% if instance %} Edit Comparabile {% else %} Add Comparabile {% endif %} </div>
+                </div>
+                
+                <form method="POST">
+                    {% csrf_token %}
+
+                    <div class="card-body">
+                        {% if msg %}
+                            <p class="text-danger">{{msg}}</p>
+                        {% endif %}
+                        {% if instance.is_comparable %}
+                        <table class="table table-hover">
+                            <tbody>
+                                <tr>
+                                    <td colspan="2" style="text-align: center;color: #fff;font-weight: bold;">Proprietate Comparabile</td>
+                                </tr>
+                                <tr>
+                                    <td style="color: #fff;font-weight: bold;">Element de comparatie</td>
+                                    <td style="color: #fff;font-weight: bold;">Element Value</td>
+                                </tr>
+                                <tr>
+                                    <td>Preţ de oferta/vanzare (EURO) <span class="required-label">*</span></td>
+                                    <td>{{ form.sale_price }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Mobila <span class="required-label">*</span></td>
+                                    <td>{{ form.mobila }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Loc de parcare/boxa</td>
+                                    <td>{{ form.parking_boxa }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Date disponibile <span class="required-label">*</span></td>
+                                    <td>{{ form.available_data }}</td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2" style="text-align: center;color: #fff;font-weight: bold; padding-top: 20px!important;">Ajustari pentru conditiile tranzactiilor</td>
+                                </tr>
+                                <tr>
+                                    <td>Drepturi de proprietate <span class="required-label">*</span></td>
+                                    <td>{{ form.property_rights }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Condiţii de finanţare <span class="required-label">*</span></td>
+                                    <td>{{ form.financing_condition }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Conditii de vanzare <span class="required-label">*</span></td>
+                                    <td>{{ form.sale_condition }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Cheltuieli necesare imediat dupa cumparare <span class="required-label">*</span></td>
+                                    <td>{{ form.ape }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Conditii de piata <span class="required-label">*</span></td>
+                                    <td>
+                                        {% if instance %}
+                                        <input type="text" class="form-control" name="market_env" id="market_env" value="{{ instance.market_env }}"/>
+                                        {% else %}
+                                        <input type="text" class="form-control" name="market_env" id="market_env"/>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2" style="text-align: center;color: #fff;font-weight: bold; padding-top: 20px!important;">Ajustari specifice proprietatii</td>
+                                </tr>
+                                <tr>
+                                    <td>Localizare <span class="required-label">*</span></td>
+                                    <td>{{ form.location }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Compartimentare <span class="required-label">*</span></td>
+                                    <td>{{ form.compartment }}</td>
+                                </tr>
+                                <tr>
+                                    <td>AN PIF <span class="required-label">*</span></td>
+                                    <td>{{form.year_build}}</td>
+                                </tr>
+                                <tr>
+                                    <td>Suprafata utila (mp) <span class="required-label">*</span></td>
+                                    <td>{{form.area}}</td>
+                                </tr>
+                                <tr>
+                                    <td>Chirie/mp <span class="required-label">*</span></td>
+                                    <td>{{form.rent_sqm}}</td>
+                                </tr>
+                                <tr>
+                                    <td>Finisaje <span class="required-label">*</span></td>
+                                    <td>{{form.finish}}</td>
+                                </tr>
+                                <tr>
+                                    <td>Regim de inaltime <span class="required-label">*</span></td>
+                                    <td>{{form.etaj}}</td>
+                                </tr>
+                                <tr>
+                                    <td>Balcon (mp) <span class="required-label">*</span></td>
+                                    <td>{{form.balcon}}</td>
+                                </tr>
+                                <tr>
+                                    <td>Sistem de incalzire <span class="required-label">*</span></td>
+                                    <td>{{form.heating}}</td>
+                                </tr>
+                                <tr>
+                                    <td>Parcare <span class="required-label">*</span></td>
+                                    <td>{{form.parking}}</td>
+                                </tr>
+                                <tr>
+                                    <td>Camara</td>
+                                    <td>{{form.camara}}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        {% else %}
+                        <table class="table table-hover">
+                            <tbody>
+                                <tr>
+                                    <td colspan="2" style="text-align: center;color: #fff;font-weight: bold; padding-top: 20px!important;">Ajustari pentru conditiile tranzactiilor</td>
+                                </tr>
+                                <tr>
+                                    <td style="color: #fff;font-weight: bold;">Element de comparatie</td>
+                                    <td style="color: #fff;font-weight: bold;">Element Value</td>
+                                </tr>
+                                <tr>
+                                    <td>Drepturi de proprietate <span class="required-label">*</span></td>
+                                    <td>{{ form.property_rights }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Condiţii de finanţare <span class="required-label">*</span></td>
+                                    <td>{{ form.financing_condition }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Conditii de vanzare <span class="required-label">*</span></td>
+                                    <td>{{ form.sale_condition }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Cheltuieli necesare imediat dupa cumparare <span class="required-label">*</span></td>
+                                    <td>{{ form.ape }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Conditii de piata <span class="required-label">*</span></td>
+                                    <td>
+                                        {% if instance %}
+                                        <input type="text" class="form-control" name="market_env" id="market_env" value="{{ instance.market_env }}"/>
+                                        {% else %}
+                                        <input type="text" class="form-control" name="market_env" id="market_env"/>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2" style="text-align: center;color: #fff;font-weight: bold; padding-top: 20px!important;">Ajustari specifice proprietatii</td>
+                                </tr>
+                                <tr>
+                                    <td>Localizare <span class="required-label">*</span></td>
+                                    <td>{{ form.location }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Compartimentare <span class="required-label">*</span></td>
+                                    <td>{{ form.compartment }}</td>
+                                </tr>
+                                <tr>
+                                    <td>AN PIF <span class="required-label">*</span></td>
+                                    <td>{{form.year_build}}</td>
+                                </tr>
+                                <tr>
+                                    <td>Suprafata utila (mp) <span class="required-label">*</span></td>
+                                    <td>{{form.area}}</td>
+                                </tr>
+                                <tr>
+                                    <td>Chirie/mp <span class="required-label">*</span></td>
+                                    <td>{{form.rent_sqm}}</td>
+                                </tr>
+                                <tr>
+                                    <td>Finisaje <span class="required-label">*</span></td>
+                                    <td>{{form.finish}}</td>
+                                </tr>
+                                <tr>
+                                    <td>Regim de inaltime <span class="required-label">*</span></td>
+                                    <td>{{form.etaj}}</td>
+                                </tr>
+                                <tr>
+                                    <td>Balcon (mp) <span class="required-label">*</span></td>
+                                    <td>{{form.balcon}}</td>
+                                </tr>
+                                <tr>
+                                    <td>Price per sqm <span class="required-label">*</span></td>
+                                    <td>{{form.price_persqm}}</td>
+                                </tr>
+                                <tr>
+                                    <td>Sistem de incalzire <span class="required-label">*</span></td>
+                                    <td>{{form.heating}}</td>
+                                </tr>
+                                <tr>
+                                    <td>Parcare <span class="required-label">*</span></td>
+                                    <td>{{form.parking}}</td>
+                                </tr>
+                                <tr>
+                                    <td>Camara</td>
+                                    <td>{{form.camara}}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="card-action">
+                        <button class="btn btn-success" type="submit">{% if instance %}Update{% else %}Save{% endif %}</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+    <!-- bootstrap datepicker  -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.2.0/js/bootstrap-datepicker.min.js"></script>
+    
+    <script>
+        $("#market_env").datepicker( {
+            format: "MM yyyy",
+            startView: "months", 
+            minViewMode: "months"
+        });
+    </script>
+{% endblock javascripts %}  

@@ -1,0 +1,506 @@
+{% extends "base-form.html" %}
+
+{% block title %} Add Valuation - Date Initiale {% endblock %} 
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}
+    {% load static %}
+    <!-- Load Leaflet from CDN -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+    integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+    crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+    integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+    crossorigin=""></script>
+
+    <!-- Load Esri Leaflet from CDN -->
+    <script src="https://unpkg.com/esri-leaflet@3.0.2/dist/esri-leaflet.js"
+    integrity="sha512-myckXhaJsP7Q7MZva03Tfme/MSF5a6HC2xryjAM4FxPLHGqlh5VALCbywHnzs2uPoF/4G/QVXyYDDSkp5nPfig=="
+    crossorigin=""></script>
+
+    <!-- Load Esri Leaflet Geocoder from CDN -->
+    <link rel="stylesheet" href="https://unpkg.com/esri-leaflet-geocoder@3.1.1/dist/esri-leaflet-geocoder.css"
+    integrity="sha512-IM3Hs+feyi40yZhDH6kV8vQMg4Fh20s9OzInIIAc4nx7aMYMfo+IenRUekoYsHZqGkREUgx0VvlEsgm7nCDW9g=="
+    crossorigin="">
+    <script src="https://unpkg.com/esri-leaflet-geocoder@3.1.1/dist/esri-leaflet-geocoder.js"
+    integrity="sha512-enHceDibjfw6LYtgWU03hke20nVTm+X5CRi9ity06lGQNtC9GkBNl/6LoER6XzSudGiXy++avi1EbIg9Ip4L1w=="
+    crossorigin=""></script>
+
+    <!-- select2 js -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@ttskch/select2-bootstrap4-theme@x.x.x/dist/select2-bootstrap4.min.css">
+
+    <style>
+        ul {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+        #mapid { 
+            height: 400px;
+            width: 100%; 
+        }
+        .msg {
+            padding-left: 10px;
+        }
+        .select2-container--bootstrap4.select2-container--focus .select2-selection {
+            border-color: #2f374b; 
+            -webkit-box-shadow: none;
+            box-shadow: none;
+        }
+        .select2-container--bootstrap4 .select2-selection {
+            background: #1a2035;
+            border-color: #2f374b;
+            border-radius: 4px;
+            height: 40px!important;
+        }
+        .select2-container--bootstrap4 .select2-selection--single .select2-selection__rendered {
+            color: #fff;
+        }
+        .ms-choice {
+            background: transparent;
+            border: none;
+            height: 19px;
+        }
+        .ms-choice>span {
+            color: #fff;
+            top: 5px;
+            left: 8px;
+        }
+        .ms-drop {
+            left: 0;
+        }
+        .ms-drop span {
+            color: #1a2035!important;
+        }
+        .required {
+            border-color: #F25961 !important;
+            color: #F25961 !important;
+        }
+    </style>
+{% endblock stylesheets %}
+
+{% block content %}
+
+    <div class="content">
+        <div class="page-inner">
+            <div class="page-header">
+                <h4 class="page-title">Date Initiale</h4>
+                <ul class="breadcrumbs">
+                    <li class="nav-home">
+                        <a href="#">
+                            <i class="flaticon-home"></i>
+                        </a>
+                    </li>
+                    <li class="separator">
+                        <i class="flaticon-right-arrow"></i>
+                    </li>
+                    <li class="nav-item">
+                        <a href="">Date Initiale</a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">Date Initiale</div>
+                </div>
+
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div id="mapid"></div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <form method="POST" action="" id="initial_form">
+                    {% csrf_token %}
+                    <div class="card-body">
+                        <p class="mb-2 text-danger lat_lng"></p>
+                        {% if form.non_field_errors%}
+                            <div class="mb-3">
+                                {% for error in form.non_field_errors %}
+                                <p class="text-danger">{{error}}</p>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="id_property_type">Tipul Proprietatii <span class="required-label">*</span></label>
+                                    {{ form.property_type }}
+                                    <small class="form-text text-danger prop_type"></small>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="id_property_type">Compartimentare</label>
+                                    {{ form.compartment_type }}
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="id_property_type">Apartamentului nr.</label>
+                                    {{ form.apartment_no }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="id_address">Adresa <span class="required-label">*</span></label>
+                                    {{ form.address }}
+                                    {{ form.latitude }}
+                                    {{ form.longitude }}
+                                    <small class="form-text text-danger street"></small>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="id_area">Zona <span class="required-label">*</span></label>
+                                    {{ form.area }}
+                                    <small class="form-text text-danger area"></small>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="id_city">Oraș <span class="required-label">*</span></label>
+                                    <select id="id_city" class="form-control" name="city">
+                                    </select>
+                                    <small class="form-text text-danger city"></small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="id_urbana">Urbana/Rurala</label>
+                                    <select id="id_urbana" class="form-control" name="urbana">
+                                        <option value="urbana">Urbana</option>
+                                        <option value="rurala">Rurala</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="id_locatie">Locatie</label>
+                                    <select id="id_locatie" class="form-control" name="locatie">
+                                        <option value="centrala">Centrala</option>
+                                        <option value="mediana">Mediana</option>
+                                        <option value="periferica">Periferica</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="id_owner">Proprietar <span class="required-label">*</span></label>
+                                    {{ form.owner }}
+                                    <small class="form-text text-danger owner"></small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="nume_client">Nume Client <span class="required-label">*</span></label>
+                                    {{ form.nume_client }}
+                                    <small class="form-text text-danger client"></small>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="id_ct_address">Client Address</label>
+                                    {{ form.ct_address }}
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="id_cui">CUI</label>
+                                    {{ form.cui }}
+                                    <small class="form-text text-muted">Only for business Client</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="report_recipient">Utilizator semnat <span class="required-label">*</span></label>
+                                    {{ form.report_recipient }}
+                                    <small class="form-text text-danger recipient"></small>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="id_evaluator">Inspector Name</label>
+                                    {{ form.evaluator }}
+                                </div>
+                            </div>
+                        </div> 
+                    </div>
+
+                    <div class="card-header">
+                        <div class="card-title">Compartimentare</div>
+                    </div>
+
+                    <div class="card-body">
+                        <div class="row">
+                            {% for c in compartments %}
+                                <div class="col-md-3 mb-2">
+                                    <div class="form-group">
+                                        <label>Nr. {{ c.name }} </label>
+                                        <input type="number" value="0" class="form-control" name="compart[]">
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <div class="card-header">
+                        <div class="card-title">Câmpuri customizate</div>
+                    </div>
+
+                    <div class="card-body custom-field">
+                        <div class="row">
+                            <div class="col-md-4 mb-2">
+                                <div class="form-group">
+                                    <label>Name</label>
+                                    <input type="text" class="form-control" name="cf_name[]" placeholder="e.g. Name">
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-2">
+                                <div class="form-group">
+                                    <label>Value</label>
+                                    <input type="number" value="0" class="form-control" name="cf_value[]" >
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-2">
+                                <div class="form-group">
+                                    <button type="button" class="btn btn-icon btn-round btn-primary" style="margin-top: 1.7rem;" id="add_cf" data-toggle="tooltip" data-placement="top" title="Add New">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>   
+                
+                <div class="card-action" style="padding-top: 10px;">
+                    <div class="row mt-3">
+                        <div class="col-md">
+                            <button class="btn btn-success" id="submitBtn">Next</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+    <script src="{% static 'dashboard/js/select2.min.js' %}"></script>
+    <script type="text/javascript">
+        // select2 js
+        $(document).ready(function() {
+            $('#id_area').select2({
+                theme: "bootstrap4"
+            });
+        });
+
+        // =========================== get city ===========================
+        $('#id_area').on('change', function() {
+            var area_id = this.value;
+            if(area_id != '') {
+                $.ajax({
+                    url: "{% url 'valuation:get_city' %}",
+                    type: "GET",
+                    cache: false,
+                    data: {'area_id': area_id},
+                    success: function(e) {
+                        var city = e.city;
+                        $('#id_city').html('');
+                        for(let i=0; i<city.length; i++) {
+                            var opt = '<option value="'+city[i][0]+'">'+ city[i][1] +'</option>'
+                            $('#id_city').append(opt);
+                        }
+                    }
+                })
+            }
+        });
+
+        // ========================= map management  =============================
+        var map = L.map('mapid').setView([44.4268, 26.1025], 13);
+        // var map = L.map('mapid').setView([24.774265, 46.738586], 13);
+
+        L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibmFlZW0yMyIsImEiOiJja2lyNmpzdjUwMHVrMnRreXZyNHdubHptIn0.X3OwhHNVTJG_SzVzHEeLnQ', {
+            attribution: '&copy; <a href="https://osm.org/copyright">OpenStreetMap</a> contributors',
+            maxZoom: 18,
+            id: 'mapbox/streets-v11',
+            tileSize: 512,
+            zoomOffset: -1,
+            accessToken: 'pk.eyJ1IjoibmFlZW0yMyIsImEiOiJja2lyNmpzdjUwMHVrMnRreXZyNHdubHptIn0.X3OwhHNVTJG_SzVzHEeLnQ'
+        }).addTo(map);
+
+        var searchControl = L.esri.Geocoding.geosearch({
+            position: 'topright',
+            placeholder: 'Search for places and addresses',
+            useMapBounds: false,
+            providers: [L.esri.Geocoding.arcgisOnlineProvider({
+                apikey: 'AAPK5f52374845404757a5eb02c2b5bc9e1cbjcT5ty0oXBKBseoCLCC_JhCLvbOLn1nXEgiuOcKaUUK8yLa7hmuYQd0fVtKOfoy',
+            })]
+        }).addTo(map);
+
+        var marker = L.marker()
+        searchControl.on('results', function (data) {
+            $('#id_address').val(data.text)
+            map.removeLayer(marker)
+            for (var i = data.results.length - 1; i >= 0; i--) {
+                marker = L.marker(data.results[i].latlng, {draggable:'true'}).addTo(map);
+                marker.on('dragend', function(event){
+                    var marker = event.target;
+                    var position = marker.getLatLng();
+                    marker.setLatLng(new L.LatLng(position.lat, position.lng),{draggable:'true'});
+                    map.panTo(new L.LatLng(position.lat, position.lng))
+                    $('#id_latitude').val(position.lat.toFixed(6)) 
+                    $('#id_longitude').val(position.lng.toFixed(6))
+                });
+                var lat = data.results[i].latlng.lat
+                var lng = data.results[i].latlng.lng
+                $('#id_latitude').val(lat.toFixed(6)) 
+                $('#id_longitude').val(lng.toFixed(6))
+            }
+        });
+        
+        function onMapClick(e) {
+            map.removeLayer(marker);
+            marker = L.marker([e.latlng.lat, e.latlng.lng], {draggable:'true'}).addTo(map);
+            marker.on('dragend', function(event){
+                var marker = event.target;
+                var position = marker.getLatLng();
+                marker.setLatLng(new L.LatLng(position.lat, position.lng),{draggable:'true'});
+                map.panTo(new L.LatLng(position.lat, position.lng))
+                $('#id_latitude').val(position.lat.toFixed(6))
+                $('#id_longitude').val(position.lng.toFixed(6))
+            });
+            var lat = e.latlng.lat 
+            var lng = e.latlng.lng 
+            $('#id_latitude').val(lat.toFixed(6))
+            $('#id_longitude').val(lng.toFixed(6))
+        }
+        map.on('click', onMapClick);
+        // map management
+
+        // ======================== form validation check ===========================
+        $("#submitBtn").on('click', function () {
+            var prop_type =  $("#id_property_type").val()
+            var address = $("#id_address").val()
+            var lat = $("#id_latitude").val()
+            var lng = $("#id_longitude").val()
+            var area = $("#id_area").val()
+            var city = $("#id_city").val()
+            var owner = $("#id_owner").val()
+            var client = $("#id_nume_client").val()
+            var recipient = $("#id_report_recipient").val()
+            
+            if(prop_type.length > 0 && address.length > 1 && lat.length > 1 && lng.length > 1 && area.length > 0 && city.length > 0 && owner.length > 1 && client.length > 1 && recipient.length > 1) {
+                console.log('if')
+                $("#initial_form").submit();
+            } else {
+                if (prop_type.length < 1) {
+                    $("#id_property_type").addClass('required')
+                    $(".prop_type").text('This field is required')
+                } else {
+                    $("#id_property_type").removeClass('required')
+                    $(".prop_type").text('')
+                }
+
+                if (address.length < 1) {
+                    $("#id_street").addClass('required')
+                    $(".street").text('This field is required')
+                } else {
+                    $("#id_street").removeClass('required')
+                    $(".street").text('')
+                }
+
+                if (lat.length < 1 || lng.length < 1) {
+                    $(".lat_lng").text("You must add a marker")
+                } else {
+                    $(".lat_lng").text('')
+                }
+
+                if (area.length < 1) {
+                    $("#id_area").addClass('required')
+                    $(".area").text('This field is required')
+                } else {
+                    $("#id_area").removeClass('required')
+                    $(".area").text('')
+                }
+
+                if (city.length < 1) {
+                    $("#id_city").addClass('required')
+                    $(".city").text('This field is required')
+                } else {
+                    $("#id_city").removeClass('required')
+                    $(".city").text('')
+                }
+
+                if (owner.length < 1) {
+                    $("#id_owner").addClass('required')
+                    $(".owner").text('This field is required')
+                } else {
+                    $("#id_owner").removeClass('required')
+                    $(".owner").text('')
+                }
+
+                if (client.length < 1) {
+                    $("#id_nume_client").addClass('required')
+                    $(".client").text('This field is required')
+                } else {
+                    $("#id_nume_client").removeClass('required')
+                    $(".client").text('')
+                }
+
+                if (recipient.length < 1) {
+                    $("#id_report_recipient").addClass('required')
+                    $(".recipient").text('This field is required')
+                } else {
+                    $("#id_report_recipient").removeClass('required')
+                    $(".recipient").text('')
+                }
+            }
+        })
+
+        // ========================== manage custom field =========================== 
+        $(document).ready(function(){
+            var maxField = 10;
+            var addButton = $('#add_cf');
+            var wrapper = $('.custom-field');
+            var form_input = '<div class="row"><div class="col-md-4 mb-2"><div class="form-group"><label>Name</label><input type="text" class="form-control" name="cf_name[]" placeholder="e.g. Name"></div></div><div class="col-md-4 mb-2"><div class="form-group"><label>Value</label><input type="number" value="0" class="form-control" name="cf_value[]" ></div></div><div class="col-md-4 mb-2"><div class="form-group"><button type="button" class="btn btn-icon btn-round btn-danger" style="margin-top: 1.7rem;" id="remove_cf" data-toggle="tooltip" data-placement="top" title="Remove Field"><i class="fas fa-minus"></i></button></div></div></div>';
+            var x = 1;
+            
+            //Once add button is clicked
+            $(addButton).click(function(){
+                if(x < maxField){ 
+                    x++;
+                    $(wrapper).append(form_input);
+                }
+            });
+            
+            //Once remove button is clicked
+            $(wrapper).on('click', '#remove_cf', function(e){
+                e.preventDefault();
+                $(this).parents('.row').remove();
+                x--;
+            });
+        });
+    </script>
+{% endblock javascripts %}  

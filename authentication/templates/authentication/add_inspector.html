@@ -1,0 +1,168 @@
+{% extends "base.html" %}
+
+{% block title %} Add Inspector {% endblock %} 
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}
+    <style type="text/css">
+        .msg {
+            padding-left: 10px;
+        }
+    </style>
+{% endblock stylesheets %}
+
+{% block content %}
+
+    <div class="content">
+        <div class="page-inner">
+            <div class="page-header">
+                <h4 class="page-title">Settings</h4>
+                <ul class="breadcrumbs">
+                    <li class="nav-home">
+                        <a href="#">
+                            <i class="flaticon-home"></i>
+                        </a>
+                    </li>
+                    <li class="separator">
+                        <i class="flaticon-right-arrow"></i>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'authentication:inspectors' %}">Inspectors</a>
+                    </li>
+                    <li class="separator">
+                        <i class="flaticon-right-arrow"></i>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'authentication:add_inspector' %}">Add Inspector</a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">Add Inspector</div>
+                        </div>
+
+                        <form method="post" action="" enctype="multipart/form-data">
+                            {% csrf_token %}
+
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        {% if msg %}
+                                            <div class="msg mb-2">
+                                                <span class="text-danger">{{ msg | safe }}</span>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="id_username">Username</label>
+                                            {{form.username}}
+                                        </div>
+                                        <span class="text-danger">{{form.username.errors}}</span>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="id_email">Email</label>
+                                            {{form.email}}
+                                        </div>
+                                        <span class="text-danger">{{form.email.errors}}</span>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="id_first_name">First Name</label>
+                                            {{form.first_name}}
+                                        </div>
+                                        <span class="text-danger">{{form.first_name.errors}}</span>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="id_last_name">Last Name</label>
+                                            {{form.last_name}}
+                                        </div>
+                                        <span class="text-danger">{{form.last_name.errors}}</span>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="id_password1">Password</label>
+                                            {{ form.password1 }}
+                                        </div>
+                                        <span class="text-danger">{{form.password1.errors}}</span>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="id_password2">Password check</label>
+                                            {{ form.password2 }}
+                                        </div>
+                                        <span class="text-danger">{{form.password2.errors}}</span>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="id_profile_picture">Profile Picture</label>
+                                            {{ form.profile_picture }}
+                                        </div>
+                                        <span class="text-danger">{{form.profile_picture.errors}}</span>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="id_stamp">Stamp</label>
+                                            {{ form.stamp }}
+                                        </div>
+                                        <span class="text-danger">{{form.stamp.errors}}</span>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="id_certification_number">Certification Number</label>
+                                            {{ form.certification_number }}
+                                        </div>
+                                        <span class="text-danger">{{form.certification_number.errors}}</span>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="id_certification_text">Certification Text</label>
+                                            {{ form.certification_text }}
+                                        </div>
+                                        <span class="text-danger">{{form.certification_text.errors}}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="card-action">
+                                <button class="btn btn-success" type="submit">Submit</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+
+    <!-- Atlantis DEMO methods, don't include it in your project! -->
+    <script src="/static/assets/js/setting-demo2.js"></script>
+
+{% endblock javascripts %}  

@@ -1,0 +1,285 @@
+{% extends "base-form.html" %}
+
+{% block title %} Prezentarea Datelor {% endblock %} 
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}
+    {% load static %}   
+    <link rel="stylesheet" href="https://unpkg.com/multiple-select@1.5.2/dist/multiple-select.min.css">
+    <link rel="stylesheet" type="text/css" href="{% static 'valuationform/presentation-data.css' %}">
+    
+    <style>
+        .required {
+            border-color: #F25961 !important;
+            color: #F25961 !important;
+        }
+        .msg {
+            display: none;
+            margin-bottom: 0px!important;
+        }
+    </style>
+{% endblock stylesheets %}
+
+{% block content %}
+
+    <div class="content">
+        <div class="page-inner">
+            <div class="page-header">
+                <h4 class="page-title">Prezentarea Datelor</h4>
+                <ul class="breadcrumbs">
+                    <li class="nav-home">
+                        <a href="#">
+                            <i class="flaticon-home"></i>
+                        </a>
+                    </li>
+                    <li class="separator">
+                        <i class="flaticon-right-arrow"></i>
+                    </li>
+                    <li class="nav-item">
+                        <a href="">Valuation Form</a>
+                    </li>
+                    <li class="separator">
+                        <i class="flaticon-right-arrow"></i>
+                    </li>
+                    <li class="nav-item">
+                        <a href="">Prezentarea Datelor</a>
+                    </li>
+                </ul>
+            </div>
+        
+            <form method="POST" id="presentation-form">
+                {% csrf_token %}
+                
+                {% if 'details' in pre_url %}
+                    <input type="hidden" name="pre_url" value="details">
+                {% endif %}
+
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">Sursă de informații</div>
+                    </div>
+                    <div class="card-body">
+                        <p class="text-danger mb-3 msg">Something went wrong.</p>
+                        <div class="row documents">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Nume documente <span class="required-label">*</span></label>
+                                    <input type="text" name="src" class="form-control" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <button type="button" class="btn btn-primary btn-round mr-2" id="save_src">Save</button>
+                                    <button type="button" class="btn btn-primary btn-round" id="add_src">Save & Add New</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                    
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">Prezentarea Datelor</div>
+                    </div>
+                    <div class="card-body">
+                        {% if msg %}
+                            <p class="text-danger mb-3">{{ msg }}</p>
+                        {% endif %}
+
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label for="id_sp_hypo">Ipoteze speciale</label>
+                                    {{ form.sp_hypo }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label for="id_poi">Place of Interest <span class="required-label">*</span></label>
+                                    <div class="poi-inputs">
+                                        <div class="pois"></div>
+                                        {{ form.poi }}
+                                    </div>
+                                    <small class="form-text text-muted">Comma separated value</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="id_pt">Public Transport <span class="required-label">*</span></label>
+                                    <select multiple="multiple" id="id_pt" class="form-control" name="pt[]">
+                                        <option value="Metrou">Metrou</option>
+                                        <option value="Tramvai">Tramvai</option>
+                                        <option value="Autobuz">Autobuz</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="id_identification">Identification <span class="required-label">*</span></label>
+                                    {{ form.identification }}
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="id_legal_doc">Proprietar si situatia juridica <span class="required-label">*</span></label>
+                                    <select multiple="multiple" id="id_legal_doc" class="form-control" name="legal_doc[]">
+                                    </select>
+                                    <small class="form-text text-muted">Add source of documents first</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="id_cadastral_no">Cadastral Nr <span class="required-label">*</span></label>
+                                    {{ form.cadastral_no }}
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="id_land_book_no">Land Book Nr <span class="required-label">*</span></label>
+                                    {{ form.land_book_no }}
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="id_uat">UAT <span class="required-label">*</span></label>
+                                    {{ form.uat }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="id_charges">Charges <span class="required-label">*</span></label>
+                                    {{ form.charges }}
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="id_sarcini">Sarcini Nume</label>
+                                    <input type="text" name="sarcini" class="form-control" placeholder="Sarcini Nume" id="id_sarcini" disabled>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="id_current_use">Current Use <span class="required-label">*</span></label>
+                                    {{ form.current_use }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row"> 
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label for="id_history">History</label>
+                                    {{ form.history }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-action">
+                        <button class="btn btn-success" id="next">{% if 'details' in pre_url %}SAVE{% else %}NEXT{% endif %}</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}  
+    <script src="{% static 'valuationform/presentation-data.js' %}"></script>
+    <script src="https://unpkg.com/multiple-select@1.5.2/dist/multiple-select.min.js"></script>
+    <script>
+        $(function () {
+            $('#id_pt').multipleSelect()
+            $('#id_legal_doc').multipleSelect()
+        })
+
+        // disable enable sarcini 
+        $("#id_charges").change(function () {
+            var value = $(this).children('option:selected').val()
+            if(value == 'yes') {
+                $('#id_sarcini').prop('disabled', false)
+            } else {
+                $('#id_sarcini').prop('disabled', true)
+            }
+        })
+
+        // submit form 
+        $('#next').on('click', function() {
+            var all = $(".tag-name").map(function() {
+                return this.innerHTML;
+            }).get();
+            $("#id_poi").val(all.join());
+            $("#presentation-form").submit();
+        })
+
+        // source of information 
+        $('#save_src').on('click', function() {
+            var last = $(".documents").find('input').slice(-1)
+            var val = last.val()
+            if (val.length > 5) {
+                last.removeClass('required')
+                save_source(val)
+            } else {
+                last.addClass('required')
+            }
+        })
+        $("#add_src").on('click', function() {
+            var last = $(".documents").find('input').slice(-1)
+            var val = last.val()
+            if (val.length > 5) {
+                last.removeClass('required')
+                save_source(val)
+                var div = "<div class='col-md-6'>\
+                            <div class='form-group'> \
+                                <label>Nume documente <span class='required-label'>*</span></label> \
+                                <input type='text' name='src' class='form-control' required>\
+                            </div>\
+                        </div>"
+                $('.documents').append(div)
+            } else {
+                last.addClass('required')
+            }
+        })
+
+        // save source 
+        function save_source(val) {
+            $.ajax({
+                url: "{% url 'dashboard:add_src_doc' %}",
+                type: "POST",
+                cache: false,
+                data: {'vid': '{{valuation_id}}', 'source': val, "csrfmiddlewaretoken": '{{ csrf_token }}'},
+                success: function (e) {
+                    if(e.success=='true') {
+                        $('#id_legal_doc').append("<option data-toggle='tooltip' data-placement='top' title='"+val+"' value=\"" + e.id + "\">" + val.substring(0,30) + "...</option>");
+                        $('#id_legal_doc').multipleSelect( 'refresh' );
+                    } else {
+                        $(".msg").css('display', 'block')
+                    }
+                },
+                error: function (err) {
+                    $(".msg").css('display', 'block')
+                }
+            })
+        }
+    </script>
+{% endblock javascripts %}  

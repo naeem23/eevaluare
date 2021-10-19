@@ -1,0 +1,48 @@
+{% extends "base-fullscreen.html" %}
+
+{% block title %} Signin {% endblock %} 
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}
+    <style type="text/css">
+        p {
+            margin-top: 1rem;
+        }
+    </style>
+{% endblock stylesheets %}
+
+{% block content %}
+    <div class="d-flex align-items-center justify-content-center mb-3">
+        <i class="fa fa-shield auth-icon text-white" aria-hidden="true"></i>
+    </div>
+
+    <h3 class="text-center mb-2">Verify your email</h3>
+    <p class="text-center">Please enter the six digits code sent to your email</p>
+
+    <form method="post" class="login-form mt-4">
+        {% csrf_token %}
+        <div class="form-group">
+            {{ form.otp }}
+        </div>
+        <span class="text-danger">{{ form.otp.errors }}</span>
+
+        {% if msg %}<span class="text-danger">{{ msg }}</span>{% endif %}
+        {% if resend_msg %}<span class="text-success"><i class="fa fa-check mr-2" aria-hidden="true"></i>{{ resend_msg }}</span>{% endif %}
+
+        <div class="form-group d-md-flex">
+            <div class="w-100 text-md-right">
+                <a href="" class="text-uppercase disabled resend">resend code</a>
+            </div>
+        </div>
+
+        <div class="form-group text-center mb-0 mt-4">
+            <button type="submit" class="btn form-control btn-primary rounded submit px-3 mb-4">Verify</button>
+            <a href="{% ifequal page 'signup'%}{% url 'authentication:signup' %}{% else %}{% url 'authentication:forget_password' %}{% endifequal %}" class="text-uppercase change_email">Change email</a>
+        </div>
+    </form>
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+{% endblock javascripts %} 
+

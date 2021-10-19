@@ -1,0 +1,207 @@
+{% extends "base.html" %}
+
+{% block title %} Evaluari Complete {% endblock %} 
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}
+    <style type="text/css">
+        #delete {
+            cursor: pointer;
+        }
+        #delete-modal {
+            display: none;
+        }
+    </style>
+{% endblock stylesheets %}
+
+{% block content %}
+    <div class="content">
+        <div class="page-inner">
+            <div class="page-header">
+                <h4 class="page-title">Evaluari Complete</h4>
+                <ul class="breadcrumbs">
+                    <li class="nav-home">
+                        <a href="#">
+                            <i class="flaticon-home"></i>
+                        </a>
+                    </li>
+                    <li class="separator">
+                        <i class="flaticon-right-arrow"></i>
+                    </li>
+                    <li class="nav-item">
+                        <a href="">Evaluari Complete</a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="d-flex align-items-center">
+                                <h4 class="card-title">Evaluari Complete</h4>
+                                <a class="btn btn-primary btn-round ml-auto" href="{% url 'dashboard:complete_map' %}">
+                                    <i class="fa fa-location-arrow mr-2"></i>
+                                    Map View
+                                </a>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table id="incomplete_table" class="display table table-striped table-hover" >
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Adress</th>
+                                            <th>Created At</th>
+                                            <th>Completed At</th>
+                                            <th>Inspector</th>
+                                            <th style="width: 10%">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for obj in complete %}
+                                        <tr id="rowid_{{ obj.id }}">
+                                            <td>
+                                                <a href="{% url 'dashboard:details' id=obj.id %}"><span class="text-light">EPI-{{obj.reference_no}}-{{obj.inspection_date|date:"dmy"}}</span></a>
+                                            </td>
+                                            <td>
+                                                <a href="{% url 'dashboard:details' id=obj.id %}"><span class="text-light">{{obj.street|truncatechars:30}}</span></a>
+                                            </td>
+                                            <td>
+                                                <a href="{% url 'dashboard:details' id=obj.id %}"><span class="text-light">{{obj.inspection_date|date:'d-m-Y'}}</span></a>
+                                            </td>
+                                            <td>
+                                                <a href="{% url 'dashboard:details' id=obj.id %}"><span class="text-light">{{obj.report_date|date:'d-m-Y'}}</span></a>
+                                            </td>
+                                            <td>
+                                                <a href="{% url 'dashboard:details' id=obj.id %}"><span class="text-light">{% if obj.valuatate_by.get_full_name %}
+                                                {{obj.valuatate_by.get_full_name}} {% else %} {{obj.valuatate_by.username }}{% endif %}</span></a>
+                                            </td>
+                                            <td>
+                                                <span class="mr-3" href="" id="delete" onclick="delete_modal('{{obj.id}}')"><i class="fas fa-trash text-white" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Delete"></i></span>
+                                                <a href=""><i class="fas fa-file-pdf text-white"  data-toggle="tooltip" data-placement="top" title="PDF"></i></a>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('#incomplete_table').DataTable({
+                "pageLength": 10,
+                "order": [[ 0, "desc" ]]
+            });
+        });
+
+        // delete modal
+        function delete_modal(id) {
+            swal({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                buttons:{
+                    confirm: {
+                        text : 'Yes, delete it!',
+                        className : 'btn btn-success'
+                    },
+                    cancel: {
+                        visible: true,
+                        className: 'btn btn-danger'
+                    }
+                }
+            }).then((Delete) => {
+                if (Delete) {
+                    $.ajax({
+                        url: "{% url 'dashboard:delete' %}",
+                        type: "GET",
+                        data: {id: id},
+                        success: function(e) {
+                            if (e.success === 'true') {
+                                $("#rowid_"+id).remove()
+                                var content = {};
+                                var state = "success";
+                                content.message = 'Valuation deleted successfully';
+                                content.title = 'Deleted!';
+                                content.icon = 'fa fa-bell';
+                                $.notify(content,{
+                                    type: state,
+                                    placement: {
+                                        from: 'top',
+                                        align: 'right'
+                                    },
+                                    time: 1000,
+                                    delay: 0,
+                                });
+                                // closing notification
+                                setTimeout(function(){
+                                    $('.close').trigger('click');
+                                }, 4000);
+                            } else {
+                                var content = {};
+                                var state = "danger";
+                                content.message = 'Problem deleting valuation';
+                                content.title = 'Error!';
+                                content.icon = 'fa fa-bell';
+                                $.notify(content,{
+                                    type: state,
+                                    placement: {
+                                        from: 'top',
+                                        align: 'right'
+                                    },
+                                    time: 1000,
+                                    delay: 0,
+                                });
+                                // closing notification
+                                setTimeout(function(){
+                                    $('.close').trigger('click');
+                                }, 4000);
+                            }
+                            swal.close();
+                        }
+                    })
+                } else {
+                    swal.close();
+                }
+            });
+        }
+        // delete modal
+
+        // creating notification
+        var msg = "{% if msg %}{{msg}}{% endif %}"
+        if(msg !== "") {
+            var content = {};
+            if (msg == 'marked') {
+                var state = "success";
+                content.message = 'Valuation marked as completed.';
+                content.title = 'Success!';
+            }
+
+            content.icon = 'fa fa-bell';
+            $.notify(content,{
+                type: state,
+                placement: {
+                    from: 'top',
+                    align: 'right'
+                },
+                time: 1000,
+                delay: 0,
+            });
+            // closing notification
+            setTimeout(function(){
+                $('.close').trigger('click');
+            }, 4000);
+        }
+    </script>
+{% endblock javascripts %}

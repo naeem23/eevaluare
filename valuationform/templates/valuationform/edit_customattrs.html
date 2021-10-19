@@ -1,0 +1,237 @@
+{% extends "base.html" %}
+
+{% block title %} Edit câmpuri customizate{% endblock %} 
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}
+    {% load static %}
+    <!-- dropzone file upload -->
+    <script src="{% static 'dashboard/js/dropzone.js' %}"></script>
+    <link rel="stylesheet" href="{% static 'dashboard/css/dropzone.css' %}">
+    
+    <style>
+        .msg {
+            padding-left: 10px;
+        }
+        .form-control:disabled {
+            background-color: #1a2035 !important;
+            color: #fff !important;
+            border-color: #2f374b !important;
+        }
+        .dropzone {
+            padding: 20px 60px 20px !important;
+        }
+        .dropzone h4 {
+            font-size: 26px !important;
+        }
+        .btn-muted {
+            background: rgba(169,175,187,.82);
+            color: #fff;
+        }
+        .modal-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #2f374b!important;
+        }
+        #cf_name, #cf_value {
+            background-color: transparent;
+            color: #495057;
+        }
+    </style>
+{% endblock stylesheets %}
+
+{% block content %}
+
+    <div class="content">
+        <div class="page-inner">
+            <div class="page-header">
+                <h4 class="page-title">Câmpuri customizate</h4>
+                <ul class="breadcrumbs">
+                    <li class="nav-home">
+                        <a href="#">
+                            <i class="flaticon-home"></i>
+                        </a>
+                    </li>
+                    <li class="separator">
+                        <i class="flaticon-right-arrow"></i>
+                    </li>
+                    <li class="nav-item">
+                        <a href="">Valuation Form</a>
+                    </li>
+                    <li class="separator">
+                        <i class="flaticon-right-arrow"></i>
+                    </li>
+                    <li class="nav-item">
+                        <a href="">Câmpuri customizate</a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div class="d-flex align-items-center">
+                        <div class="card-title">Câmpuri customizate</div>
+                        <button type="button" class="ml-auto btn btn-icon btn-round btn-primary" data-toggle="modal" data-target="#custom_modal">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="card-body">
+                    {% if msg %}
+                    <p class="msg mb-3">{{ msg }}</p>
+                    {% endif %}
+                    <form method="post" id="attrs-value">
+                        {% csrf_token %}
+                        <div class="row" id="custom_fields">
+                            {% for attr in attrs %}
+                                <div class="col-md-3 mb-2">
+                                    <div class="form-group">
+                                        <label for="name_{{ attr.id }}">Nr. {{ attr.attr_name }} </label>
+                                        <input type="number" value="{{attr.attr_value}}" class="form-control" name="name_{{attr.id}}">
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </form>
+                </div>
+
+                <div class="card-header">
+                    <div class="card-title">Fotografii</div>
+                </div>
+
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="custom_field">Select Caracteristici</label>
+                                <select class="form-control" id="custom_field">
+                                    {% for p in attrs %}
+                                        <option value="{{ p.id }}">{{ p.attr_name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12 m-2">
+                            <form action="{% url 'dashboard:customfield_photos' %}" class="dropzone dz-clickable" id="step-three-dropzone">
+                                {% csrf_token %}
+                                <input type="hidden" name="vid" id="custom_vid" value="{{ valuation_id }}">
+                                <input type="hidden" name="attr_id" id="custom_attr_id" value="">
+                                <div class="dz-message" data-dz-message="">
+                                    <div class="icon">
+                                        <i class="flaticon-file"></i>
+                                    </div>
+                                    <h4 class="message">Drag and Drop files here</h4>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-action">
+                    <button class="btn btn-success step-two-next" id="submitBtn">UPDATE</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+        <!-- ================================================================================= -->
+    <!-- =============================== Custom Modal ==================================== -->
+    <div class="modal fade" id="custom_modal" tabindex="-1" role="dialog">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Add Custom Fields</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <span class="custom-msg"></span>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="cf_name" style="color: #2f374b!important;">Field Name <span class="required-label">*</span></label>
+                        <input type="text" placeholder="Field name" class="form-control" id="cf_name">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="cf_value" style="color: #2f374b!important;">Field Value</label>
+                        <input type="number" value="0" class="form-control" id="cf_value">
+                    </div>
+                </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-muted" data-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary" onclick="saveCustomField()">Save</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+    <script type="text/javascript">
+        // ===================================================================
+        // ======================== add custom field =========================
+        var custom_id;
+        function saveCustomField() {
+            var name = $('#cf_name').val()
+            var value = $('#cf_value').val()
+
+            if (name.length !== 0) {
+                $.ajax({
+                    url: "{% url 'dashboard:add_custom_field' %}",
+                    type: 'POST',
+                    cache: false,
+                    data: {"vid": '{{ valuation_id }}', "name": name, "value": value, "csrfmiddlewaretoken": '{{ csrf_token }}'},
+                    success: function(e){
+                        if (e.success=='true') {
+                            custom_id = e.cf_id
+                            var html = '<div class="col-md-3 mb-2">\
+                                <div class="form-group">\
+                                    <label for="name_2">Nr. '+ name +'</label>\
+                                    <input type="number" value="'+ value +'" class="form-control" name="name_2" disabled>\
+                                </div>\
+                            </div>'
+                            $('#custom_fields').append(html)
+
+                            var opt = "<option value='"+custom_id+"'>"+ name +"</option>"
+                            $('#custom_field').append(opt)
+
+                            $("#cf_name").val('')
+                            $("#cf_value").val('0')
+                            $('#custom_modal').modal('hide')
+                        } else {
+                            $('.custom-msg').addClass('required-label')
+                            $('.custom-msg').html('Problem saving data. Try agian.')
+                        }
+                    }
+                })
+            } else {
+                $("#cf_name").addClass('required')
+            }
+        }
+
+        $("#step-three-dropzone").click(function () {
+            var aid = $('#custom_attr_id').val();
+            if (aid === ""){
+                $('#custom_attr_id').val($("#custom_field option:first").val());
+            }
+        })
+        $("#custom_field").on('change', function() {
+            $("#custom_attr_id").val(this.value)
+        })
+
+        $("#submitBtn").click(function () {
+            $("#attrs-value").submit();
+        })
+    </script>
+{% endblock javascripts %}  

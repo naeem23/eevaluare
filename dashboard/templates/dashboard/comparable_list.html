@@ -1,0 +1,210 @@
+{% extends "base.html" %}
+
+{% block title %} Proprietati Comparabile {% endblock %} 
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}
+    <style type="text/css">
+        #delete {
+            cursor: pointer;
+        }
+        #delete-modal {
+            display: none;
+        }
+    </style>
+{% endblock stylesheets %}
+
+{% block content %}
+    <div class="content">
+        <div class="page-inner">
+            <div class="page-header">
+                <h4 class="page-title">Proprietati Comparabile</h4>
+                <ul class="breadcrumbs">
+                    <li class="nav-home">
+                        <a href="#">
+                            <i class="flaticon-home"></i>
+                        </a>
+                    </li>
+                    <li class="separator">
+                        <i class="flaticon-right-arrow"></i>
+                    </li>
+                    <li class="nav-item">
+                        <a href="">Proprietati Comparabile</a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="d-flex align-items-center">
+                                <h4 class="card-title">Proprietati Comparabile</h4>
+                                <a class="btn btn-primary btn-round ml-auto" href="{% url 'dashboard:add_comparable' %}">
+                                    <i class="fas fa-plus mr-2"></i>
+                                    Add New
+                                </a>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table id="comparable_table" class="display table table-striped table-hover" >
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Preţ de oferta/vanzare</th>
+                                            <th>Localizare</th>
+                                            <th>Suprafata utila (mp)</th>
+                                            <th style="width: 12%">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for obj in properties %}
+                                        <tr id="rowid_{{ obj.id }}">
+                                            <td>
+                                                <a href="{% url 'dashboard:comparable_details' id=obj.id %}"><span class="text-light">ID-{{obj.id}}</span></a>
+                                            </td>
+                                            <td>
+                                                <a href="{% url 'dashboard:comparable_details' id=obj.id %}"><span class="text-light">{{obj.sale_price|floatformat:"0"}}</span></a>
+                                            </td>
+                                            <td>
+                                                <a href="{% url 'dashboard:comparable_details' id=obj.id %}"><span class="text-light">{{obj.location|truncatechars:30}}</span></a>
+                                            </td>
+                                            <td>
+                                                <a href="{% url 'dashboard:comparable_details' id=obj.id %}"><span class="text-light">{{obj.area}}</span></a>
+                                            </td>
+                                            <td>
+                                                <span class="mr-3" href="" id="delete" onclick="delete_modal('{{obj.id}}')"><i class="fas fa-trash text-white" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Delete"></i></span>
+                                                <a href="{% url 'dashboard:edit_comparable' id=obj.id %}"><i class="fas fa-pencil-alt text-light" data-toggle="tooltip" data-placement="top" title="Edit"></i></a>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('#comparable_table').DataTable({
+                "pageLength": 10,
+                "order": [[ 0, "desc" ]]
+            });
+        });
+
+        // delete modal
+        function delete_modal(id) {
+            swal({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                buttons:{
+                    confirm: {
+                        text : 'Yes, delete it!',
+                        className : 'btn btn-success'
+                    },
+                    cancel: {
+                        visible: true,
+                        className: 'btn btn-danger'
+                    }
+                }
+            }).then((Delete) => {
+                if (Delete) {
+                    $.ajax({
+                        url: "{% url 'dashboard:delete_comparable' %}",
+                        type: "GET",
+                        data: {id: id},
+                        success: function(e) {
+                            if (e.success === 'true') {
+                                $("#rowid_"+id).remove()
+                                var content = {};
+                                var state = "success";
+                                content.message = 'Comparabile deleted successfully';
+                                content.title = 'Deleted!';
+                                content.icon = 'fa fa-bell';
+                                $.notify(content,{
+                                    type: state,
+                                    placement: {
+                                        from: 'top',
+                                        align: 'right'
+                                    },
+                                    time: 1000,
+                                    delay: 0,
+                                });
+                                // closing notification
+                                setTimeout(function(){
+                                    $('.close').trigger('click');
+                                }, 4000);
+                            } else {
+                                var content = {};
+                                var state = "danger";
+                                content.message = 'Problem deleting comparabile';
+                                content.title = 'Error!';
+                                content.icon = 'fa fa-bell';
+                                $.notify(content,{
+                                    type: state,
+                                    placement: {
+                                        from: 'top',
+                                        align: 'right'
+                                    },
+                                    time: 1000,
+                                    delay: 0,
+                                });
+                                // closing notification
+                                setTimeout(function(){
+                                    $('.close').trigger('click');
+                                }, 4000);
+                            }
+                            swal.close();
+                        }
+                    })
+                } else {
+                    swal.close();
+                }
+            });
+        }
+        // delete modal
+
+        // creating notification
+        var msg = "{% if msg %}{{msg}}{% endif %}"
+        if(msg !== "") {
+            var content = {};
+            if (msg == 'updated') {
+                var state = "success";
+                content.message = 'Comparabile updated successfully.';
+                content.title = 'Success!';
+            } else if (msg == 'not_updated') {
+                var state = "danger";
+                content.message = 'Problem updating comparabile.';
+                content.title = 'Error!';
+            } else if (msg == 'added') {
+                var state = "success";
+                content.message = 'Comparabile added successfully';
+                content.title = 'Success!';
+            }
+
+            content.icon = 'fa fa-bell';
+            $.notify(content,{
+                type: state,
+                placement: {
+                    from: 'top',
+                    align: 'right'
+                },
+                time: 1000,
+                delay: 0,
+            });
+            // closing notification
+            setTimeout(function(){
+                $('.close').trigger('click');
+            }, 4000);
+        }
+    </script>
+{% endblock javascripts %}

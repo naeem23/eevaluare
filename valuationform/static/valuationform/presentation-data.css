@@ -1,0 +1,63 @@
+.msg {
+    padding-left: 10px;
+}
+.btn-muted {
+    background: rgba(169,175,187,.82);
+    color: #fff;
+}
+.ms-choice {
+    background: transparent;
+    border: none;
+    height: 19px;
+}
+.ms-choice>span {
+    color: #fff;
+    top: 5px;
+    left: 8px;
+}
+.ms-drop {
+    left: 0;
+}
+.ms-drop span {
+    color: #1a2035!important;
+}
+.poi-inputs {
+    border-radius: 0.25rem;
+    padding: .6rem 1rem;
+    cursor: text;
+    background-color: #1a2035;
+    color: #fff;
+    border: 1px solid #2f374b;
+}
+.pois, #id_poi {
+    display: inline-block;
+}
+#id_poi {
+    border: none;
+    font-size: 14px;
+    background: transparent;
+    color: #fff;
+}
+.poi {
+    display: inline-block;
+    border: 1px solid #d0d0d0;
+    padding: 0.1rem 0.5rem 0.25rem;
+    border-radius: 0.4rem;
+    margin: 0 3px 5px;
+}
+
+.tag-name {
+  color: #6f6f6f;
+  margin: 0!important;
+}
+
+.poi-inputs .remove {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #e0e0e0;
+  margin-left: 0.3rem;
+  cursor: pointer;
+}
+.poi-inputs .remove:hover {
+  color: #8f8f8f;
+}

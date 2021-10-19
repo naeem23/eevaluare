@@ -1,0 +1,482 @@
+{% extends "base.html" %}
+
+{% block title %} Comparabile Table {% endblock %} 
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}
+    {% load static %}
+    <!-- bootstrap datepicker  -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.2.0/css/datepicker.min.css" rel="stylesheet">
+
+    <style>
+        .ms-choice {
+            background: transparent;
+            border: none;
+            height: 19px;
+        }
+        .ms-choice>span {
+            color: #fff;
+            top: 5px;
+            left: 8px;
+        }
+        .ms-drop {
+            left: 0;
+        }
+        .ms-drop span {
+            color: #1a2035!important;
+        }
+        .table td {
+            border-bottom: none!important;
+            padding-top: 8px!important;
+            height: 40px!important;
+        }
+    </style>
+{% endblock stylesheets %}
+
+{% block content %}
+
+    <div class="content">
+        <div class="page-inner">
+            <div class="page-header">
+                <h4 class="page-title">Comparabile Table</h4>
+                <ul class="breadcrumbs">
+                    <li class="nav-home">
+                        <a href="#">
+                            <i class="flaticon-home"></i>
+                        </a>
+                    </li>
+                    <li class="separator">
+                        <i class="flaticon-right-arrow"></i>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'dashboard:comparable_list' %}">Proprietati Comparabile</a>
+                    </li>
+                    <li class="separator">
+                        <i class="flaticon-right-arrow"></i>
+                    </li>
+                    <li class="nav-item">
+                        <a href="">Comparabile Table</a>
+                    </li>
+                </ul>
+            </div>
+            
+            {% load my_filters %}
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">Comparabile Table</div>
+                </div>
+                
+                <form method="POST">
+                    {% csrf_token %}
+
+                    <div class="card-body">
+                        {% if msg %}
+                            <p class="text-danger">{{msg}}</p>
+                        {% endif %}
+
+                        <table class="table table-hover">
+                            <tbody>
+                                <tr>
+                                    <td colspan="4" style="text-align: center;color: #fff;font-weight: bold;">ABORDAREA PRIN PIATA, METODA COMPARATIILOR DE PIATA (LOCUINTA UNIFAMILIALA)</td>
+                                </tr>
+                                <tr>
+                                    <td style="color: #fff;font-weight: bold;">Element de comparatie</td>
+                                    <td style="color: #fff;font-weight: bold;text-align: center;" colspan="3">Proprietati comparabile</td>
+                                </tr>
+                                <tr>
+                                    <td>&nbsp;</td>
+                                    {% for p in ct %}
+                                    <td style="color: #fff;font-weight: bold;text-align: center;">ID-{{p.id}}</td>
+                                    {% endfor %}
+                                </tr>
+                                <tr>
+                                    <td>Mobila Ajustare (EUR)</td>
+                                    {% for p in ct %}
+                                    <td>
+                                        <input type="number" name="mobila_ajustare[]" class="form-control" step="0.01">
+                                    </td>
+                                    {% endfor %}
+                                </tr>
+                                <tr>
+                                    <td>Parcare/boxa Ajustare (EUR)</td>  
+                                    {% for p in ct %}
+                                    <td><input type="number" name="pb_ajustare[]" class="form-control" step="0.01"></td>
+                                    {% endfor %}
+                                </tr>
+                                <tr>
+                                    <td>Marja negociere (%) </td>
+                                    {% for p in ct %}
+                                    <td>
+                                        <div class="input-group">
+                                            <input type="number" name="margin[]" class="form-control" step="0.01">
+                                            <div class="input-group-append">
+                                                <span class="input-group-text">%</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    {% endfor %}
+                                </tr>
+                                
+                                <tr>
+                                    <td>Motivare corectie</td>
+                                    <td colspan="3" style="height: 60px!important;"><textarea name="motivation" rows="5" class="form-control"></textarea></td>
+                                </tr>
+                                <tr>
+                                    <td colspan="4" style="text-align: center;color: #fff;font-weight: bold; padding-top: 20px!important;">Ajustari pentru conditiile tranzactiilor</td>
+                                </tr>
+                                <tr>
+                                    <td colspan="4" style="color: #fff;">Drepturi de proprietate</td>
+                                </tr>
+                                <tr>
+                                    <td>Ajustare (%)</td>
+                                    {% for p in ct %}
+                                    <td>
+                                        <div class="input-group">
+                                            <input type="number" name="property_percent[]" class="form-control" step="0.01">
+                                            <div class="input-group-append">
+                                                <span class="input-group-text">%</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    {% endfor %}
+                                </tr>
+                                <tr>
+                                    <td>Ajustare (EURO)</td>
+                                    {% for p in ct %}
+                                    <td><input type="number" name="property_euro[]" class="form-control" step="0.01"></td>
+                                    {% endfor %}
+                                </tr>
+                                <tr>
+                                    <td>Motivare corectie</td>
+                                    <td colspan="3" style="height: 60px!important;"><textarea name="property_motivation" rows="5" class="form-control"></textarea></td>
+                                </tr>
+                                <tr>
+                                    <td colspan="4" style="color: #fff;">Condiţii de finanţare</td>
+                                </tr>
+                                <tr>
+                                    <td>Ajustare (%)</td>
+                                    {% for p in ct %}
+                                    <td>
+                                        <div class="input-group">
+                                            <input type="number" name="fc_percent[]" class="form-control" step="0.01">
+                                            <div class="input-group-append">
+                                                <span class="input-group-text">%</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    {% endfor %}
+                                </tr>
+                                <tr>
+                                    <td>Ajustare (EURO)</td>
+                                    {% for p in ct %}
+                                    <td><input type="number" name="fc_euro[]" class="form-control" step="0.01"></td>
+                                    {% endfor %}
+                                </tr>
+                                <tr>
+                                    <td>Motivare corectie</td>
+                                    <td colspan="3" style="height: 60px!important;"><textarea name="fc_motivation" rows="5" class="form-control"></textarea></td>
+                                </tr>
+                                <tr>
+                                    <td colspan="4" style="color: #fff;">Conditii de vanzare</td>
+                                </tr>
+                                <tr>
+                                    <td>Ajustare (%)</td>
+                                    {% for p in ct %}
+                                    <td>
+                                        <div class="input-group">
+                                            <input type="number" name="sc_percent[]" class="form-control" step="0.01">
+                                            <div class="input-group-append">
+                                                <span class="input-group-text">%</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    {% endfor %}
+                                </tr>
+                                <tr>
+                                    <td>Ajustare (EURO)</td>
+                                    {% for p in ct %}
+                                    <td><input type="number" name="sc_euro[]" class="form-control" step="0.01"></td>
+                                    {% endfor %}
+                                </tr>
+                                <tr>
+                                    <td>Motivare corectie</td>
+                                    <td colspan="3" style="height: 60px!important;"><textarea name="sc_motivation" rows="5" class="form-control"></textarea></td>
+                                </tr>
+                                <tr>
+                                    <td colspan="4" style="color: #fff;">Cheltuieli necesare imediat dupa cumparare</td>
+                                </tr>
+                                <tr>
+                                    <td>Ajustare (%)</td>
+                                    {% for p in ct %}
+                                    <td>
+                                        <div class="input-group">
+                                            <input type="number" name="ape_percent[]" class="form-control" step="0.01">
+                                            <div class="input-group-append">
+                                                <span class="input-group-text">%</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    {% endfor %}
+                                </tr>
+                                <tr>
+                                    <td>Ajustare (EURO)</td>
+                                    {% for p in ct %}
+                                    <td><input type="number" name="ape_euro[]" class="form-control" step="0.01"></td>
+                                    {% endfor %}
+                                </tr>
+                                <tr>
+                                    <td>Motivare corectie</td>
+                                    <td colspan="3" style="height: 60px!important;"><textarea name="ape_motivation" rows="5" class="form-control"></textarea></td>
+                                </tr>
+                                <tr>
+                                    <td colspan="4" style="color: #fff;">Conditii de piata</td>
+                                </tr>
+                                <tr>
+                                    <td>Ajustare (%)</td>
+                                    {% for p in ct %}
+                                    <td>
+                                        <div class="input-group">
+                                            <input type="number" name="me_percent[]" class="form-control" step="0.01">
+                                            <div class="input-group-append">
+                                                <span class="input-group-text">%</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    {% endfor %}
+                                </tr>
+                                <tr>
+                                    <td>Ajustare (EURO)</td>
+                                    {% for p in ct %}
+                                    <td><input type="number" name="me_euro[]" class="form-control" step="0.01"></td>
+                                    {% endfor %}
+                                </tr>
+                                <tr>
+                                    <td>Motivare corectie</td>
+                                    <td colspan="3" style="height: 60px!important;"><textarea name="me_motivation" rows="5" class="form-control"></textarea></td>
+                                </tr>
+                                <tr>
+                                    <td colspan="4" style="text-align: center;color: #fff;font-weight: bold; padding-top: 20px!important;">Ajustari specifice proprietatii</td>
+                                </tr>
+                                <tr>
+                                    <td style="color: #fff;">Localizare</td>
+                                </tr>
+                                <tr>
+                                    <td>Ajustare (%)</td>
+                                    {% for p in ct %}
+                                    <td>
+                                        <div class="input-group">
+                                            <input type="number" name="lc_percent[]" class="form-control" step="0.01">
+                                            <div class="input-group-append">
+                                                <span class="input-group-text">%</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    {% endfor %}
+                                </tr>
+                                <tr>
+                                    <td>Ajustare (EURO)</td>
+                                    {% for p in ct %}
+                                    <td><input type="number" name="lc_euro[]" class="form-control" step="0.01"></td>
+                                    {% endfor %}
+                                </tr>
+                                <tr>
+                                    <td>Motivare corectie</td>
+                                    <td colspan="3" style="height: 60px!important;"><textarea name="lc_motivation" rows="5" class="form-control"></textarea></td>
+                                </tr>
+                                <tr>
+                                    <td colspan="4" style="color: #fff;">Compartimentare</td>
+                                </tr>
+                                <tr>
+                                    <td>Ajustare (%)</td>
+                                    {% for p in ct %}
+                                    <td>
+                                        <div class="input-group">
+                                            <input type="number" name="cp_percent[]" class="form-control" step="0.01">
+                                            <div class="input-group-append">
+                                                <span class="input-group-text">%</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    {% endfor %}
+                                </tr>
+                                <tr>
+                                    <td>Ajustare (EURO)</td>
+                                    {% for p in ct %}
+                                    <td><input type="number" name="cp_euro[]" class="form-control" step="0.01"></td>
+                                    {% endfor %}
+                                </tr>
+                                <tr>
+                                    <td>Motivare corectie</td>
+                                    <td colspan="3" style="height: 60px!important;"><textarea name="cp_motivation" rows="5" class="form-control"></textarea></td>
+                                </tr>
+                                <tr>
+                                    <td colspan="4" style="color: #fff;">AN PIF</td>
+                                </tr>
+                                <tr>
+                                    <td>Ajustare (%)</td>
+                                    {% for p in ct %}
+                                    <td>
+                                        <div class="input-group">
+                                            <input type="number" name="cy_percent[]" class="form-control" step="0.01">
+                                            <div class="input-group-append">
+                                                <span class="input-group-text">%</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    {% endfor %}
+                                </tr>
+                                <tr>
+                                    <td>Ajustare (EURO)</td>
+                                    {% for p in ct %}
+                                    <td><input type="number" name="cy_euro[]" class="form-control" step="0.01"></td>
+                                    {% endfor %}
+                                </tr>
+                                <tr>
+                                    <td>Motivare corectie</td>
+                                    <td colspan="3" style="height: 60px!important;"><textarea name="cy_motivation" rows="5" class="form-control"></textarea></td>
+                                </tr>
+                                <tr>
+                                    <td colspan="4" style="color: #fff;">Suprafata utila (mp)</td>
+                                </tr>
+                                <tr>
+                                    <td>Motivare corectie</td>
+                                    <td colspan="3" style="height: 60px!important;"><textarea name="su_motivation" rows="5" class="form-control"></textarea></td>
+                                </tr>
+                                <tr>
+                                    <td colspan="4" style="color: #fff;">Finisaje</td>
+                                </tr>
+                                <tr>
+                                    <td>Ajustare (%)</td>
+                                    {% for p in ct %}
+                                    <td>
+                                        <div class="input-group">
+                                            <input type="number" name="finish_percent[]" class="form-control" step="0.01">
+                                            <div class="input-group-append">
+                                                <span class="input-group-text">%</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    {% endfor %}
+                                </tr>
+                                <tr>
+                                    <td>Ajustare (EURO)</td>
+                                    {% for p in ct %}
+                                    <td><input type="number" name="finish_euro[]" class="form-control" step="0.01"></td>
+                                    {% endfor %}
+                                </tr>
+                                <tr>
+                                    <td>Motivare corectie</td>
+                                    <td colspan="3" style="height: 60px!important;"><textarea name="finish_motivation" rows="5" class="form-control"></textarea></td>
+                                </tr>
+                                <tr>
+                                    <td colspan="4" style="color: #fff;">Regim de inaltime</td>
+                                </tr>
+                                <tr>
+                                    <td>Ajustare (%)</td>
+                                    {% for p in ct %}
+                                    <td>
+                                        <div class="input-group">
+                                            <input type="number" name="etaj_percent[]" class="form-control" step="0.01">
+                                            <div class="input-group-append">
+                                                <span class="input-group-text">%</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    {% endfor %}
+                                </tr>
+                                <tr>
+                                    <td>Ajustare (EURO)</td>
+                                    {% for p in ct %}
+                                    <td><input type="number" name="etaj_euro[]" class="form-control" step="0.01"></td>
+                                    {% endfor %}
+                                </tr>
+                                <tr>
+                                    <td>Motivare corectie</td>
+                                    <td colspan="3" style="height: 60px!important;"><textarea name="etaj_motivation" rows="5" class="form-control"></textarea></td>
+                                </tr>
+                                <tr>
+                                    <td colspan="4" style="color: #fff;">Balcon (mp)</td>
+                                </tr>
+                                <tr>
+                                    <td>Motivare corectie</td>
+                                    <td colspan="3" style="height: 60px!important;"><textarea name="balcon_motivation" rows="5" class="form-control"></textarea></td>
+                                </tr>
+                                <tr>
+                                    <td colspan="4" style="color: #fff;">Sistem de incalzire</td>
+                                </tr>
+                                <tr>
+                                    <td>Ajustare (%)</td>
+                                    {% for p in ct %}
+                                    <td>
+                                        <div class="input-group">
+                                            <input type="number" name="hs_percent[]" class="form-control" step="0.01">
+                                            <div class="input-group-append">
+                                                <span class="input-group-text">%</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    {% endfor %}
+                                </tr>
+                                <tr>
+                                    <td>Ajustare (EURO)</td>
+                                    {% for p in ct %}
+                                    <td><input type="number" name="hs_euro[]" class="form-control" step="0.01"></td>
+                                    {% endfor %}
+                                </tr>
+                                <tr>
+                                    <td>Motivare corectie</td>
+                                    <td colspan="3" style="height: 60px!important;"><textarea name="hs_motivation" rows="5" class="form-control"></textarea></td>
+                                </tr>
+                                <tr>
+                                    <td colspan="4" style="color: #fff;">Parcare</td>
+                                </tr>
+                                <tr>
+                                    <td>Ajustare (%)</td>
+                                    {% for p in ct %}
+                                    <td>
+                                        <div class="input-group">
+                                            <input type="number" name="parking_percent[]" class="form-control" step="0.01">
+                                            <div class="input-group-append">
+                                                <span class="input-group-text">%</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    {% endfor %}
+                                </tr>
+                                <tr>
+                                    <td>Ajustare (EURO)</td>
+                                    {% for p in ct %}
+                                    <td><input type="number" name="parking_euro[]" class="form-control" step="0.01"></td>
+                                    {% endfor %}
+                                </tr>
+                                <tr>
+                                    <td>Motivare corectie</td>
+                                    <td colspan="3" style="height: 60px!important;"><textarea name="parking_motivation" rows="5" class="form-control"></textarea></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="card-action">
+                        <button class="btn btn-success" type="submit">{% if instance %}Update{% else %}Save{% endif %}</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+    <!-- bootstrap datepicker  -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.2.0/js/bootstrap-datepicker.min.js"></script>
+    
+    <script>
+        $("#market_env").datepicker( {
+            format: "MM yyyy",
+            startView: "months", 
+            minViewMode: "months"
+        });
+    </script>
+{% endblock javascripts %}  

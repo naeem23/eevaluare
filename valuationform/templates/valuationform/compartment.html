@@ -1,0 +1,149 @@
+{% extends "base-form.html" %}
+
+{% block title %} Add Compartimentare {% endblock %} 
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}
+    {% load static %}
+    <!-- dropzone file upload -->
+    <script src="{% static 'dashboard/js/dropzone.js' %}"></script>
+    <link rel="stylesheet" href="{% static 'dashboard/css/dropzone.css' %}">
+    
+    <style>
+        .msg {
+            padding-left: 10px;
+        }
+        .btn-muted {
+            background: rgba(169,175,187,.82);
+            color: #fff;
+        }
+        .dropzone {
+            padding: 20px 60px 20px!important;
+        }
+        .dropzone h4 {
+            font-size: 26px!important;
+        }
+    </style>
+{% endblock stylesheets %}
+
+{% block content %}
+
+    <div class="content">
+        <div class="page-inner">
+            <div class="page-header">
+                <h4 class="page-title">Add Compartimentare</h4>
+                <ul class="breadcrumbs">
+                    <li class="nav-home">
+                        <a href="#">
+                            <i class="flaticon-home"></i>
+                        </a>
+                    </li>
+                    <li class="separator">
+                        <i class="flaticon-right-arrow"></i>
+                    </li>
+                    <li class="nav-item">
+                        <a href="">Inspection</a>
+                    </li>
+                    <li class="separator">
+                        <i class="flaticon-right-arrow"></i>
+                    </li>
+                    <li class="nav-item">
+                        <a href="">Compartimentare</a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">Compartimentare</div>
+                </div>
+
+                <div class="card-body">
+                    {% if msg %}
+                    <p class="msg mb-3">{{ msg }}</p>
+                    {% endif %}
+                    <form method="post" id="attrs-value">
+                        {% csrf_token %}
+                        {% if 'details' in pre_url %}
+                            <input type="hidden" name="pre_url" value="details">
+                        {% endif %}
+                        <div class="row" id="caracteristici_data">
+                            {% for attr in attrs %}
+                                {% if attr.has_nr %}
+                                <div class="col-md-3 mb-2">
+                                    <div class="form-group">
+                                        <label for="name_{{ attr.id }}">Nr. {{ attr.name }} </label>
+                                        <input type="number" value="0" class="form-control" name="name_{{attr.id}}">
+                                    </div>
+                                </div>
+                                {% else %}
+                                <input type="hidden" value="none" name="name_{{attr.id}}">
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </form>
+                </div>
+
+                <div class="card-header">
+                    <div class="card-title">Fotografii</div>
+                </div>
+
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="attribute">Select Compartimentare</label>
+                                <select class="form-control" id="attribute">
+                                    {% for p in attrs %}
+                                        {% if p.has_photo %}
+                                        <option value="{{ p.pk }}">{{ p.name }}</option>
+                                        {% endif %}
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12 m-2">
+                            <form action="{% url 'dashboard:compartment_photos' %}" class="dropzone dz-clickable" id="attrsDropzone">
+                                {% csrf_token %}
+                                <input type="hidden" name="valuation_id" id="valuation_id" value="{{ valuation_id }}">
+                                <input type="hidden" name="attr_id" id="attr_id" value="">
+                                <div class="dz-message" data-dz-message="">
+                                    <div class="icon">
+                                        <i class="flaticon-file"></i>
+                                    </div>
+                                    <h4 class="message">Drag and Drop files here</h4>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-action">
+                    <button class="btn btn-success step-two-next" id="submitBtn">{% if 'details' in pre_url %}SAVE{% else %}NEXT{% endif %}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+    <script type="text/javascript">
+        $('#attrsDropzone').click(function () {
+            var aid = $('#attr_id').val();
+            if (aid === ""){
+                $('#attr_id').val($("#attribute option:first").val());
+            }
+        })
+        $('#attribute').on('change', function() {
+            $('#attr_id').val(this.value);
+        });
+
+        $("#submitBtn").click(function () {
+            $("#attrs-value").submit();
+        })
+    </script>
+{% endblock javascripts %}  

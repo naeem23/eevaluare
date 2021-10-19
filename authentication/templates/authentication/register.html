@@ -1,0 +1,63 @@
+{% extends "base-fullscreen.html" %}
+
+{% block title %} Signin {% endblock %} 
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}
+    <style type="text/css">
+        p {
+            margin-top: 1rem;
+        }
+    </style>
+{% endblock stylesheets %}
+
+{% block content %}
+    <div class="d-flex align-items-center justify-content-center mb-3">
+        <i class="fa fa-user-plus auth-icon text-white" aria-hidden="true"></i>
+    </div>
+    <h3 class="text-center mb-2">Create Account</h3>
+    {% if msg %}
+    	<p class="text-center text-danger">{{ msg }}</p>
+    {% else %}
+    	<p class="text-center">Sign Up by entering the information below</p>
+    {% endif %}
+   
+   	<form method="post" class="login-form mt-4">
+   		{% csrf_token %}
+	    <div class="form-group">
+	        <div class="icon d-flex align-items-center justify-content-center"><span class="fa fa-user"></span></div>
+	        {{ form.username }}
+	    </div>
+	    <span class="text-danger">{{ form.username.errors }}</span>
+
+	    <div class="form-group">
+	        <div class="icon d-flex align-items-center justify-content-center"><span class="fa fa-envelope"></span></div>
+	        {{ form.email }}
+	    </div>
+	    <span class="text-danger">{{ form.email.errors }}</span>
+
+	    <div class="form-group">
+	        <div class="icon d-flex align-items-center justify-content-center"><span class="fa fa-lock"></span></div>
+	      {{ form.password1 }}
+	    </div>
+	    <span class="text-danger">{{ form.password1.errors }}</span>
+
+	    <div class="form-group">
+	        <div class="icon d-flex align-items-center justify-content-center"><span class="fa fa-lock"></span></div>
+	      	{{ form.password2 }}
+	    </div>
+	    <span class="text-danger">{{ form.password2.errors }}</span>
+
+	    <div class="form-group submit-btn mt-4">
+	        <button class="btn form-control btn-primary rounded submit px-3" type="submit">Sign Up</button>
+	    </div>
+   	</form>
+
+    <div class="w-100 text-center mt-4 text">
+        <p class="mb-0">Already have an account?</p>
+        <a href="{% url 'authentication:signin' %}">Sign In</a>
+    </div>
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}{% endblock javascripts %} 

@@ -1,0 +1,175 @@
+{% extends "base.html" %}
+
+{% block title %} Inspectors List {% endblock %} 
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}
+    <style type="text/css">
+        #delete {
+            cursor: pointer;
+        }
+        #delete-modal {
+            display: none;
+        }
+    </style>
+{% endblock stylesheets %}
+
+{% block content %}
+    <div class="content">
+        <div class="page-inner">
+            <div class="page-header">
+                <h4 class="page-title">Settings</h4>
+                <ul class="breadcrumbs">
+                    <li class="nav-home">
+                        <a href="#">
+                            <i class="flaticon-home"></i>
+                        </a>
+                    </li>
+                    <li class="separator">
+                        <i class="flaticon-right-arrow"></i>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'authentication:inspectors' %}">Inspectors</a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+					<div class="card">
+						<div class="card-header">
+							<div class="d-flex align-items-center">
+								<h4 class="card-title">Inspectors</h4>
+								<a class="btn btn-primary btn-round ml-auto" href="{% url 'authentication:add_inspector' %}">
+									<i class="fa fa-plus mr-2"></i>
+									Add Inspector
+								</a>
+							</div>
+						</div>
+						<div class="card-body">
+							<div class="table-responsive">
+								<table id="inspector_table" class="display table table-striped table-hover" >
+									<thead>
+										<tr>
+											<th>#</th>
+											<th>Full Name</th>
+                                            <th>Email</th>
+											<th>Certification Number</th>
+											<th style="width: 12%">Action</th>
+										</tr>
+									</thead>
+									<tbody>
+										{% for inspector in inspectors %}
+										<tr>
+											<td>
+                                                <a href="{% url 'authentication:inspector_details' id=inspector.id %}" class="text-light">
+                                                    {{ inspector.id }}
+                                                </a>
+											</td>
+											<td>
+												<a href="{% url 'authentication:inspector_details' id=inspector.id %}">
+                                                    <span class="text-light">{{inspector.get_full_name}}</span>
+                                                </a>
+											</td>
+											<td>
+												<a href="{% url 'authentication:inspector_details' id=inspector.id %}"><span class="text-light">{{inspector.email}}
+                                                    </span></a>
+											</td>
+                                            <td>
+                                                <a href="{% url 'authentication:inspector_details' id=inspector.id %}"><span class="text-light">{{inspector.certification_number}}</span></a>
+                                            </td>
+											<td>
+                                                <span class="mr-3 text-light" href="" id="delete" onclick="delete_modal('{{inspector.id}}')" data-toggle="tooltip" data-placement="top" title="Delete"><i class="la flaticon-remove-user"></i></span>
+                                                <a href="{% url 'authentication:inspector_details' id=inspector.id %}" data-toggle="tooltip" data-placement="top" title="View Details"><i class="la flaticon-user-5 text-light"></i></a>
+											</td>
+										</tr>
+										{% endfor %}
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="swal-overlay swal-overlay--show-modal" tabindex="-1" id="delete-modal">
+        <div class="swal-modal" role="dialog" aria-modal="true">
+            <div class="swal-title" style="">Are you sure?</div>
+            <div class="swal-text" style="">You won't be able to revert this!</div>
+            <div class="swal-footer">
+                <div class="swal-button-container">
+                    <a class="swal-button swal-button--confirm btn btn-success" href="">Yes, delete it!</a>
+                </div>
+
+                <div class="swal-button-container">
+                    <button class="swal-button swal-button--cancel btn btn-danger">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+    <script type="text/javascript">
+		$(document).ready(function() {
+			$('#inspector_table').DataTable({
+				"pageLength": 10,
+				"order": [[ 0, "desc" ]]
+			});
+		});
+
+        function delete_modal(id) {
+            $("#delete-modal").css('display', 'block')
+            var url = "/agent/delete/" + id
+            $(".swal-button--confirm").attr('href', url)
+        }
+
+        // for sweet alert
+        $(".swal-button--cancel").click(function(e) {
+            $("#delete-modal").css('display', 'none')
+        });
+
+        // creating notification
+        var msg = "{% if msg %}{{msg}}{% endif %}"
+        if(msg !== "") {
+            var content = {};
+            if(msg=='deleted') {
+                var state = "success";
+                content.message = 'inspector deleted successfully';
+                content.title = 'Deleted!';
+            } else if (msg=='not_deleted') {
+                var state = "danger";
+                content.message = 'Problem deleting inspector';
+                content.title = 'Error!';
+            } else if (msg=='added') {
+                var state = "success";
+                content.message = 'inspector added successfully';
+                content.title = 'Success!';
+            } else if (msg=='not_added') {
+                var state = "danger";
+                content.message = 'Problem adding inspector';
+                content.title = 'Error!';
+            }
+
+            content.icon = 'fa fa-bell';
+
+            $.notify(content,{
+                type: state,
+                placement: {
+                    from: 'top',
+                    align: 'right'
+                },
+                time: 1000,
+                delay: 0,
+            });
+            // closing notification
+            setTimeout(function(){
+                $('.close').trigger('click');
+            }, 4000);
+        }
+    </script>
+{% endblock javascripts %}
