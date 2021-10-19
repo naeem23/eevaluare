@@ -7,7 +7,6 @@ from django.utils import timezone
 from dashboard.choices import *
 
 
-
 class Area(models.Model):
 	auto = models.CharField(max_length=3, blank=True, null=True)
 	name = models.CharField(max_length=255, blank=True, null=True)
