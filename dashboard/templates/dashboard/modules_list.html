@@ -37,10 +37,10 @@
             <div class="row">
                 <div class="col-md-2">
                     <h3>list</h3>
-                    <ul>
+                    <ul style="padding: 0;">
                         {% for key, value in modules.items %}                        
-                            <li>
-                                <a href="{% url 'dashboard:go_module_view' key %}">{{value}}</a>
+                            <li style="padding: 2px;">
+                                <a href="{% url 'dashboard:go_module_view' key %}" style="color: white;text-decoration: none;">{{value}}</a>
                             </li>
                         {% endfor %}
                     </ul>
