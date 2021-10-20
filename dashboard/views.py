@@ -845,10 +845,11 @@ def go_module(request, key):
 				area = Area.objects.create(auto = auto, name = name)
 
 		elif 'update' in request.POST:
-			if request.POST.get('add')=="status":
-				status = Status.objects.create(status = request.POST.get('status'))
-
-			if request.POST.get('add')=="area":
+			if request.POST.get('update')=="status":
+				status_obj = Status.objects.get(id = request.POST.get('id'))
+				status_obj.status = request.POST.get('status') 
+				status_obj.save()
+			if request.POST.get('update')=="area":
 				auto = request.POST.get('auto')
 				name = request.POST.get('name')
 				area = Area.objects.create(auto = auto, name = name)

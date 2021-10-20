@@ -190,18 +190,26 @@
                         
                         {% if key == "area" %}
                             <div class="form-group">
-                                <label for="recipient-name" class="col-form-label">Auto:</label>
-                                <input type="text" class="form-control" id="recipient-name" name="auto" value={{module_key.auto}}>
+                                <label for="module-id" class="col-form-label">Id:</label>
+                                <input type="text" class="form-control" id="module-id" name="id" value={{module_key.id}}>
                             </div>
                             <div class="form-group">
-                                <label for="recipient-name" class="col-form-label">Name:</label>
-                                <input type="text" class="form-control" id="recipient-name" name="name"  value={{module_key.name}}>
+                                <label for="module-auto" class="col-form-label">Auto:</label>
+                                <input type="text" class="form-control" id="module-auto" name="auto" value={{module_key.auto}}>
+                            </div>
+                            <div class="form-group">
+                                <label for="module-name" class="col-form-label">Name:</label>
+                                <input type="text" class="form-control" id="module-name" name="name"  value={{module_key.name}}>
                             </div>
                         {% endif %}
                         {% if key == "status" %}
+                            <div class="form-group" style="display: none;">
+                                <label for="module-id" class="col-form-label">Id:</label>
+                                <input type="text" class="form-control" id="module-id" name="id" value={{module_key.id}}>
+                            </div>
                             <div class="form-group">
-                                <label for="recipient-name" class="col-form-label">Status:</label>
-                                <input type="text" class="form-control" id="recipient-name" name="status"  value={{module_key.status}}>
+                                <label for="module-status" class="col-form-label">Status:</label>
+                                <input type="text" class="form-control" id="module-status" name="status"  value={{module_key.status}}>
                             </div>
                         {% endif %}
 
