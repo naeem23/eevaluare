@@ -60,5 +60,5 @@ urlpatterns = [
     # modules
     path('modules/', views.modules_list, name='modules'),
     path('modules/<str:key>', views.go_module, name='go_module_view'),
-
+    
 ]

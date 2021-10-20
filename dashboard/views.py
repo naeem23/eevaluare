@@ -829,23 +829,30 @@ def modules_list(request):
 	return render(request, template_name, context)
 
 from django.http import JsonResponse
-from valuation.models import Area, Status
+from valuation.models import Area, Status, PropertyType
+
 def go_module(request, key):
 	template_name = 'dashboard/go_module.html'
+
 	module_keys = None
 	if key=="property-type":
-		module_keys = Area.objects.all()
+		module_keys = PropertyType.objects.all()
 	elif key=="status":
 		module_keys = Status.objects.all()
+	elif key=="area":
+		module_keys = Area.objects.all()
 
-	modules = { 'property-type':'PropertyType','status':'Status','valuation-purpose':'ValuationPurpose'}
+	modules = {'area':'Area', 'property-type':'PropertyType','status':'Status','valuation-purpose':'ValuationPurpose'}
+
+	if request.method=="POST":
+		print(request.POST)
+
 	context = {
 		'modules': modules,
 		'key': key,
 		'module_keys':module_keys,
 	}
 	return render(request, template_name, context)
-
 
 
 
