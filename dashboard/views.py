@@ -838,8 +838,6 @@ def go_module(request, key):
 
 	if request.method=="POST":
 		if 'add' in request.POST:
-			# add_key = modules[request.POST.get('add')]
-			# print(add_key.replace(" ", ""))
 
 			if request.POST.get('add')=="area":
 				area = Area.objects.create(auto = request.POST.get('auto'), name = request.POST.get('name'))
@@ -886,15 +884,92 @@ def go_module(request, key):
 			
 		elif 'update' in request.POST:
 			idd = request.POST.get('id')
-			if request.POST.get('update')=="status":
-				status_obj = Status.objects.get(id = idd)
-				status_obj.status = request.POST.get('status') 
-				status_obj.save()
 			if request.POST.get('update')=="area":
-				area_obj = Area.objects.get(id = idd)
-				area_obj.auto = request.POST.get('auto')
-				area_obj.name = request.POST.get('name')
-				area_obj.save()
+				obj = Area.objects.get(id = idd)
+				obj.auto = request.POST.get('auto')
+				obj.name = request.POST.get('name')
+				obj.save()
+			elif request.POST.get('update')=="city":
+				obj = City.objects.get(id = idd)
+				obj.area = request.POST.get('area')
+				obj.name = request.POST.get('name')
+				obj.save()
+			elif request.POST.get('update')=="status":
+				obj = Status.objects.get(id = idd)
+				obj.status = request.POST.get('status')
+				obj.save()
+			elif request.POST.get('update')=="valuation-purpose":
+				obj = ValuationPurpose.objects.get(id = idd)
+				obj.purpose = request.POST.get('purpose')
+				obj.save()
+			elif request.POST.get('update')=="valuation-approach":
+				obj = ValuationApproach.objects.get(id = idd)
+				obj.approach = request.POST.get('approach')
+				obj.save()
+			elif request.POST.get('update')=="transport":
+				obj = Transport.objects.get(id = idd)
+				obj.name = request.POST.get('name')
+				obj.save()
+			elif request.POST.get('update')=="heating-system":
+				obj = HeatingSystem.objects.get(id = idd)
+				obj.name = request.POST.get('name')
+				obj.save()
+			elif request.POST.get('update')=="finish-type":
+				obj = FinishType.objects.get(id = idd)
+				obj.type = request.POST.get('type')
+				obj.save()
+			elif request.POST.get('update')=="property-right-type":
+				obj = PropertyRightType.objects.get(id = idd)
+				obj.type = request.POST.get('type')
+				obj.save()
+			elif request.POST.get('update')=="property-type":
+				obj = PropertyType.objects.get(id = idd)
+				obj.type = request.POST.get('type')
+				obj.save()
+			elif request.POST.get('update')=="compartment-type":
+				obj = CompartmentType.objects.get(id = idd)
+				obj.type = request.POST.get('type')
+				obj.save()
+			elif request.POST.get('update')=="strada-type":
+				obj = StradaType.objects.get(id = idd)
+				obj.type = request.POST.get('type')
+				obj.save()
+			elif request.POST.get('update')=="conform-type":
+				obj = ConformType.objects.get(id = idd)
+				obj.type = request.POST.get('type')
+				obj.save()
+			elif request.POST.get('update')=="structure-type":
+				obj = StructureType.objects.get(id = idd)
+				obj.type = request.POST.get('type')
+				obj.save()
+			elif request.POST.get('update')=="mobila-type":
+				obj = MobilaType.objects.get(id = idd)
+				obj.type = request.POST.get('type')
+				obj.save()
+			elif request.POST.get('update')=="invelitoare-type":
+				obj = InvelitoareType.objects.get(id = idd)
+				obj.type = request.POST.get('type')
+				obj.save()
+			elif request.POST.get('update')=="roof-type":
+				obj = RoofType.objects.get(id = idd)
+				obj.type = request.POST.get('type')
+				obj.save()
+			elif request.POST.get('update')=="subcompartment-type":
+				obj = SubcompartmentType.objects.get(id = idd)
+				obj.type = request.POST.get('type')
+				obj.save()
+			elif request.POST.get('update')=="clouser-type":
+				obj = ClouserType.objects.get(id = idd)
+				obj.type = request.POST.get('type')
+				obj.save()
+			elif request.POST.get('update')=="floor-type":
+				obj = FloorType.objects.get(id = idd)
+				obj.type = request.POST.get('type')
+				obj.save()
+			elif request.POST.get('update')=="foundation-type":
+				obj = FoundationType.objects.get(id = idd)
+				obj.type = request.POST.get('type')
+				obj.save()
 
 		return redirect('dashboard:go_module_view', key)
 
@@ -949,6 +1024,7 @@ def go_module(request, key):
 	context = {
 		'modules': modules,
 		'key': key,
+		'value': modules[key],
 		'module_keys':module_keys,
 	}
 	return render(request, template_name, context)

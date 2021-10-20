@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %} Modules List {% endblock %} 
+{% block title %} Modules List-{{key}} {% endblock %} 
 
 <!-- Specific Page CSS goes HERE  -->
 {% block stylesheets %}
@@ -41,181 +41,184 @@
             <div class="row">
                 <div class="col-md-2">
                     <h3>list</h3>
-                    {% for key, value in modules.items %}
-                        <a href="{% url 'dashboard:go_module_view' key %}">{{value}}</a>
-                        <br>
-                    {% endfor %}
+                    <ul>
+                        {% for key, value in modules.items %}                        
+                            <li>
+                                <a href="{% url 'dashboard:go_module_view' key %}">{{value}}</a>
+                            </li>
+                        {% endfor %}
+                    </ul>
                 </div>
                 <div class="col-md-10">
 					<div class="card">
 						<div class="card-header">
 							<div class="d-flex align-items-center">
-								<h4 class="card-title">{{key}}</h4>
+								<h4 class="card-title">{{value}}</h4>
 								<button type="button" class="btn btn-primary btn-round ml-auto" data-toggle="modal" data-target="#exampleModal">
 									<i class="fa fa-plus mr-2"></i>
-									Add {{key}}
+									Add {{value}}
                                 </button>
                                 <!-- Modal start -->
                                 <form method="post">
-                                {% csrf_token %}
-                                <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                    <div class="modal-dialog" role="document">
-                                      <div class="modal-content">
-                                        <div class="modal-header">
-                                          <h5 class="modal-title" id="exampleModalLabel">New message</h5>
-                                          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                            <span aria-hidden="true">&times;</span>
-                                          </button>
-                                        </div>
-                                        <div class="modal-body">
-                                          <form>
-                                            
-                                            {% if key == "area" %}
-                                                <div class="form-group">
-                                                    <label for="recipient-name" class="col-form-label">Auto:</label>
-                                                    <input type="text" class="form-control" id="recipient-name" name="auto">
-                                                </div>
-                                                <div class="form-group">
-                                                    <label for="recipient-name" class="col-form-label">Name:</label>
-                                                    <input type="text" class="form-control" id="recipient-name" name="name">
-                                                </div>
-                                            {% endif %}
-                                            {% if key == "city" %}
-                                                <div class="form-group">
-                                                    <label for="recipient-name" class="col-form-label">Area:</label>
-                                                    <input type="text" class="form-control" id="recipient-name" name="area">
-                                                </div>
-                                                <div class="form-group">
-                                                    <label for="recipient-name" class="col-form-label">Name:</label>
-                                                    <input type="text" class="form-control" id="recipient-name" name="name">
-                                                </div>
-                                            {% endif %}
-                                            
-                                            {% if key == "status" %}
-                                                <div class="form-group">
-                                                    <label for="recipient-name" class="col-form-label">Status:</label>
-                                                    <input type="text" class="form-control" id="recipient-name" name="status">
-                                                </div>
-                                            {% endif %}
-                                            {% if key == "valuation-purpose" %}
-                                                <div class="form-group">
-                                                    <label for="recipient-name" class="col-form-label">Purpose:</label>
-                                                    <input type="text" class="form-control" id="recipient-name" name="purpose">
-                                                </div>
-                                            {% endif %}
-                                            {% if key == "valuation-approach" %}
-                                                <div class="form-group">
-                                                    <label for="recipient-name" class="col-form-label">Purpose:</label>
-                                                    <input type="text" class="form-control" id="recipient-name" name="approach">
-                                                </div>
-                                            {% endif %}
-                                            {% if key == "transport" %}
-                                                <div class="form-group">
-                                                    <label for="recipient-name" class="col-form-label">Name:</label>
-                                                    <input type="text" class="form-control" id="recipient-name" name="name">
-                                                </div>                                            
-                                            {% endif %}
-                                            {% if key == "heating-system" %}
-                                                <div class="form-group">
-                                                    <label for="recipient-name" class="col-form-label">Name:</label>
-                                                    <input type="text" class="form-control" id="recipient-name" name="name">
-                                                </div>                                            
-                                            {% endif %}
+                                    {% csrf_token %}
+                                    <div class="modal" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog" role="document">
+                                        <div class="card modal-content">
+                                            <div class="modal-header">
+                                            <h5 class="modal-title" id="exampleModalLabel">Adding new {{key}}</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true" style="color: white;">&times;</span>
+                                            </button>
+                                            </div>
+                                            <div class="modal-body">
+                                            <form>
                                                 
-                                            {% if key == "finish-type"%}  
-                                                <div class="form-group">
-                                                    <label for="recipient-name" class="col-form-label">Type:</label>
-                                                    <input type="text" class="form-control" id="recipient-name" name="type">
-                                                </div>                                            
-                                            {% endif %}
-                                            {% if key == "property-right-type" %} 
-                                                <div class="form-group">
-                                                    <label for="recipient-name" class="col-form-label">Type:</label>
-                                                    <input type="text" class="form-control" id="recipient-name" name="type">
-                                                </div>                                            
-                                            {% endif %}
-                                            {% if key == "property-type" %} 
-                                                <div class="form-group">
-                                                    <label for="recipient-name" class="col-form-label">Type:</label>
-                                                    <input type="text" class="form-control" id="recipient-name" name="type">
-                                                </div>                                            
-                                            {% endif %}
-                                            {% if key == "compartment-type" %} 
-                                                <div class="form-group">
-                                                    <label for="recipient-name" class="col-form-label">Type:</label>
-                                                    <input type="text" class="form-control" id="recipient-name" name="type">
-                                                </div>                                            
-                                            {% endif %}
-                                            {% if key == "strada-type" %} 
-                                                <div class="form-group">
-                                                    <label for="recipient-name" class="col-form-label">Type:</label>
-                                                    <input type="text" class="form-control" id="recipient-name" name="type">
-                                                </div>                                            
-                                            {% endif %}
-                                            {% if key == "conform-type" %} 
-                                                <div class="form-group">
-                                                    <label for="recipient-name" class="col-form-label">Type:</label>
-                                                    <input type="text" class="form-control" id="recipient-name" name="type">
-                                                </div>                                            
-                                            {% endif %}
-                                            {% if key == "structure-type" %} 
-                                                <div class="form-group">
-                                                    <label for="recipient-name" class="col-form-label">Type:</label>
-                                                    <input type="text" class="form-control" id="recipient-name" name="type">
-                                                </div>                                            
-                                            {% endif %}
-                                            {% if key == "mobila-type" %} 
-                                                <div class="form-group">
-                                                    <label for="recipient-name" class="col-form-label">Type:</label>
-                                                    <input type="text" class="form-control" id="recipient-name" name="type">
-                                                </div>                                            
-                                            {% endif %}
-                                            {% if key == "invelitoare-type" %} 
-                                                <div class="form-group">
-                                                    <label for="recipient-name" class="col-form-label">Type:</label>
-                                                    <input type="text" class="form-control" id="recipient-name" name="type">
-                                                </div>                                            
-                                            {% endif %}
-                                            {% if key == "roof-type" %} 
-                                                <div class="form-group">
-                                                    <label for="recipient-name" class="col-form-label">Type:</label>
-                                                    <input type="text" class="form-control" id="recipient-name" name="type">
-                                                </div>                                            
-                                            {% endif %}
-                                            {% if key == "subcompartment-type" %} 
-                                                <div class="form-group">
-                                                    <label for="recipient-name" class="col-form-label">Type:</label>
-                                                    <input type="text" class="form-control" id="recipient-name" name="type">
-                                                </div>                                            
-                                            {% endif %}
-                                            {% if key == "clouser-type" %} 
-                                                <div class="form-group">
-                                                    <label for="recipient-name" class="col-form-label">Type:</label>
-                                                    <input type="text" class="form-control" id="recipient-name" name="type">
-                                                </div>                                            
-                                            {% endif %}
-                                            {% if key == "floor-type" %} 
-                                                <div class="form-group">
-                                                    <label for="recipient-name" class="col-form-label">Type:</label>
-                                                    <input type="text" class="form-control" id="recipient-name" name="type">
-                                                </div>                                            
-                                            {% endif %}
-                                            {% if key == "foundation-type" %} 
-                                                <div class="form-group">
-                                                    <label for="recipient-name" class="col-form-label">Type:</label>
-                                                    <input type="text" class="form-control" id="recipient-name" name="type">
-                                                </div>                                            
-                                            {% endif %}
+                                                {% if key == "area" %}
+                                                    <div class="form-group">
+                                                        <label for="recipient-name" class="col-form-label">Auto:</label>
+                                                        <input type="text" class="form-control" id="recipient-name" name="auto">
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="recipient-name" class="col-form-label">Name:</label>
+                                                        <input type="text" class="form-control" id="recipient-name" name="name">
+                                                    </div>
+                                                {% endif %}
+                                                {% if key == "city" %}
+                                                    <div class="form-group">
+                                                        <label for="recipient-name" class="col-form-label">Area:</label>
+                                                        <input type="text" class="form-control" id="recipient-name" name="area">
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="recipient-name" class="col-form-label">Name:</label>
+                                                        <input type="text" class="form-control" id="recipient-name" name="name">
+                                                    </div>
+                                                {% endif %}
+                                                
+                                                {% if key == "status" %}
+                                                    <div class="form-group">
+                                                        <label for="recipient-name" class="col-form-label">Status:</label>
+                                                        <input type="text" class="form-control" id="recipient-name" name="status">
+                                                    </div>
+                                                {% endif %}
+                                                {% if key == "valuation-purpose" %}
+                                                    <div class="form-group">
+                                                        <label for="recipient-name" class="col-form-label">Purpose:</label>
+                                                        <input type="text" class="form-control" id="recipient-name" name="purpose">
+                                                    </div>
+                                                {% endif %}
+                                                {% if key == "valuation-approach" %}
+                                                    <div class="form-group">
+                                                        <label for="recipient-name" class="col-form-label">Purpose:</label>
+                                                        <input type="text" class="form-control" id="recipient-name" name="approach">
+                                                    </div>
+                                                {% endif %}
+                                                {% if key == "transport" %}
+                                                    <div class="form-group">
+                                                        <label for="recipient-name" class="col-form-label">Name:</label>
+                                                        <input type="text" class="form-control" id="recipient-name" name="name">
+                                                    </div>                                            
+                                                {% endif %}
+                                                {% if key == "heating-system" %}
+                                                    <div class="form-group">
+                                                        <label for="recipient-name" class="col-form-label">Name:</label>
+                                                        <input type="text" class="form-control" id="recipient-name" name="name">
+                                                    </div>                                            
+                                                {% endif %}
+                                                    
+                                                {% if key == "finish-type"%}  
+                                                    <div class="form-group">
+                                                        <label for="recipient-name" class="col-form-label">Type:</label>
+                                                        <input type="text" class="form-control" id="recipient-name" name="type">
+                                                    </div>                                            
+                                                {% endif %}
+                                                {% if key == "property-right-type" %} 
+                                                    <div class="form-group">
+                                                        <label for="recipient-name" class="col-form-label">Type:</label>
+                                                        <input type="text" class="form-control" id="recipient-name" name="type">
+                                                    </div>                                            
+                                                {% endif %}
+                                                {% if key == "property-type" %} 
+                                                    <div class="form-group">
+                                                        <label for="recipient-name" class="col-form-label">Type:</label>
+                                                        <input type="text" class="form-control" id="recipient-name" name="type">
+                                                    </div>                                            
+                                                {% endif %}
+                                                {% if key == "compartment-type" %} 
+                                                    <div class="form-group">
+                                                        <label for="recipient-name" class="col-form-label">Type:</label>
+                                                        <input type="text" class="form-control" id="recipient-name" name="type">
+                                                    </div>                                            
+                                                {% endif %}
+                                                {% if key == "strada-type" %} 
+                                                    <div class="form-group">
+                                                        <label for="recipient-name" class="col-form-label">Type:</label>
+                                                        <input type="text" class="form-control" id="recipient-name" name="type">
+                                                    </div>                                            
+                                                {% endif %}
+                                                {% if key == "conform-type" %} 
+                                                    <div class="form-group">
+                                                        <label for="recipient-name" class="col-form-label">Type:</label>
+                                                        <input type="text" class="form-control" id="recipient-name" name="type">
+                                                    </div>                                            
+                                                {% endif %}
+                                                {% if key == "structure-type" %} 
+                                                    <div class="form-group">
+                                                        <label for="recipient-name" class="col-form-label">Type:</label>
+                                                        <input type="text" class="form-control" id="recipient-name" name="type">
+                                                    </div>                                            
+                                                {% endif %}
+                                                {% if key == "mobila-type" %} 
+                                                    <div class="form-group">
+                                                        <label for="recipient-name" class="col-form-label">Type:</label>
+                                                        <input type="text" class="form-control" id="recipient-name" name="type">
+                                                    </div>                                            
+                                                {% endif %}
+                                                {% if key == "invelitoare-type" %} 
+                                                    <div class="form-group">
+                                                        <label for="recipient-name" class="col-form-label">Type:</label>
+                                                        <input type="text" class="form-control" id="recipient-name" name="type">
+                                                    </div>                                            
+                                                {% endif %}
+                                                {% if key == "roof-type" %} 
+                                                    <div class="form-group">
+                                                        <label for="recipient-name" class="col-form-label">Type:</label>
+                                                        <input type="text" class="form-control" id="recipient-name" name="type">
+                                                    </div>                                            
+                                                {% endif %}
+                                                {% if key == "subcompartment-type" %} 
+                                                    <div class="form-group">
+                                                        <label for="recipient-name" class="col-form-label">Type:</label>
+                                                        <input type="text" class="form-control" id="recipient-name" name="type">
+                                                    </div>                                            
+                                                {% endif %}
+                                                {% if key == "clouser-type" %} 
+                                                    <div class="form-group">
+                                                        <label for="recipient-name" class="col-form-label">Type:</label>
+                                                        <input type="text" class="form-control" id="recipient-name" name="type">
+                                                    </div>                                            
+                                                {% endif %}
+                                                {% if key == "floor-type" %} 
+                                                    <div class="form-group">
+                                                        <label for="recipient-name" class="col-form-label">Type:</label>
+                                                        <input type="text" class="form-control" id="recipient-name" name="type">
+                                                    </div>                                            
+                                                {% endif %}
+                                                {% if key == "foundation-type" %} 
+                                                    <div class="form-group">
+                                                        <label for="recipient-name" class="col-form-label">Type:</label>
+                                                        <input type="text" class="form-control" id="recipient-name" name="type">
+                                                    </div>                                            
+                                                {% endif %}
 
-                                          </form>
+                                            </form>
+                                            </div>
+                                            <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                            <button type="submit" class="btn btn-primary" value={{key}} name="add">Add {{key}}</button>
+                                            </div>
                                         </div>
-                                        <div class="modal-footer">
-                                          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                          <button type="submit" class="btn btn-primary" value={{key}} name="add">Send message</button>
                                         </div>
-                                      </div>
                                     </div>
-                                  </div>
                                 </form>
                                 <!-- Modal end -->
 							</div>
@@ -508,150 +511,233 @@
             <form method="post">
                 {% csrf_token %}        
                 <div class="modal-dialog" role="document">
-                <div class="modal-content">
+                <div class="card modal-content">
                     <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">New message</h5>
+                    <h5 class="modal-title" id="exampleModalLabel">Updating {{key}}</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
+                        <span aria-hidden="true" style="color: white;">&times;</span>
                     </button>
                     </div>
                     <div class="modal-body">
-                        <form>
-                                            
+                        <form>                                            
                             {% if key == "area" %}
+                                <div class="form-group" style="display: none;">
+                                    <label for="recipient-name" class="col-form-label">Id:</label>
+                                    <input type="text" class="form-control" id="recipient-name" name="id" value="{{module_key.id}}">
+                                </div>
                                 <div class="form-group">
                                     <label for="recipient-name" class="col-form-label">Auto:</label>
-                                    <input type="text" class="form-control" id="recipient-name" name="auto">
+                                    <input type="text" class="form-control" id="recipient-name" name="auto" value="{{module_key.auto}}">
                                 </div>
                                 <div class="form-group">
                                     <label for="recipient-name" class="col-form-label">Name:</label>
-                                    <input type="text" class="form-control" id="recipient-name" name="name">
+                                    <input type="text" class="form-control" id="recipient-name" name="name" value="{{module_key.name}}">
                                 </div>
                             {% endif %}
                             {% if key == "city" %}
+                                <div class="form-group" style="display: none;">
+                                    <label for="recipient-name" class="col-form-label">Id:</label>
+                                    <input type="text" class="form-control" id="recipient-name" name="id" value="{{module_key.id}}">
+                                </div> 
                                 <div class="form-group">
                                     <label for="recipient-name" class="col-form-label">Area:</label>
-                                    <input type="text" class="form-control" id="recipient-name" name="area">
+                                    <input type="text" class="form-control" id="recipient-name" name="area" value="{{module_key.area}}">
                                 </div>
                                 <div class="form-group">
                                     <label for="recipient-name" class="col-form-label">Name:</label>
-                                    <input type="text" class="form-control" id="recipient-name" name="name">
+                                    <input type="text" class="form-control" id="recipient-name" name="name" value="{{module_key.name}}">
                                 </div>
                             {% endif %}
                             
                             {% if key == "status" %}
+                                <div class="form-group" style="display: none;">
+                                    <label for="recipient-name" class="col-form-label">Id:</label>
+                                    <input type="text" class="form-control" id="recipient-name" name="id" value="{{module_key.id}}">
+                                </div>
                                 <div class="form-group">
                                     <label for="recipient-name" class="col-form-label">Status:</label>
-                                    <input type="text" class="form-control" id="recipient-name" name="status">
+                                    <input type="text" class="form-control" id="recipient-name" name="status" value="{{module_key.status}}">
                                 </div>
                             {% endif %}
                             {% if key == "valuation-purpose" %}
+                                <div class="form-group" style="display: none;">
+                                    <label for="recipient-name" class="col-form-label">Id:</label>
+                                    <input type="text" class="form-control" id="recipient-name" name="id" value="{{module_key.id}}">
+                                </div>
                                 <div class="form-group">
                                     <label for="recipient-name" class="col-form-label">Purpose:</label>
-                                    <input type="text" class="form-control" id="recipient-name" name="purpose">
+                                    <input type="text" class="form-control" id="recipient-name" name="purpose" value="{{module_key.purpose}}">
                                 </div>
                             {% endif %}
                             {% if key == "valuation-approach" %}
+                                <div class="form-group" style="display: none;">
+                                    <label for="recipient-name" class="col-form-label">Id:</label>
+                                    <input type="text" class="form-control" id="recipient-name" name="id" value="{{module_key.id}}">
+                                </div>
                                 <div class="form-group">
                                     <label for="recipient-name" class="col-form-label">Purpose:</label>
-                                    <input type="text" class="form-control" id="recipient-name" name="approach">
+                                    <input type="text" class="form-control" id="recipient-name" name="approach" value="{{module_key.approach}}">
                                 </div>
                             {% endif %}
                             {% if key == "transport" %}
+                                <div class="form-group" style="display: none;">
+                                    <label for="recipient-name" class="col-form-label">Id:</label>
+                                    <input type="text" class="form-control" id="recipient-name" name="id" value="{{module_key.id}}">
+                                </div>
                                 <div class="form-group">
                                     <label for="recipient-name" class="col-form-label">Name:</label>
-                                    <input type="text" class="form-control" id="recipient-name" name="name">
+                                    <input type="text" class="form-control" id="recipient-name" name="name" value="{{module_key.name}}">
                                 </div>                                            
                             {% endif %}
                             {% if key == "heating-system" %}
+                                <div class="form-group" style="display: none;">
+                                    <label for="recipient-name" class="col-form-label">Id:</label>
+                                    <input type="text" class="form-control" id="recipient-name" name="id" value="{{module_key.id}}">
+                                </div>
                                 <div class="form-group">
                                     <label for="recipient-name" class="col-form-label">Name:</label>
-                                    <input type="text" class="form-control" id="recipient-name" name="name">
+                                    <input type="text" class="form-control" id="recipient-name" name="name" value="{{module_key.name}}">
                                 </div>                                            
                             {% endif %}
                                 
                             {% if key == "finish-type"%}  
+                                <div class="form-group" style="display: none;">
+                                    <label for="recipient-name" class="col-form-label">Id:</label>
+                                    <input type="text" class="form-control" id="recipient-name" name="id" value="{{module_key.id}}">
+                                </div>
                                 <div class="form-group">
                                     <label for="recipient-name" class="col-form-label">Type:</label>
-                                    <input type="text" class="form-control" id="recipient-name" name="type">
+                                    <input type="text" class="form-control" id="recipient-name" name="type" value="{{module_key.type}}">
                                 </div>                                            
                             {% endif %}
                             {% if key == "property-right-type" %} 
+                                <div class="form-group" style="display: none;">
+                                    <label for="recipient-name" class="col-form-label">Id:</label>
+                                    <input type="text" class="form-control" id="recipient-name" name="id" value="{{module_key.id}}">
+                                </div>
                                 <div class="form-group">
                                     <label for="recipient-name" class="col-form-label">Type:</label>
-                                    <input type="text" class="form-control" id="recipient-name" name="type">
+                                    <input type="text" class="form-control" id="recipient-name" name="type" value="{{module_key.type}}">
                                 </div>                                            
                             {% endif %}
                             {% if key == "property-type" %} 
+                                <div class="form-group" style="display: none;">
+                                    <label for="recipient-name" class="col-form-label">Id:</label>
+                                    <input type="text" class="form-control" id="recipient-name" name="id" value="{{module_key.id}}">
+                                </div>
                                 <div class="form-group">
                                     <label for="recipient-name" class="col-form-label">Type:</label>
-                                    <input type="text" class="form-control" id="recipient-name" name="type">
+                                    <input type="text" class="form-control" id="recipient-name" name="type" value="{{module_key.type}}">
                                 </div>                                            
                             {% endif %}
                             {% if key == "compartment-type" %} 
+                                <div class="form-group" style="display: none;">
+                                    <label for="recipient-name" class="col-form-label">Id:</label>
+                                    <input type="text" class="form-control" id="recipient-name" name="id" value="{{module_key.id}}">
+                                </div>
                                 <div class="form-group">
                                     <label for="recipient-name" class="col-form-label">Type:</label>
-                                    <input type="text" class="form-control" id="recipient-name" name="type">
+                                    <input type="text" class="form-control" id="recipient-name" name="type" value="{{module_key.type}}">
                                 </div>                                            
                             {% endif %}
                             {% if key == "strada-type" %} 
+                                <div class="form-group" style="display: none;">
+                                    <label for="recipient-name" class="col-form-label">Id:</label>
+                                    <input type="text" class="form-control" id="recipient-name" name="id" value="{{module_key.id}}">
+                                </div>
                                 <div class="form-group">
                                     <label for="recipient-name" class="col-form-label">Type:</label>
-                                    <input type="text" class="form-control" id="recipient-name" name="type">
+                                    <input type="text" class="form-control" id="recipient-name" name="type" value="{{module_key.type}}">
                                 </div>                                            
                             {% endif %}
                             {% if key == "conform-type" %} 
+                                <div class="form-group" style="display: none;">
+                                    <label for="recipient-name" class="col-form-label">Id:</label>
+                                    <input type="text" class="form-control" id="recipient-name" name="id" value="{{module_key.id}}">
+                                </div>
                                 <div class="form-group">
                                     <label for="recipient-name" class="col-form-label">Type:</label>
-                                    <input type="text" class="form-control" id="recipient-name" name="type">
+                                    <input type="text" class="form-control" id="recipient-name" name="type" value="{{module_key.type}}">
                                 </div>                                            
                             {% endif %}
                             {% if key == "structure-type" %} 
+                                <div class="form-group" style="display: none;">
+                                    <label for="recipient-name" class="col-form-label">Id:</label>
+                                    <input type="text" class="form-control" id="recipient-name" name="id" value="{{module_key.id}}">
+                                </div>
                                 <div class="form-group">
                                     <label for="recipient-name" class="col-form-label">Type:</label>
-                                    <input type="text" class="form-control" id="recipient-name" name="type">
+                                    <input type="text" class="form-control" id="recipient-name" name="type" value="{{module_key.type}}">
                                 </div>                                            
                             {% endif %}
                             {% if key == "mobila-type" %} 
+                                <div class="form-group" style="display: none;">
+                                    <label for="recipient-name" class="col-form-label">Id:</label>
+                                    <input type="text" class="form-control" id="recipient-name" name="id" value="{{module_key.id}}">
+                                </div>
                                 <div class="form-group">
                                     <label for="recipient-name" class="col-form-label">Type:</label>
-                                    <input type="text" class="form-control" id="recipient-name" name="type">
+                                    <input type="text" class="form-control" id="recipient-name" name="type" value="{{module_key.type}}">
                                 </div>                                            
                             {% endif %}
                             {% if key == "invelitoare-type" %} 
+                                <div class="form-group" style="display: none;">
+                                    <label for="recipient-name" class="col-form-label">Id:</label>
+                                    <input type="text" class="form-control" id="recipient-name" name="id" value="{{module_key.id}}">
+                                </div>
                                 <div class="form-group">
                                     <label for="recipient-name" class="col-form-label">Type:</label>
-                                    <input type="text" class="form-control" id="recipient-name" name="type">
+                                    <input type="text" class="form-control" id="recipient-name" name="type" value="{{module_key.type}}">
                                 </div>                                            
                             {% endif %}
                             {% if key == "roof-type" %} 
+                                <div class="form-group" style="display: none;">
+                                    <label for="recipient-name" class="col-form-label">Id:</label>
+                                    <input type="text" class="form-control" id="recipient-name" name="id" value="{{module_key.id}}">
+                                </div>
                                 <div class="form-group">
                                     <label for="recipient-name" class="col-form-label">Type:</label>
-                                    <input type="text" class="form-control" id="recipient-name" name="type">
+                                    <input type="text" class="form-control" id="recipient-name" name="type" value="{{module_key.type}}">
                                 </div>                                            
                             {% endif %}
                             {% if key == "subcompartment-type" %} 
+                                <div class="form-group" style="display: none;">
+                                    <label for="recipient-name" class="col-form-label">Id:</label>
+                                    <input type="text" class="form-control" id="recipient-name" name="id" value="{{module_key.id}}">
+                                </div>
                                 <div class="form-group">
                                     <label for="recipient-name" class="col-form-label">Type:</label>
-                                    <input type="text" class="form-control" id="recipient-name" name="type">
+                                    <input type="text" class="form-control" id="recipient-name" name="type" value="{{module_key.type}}">
                                 </div>                                            
                             {% endif %}
                             {% if key == "clouser-type" %} 
+                                <div class="form-group" style="display: none;">
+                                    <label for="recipient-name" class="col-form-label">Id:</label>
+                                    <input type="text" class="form-control" id="recipient-name" name="id" value="{{module_key.id}}">
+                                </div>
                                 <div class="form-group">
                                     <label for="recipient-name" class="col-form-label">Type:</label>
-                                    <input type="text" class="form-control" id="recipient-name" name="type">
+                                    <input type="text" class="form-control" id="recipient-name" name="type" value="{{module_key.type}}">
                                 </div>                                            
                             {% endif %}
                             {% if key == "floor-type" %} 
+                                <div class="form-group" style="display: none;">
+                                    <label for="recipient-name" class="col-form-label">Id:</label>
+                                    <input type="text" class="form-control" id="recipient-name" name="id" value="{{module_key.id}}">
+                                </div>
                                 <div class="form-group">
                                     <label for="recipient-name" class="col-form-label">Type:</label>
-                                    <input type="text" class="form-control" id="recipient-name" name="type">
+                                    <input type="text" class="form-control" id="recipient-name" name="type" value="{{module_key.type}}">
                                 </div>                                            
                             {% endif %}
                             {% if key == "foundation-type" %} 
+                                <div class="form-group" style="display: none;">
+                                    <label for="recipient-name" class="col-form-label">Id:</label>
+                                    <input type="text" class="form-control" id="recipient-name" name="id" value="{{module_key.id}}">
+                                </div>
                                 <div class="form-group">
                                     <label for="recipient-name" class="col-form-label">Type:</label>
-                                    <input type="text" class="form-control" id="recipient-name" name="type">
+                                    <input type="text" class="form-control" id="recipient-name" name="type" value="{{module_key.type}}">
                                 </div>                                            
                             {% endif %}
 
@@ -749,7 +835,7 @@
             // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
             // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.          
             var modal = $(this)
-            modal.find('.modal-title').text('New message to ' + recipient)
+            modal.find('.modal-title').text('Adding new ' + "{{key}}")
             modal.find('.modal-body input').val(recipient)
         })
 
