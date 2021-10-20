@@ -821,7 +821,7 @@ def modules_list(request):
 		msg = None
 
 #	modules = ['Area','City','PropertyType','CompartmentType','Status','ValuationPurpose','ValuationApproach','StradaType','Transport','ConformType','StructureType','FoundationType','FloorType','ClouserType','SubcompartmentType','RoofType','InvelitoareType','MobilaType','PropertyRightType','HeatingSystem','FinishType']
-	modules = { 'property-type':'PropertyType','status':'Status','valuation-purpose':'ValuationPurpose'}
+	modules = {'area':'Area', 'property-type':'PropertyType','status':'Status','valuation-purpose':'ValuationPurpose'}
 	context = {
 		'modules': modules, 
 		'segment': 'settings',
@@ -834,6 +834,12 @@ from valuation.models import Area, Status, PropertyType
 def go_module(request, key):
 	template_name = 'dashboard/go_module.html'
 
+	if request.method=="POST":
+		if request.POST['submit']=="status":
+			status = Status.objects.create(status = request.POST['status'])
+			print("bye")
+
+	print("koi")
 	module_keys = None
 	if key=="property-type":
 		module_keys = PropertyType.objects.all()
@@ -843,10 +849,7 @@ def go_module(request, key):
 		module_keys = Area.objects.all()
 
 	modules = {'area':'Area', 'property-type':'PropertyType','status':'Status','valuation-purpose':'ValuationPurpose'}
-
-	if request.method=="POST":
-		print(request.POST)
-
+		
 	context = {
 		'modules': modules,
 		'key': key,
