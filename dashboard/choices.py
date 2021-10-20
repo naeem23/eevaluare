@@ -1,3 +1,4 @@
+
 PROPERTY_TYPE_CHOICE = [
 	('apartamente', 'Apartamente'),
 	('case', 'Case / Vile'),

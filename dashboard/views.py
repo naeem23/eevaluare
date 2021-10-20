@@ -789,9 +789,12 @@ def test(request):
 # ============================== Modules ===============================
 # =========================================================================
 
+modules = {'area':'Area','city':'City','property-type':'Property Type','compartment-type':'Compartment Type','status':'Status','valuation-purpose':'Valuation Purpose','valuation-approach':'Valuation Approach','strada-type':'Strada Type','transport':'Transport','conform-type':'ConformType','structure-type':'Structure Type','foundation-type':'Foundation Type','floor-type':'Floor Type','clouser-type':'ClouserType','subcompartment-type':'Subcompartment Type','roof-type':'Roof Type','invelitoare-type':'Invelitoare Type','mobila-type':'Mobila Type','property-right-type':'Property Right Type','heating-system':'Heating System','finish-type':'FinishType'}
+
 @login_required(login_url='/signin/')
 def modules_list(request):
 	template_name = 'dashboard/modules_list.html'
+	modules = {'area':'Area','city':'City','property-type':'Property Type','compartment-type':'Compartment Type','status':'Status','valuation-purpose':'Valuation Purpose','valuation-approach':'Valuation Approach','strada-type':'Strada Type','transport':'Transport','conform-type':'ConformType','structure-type':'Structure Type','foundation-type':'Foundation Type','floor-type':'Floor Type','clouser-type':'ClouserType','subcompartment-type':'Subcompartment Type','roof-type':'Roof Type','invelitoare-type':'Invelitoare Type','mobila-type':'Mobila Type','property-right-type':'Property Right Type','heating-system':'Heating System','finish-type':'FinishType'}
 
 	if request.session.get('success'):
 		msg = 'deleted'
@@ -820,8 +823,6 @@ def modules_list(request):
 	else:
 		msg = None
 
-#	modules = ['Area','City','PropertyType','CompartmentType','Status','ValuationPurpose','ValuationApproach','StradaType','Transport','ConformType','StructureType','FoundationType','FloorType','ClouserType','SubcompartmentType','RoofType','InvelitoareType','MobilaType','PropertyRightType','HeatingSystem','FinishType']
-	modules = {'area':'Area', 'property-type':'PropertyType','status':'Status','valuation-purpose':'ValuationPurpose'}
 	context = {
 		'modules': modules, 
 		'segment': 'settings',
@@ -829,30 +830,71 @@ def modules_list(request):
 	return render(request, template_name, context)
 
 from django.http import JsonResponse
-from valuation.models import Area, Status, PropertyType
+from valuation.models import *
 
 def go_module(request, key):
 	template_name = 'dashboard/go_module.html'
+	modules = {'area':'Area','city':'City','property-type':'Property Type','compartment-type':'Compartment Type','status':'Status','valuation-purpose':'Valuation Purpose','valuation-approach':'Valuation Approach','strada-type':'Strada Type','transport':'Transport','conform-type':'ConformType','structure-type':'Structure Type','foundation-type':'Foundation Type','floor-type':'Floor Type','clouser-type':'ClouserType','subcompartment-type':'Subcompartment Type','roof-type':'Roof Type','invelitoare-type':'Invelitoare Type','mobila-type':'Mobila Type','property-right-type':'Property Right Type','heating-system':'Heating System','finish-type':'FinishType'}
 
 	if request.method=="POST":
 		if 'add' in request.POST:
-			if request.POST.get('add')=="status":
-				status = Status.objects.create(status = request.POST.get('status'))
+			# add_key = modules[request.POST.get('add')]
+			# print(add_key.replace(" ", ""))
 
 			if request.POST.get('add')=="area":
-				auto = request.POST.get('auto')
-				name = request.POST.get('name')
-				area = Area.objects.create(auto = auto, name = name)
-
+				area = Area.objects.create(auto = request.POST.get('auto'), name = request.POST.get('name'))
+			elif request.POST.get('add')=="city":
+				city = City.objects.create(area = request.POST.get('area'), name = request.POST.get('name'))
+			elif request.POST.get('add')=="status":
+				status = Status.objects.create(status = request.POST.get('status'))
+			elif request.POST.get('add')=="valuation-purpose":
+				valuation_purpose = ValuationPurpose.objects.create(purpose = request.POST.get('purpose'))
+			elif request.POST.get('add')=="valuation-approach":
+				valuation_approach = ValuationApproach.objects.create(approach = request.POST.get('approach'))
+			elif request.POST.get('add')=="transport":
+				transport = Transport.objects.create(name = request.POST.get('name'))
+			elif request.POST.get('add')=="heating-system":
+				heating_system = HeatingSystem.objects.create(name = request.POST.get('name'))
+			elif request.POST.get('add')=="finish-type":
+				finish_type = FinishType.objects.create(type = request.POST.get('type'))
+			elif request.POST.get('add')=="property-right-type":
+				property_right_type = PropertyRightType.objects.create(type = request.POST.get('type'))
+			elif request.POST.get('add')=="property-type":
+				property_type = PropertyType.objects.create(type = request.POST.get('type'))
+			elif request.POST.get('add')=="compartment-type":
+				compartment_type = CompartmentType.objects.create(type = request.POST.get('type'))
+			elif request.POST.get('add')=="strada-type":
+				strada_type = StradaType.objects.create(type = request.POST.get('type'))
+			elif request.POST.get('add')=="conform-type":
+				conform_type = ConformType.objects.create(type = request.POST.get('type'))
+			elif request.POST.get('add')=="structure-type":
+				structure_type = StructureType.objects.create(type = request.POST.get('type'))
+			elif request.POST.get('add')=="mobila-type":
+				mobila_type = MobilaType.objects.create(type = request.POST.get('type'))
+			elif request.POST.get('add')=="invelitoare-type":
+				invelitoare_type = InvelitoareType.objects.create(type = request.POST.get('type'))
+			elif request.POST.get('add')=="roof-type":
+				roof_type = RoofType.objects.create(type = request.POST.get('type'))
+			elif request.POST.get('add')=="subcompartment-type":
+				subcompartment_type = SubcompartmentType.objects.create(type = request.POST.get('type'))
+			elif request.POST.get('add')=="clouser-type":
+				clouser_type = ClouserType.objects.create(type = request.POST.get('type'))
+			elif request.POST.get('add')=="floor-type":
+				floor_type = FloorType.objects.create(type = request.POST.get('type'))
+			elif request.POST.get('add')=="foundation-type":
+				foundation_type = FoundationType.objects.create(type = request.POST.get('type'))
+			
 		elif 'update' in request.POST:
+			idd = request.POST.get('id')
 			if request.POST.get('update')=="status":
-				status_obj = Status.objects.get(id = request.POST.get('id'))
+				status_obj = Status.objects.get(id = idd)
 				status_obj.status = request.POST.get('status') 
 				status_obj.save()
 			if request.POST.get('update')=="area":
-				auto = request.POST.get('auto')
-				name = request.POST.get('name')
-				area = Area.objects.create(auto = auto, name = name)
+				area_obj = Area.objects.get(id = idd)
+				area_obj.auto = request.POST.get('auto')
+				area_obj.name = request.POST.get('name')
+				area_obj.save()
 
 		return redirect('dashboard:go_module_view', key)
 
@@ -863,8 +905,47 @@ def go_module(request, key):
 		module_keys = Status.objects.all()
 	elif key=="area":
 		module_keys = Area.objects.all()
-
-	modules = {'area':'Area', 'property-type':'PropertyType','status':'Status','valuation-purpose':'ValuationPurpose'}
+	elif key=="city":
+		module_keys = City.objects.all()
+	elif key=="status":
+		module_keys = Status.objects.all()
+	elif key=="valuation-purpose":
+		module_keys = ValuationPurpose.objects.all()
+	elif key=="valuation-approach":
+		module_keys = ValuationApproach.objects.all()
+	elif key=="transport":
+		module_keys = Transport.objects.all()
+	elif key=="heating-system":
+		module_keys = HeatingSystem.objects.all()
+	elif key=="finish-type":
+		module_keys = FinishType.objects.all()
+	elif key=="property-right-type":
+		module_keys = PropertyRightType.objects.all()
+	elif key=="property-type":
+		module_keys = PropertyType.objects.all()
+	elif key=="compartment-type":
+		module_keys = CompartmentType.objects.all()
+	elif key=="strada-type":
+		module_keys = StradaType.objects.all()
+	elif key=="conform-type":
+		module_keys = ConformType.objects.all()
+	elif key=="structure-type":
+		module_keys = StructureType.objects.all()
+	elif key=="mobila-type":
+		module_keys = MobilaType.objects.all()
+	elif key=="invelitoare-type":
+		module_keys = InvelitoareType.objects.all()
+	elif key=="roof-type":
+		module_keys = RoofType.objects.all()
+	elif key=="subcompartment-type":
+		module_keys = SubcompartmentType.objects.all()
+	elif key=="clouser-type":
+		module_keys = ClouserType.objects.all()
+	elif key=="floor-type":
+		module_keys = FloorType.objects.all()
+	elif key=="foundation-type":
+		module_keys = FoundationType.objects.all()
+	
 	context = {
 		'modules': modules,
 		'key': key,
@@ -877,13 +958,49 @@ def go_module(request, key):
 # ============================================================================
 def delete_module(request,key, id):
 	print("aci???")
-	if key=="property-type":
-		module_obj = get_object_or_404(PropertyType, id=id)
+	if key=="area":
+		module_obj = get_object_or_404(Area, id=id)
+	elif key=="city":
+		module_obj = get_object_or_404(City, id=id)
 	elif key=="status":
 		module_obj = get_object_or_404(Status, id=id)
-	elif key=="area":
-		module_obj = get_object_or_404(Area, id=id)
-
+	elif key=="valuation-purpose":
+		module_obj = get_object_or_404(ValuationPurpose, id=id)
+	elif key=="valuation-approach":
+		module_obj = get_object_or_404(ValuationApproach, id=id)
+	elif key=="transport":
+		module_obj = get_object_or_404(Transport, id=id)
+	elif key=="heating-system":
+		module_obj = get_object_or_404(HeatingSystem, id=id)
+	elif key=="finish-type":
+		module_obj = get_object_or_404(FinishType, id=id)
+	elif key=="property-right-type":
+		module_obj = get_object_or_404(PropertyRightType, id=id)
+	elif key=="property-type":
+		module_obj = get_object_or_404(PropertyType, id=id)
+	elif key=="compartment-type":
+		module_obj = get_object_or_404(CompartmentType, id=id)
+	elif key=="strada-type":
+		module_obj = get_object_or_404(StradaType, id=id)
+	elif key=="conform-type":
+		module_obj = get_object_or_404(ConformType, id=id)
+	elif key=="structure-type":
+		module_obj = get_object_or_404(StructureType, id=id)
+	elif key=="mobila-type":
+		module_obj = get_object_or_404(MobilaType, id=id)
+	elif key=="invelitoare-type":
+		module_obj = get_object_or_404(InvelitoareType, id=id)
+	elif key=="roof-type":
+		module_obj = get_object_or_404(RoofType, id=id)
+	elif key=="subcompartment-type":
+		module_obj = get_object_or_404(SubcompartmentType, id=id)
+	elif key=="clouser-type":
+		module_obj = get_object_or_404(ClouserType, id=id)
+	elif key=="floor-type":
+		module_obj = get_object_or_404(FloorType, id=id)
+	elif key=="foundation-type":
+		module_obj = get_object_or_404(FoundationType, id=id)
+	
 	try:
 		response = module_obj.delete()
 		if response:
