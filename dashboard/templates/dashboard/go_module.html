@@ -46,10 +46,10 @@
 					<div class="card">
 						<div class="card-header">
 							<div class="d-flex align-items-center">
-								<h4 class="card-title">Modules</h4>
+								<h4 class="card-title">{{key}}</h4>
 								<a class="btn btn-primary btn-round ml-auto" href="#">
 									<i class="fa fa-plus mr-2"></i>
-									Add Modules
+									Add {{key}}
 								</a>
 							</div>
 						</div>
@@ -60,34 +60,25 @@
 										<tr>
 											<th>#</th>
 											<th>Full Name</th>
-                                            <th>Email</th>
-											<th>Certification Number</th>
 											<th style="width: 12%">Action</th>
 										</tr>
 									</thead>
 									<tbody>
-										{% for inspector in inspectors %}
+										{% for module_key in module_keys %}
 										<tr>
 											<td>
-                                                <a href="{% url 'authentication:inspector_details' id=inspector.id %}" class="text-light">
-                                                    {{ inspector.id }}
+                                                <a class="text-light">
+                                                    {{module_key.id }}
                                                 </a>
 											</td>
 											<td>
-												<a href="{% url 'authentication:inspector_details' id=inspector.id %}">
-                                                    <span class="text-light">{{inspector.get_full_name}}</span>
+												<a>
+                                                    <span class="text-light">{{module_key.status}}</span>
                                                 </a>
 											</td>
-											<td>
-												<a href="{% url 'authentication:inspector_details' id=inspector.id %}"><span class="text-light">{{inspector.email}}
-                                                    </span></a>
-											</td>
-                                            <td>
-                                                <a href="{% url 'authentication:inspector_details' id=inspector.id %}"><span class="text-light">{{inspector.certification_number}}</span></a>
-                                            </td>
 											<td>
                                                 <span class="mr-3 text-light" href="" id="delete" onclick="delete_modal('{{inspector.id}}')" data-toggle="tooltip" data-placement="top" title="Delete"><i class="la flaticon-remove-user"></i></span>
-                                                <a href="{% url 'authentication:inspector_details' id=inspector.id %}" data-toggle="tooltip" data-placement="top" title="View Details"><i class="la flaticon-user-5 text-light"></i></a>
+                                                <a href="" data-toggle="tooltip" data-placement="top" title="View Details"><i class="la flaticon-user-5 text-light"></i></a>
 											</td>
 										</tr>
 										{% endfor %}

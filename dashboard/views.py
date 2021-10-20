@@ -832,20 +832,19 @@ from django.http import JsonResponse
 from valuation.models import Area, Status
 def go_module(request, key):
 	template_name = 'dashboard/go_module.html'
-	area = None
-	status = None
+	module_keys = None
 	if key=="property-type":
-		area = Area.objects.all()
+		module_keys = Area.objects.all()
 	elif key=="status":
-		status = Status.objects.all()
+		module_keys = Status.objects.all()
 
 	modules = { 'property-type':'PropertyType','status':'Status','valuation-purpose':'ValuationPurpose'}
 	context = {
-		'modules': modules, 
-		'area':area,
-		'status':status,
+		'modules': modules,
+		'key': key,
+		'module_keys':module_keys,
 	}
-	return render(request, template, context)
+	return render(request, template_name, context)
 
 
 
