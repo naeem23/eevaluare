@@ -60,5 +60,6 @@ urlpatterns = [
     # modules
     path('modules/', views.modules_list, name='modules'),
     path('modules/<str:key>', views.go_module, name='go_module_view'),
+    path('modules/module/delete/<str:key>/<int:id>', views.delete_module, name='delete_module_view'),
     
 ]

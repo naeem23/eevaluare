@@ -835,11 +835,26 @@ def go_module(request, key):
 	template_name = 'dashboard/go_module.html'
 
 	if request.method=="POST":
-		if request.POST['submit']=="status":
-			status = Status.objects.create(status = request.POST['status'])
-			print("bye")
+		if 'add' in request.POST:
+			if request.POST.get('add')=="status":
+				status = Status.objects.create(status = request.POST.get('status'))
 
-	print("koi")
+			if request.POST.get('add')=="area":
+				auto = request.POST.get('auto')
+				name = request.POST.get('name')
+				area = Area.objects.create(auto = auto, name = name)
+
+		elif 'update' in request.POST:
+			if request.POST.get('add')=="status":
+				status = Status.objects.create(status = request.POST.get('status'))
+
+			if request.POST.get('add')=="area":
+				auto = request.POST.get('auto')
+				name = request.POST.get('name')
+				area = Area.objects.create(auto = auto, name = name)
+
+		return redirect('dashboard:go_module_view', key)
+
 	module_keys = None
 	if key=="property-type":
 		module_keys = PropertyType.objects.all()
@@ -849,7 +864,6 @@ def go_module(request, key):
 		module_keys = Area.objects.all()
 
 	modules = {'area':'Area', 'property-type':'PropertyType','status':'Status','valuation-purpose':'ValuationPurpose'}
-		
 	context = {
 		'modules': modules,
 		'key': key,
@@ -857,6 +871,26 @@ def go_module(request, key):
 	}
 	return render(request, template_name, context)
 
+# ============================================================================
+# ============================= module delete view ============================
+# ============================================================================
+def delete_module(request,key, id):
+	print("aci???")
+	if key=="property-type":
+		module_obj = get_object_or_404(PropertyType, id=id)
+	elif key=="status":
+		module_obj = get_object_or_404(Status, id=id)
+	elif key=="area":
+		module_obj = get_object_or_404(Area, id=id)
 
+	try:
+		response = module_obj.delete()
+		if response:
+			request.session['success'] = True
+		else: 
+			request.session['failed'] = True
+	except:
+		request.session['failed'] = True
 
+	return redirect('dashboard:go_module_view', key)
 

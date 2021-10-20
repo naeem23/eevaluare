@@ -11,6 +11,10 @@
         #delete-modal {
             display: none;
         }
+        #update-modal {
+            display: none;
+        }
+
     </style>
 {% endblock stylesheets %}
 
@@ -87,7 +91,7 @@
                                         </div>
                                         <div class="modal-footer">
                                           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                          <button type="submit" class="btn btn-primary" value={{key}} name="submit">Send message</button>
+                                          <button type="submit" class="btn btn-primary" value={{key}} name="add">Send message</button>
                                         </div>
                                       </div>
                                     </div>
@@ -134,8 +138,8 @@
                                                 </a>
 											</td>
 											<td>
-                                                <span class="mr-3 text-light" href="" id="delete" onclick="delete_modal('{{inspector.id}}')" data-toggle="tooltip" data-placement="top" title="Delete"><i class="la flaticon-remove-user"></i></span>
-                                                <a href="" data-toggle="tooltip" data-placement="top" title="View Details"><i class="la flaticon-user-5 text-light"></i></a>
+                                                <span class="mr-3 text-light" href="" id="delete" onclick="delete_modal('{{key}}','{{module_key.id}}')" data-toggle="tooltip" data-placement="top" title="Delete"><i class="la flaticon-remove-user"></i></span>
+	                							<button style="border: none; background: none;" type="button" class="btn-round ml-auto" data-toggle="modal" data-target="#update-modal-{{module_key.id}}"><i class="la flaticon-user-5 text-light"></i></button>
 											</td>
 										</tr>
 										{% endfor %}
@@ -149,6 +153,7 @@
         </div>
     </div>
 
+    <!-- delete modal start -->
     <div class="swal-overlay swal-overlay--show-modal" tabindex="-1" id="delete-modal">
         <div class="swal-modal" role="dialog" aria-modal="true">
             <div class="swal-title" style="">Are you sure?</div>
@@ -164,6 +169,55 @@
             </div>
         </div>
     </div>
+    <!-- delete modal end -->
+
+    <!-- update modal start -->
+    {% for module_key in module_keys %}
+        <div class="modal fade" id="update-modal-{{module_key.id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            
+            <form method="post">
+                {% csrf_token %}        
+                <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">New message</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    </div>
+                    <div class="modal-body">
+                    <form>
+                        
+                        {% if key == "area" %}
+                            <div class="form-group">
+                                <label for="recipient-name" class="col-form-label">Auto:</label>
+                                <input type="text" class="form-control" id="recipient-name" name="auto" value={{module_key.auto}}>
+                            </div>
+                            <div class="form-group">
+                                <label for="recipient-name" class="col-form-label">Name:</label>
+                                <input type="text" class="form-control" id="recipient-name" name="name"  value={{module_key.name}}>
+                            </div>
+                        {% endif %}
+                        {% if key == "status" %}
+                            <div class="form-group">
+                                <label for="recipient-name" class="col-form-label">Status:</label>
+                                <input type="text" class="form-control" id="recipient-name" name="status"  value={{module_key.status}}>
+                            </div>
+                        {% endif %}
+
+                    </form>
+                    </div>
+                    <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary" value={{key}} name="update">Send message</button>
+                    </div>
+                </div>
+                </div>
+            </form>
+        </div>
+
+    {% endfor %}
+    <!-- update modal end -->
 
 {% endblock content %}
 
@@ -177,12 +231,23 @@
 			});
 		});
 
-        function delete_modal(id) {
+        // update modal
+        function update_modal(key, id) {
+            $("#update-modal").css('display', 'block')
+            var url = "/modules/module/update/" + key+ "/"+ id
+            $(".swal-button--confirm").attr('href', url)
+        }
+        // delete modal
+        function delete_modal(key, id) {
             $("#delete-modal").css('display', 'block')
-            var url = "/agent/delete/" + id
+            var url = "/modules/module/delete/" + key+ "/"+ id
             $(".swal-button--confirm").attr('href', url)
         }
 
+        // for sweet alert
+        $(".swal-button--cancel").click(function(e) {
+            $("#update-modal").css('display', 'none')
+        });
         // for sweet alert
         $(".swal-button--cancel").click(function(e) {
             $("#delete-modal").css('display', 'none')
