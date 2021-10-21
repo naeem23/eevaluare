@@ -84,7 +84,7 @@
                         <div class="col-md-12">
                             <form action="{% url 'valuation:save_photos' %}" class="dropzone dz-clickable" id="coverphotos">
                                 {% csrf_token %}
-                                <input type="hidden" name="vid" value="{{ valuation_id }}">
+                                <input type="hidden" name="vid" value="{{ valuation.id }}">
                                 <input type="hidden" name="order" id="cover-order" value="">
                                 <input type="hidden" name="refer_to" value="cover">
                                 <div class="dz-message" data-dz-message="">
@@ -188,7 +188,7 @@
                             </div>
                             <div class="col-md-3">
                                 <div class="form-group">
-                                    <label for="id_amav">Loc de parcare nr. {% if below_parking %}{{below_parkin|floatformat:'0'}}{% else %}0{% endif %}</label>
+                                    <label for="id_amav">Loc de parcare nr. {% if below_parking %}{{below_parking|floatformat:'0'}}{% else %}0{% endif %}</label>
                                     <div class="input-group">
                                         {{form.subteran_mv}}
                                         <div class="input-group-append">
@@ -279,7 +279,7 @@
                         <div class="col-md-12">
                             <form action="{% url 'valuation:save_photos' %}" class="dropzone dz-clickable" id="summaryphotos">
                                 {% csrf_token %}
-                                <input type="hidden" name="vid" value="{{ valuation_id }}">
+                                <input type="hidden" name="vid" value="{{ valuation.id }}">
                                 <input type="hidden" name="order" id="summary-order" value="">
                                 <input type="hidden" name="refer_to" value="summary">
                                 <div class="dz-message" data-dz-message="">

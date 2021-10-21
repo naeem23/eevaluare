@@ -412,7 +412,6 @@
             var recipient = $("#id_report_recipient").val()
             
             if(prop_type.length > 0 && address.length > 1 && lat.length > 1 && lng.length > 1 && area.length > 0 && city.length > 0 && owner.length > 1 && client.length > 1 && recipient.length > 1) {
-                console.log('if')
                 $("#initial_form").submit();
             } else {
                 if (prop_type.length < 1) {

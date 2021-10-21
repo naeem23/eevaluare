@@ -1,0 +1,339 @@
+{% extends "base-form.html" %}
+
+{% block title %} Analiza Pietei Imobiliare {% endblock %} 
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}
+    {% load static %}   
+    <link rel="stylesheet" type="text/css" href="{% static 'valuationform/presentation-data.css' %}">
+    
+    <style>
+        .required {
+            border-color: #F25961 !important;
+            color: #F25961 !important;
+        }
+        #id_area_between, #id_zona_type, #id_const_density, #id_ebby, #id_prop_size, #id_exposure, #id_liquidity, #id_transactions_nr, #id_exposure_period, #id_minsale_price, #id_maxsale_price, #forcast_expo{
+            display: inline-block;
+            width: 22%;
+            border: none;
+            border-bottom: 2px dotted!important;
+            padding: 0;
+            padding-top: 0.6rem;
+            border-radius: 0px;
+            margin-right: 8px;
+            margin-left: 8px;
+        }
+        .fa-pencil-alt {
+            cursor: pointer;
+        }
+    </style>
+{% endblock stylesheets %}
+
+{% block content %}
+
+    <div class="content">
+        <div class="page-inner">
+            <div class="page-header">
+                <h4 class="page-title">Analiza Pietei Imobiliare</h4>
+                <ul class="breadcrumbs">
+                    <li class="nav-home">
+                        <a href="#">
+                            <i class="flaticon-home"></i>
+                        </a>
+                    </li>
+                    <li class="separator">
+                        <i class="flaticon-right-arrow"></i>
+                    </li>
+                    <li class="nav-item">
+                        <a href="">Valuation Form</a>
+                    </li>
+                    <li class="separator">
+                        <i class="flaticon-right-arrow"></i>
+                    </li>
+                    <li class="nav-item">
+                        <a href="">Analiza Pietei Imobiliare</a>
+                    </li>
+                </ul>
+            </div>
+
+            {% load my_filters %}
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">Analiza Pietei Imobiliare</div>
+                </div>
+                
+                <form method="POST" id="market-form">
+                    {% csrf_token %}
+                    
+                    {% if 'details' in pre_url %}
+                        <input type="hidden" name="pre_url" value="details">
+                    {% endif %}
+
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label id="dps_label">Delimitarea pietei specifice <span class="required-label mr-2">*</span><i class="fas fa-pencil-alt text-info" id="edit-dps"></i></label>
+                                    <p class="text-light dps">Piața specifică a proprietății analizate este reprezentată de apartamentele cu {{camara|floatformat:"0"}} camere și suprafețe cuprinse între {{form.area_between}}, situate in zona {{valuation.area.name}}.</p>
+                                    <input type="hidden" name="show_dps" id="show_dps" value="0">
+                                    <textarea name="dps" id="id_dps" rows="3" style="display: none;" class="form-control">Piața specifică a proprietății analizate este reprezentată de apartamentele cu {{camara|floatformat:"0"}} camere și suprafețe cuprinse între (manual number entry) mp si (manual number entry) mp, situate în zona {{valuation.area.name}}
+                                    </textarea>
+                                    <small class="form-text text-danger dps_error"></small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label id="ac_label">Analiza cererii <span class="required-label mr-2">*</span><i class="fas fa-pencil-alt text-info" id="edit-ac"></i></label>
+                                    <div class="ac">
+                                        <p class="text-light mb-0">
+                                            Cererea pentru proprietăți de tipul celei analizate s-a observat a fi formată din familii cu un nivel de venituri {{form.zona_type}} 
+                                        </p>
+                                        <p class="text-justify text-light mb-0">
+                                            Populația zonei este formată din persoane cu un nivel mediu și ridicat de educație, ceea ce contribuie la menținerea unui mediu de siguranță și confort al rezidenților. <br>
+                                            Zona în care este situată proprietatea beneficiază de suprafețe acoperite de parcuri și alte amenajări urbanistice destinate petrecerii în condiții optime a timpului liber, ceea ce contribuie la confortul locuitorilor, crescând atractivitatea zonei. De asemenea, apropierea de centre administrative, comerciale, educaționale și de sănătate publică, precum și existența unei rețele eficiente de transport în comun determină o atractivitate ridicată a proprietăților rezidențiale din zonă.
+                                        </p>
+                                    </div>
+
+                                    <input type="hidden" name="show_ac" id="show_ac" value="0">
+                                    <textarea name="ac" rows="9" class="form-control" id="id_ac" style="display: none;">Cererea pentru proprietăți de tipul celei analizate s-a observat a fi formată din familii cu un nivel de venituri [medii, sau sub medie, de vârstă medie/ medii sau peste medie, de varsta medie]&#13;&#10;Populația zonei este formată din persoane cu un nivel mediu și ridicat de educație, ceea ce contribuie la menținerea unui mediu de siguranță și confort al rezidenților.&#13;&#10;Zona în care este situată proprietatea beneficiază de suprafețe acoperite de parcuri și alte amenajări urbanistice destinate petrecerii în condiții optime a timpului liber, ceea ce contribuie la confortul locuitorilor, crescând atractivitatea zonei. De asemenea, apropierea de centre administrative, comerciale, educaționale și de sănătate publică, precum și existența unei rețele eficiente de transport în comun determină o atractivitate ridicată a proprietăților rezidențiale din zonă.
+                                    </textarea>
+                                    <small class="form-text text-danger ac_error"></small>
+                                    
+                                    <div class="form-check">
+                                        <label class="form-check-label">
+                                            <input class="form-check-input" type="checkbox" name="ac_opt_check">
+                                            <span class="form-check-sign text-light">Add following to the report</span>
+                                        </label>
+                                    </div>
+                                    <textarea name="ac_opt" rows="3" class="form-control" id="id_ac_opt">Nivelul mai ridicat al veniturilor medii ale populației față de alte zone urbane ale țării, precum și gradul înalt de ocupare a forței de muncă creează premisele menținerii lichidității pieței imobiliare din zonă.</textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mt-2">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label id="af_label">Analiza furnizarii <span class="required-label mr-2">*</span><i class="fas fa-pencil-alt text-info" id="edit-af"></i></label>
+                                    <p class="text-justify text-light af">
+                                        În zona considerată și pentru segmentul de proprietăți de tipul celei analizate se remarcă o densitate a constructiilor {{form.const_density}}, motiv pentru care activitatea de investiții imobiliare este moderată în zonă. <br>
+                                        În acest context, pe piață sunt listate un număr mediu de proprietăți similare la vânzare, majoritatea imobilelor existente în zonă fiind construite {{form.ebby}} și respectă standardele și normativele în construcții specifice perioadei respective, motiv pentru care concurența pentru proprietatea considerată poate fi apreciată ca fiind una {{form.prop_size}}. Acest context face ca perioada de expunere pe piața a unei proprietăți similare să fie medie de {{form.exposure}}.
+                                    </p>
+                                    <input type="hidden" name="show_af" id="show_af" value="0">
+                                    <textarea name="af" id="id_af" rows="6" class="form-control" style="display: none;">În zona considerată și pentru segmentul de proprietăți de tipul celei analizate se remarcă o densitate a constructiilor [mare/medie], motiv pentru care activitatea de investiții imobiliare este moderată în zonă.&#13;&#10;În acest context, pe piață sunt listate un număr mediu de proprietăți similare la vânzare, majoritatea imobilelor existente în zonă fiind construite [manual text field] și respectă standardele și normativele în construcții specifice perioadei respective, motiv pentru care concurența pentru proprietatea considerată poate fi apreciată ca fiind una [medie/mare/mica]. Acest context face ca perioada de expunere pe piața a unei proprietăți similare să fie medie de [6-12 luni/3-9 luni/peste 12 luni].</textarea>
+                                    <small class="form-text text-danger af_error"></small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label id="spi_label">Analiza interactiunii dintre cerere si oferta <span class="required-label mr-2">*</span><i class="fas fa-pencil-alt text-info" id="edit-spi"></i></label>
+                                    <p class="text-justify text-light spi">
+                                        Având în vedere cele prezentate mai sus, apreciem că piața locală pentru segmentul de proprietăți similare celei analizate este caracterizată de o lichiditate {{form.liquidity}}, cu un număr {{form.transactions_nr}} de tranzacții și perioade relativ {{form.exposure_period}} de expunere a proprietăților pe piață. <br>
+                                        Analiza cererii și ofertei efectuată mai sus arată că pentru imobile de tipul celui analizat, piața este una activă, atractivitatea pentru cumpăratori fiind peste medie, în condițiile unei oferte în echilibru ceea ce conduce la un relativ echilibru între cerere și ofertă și creează premisele vânzării într-o perioadă relativ scurtă a proprietăților similare. Menționăm că situația macroeconomică de ansamblu conduce spre previziuni moderat pesimiste pentru perioada următoare, motiv pentru care este de așteptat ca activitatea de tranzacții imobiliare să se mențină la niveluri sub cele ale anului 2019 și pe acest segment specific de piață.
+                                    </p>
+
+                                    <input type="hidden" name="show_spi" id="show_spi" value="0">
+                                    <textarea name="spi" id="id_spi" rows="8" class="form-control" style="display: none;">Având în vedere cele prezentate mai sus, apreciem că piața locală pentru segmentul de proprietăți similare celei analizate este caracterizată de o lichiditate [bună/medie/slaba], cu un număr [mediu/mare/redus] de tranzacții și perioade relativ [scurte/lungi] de expunere a proprietăților pe piață.&#13;&#10;Analiza cererii și ofertei efectuată mai sus arată că pentru imobile de tipul celui analizat, piața este una activă, atractivitatea pentru cumpăratori fiind peste medie, în condițiile unei oferte în echilibru ceea ce conduce la un relativ echilibru între cerere și ofertă și creează premisele vânzării într-o perioadă relativ scurtă a proprietăților similare. Menționăm că situația macroeconomică de ansamblu conduce spre previziuni moderat pesimiste pentru perioada următoare, motiv pentru care este de așteptat ca activitatea de tranzacții imobiliare să se mențină la niveluri sub cele ale anului 2019 și pe acest segment specific de piață.</textarea>
+                                    <small class="form-text text-danger spi_error"></small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label id="forecast_label">Previziunea absorbtiei proprietatii subiect in piata <span class="required-label mr-2">*</span><i class="fas fa-pencil-alt text-info" id="edit-forecast"></i></label>
+                                    <p class="text-justify text-light forecast">
+                                        Din punctul de vedere al gradului de absorbție a proprietăților de tipul celor analizate, având în vedere elementele expuse mai sus apreciem că proprietatea, având în vedere caracteristicile sale constructive și de localizare prezintă un grad ridicat de absorbție, cu o perioada de expunere pe piață de <span id="forcast_expo">3-9 luni</span>
+                                    </p>
+
+                                    <input type="hidden" name="show_forecast" id="show_forecast" value="0">
+                                    <textarea name="forecast" id="id_forecast" rows="3" class="form-control" style="display: none;">Din punctul de vedere al gradului de absorbție a proprietăților de tipul celor analizate, având în vedere elementele expuse mai sus apreciem că proprietatea, având în vedere caracteristicile sale constructive și de localizare prezintă un grad ridicat de absorbție, cu o perioada de expunere pe piață de [6-12 luni/3-9 luni/peste 12 luni]</textarea>
+                                    <small class="form-text text-danger forecast_error"></small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label id="price_label">Plaja de valori ofertate spre vanzare pentru proprietati similare
+                                        Apartamente: <span class="required-label">*</span></label>
+                                    <p class="text-justify text-light">Minim: {{form.minsale_price}} euro/mp</p>
+                                    <p class="text-justify text-light">Maxim: {{form.maxsale_price}} euro/mp</p>
+                                    <small class="form-text text-danger sale_price"></small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label id="risk_label">Riscul de garantie <span class="required-label">*</span></label>
+                                    <textarea name="guarantee_risk" id="id_guarantee_risk" rows="10" class="form-control">Riscul de garanție este un risc asociat riscului de credit, fiind reprezentat de posibilitatea apariției unor dificultăți legate de valorificarea bunurilor aduse ca garanție în momentul acordării creditului, în situația în care cel care împrumuta nu rambursează creditul și nu platește dobânzile aferente. Evaluarea riscului de garanție se face în functie de valoarea garanțiilor și de rapiditatea posibilității de valorificare a acestora.&#13;&#10;În acest moment, pe piața imobiliară din zonă, sunt valabile la vânzare mai multe oferte cu proprietăți similare. În condițiile actuale de piață (fluctuații economice importante, criza economică și sanitară la nivel mondial), numărul tranzacțiilor în acest sector este de asteptat sa scadă, iar perioadele de marketabilitate a activelor imobiliare să crească.&#13;&#10;Astfel, luând în considerare localizarea și caracteristicile imobilului analizat, apreciem că riscul de garantie este redus, în comparație cu cel al altor clase de active.</textarea>
+                                    <small class="form-text text-danger risk_error"></small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                    </div>
+                </form>
+
+                <div class="card-action">
+                    <button class="btn btn-success" id="next">{% if 'details' in pre_url %}SAVE{% else %}NEXT{% endif %}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}  
+    <script>
+        // disable enable sarcini 
+        $("#id_exposure").change(function () {
+            var value = $(this).children('option:selected').val()
+            if(value == '3') {
+                $('#forcast_expo').text('3-9 luni')
+            } else if (value == '6') {
+                $('#forcast_expo').text('6-12 luni')
+            } else {
+                $('#forcast_expo').text('peste 12 luni')
+            }
+        })
+
+        $("#edit-dps").on('click', function() {
+            var val = $('#show_dps').val();
+            $('#show_dps').val(val=='0' ? '1' : '0');
+            $('.dps').toggle();
+            $('#id_dps').toggle();
+        })
+        $("#edit-ac").on('click', function() {
+            var val = $('#show_ac').val();
+            $('#show_ac').val(val=='0' ? '1' : '0');
+            $('.ac').toggle();
+            $('#id_ac').toggle();
+        })
+        $("#edit-af").on('click', function() {
+            var val = $('#show_af').val();
+            $('#show_af').val(val=='0' ? '1' : '0');
+            $('.af').toggle();
+            $('#id_af').toggle();
+        })
+        $("#edit-spi").on('click', function() {
+            var val = $('#show_spi').val();
+            $('#show_spi').val(val=='0' ? '1' : '0');
+            $('.spi').toggle();
+            $('#id_spi').toggle();
+        })
+        $("#edit-forecast").on('click', function() {
+            var val = $('#show_forecast').val();
+            $('#show_forecast').val(val=='0' ? '1' : '0');
+            $('.forecast').toggle();
+            $('#id_forecast').toggle();
+        })
+
+        // submit form 
+        $('#next').on('click', function() {
+            var show_dps = $('#show_dps').val()
+            var dps = $("#id_dps").val();
+            var area_between = $('#id_area_between').val()
+
+            var show_ac = $('#show_ac').val()
+            var ac = $('#id_ac').val()
+            var zona_type = $("#id_zona_type").val();
+
+            var show_af = $("#show_af").val();
+            var af = $("#id_af").val();
+            var const_density = $("#id_const_density").val()
+            var ebby = $('#id_ebby').val()
+            var prop_size = $('#id_prop_size').val()
+            var exposure = $('#id_exposure').val()
+
+            var show_spi = $('#show_spi').val()
+            var spi = $('#id_spi').val()
+            var liquidity = $('#id_liquidity').val()
+            var transactions_nr = $('#id_transactions_nr').val()
+            var exposure_period = $('#id_exposure_period').val()
+
+            var show_forecast = $('#show_forecast').val()
+            var forecast = $('#id_forecast').val()
+            var minsale_price = $('#id_minsale_price').val()
+            var maxsale_price = $('#id_maxsale_price').val()
+            var risk = $('#id_guarantee_risk').val()
+
+            if(((show_dps == '1' && dps.length > 1) || area_between.length > 1) && ((show_ac == '1' && ac.length > 1) || zona_type.length > 0) && ((show_af == '1' && af.length > 1) || ebby.length > 1) && ((show_spi == '1' && spi.length > 1) || show_spi == '0') && ((show_forecast == '1' && forecast.length > 1) || show_forecast == '0') && minsale_price.length > 0 && maxsale_price.length > 0 && risk.length > 1) {
+                $("#market-form").submit();
+            } else {
+                if(show_dps == '1' && dps.length < 1) { 
+                    $('#id_dps').addClass('required')
+                    $(".dps_error").text('This field is required')
+                } else if (area_between.length < 1) {
+                    $('#id_area_between').addClass('required')
+                    $(".dps_error").text('This field is required')
+                } else {
+                    $('#id_dps').removeClass('required')
+                    $('#id_area_between').removeClass('required')
+                    $(".dps_error").text('')
+                }
+                
+                if(show_ac == '1' && ac.length < 1) {
+                    $(".ac_error").text('This field is required')
+                } else {
+                    $(".ac_error").text('')
+                }
+                
+                if(show_af == '1' && af.length < 1) {
+                    $('#id_af').addClass('required')
+                    $(".af_error").text('This field is required')
+                } else if (ebby.length < 1) {
+                    $('#id_ebby').addClass('required')
+                    $(".af_error").text('This field is required')
+                } else {
+                    $('#id_af').removeClass('required')
+                    $('#id_ebby').removeClass('required')
+                    $(".af_error").text('')
+                }
+                
+                if(show_spi == '1' && spi.length < 1) {
+                    $(".spi_error").text('This field is required')
+                } else {
+                    $(".spi_error").text('')
+                }
+                
+                if(show_forecast == '1' && forecast.length < 1) {
+                    $(".forecast_error").text('This field is required')
+                } else {
+                    $(".forecast_error").text('')
+                }
+
+                if(minsale_price.length < 1) {
+                    $('#id_minsale_price').addClass('required')
+                    $(".sale_price").text('This field is required')
+                } else if (maxsale_price.length < 1) {
+                    $('#id_maxsale_price').addClass('required')
+                    $(".sale_price").text('This field is required')
+                } else {
+                    $('#id_minsale_price').removeClass('required')
+                    $('#id_maxsale_price').removeClass('required')
+                    $(".sale_price").text('')
+                }
+
+                if(risk.length < 1) {
+                    $('#id_guarantee_risk').addClass('required')
+                    $(".risk_error").text('This field is required')
+                } else {
+                    $('#id_guarantee_risk').removeClass('required')
+                    $(".risk_error").text('')
+                }
+            }
+        })
+
+    </script>
+{% endblock javascripts %}  

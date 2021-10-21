@@ -17,8 +17,8 @@ class UserModelChoiceField(forms.ModelChoiceField):
 
 class InitialForm(forms.ModelForm):
 	evaluator = UserModelChoiceField(required=False, queryset=User.objects.filter(is_inspector=True), widget=forms.Select(attrs={'class': 'form-control'}))
-	property_type = forms.ModelChoiceField(queryset=PropertyType.objects.all(), widget=forms.Select(attrs={'class': 'form-control',}), empty_label='Alege')
-	compartment_type = forms.ModelChoiceField(required=False, queryset=CompartmentType.objects.all(), widget=forms.Select(attrs={'class': 'form-control'}), empty_label='Alege')
+	property_type = forms.ModelChoiceField(queryset=PropertyType.objects.all(), widget=forms.Select(attrs={'class': 'form-control',}))
+	compartment_type = forms.ModelChoiceField(required=False, queryset=CompartmentType.objects.all(), widget=forms.Select(attrs={'class': 'form-control'}))
 	apartment_no = forms.CharField(required=False, max_length=55, widget=forms.TextInput(attrs={'class': 'form-control'}))
 	address = forms.CharField(max_length=255, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Address'}))
 	area = forms.ModelChoiceField(queryset=Area.objects.all(), widget=forms.Select(attrs={'class': 'form-control'}),empty_label="Alege")
@@ -36,26 +36,9 @@ class InitialForm(forms.ModelForm):
 		model = ValuatedProperty
 		exclude = ('reference_no', 'title', 'status', 'inspection_date', 'valuation_date', 'report_date')
 		
-		
-class PresentationForm(forms.ModelForm):
-	strada = forms.ModelChoiceField(queryset=StradaType.objects.all(), widget=forms.Select(attrs={'class': 'form-control'}), empty_label='Alege')
-	poi = forms.CharField(widget=forms.TextInput(attrs={'autofocus': 'autofocus',}))
-	cadastral_no = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Cadastral Nr'}))
-	land_book_no = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Land Book Nr'}))
-	uat = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Uat'}))
-	charges = forms.ChoiceField(choices=CHARGES_CHOICE, widget=forms.Select(attrs={'class': 'form-control'}))
-	sarcini = forms.CharField(required=False, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Sarcini Nume', }))
-	current_use = forms.ChoiceField(choices=CURRENT_USE_CHOICE, widget=forms.Select(attrs={'class': 'form-control'}))
-	access = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}))
-	history = forms.CharField(required=False, widget=forms.Textarea(attrs={'class': 'form-control', 'rows': '5'}))
-
-	class Meta:
-		model = PresentationData 
-		fields = ('sub_identi', 'sp_hypo', 'zona', 'strada', 'pt', 'poi', 'legal_doc', 'cadastral_no', 'land_book_no', 'uat', 'charges', 'sarcini', 'current_use', 'identification', 'access', 'history')
-
 
 class AddValuationSummary(forms.ModelForm):
-	purpose = forms.ModelChoiceField(queryset=ValuationPurpose.objects.all(), widget=forms.Select(attrs={'class': 'form-control',}), empty_label='Alege')
+	purpose = forms.ModelChoiceField(queryset=ValuationPurpose.objects.all(), widget=forms.Select(attrs={'class': 'form-control',}))
 	amav = forms.DecimalField(max_digits=10, decimal_places=2, widget=forms.NumberInput(attrs={'class': 'form-control', 'placeholder': '0.00', 'step': '0.01'}))
 	suprateran_mv = forms.DecimalField(required=False, max_digits=10, decimal_places=2, widget=forms.NumberInput(attrs={'class': 'form-control', 'placeholder': '0.00', 'step': '0.01'}))
 	subteran_mv = forms.DecimalField(required=False, max_digits=10, decimal_places=2, widget=forms.NumberInput(attrs={'class': 'form-control', 'placeholder': '0.00', 'step': '0.01'}))
@@ -85,12 +68,48 @@ class ConstructionForm(forms.ModelForm):
 	exterior_finishes = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}))
 	exterior_carpentry = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}))
 	invelitoare = forms.ModelChoiceField(queryset=InvelitoareType.objects.all(), widget=forms.Select(attrs={'class': 'form-control'}))
+	utilities = forms.ModelMultipleChoiceField(queryset=Utility.objects.all(), widget=forms.SelectMultiple(attrs={'class': 'form-control', 'multiple': 'multiple'}))
+	additional_equipment = forms.ModelMultipleChoiceField(required=False, queryset=AdditionalEquipment.objects.all(), widget=forms.SelectMultiple(attrs={'class': 'form-control', 'multiple': 'multiple'}))
 	heating = forms.ModelChoiceField(queryset=HeatingSystem.objects.all(), widget=forms.Select(attrs={'class': 'form-control',}))
 	finish = forms.ModelChoiceField(queryset=FinishType.objects.all(), widget=forms.Select(attrs={'class': 'form-control'}))
-	comments = forms.CharField(widget=forms.Textarea(attrs={'class': 'form-control', 'rows': '5'}))
+	comments = forms.CharField(required=False, widget=forms.Textarea(attrs={'class': 'form-control', 'rows': '5'}))
 
 	class Meta:
 		model = Construction
 		exclude = ('ref_no',)
 
+
+class PresentationForm(forms.ModelForm):
+	strada = forms.ModelChoiceField(queryset=StradaType.objects.all(), widget=forms.Select(attrs={'class': 'form-control'}))
+	poi = forms.CharField(widget=forms.TextInput(attrs={'autofocus': 'autofocus',}))
+	cadastral_no = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Cadastral Nr'}))
+	land_book_no = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Land Book Nr'}))
+	uat = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Uat'}))
+	charges = forms.ChoiceField(choices=CHARGES_CHOICE, widget=forms.Select(attrs={'class': 'form-control'}))
+	sarcini = forms.CharField(required=False, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Sarcini Nume', }))
+	current_use = forms.ChoiceField(choices=CURRENT_USE_CHOICE, widget=forms.Select(attrs={'class': 'form-control'}))
+	access = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}))
+	history = forms.CharField(required=False, widget=forms.Textarea(attrs={'class': 'form-control', 'rows': '5'}))
+
+	class Meta:
+		model = PresentationData 
+		exclude = ('ref_no',)
+
+
+class MarketAnalysisForm(forms.ModelForm):
+	area_between = forms.CharField(required=False, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': '95 mp si 155 mp'}))
+	zona_type = forms.ChoiceField(required=False, choices=ZONA_TYPE_CHOICE, widget=forms.Select(attrs={'class': 'form-control'}))
+	const_density = forms.ChoiceField(required=False, choices=CONST_DENSITY_CHOICE, widget=forms.Select(attrs={'class': 'form-control'}))
+	ebby = forms.CharField(required=False, widget=forms.TextInput(attrs={'class': 'form-control'})) #existing building build year
+	prop_size = forms.ChoiceField(required=False, choices=PROP_SIZE_CHOICE, widget=forms.Select(attrs={'class': 'form-control'})) #property size
+	exposure = forms.ChoiceField(required=False, choices=EXPOSURE_CHOICE, widget=forms.Select(attrs={'class': 'form-control'}))
+	liquidity = forms.ChoiceField(required=False, choices=LIQUIDITY_CHOICE, widget=forms.Select(attrs={'class': 'form-control'}))
+	transactions_nr = forms.ChoiceField(required=False, choices=TRANSACTIONS_CHOICE, widget=forms.Select(attrs={'class': 'form-control'})) 
+	exposure_period = forms.ChoiceField(required=False, choices=EXPOSURE_PERIOD_CHOICE, widget=forms.Select(attrs={'class': 'form-control'}))
+	minsale_price = forms.DecimalField(required=False, max_digits=10, decimal_places=2, widget=forms.NumberInput(attrs={'class': 'form-control'})) 
+	maxsale_price = forms.DecimalField(required=False, max_digits=10, decimal_places=2, widget=forms.NumberInput(attrs={'class': 'form-control'})) 
+
+	class Meta:
+		model = MarketAnalysis
+		exclude = ('ref_no',)
 

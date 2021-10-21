@@ -66,6 +66,12 @@ class HeatingSystemAdmin(admin.ModelAdmin):
 class FinishTypeAdmin(admin.ModelAdmin):
     list_display = ('type',)
 
+class UtilityAdmin(admin.ModelAdmin):
+    list_display = ('name',)
+
+class AdditionalEquipmentAdmin(admin.ModelAdmin):
+    list_display = ('name',)
+
 class CompartimentareAdmin(admin.ModelAdmin):
     list_display = ('name', 'property_type')
 
@@ -91,4 +97,6 @@ admin.site.register(MobilaType, MobilaTypeAdmin)
 admin.site.register(PropertyRightType, PropertyRightTypeAdmin)
 admin.site.register(HeatingSystem, HeatingSystemAdmin)
 admin.site.register(FinishType, FinishTypeAdmin)
+admin.site.register(Utility, UtilityAdmin)
+admin.site.register(AdditionalEquipment, AdditionalEquipmentAdmin)
 admin.site.register(Compartimentare, CompartimentareAdmin)

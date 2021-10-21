@@ -1,0 +1,499 @@
+{% extends "base-form.html" %}
+
+{% block title %} Add Constructia {% endblock %} 
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}
+    {% load static %}
+    <link rel="stylesheet" href="https://unpkg.com/multiple-select@1.5.2/dist/multiple-select.min.css">
+    <style>
+        .ms-choice {
+            background: transparent;
+            border: none;
+            height: 19px;
+        }
+        .ms-choice>span {
+            color: #fff;
+            top: 5px;
+            left: 8px;
+        }
+        .ms-drop {
+            left: 0;
+        }
+        .ms-drop span {
+            color: #1a2035!important;
+        }
+        .table td {
+            border-bottom: none!important;
+            height: 40px!important;
+            padding-top: 8px!important;
+        }
+        .required {
+            border-color: #F25961 !important;
+            color: #F25961 !important;
+        }
+    </style>
+{% endblock stylesheets %}
+
+{% block content %}
+
+    <div class="content">
+        <div class="page-inner">
+            <div class="page-header">
+                <h4 class="page-title">Add Constructia</h4>
+                <ul class="breadcrumbs">
+                    <li class="nav-home">
+                        <a href="#">
+                            <i class="flaticon-home"></i>
+                        </a>
+                    </li>
+                    <li class="separator">
+                        <i class="flaticon-right-arrow"></i>
+                    </li>
+                    <li class="nav-item">
+                        <a href="">Valuation Form</a>
+                    </li>
+                    <li class="separator">
+                        <i class="flaticon-right-arrow"></i>
+                    </li>
+                    <li class="nav-item">
+                        <a href="">Constructia</a>
+                    </li>
+                </ul>
+            </div>
+        
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">Constructia</div>
+                </div>
+                
+                <form action="" method="POST" id="construction-form">
+                    {% csrf_token %}
+                    {% if 'details' in pre_url %}
+                        <input type="hidden" name="pre_url" value="details">
+                    {% endif %}
+
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="id_structure">Regim de inaltime imobil <span class="required-label">*</span></label>
+                                    {{ form.etaj }}
+                                    <small class="form-text text-danger etaj"></small>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="id_structure">An constructie <span class="required-label">*</span></label>
+                                    {{ form.build_in }}
+                                    <small class="form-text text-danger build_in"></small>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="id_structure">Conform <span class="required-label">*</span></label>
+                                    {{ form.conform }}
+                                    <small class="form-text text-danger conform"></small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="id_structure">Structura <span class="required-label">*</span></label>
+                                    {{ form.structure }}
+                                    <small class="form-text text-danger structure"></small>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="id_foundation">Fundatie <span class="required-label">*</span></label>
+                                    {{ form.foundation }}
+                                    <small class="form-text text-danger foundation"></small>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="id_closure">Inchideri <span class="required-label">*</span></label>
+                                    {{ form.closure }}
+                                    <small class="form-text text-danger closure"></small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="id_subcompartment">Compartimentari <span class="required-label">*</span></label>
+                                    {{ form.subcompartment }}
+                                    <small class="form-text text-danger subcompartment"></small>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="id_roof">Acoperis <span class="required-label">*</span></label>
+                                    {{ form.roof }}
+                                    <small class="form-text text-danger roof"></small>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="id_walls">Pereti <span class="required-label">*</span></label>
+                                    {{ form.walls }}
+                                    <small class="form-text text-danger walls"></small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="id_interior_carpentry">Tamplarie interioara <span class="required-label">*</span></label>
+                                    {{ form.interior_carpentry }}
+                                    <small class="form-text text-danger interior_carpentry"></small>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="id_ceiling">Ceiling <span class="required-label">*</span></label>
+                                    {{ form.ceiling }}
+                                    <small class="form-text text-danger ceiling"></small>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="exterior_finishes">Exterior finishes <span class="required-label">*</span></label>
+                                    {{ form.exterior_finishes }}
+                                    <small class="form-text text-danger exterior_finishes"></small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="id_exterior_carpentry">Tamplarie exterioara <span class="required-label">*</span></label>
+                                    {{ form.exterior_carpentry }}
+                                    <small class="form-text text-danger exterior_carpentry"></small>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="id_subcompartment">Invelitoare <span class="required-label">*</span></label>
+                                    {{ form.invelitoare }}
+                                    <small class="form-text text-danger invelitoare"></small>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="id_subcompartment">Utilities <span class="required-label">*</span></label>
+                                    {{ form.utilities }}
+                                    <small class="form-text text-danger utilities"></small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="id_subcompartment">Dotari suplimentare</label>
+                                    {{ form.additional_equipment }}
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="id_heating">Sistem de incalzire <span class="required-label">*</span></label>
+                                    {{ form.heating }}
+                                    <small class="form-text text-danger heating"></small>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="id_finish">Finisaje <span class="required-label">*</span></label>
+                                    {{ form.finish }}
+                                    <small class="form-text text-danger finish"></small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label for="id_comments">Comments</label>
+                                    {{ form.comments }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                
+                    <!-- floors  -->
+                    <div class="card-header">
+                        <div class="card-title">Pardoseli</div>
+                    </div>
+
+                    <div class="card-body">
+                        <div class="row">
+                            {% for r in rooms %}
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>{{r.attr_id.name}}</label>
+                                    <select class="form-control" name="floor[]">
+                                        {% for ft in floor_type %}
+                                        <option value="{{ft.id}}">{{ft.type}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <!-- surface area -->
+                    <div class="card-header">
+                        <div class="card-title">Suprafete</div>
+                    </div>
+                    
+                    <div class="card-body">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th scope="col" width="15%">Nr. Crt.</th>
+                                    <th scope="col" width="30%">Denumire incapere</th>
+                                    <th scope="col" width="35%">Suprafata (mp)</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% load my_filters %}
+                                {% for r in rooms %}
+                                    {% if r.attr_value|add:"0" > 1 %}
+                                        {% for i in r.attr_value|myrange %}
+                                        <tr class="tr">
+                                            <td class="nr"></td>
+                                            <td>
+                                                <input type="text" name="room_name[]" value="{{ r.attr_id.name }} {{ i }}" class="form-control">
+                                            </td>
+                                            <td>
+                                                <input type="number" name="area[]" placeholder="0.00" class="form-control" step="0.01" required>
+                                            </td>
+                                            <td>
+                                                {% if 'Balcon' in r.attr_id.name or 'Terrace' in r.attr_id.name %}
+                                                    <input type="hidden" name="utila[]" value="0">
+                                                {% else %}
+                                                    <input type="hidden" name="utila[]" value="1">
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    {% else %}
+                                        <tr class="tr">
+                                            <td class="nr"></td>
+                                            <td>
+                                                <input type="text" name="room_name[]" value="{{ r.attr_id.name }}" class="form-control">
+                                            </td>
+                                            <td>
+                                                <input type="number" name="area[]" placeholder="0.00" class="form-control" step="0.01" required>
+                                            </td>
+                                            <td>
+                                                {% if 'Balcon' in r.attr_id.name or 'Terrace' in r.attr_id.name %}
+                                                    <input type="hidden" name="utila[]" value="0">
+                                                {% else %}
+                                                    <input type="hidden" name="utila[]" value="1">
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                    {% endif %}
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </form>
+            
+                <div class="card-action">
+                    <button class="btn btn-success" id="submitBtn">{% if 'details' in pre_url %}SAVE{% else %}NEXT{% endif %}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+    <script src="https://unpkg.com/multiple-select@1.5.2/dist/multiple-select.min.js"></script>
+    <script>
+        $(function () {
+            $('#id_utilities').multipleSelect()
+            $('#id_additional_equipment').multipleSelect()
+        })
+        
+        var table = document.getElementsByTagName('table')[0],
+        rows = table.getElementsByClassName('tr'),
+        tds = table.getElementsByClassName('nr');
+        for (let i = 0, len = rows.length; i < len; i++) {
+            tds[i].innerHTML = i+1;
+        }
+
+        // form validity check 
+        $('#submitBtn').on('click', function () {
+            var etaj = $('#id_etaj').val();
+            var build_in = $('#id_build_in').val();
+            var conform = $('#id_conform').val();
+            var structure = $('#id_structure').val();
+            var foundation = $('#id_foundation').val();
+            var closure = $('#id_closure').val();
+            var subcompartment = $('#id_subcompartment').val();
+            var roof = $('#id_roof').val();
+            var walls = $('#id_walls').val();
+            var interior_carpentry = $('#id_interior_carpentry').val();
+            var ceiling = $('#id_ceiling').val();
+            var exterior_finishes = $('#id_exterior_finishes').val();
+            var exterior_carpentry = $('#id_exterior_carpentry').val();
+            var invelitoare = $('#id_invelitoare').val();
+            var utilities = $('#id_utilities').val();
+            var heating = $('#id_heating').val();
+            var finish = $('#id_finish').val();
+            
+            if (etaj.length > 1 && build_in.length > 1 && conform.length > 0 && structure.length > 0 && foundation.length > 0 && closure.length > 0 && subcompartment.length > 0 && roof.length > 0 && walls.length > 1 && interior_carpentry.length > 1 && ceiling.length > 1 && exterior_carpentry.length > 1 && exterior_finishes.length > 1 && invelitoare.length > 0 && utilities.length > 0 && heating.length > 0 && finish.length > 0) {
+                $("#construction-form").submit();
+            } else {
+                if (etaj.length < 1) {
+                    $("#id_etaj").addClass('required')
+                    $(".etaj").text('This field is required')
+                } else {
+                    $("#id_etaj").removeClass('required')
+                    $(".etaj").text('')
+                }
+
+                if (build_in.length < 1) {
+                    $("#id_build_in").addClass('required')
+                    $(".build_in").text('This field is required')
+                } else {
+                    $("#id_build_in").removeClass('required')
+                    $(".build_in").text('')
+                }
+                
+                if (conform.length < 1) {
+                    $("#id_conform").addClass('required')
+                    $(".conform").text('This field is required')
+                } else {
+                    $("#id_conform").removeClass('required')
+                    $(".conform").text('')
+                }
+                
+                if (structure.length < 1) {
+                    $("#id_structure").addClass('required')
+                    $(".structure").text('This field is required')
+                } else {
+                    $("#id_structure").removeClass('required')
+                    $(".structure").text('')
+                }
+                
+                if (foundation.length < 1) {
+                    $("#id_foundation").addClass('required')
+                    $(".foundation").text('This field is required')
+                } else {
+                    $("#id_foundation").removeClass('required')
+                    $(".foundation").text('')
+                }
+                
+                if (closure.length < 1) {
+                    $("#id_closure").addClass('required')
+                    $(".closure").text('This field is required')
+                } else {
+                    $("#id_closure").removeClass('required')
+                    $(".closure").text('')
+                }
+                
+                if (subcompartment.length < 1) {
+                    $("#id_subcompartment").addClass('required')
+                    $(".subcompartment").text('This field is required')
+                } else {
+                    $("#id_subcompartment").removeClass('required')
+                    $(".subcompartment").text('')
+                }
+                
+                if (roof.length < 1) {
+                    $("#id_roof").addClass('required')
+                    $(".roof").text('This field is required')
+                } else {
+                    $("#id_roof").removeClass('required')
+                    $(".roof").text('')
+                }
+                
+                if (walls.length < 1) {
+                    $("#id_walls").addClass('required')
+                    $(".walls").text('This field is required')
+                } else {
+                    $("#id_walls").removeClass('required')
+                    $(".walls").text('')
+                }
+                
+                if (interior_carpentry.length < 1) {
+                    $("#id_interior_carpentry").addClass('required')
+                    $(".interior_carpentry").text('This field is required')
+                } else {
+                    $("#id_interior_carpentry").removeClass('required')
+                    $(".interior_carpentry").text('')
+                }
+                
+                if (ceiling.length < 1) {
+                    $("#id_ceiling").addClass('required')
+                    $(".ceiling").text('This field is required')
+                } else {
+                    $("#id_ceiling").removeClass('required')
+                    $(".ceiling").text('')
+                }
+                
+                if (exterior_finishes.length < 1) {
+                    $("#id_exterior_finishes").addClass('required')
+                    $(".exterior_finishes").text('This field is required')
+                } else {
+                    $("#id_exterior_finishes").removeClass('required')
+                    $(".exterior_finishes").text('')
+                }
+                
+                if (exterior_carpentry.length < 1) {
+                    $("#id_exterior_carpentry").addClass('required')
+                    $(".exterior_carpentry").text('This field is required')
+                } else {
+                    $("#id_exterior_carpentry").removeClass('required')
+                    $(".exterior_carpentry").text('')
+                }
+                
+                if (invelitoare.length < 1) {
+                    $("#id_invelitoare").addClass('required')
+                    $(".invelitoare").text('This field is required')
+                } else {
+                    $("#id_invelitoare").removeClass('required')
+                    $(".invelitoare").text('')
+                }
+                
+                if (utilities.length < 1) {
+                    $("#id_utilities").addClass('required')
+                    $(".utilities").text('This field is required')
+                } else {
+                    $("#id_utilities").removeClass('required')
+                    $(".utilities").text('')
+                }
+                
+                if (heating.length < 1) {
+                    $("#id_heating").addClass('required')
+                    $(".heating").text('This field is required')
+                } else {
+                    $("#id_heating").removeClass('required')
+                    $(".heating").text('')
+                }
+                
+                if (finish.length < 1) {
+                    $("#id_finish").addClass('required')
+                    $(".finish").text('This field is required')
+                } else {
+                    $("#id_finish").removeClass('required')
+                    $(".finish").text('')
+                }
+            }
+        })
+    </script>
+{% endblock javascripts %}  

@@ -71,7 +71,7 @@
                     <div class="row">
                         <div class="col-md-12">
                             <div>
-                                <input type="text" class="form-control" value="{{valuation.street}}" id="location">
+                                <input type="text" class="form-control" value="{{valuation.address}}" id="location">
                                 <input type="number" placeholder="Redius in km" class="form-control radius">
                                 <input type="button" value="Search" class="form-control search-btn">
                             </div>
@@ -81,10 +81,10 @@
 
                 <form method="POST" id="comp_form">
                     {% csrf_token %}
-                    <div class="card-body">
+                    <div class="card-body pt-0">
                         <div class="row search-result">
                             <div class="col-md-12">
-                                <h4 class="mt-5 mb-3 text-light">Search results</h4>
+                                <h4 class="mb-3 text-light">Search results</h4>
                                 <p class="text-danger search-warning" style="display: none;">No match found</p>
                                 <table class="table table-hover" id="search-result-tbl">
                                     <thead>
@@ -141,7 +141,7 @@
                         $('.search-result').css('display', 'block')
                         $('#search-result-tbl').css('display', 'block')
                         for(let i=0; i<comp.length; i++) {
-                            var tr = '<tr><td><div class="form-check"><label class="form-check-label"><input class="form-check-input" type="checkbox" name="comp[]" value="'+comp[i][0]+'"><span class="form-check-sign text-light">ID '+comp[i][0]+'</span></label></div></td><td>'+comp[i][1]+'</td><td>'+comp[i][3]+'</td><td>'+comp[i][2]+'</td><td>'+comp[i][4]+'</td></tr>';
+                            var tr = '<tr><td><div class="form-check"><label class="form-check-label"><input class="form-check-input" type="checkbox" name="comp[]" value="'+comp[i][0]+'"><span class="form-check-sign text-light">ID '+comp[i][0]+'</span></label></div></td><td>'+comp[i][1]+'</td><td>'+comp[i][2]+'</td><td></td><td>'+comp[i][3]+'</td></tr>';
                             $('#search-result-tbl tbody').append(tr);
                         }
                     } else {

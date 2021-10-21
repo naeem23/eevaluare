@@ -17,6 +17,17 @@
             display: none;
             margin-bottom: 0px!important;
         }
+        #id_strada, #id_access {
+            display: inline-block;
+            width: 22%;
+            border: none;
+            border-bottom: 2px dotted;
+            padding: 0px;
+            padding-top: 0.5rem;
+            border-radius: 0px;
+            margin-right: 8px;
+            margin-left: 8px;
+        }
     </style>
 {% endblock stylesheets %}
 
@@ -71,14 +82,21 @@
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <button type="button" class="btn btn-primary btn-round mr-2" id="save_src">Save</button>
-                                    <button type="button" class="btn btn-primary btn-round" id="add_src">Save & Add New</button>
+                                    <button type="button" class="btn btn-primary btn-round mr-2" id="save_src">
+                                        <span class="loading text-light" style="display: none;"><i class="fas fa-redo mr-2"></i>Save ...</span>
+                                        <span class="save">Save</span>
+                                    </button>
+                                    <button type="button" class="btn btn-primary btn-round" id="add_src">
+                                        <span class="loading text-light" style="display: none;"><i class="fas fa-redo mr-2"></i>Save ...</span>
+                                        <span class="save">Save & Add New</span>
+                                    </button>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                    
+                
+                {% load my_filters %}
                 <div class="card">
                     <div class="card-header">
                         <div class="card-title">Prezentarea Datelor</div>
@@ -87,16 +105,36 @@
                         <div class="row">
                             <div class="col-md-12">
                                 <div class="form-group">
-                                    <label for="id_sp_hypo">Identificarea proprietatii imobiliare subiect al evaluarii</label>
-                                    {{ form.sub_identi }}
+                                    <label for="id_sub_identi">Identificarea proprietatii imobiliare subiect al evaluarii <span class="required-label">*</span></label>
+                                    <textarea name="sub_identi" rows="5" class="form-control" id="id_sub_identi">Dreptul deplin de proprietate asupra apartamentului cu nr. {{valuation.apartment_no}}, compus din {{camara|floatformat:"0"}} camere si dependinte cu o suprafata utila de {{ utila }} mp si trei balcoane cu suprafata lor totala de {{ totala|sub:utila }}, rezultand suprafata utila totala de {{ totala }} mp, impreuna cu dreptul de proprietate asupra cotei indivize de 56.72 mp din partile si dependintele comune ale imobilului si dreptul de proprietate asupra terenului in suprafata de indiviza de 53.59 mp.</textarea>
+                                    <small class="form-text text-danger sub_identi"></small>
                                 </div>
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-md-12">
                                 <div class="form-group">
-                                    <label for="id_sp_hypo">Ipoteze speciale</label>
-                                    {{ form.sp_hypo }}
+                                    <label for="id_sp_hypo">Ipoteze speciale <span class="required-label">*</span></label>
+                                    <textarea name="sp_hypo" rows="5" class="form-control" id="id_sp_hypo">Deoarece nu a fost pus la dispozitia evaluatorului un Extras de Carte Funciara actualizat, evaluatorul a considerat proprietatea imobiliara subiect libera de sarcini, fiind evaluata in aceasta ipoteza.</textarea>
+                                    <small class="form-text text-danger sp_hypo"></small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label for="id_zona">Zona <span class="required-label">*</span></label>
+                                    <textarea name="zona" rows="5" class="form-control" id="id_zona">Microzona din care face parte proprietatea are caracter mixt preponderent rezidențial-comercial. Regimul specific de înălțime al clădirilor este P+4E-P+10E. Drumurile sunt asfaltate. Drumurile din zonă au configurația și capacitatea necesară pentru deservirea în bune condiții a imobilelor adiacente.</textarea>
+                                    <small class="form-text text-danger zona"></small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group text-light">
+                                    <label>Informatii specifice <span class="required-label">*</span></label>
+                                    <p class="text-justify">Proprietatea are caracter rezidential este amplasata in zona {{valuation.locatie}} din orasul {{valuation.city.name}}, pe {{valuation.address}}, strada asfaltata cu {{form.strada}} pe sens. Strada de acces are caracter public.</p>
+                                    <small class="form-text text-danger strada"></small>
                                 </div>
                             </div>
                         </div>
@@ -110,33 +148,37 @@
                                         {{ form.poi }}
                                     </div>
                                     <small class="form-text text-muted">Comma separated value</small>
+                                    <small class="form-text text-danger poi-error"></small>
                                 </div>
                             </div>
                         </div>
 
                         <div class="row">
                             <div class="col-md-4">
-                                <div class="form-group">
+                                <div class="form-group transport">
                                     <label for="id_pt">Public Transport <span class="required-label">*</span></label>
                                     <select multiple="multiple" id="id_pt" class="form-control" name="pt[]">
-                                        <option value="Metrou">Metrou</option>
-                                        <option value="Tramvai">Tramvai</option>
-                                        <option value="Autobuz">Autobuz</option>
+                                        {% for t in transport %}
+                                        <option value="{{t.id}}">{{t.name}}</option>
+                                        {% endfor %}
                                     </select>
+                                    <small class="form-text text-danger pt"></small>
                                 </div>
                             </div>
                             <div class="col-md-4">
-                                <div class="form-group">
-                                    <label for="id_identification">Identification <span class="required-label">*</span></label>
-                                    {{ form.identification }}
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="form-group">
+                                <div class="form-group legal_doc">
                                     <label for="id_legal_doc">Proprietar si situatia juridica <span class="required-label">*</span></label>
                                     <select multiple="multiple" id="id_legal_doc" class="form-control" name="legal_doc[]">
                                     </select>
                                     <small class="form-text text-muted">Add source of documents first</small>
+                                    <small class="form-text text-danger legal_doc_error"></small>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="id_current_use">Current Use <span class="required-label">*</span></label>
+                                    {{ form.current_use }}
+                                    <small class="form-text text-danger current_use"></small>
                                 </div>
                             </div>
                         </div>
@@ -146,6 +188,7 @@
                                 <div class="form-group">
                                     <label for="id_cadastral_no">Cadastral Nr <span class="required-label">*</span></label>
                                     {{ form.cadastral_no }}
+                                    <small class="form-text text-danger cadastral_no"></small>
                                 </div>
                             </div>
 
@@ -153,6 +196,7 @@
                                 <div class="form-group">
                                     <label for="id_land_book_no">Land Book Nr <span class="required-label">*</span></label>
                                     {{ form.land_book_no }}
+                                    <small class="form-text text-danger land_book_no"></small>
                                 </div>
                             </div>
 
@@ -160,6 +204,7 @@
                                 <div class="form-group">
                                     <label for="id_uat">UAT <span class="required-label">*</span></label>
                                     {{ form.uat }}
+                                    <small class="form-text text-danger uat"></small>
                                 </div>
                             </div>
                         </div>
@@ -169,20 +214,32 @@
                                 <div class="form-group">
                                     <label for="id_charges">Charges <span class="required-label">*</span></label>
                                     {{ form.charges }}
+                                    <small class="form-text text-danger charges"></small>
                                 </div>
                             </div>
-
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="id_sarcini">Sarcini Nume</label>
                                     <input type="text" name="sarcini" class="form-control" placeholder="Sarcini Nume" id="id_sarcini" disabled>
                                 </div>
                             </div>
-
                             <div class="col-md-4">
+                                <div class="form-group identification">
+                                    <label for="id_identification">Identificare <span class="required-label">*</span></label>
+                                    <select multiple="multiple" id="id_identification" class="form-control" name="identification[]">
+                                        <option value="apii">Adresei postale inscrise pe imobil</option>
+                                        <option value="cipa">Cadastral introdus pe platforma ANCPI</option>
+                                    </select>
+                                    <small class="form-text text-danger identification_error"></small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row"> 
+                            <div class="col-md-12">
                                 <div class="form-group">
-                                    <label for="id_current_use">Current Use <span class="required-label">*</span></label>
-                                    {{ form.current_use }}
+                                    <label for="id_history">Acces <span class="required-label">*</span></label>
+                                    <p class="text-justify text-light">Din punct de vedere juridic accesul la proprietate pietonal si auto se face {{form.access}}. Imobilul se afla in zona {{valuation.locatie}} a intravilanului munincipiului Bucuresti, fiind reprezentat de un bloc cu regim de inaltime {{height.etaj}}. Apartamentului ii revin cote din partile comune si dependintele imobilului conform extrasului de carte funciara prezentat evaluatorului.</p>
+                                    <small class="form-text text-danger access"></small>
                                 </div>
                             </div>
                         </div>
@@ -215,6 +272,7 @@
         $(function () {
             $('#id_pt').multipleSelect()
             $('#id_legal_doc').multipleSelect()
+            $('#id_identification').multipleSelect()
         })
 
         // disable enable sarcini 
@@ -233,26 +291,158 @@
                 return this.innerHTML;
             }).get();
             $("#id_poi").val(all.join());
-            $("#presentation-form").submit();
+
+            var sub_identi = $("#id_sub_identi").val();
+            var sp_hypo = $("#id_sp_hypo").val();
+            var zona = $("#id_zona").val();
+            var strada = $("#id_strada").val();
+            var poi = $("#id_poi").val()
+            var pt = $('#id_pt').val()
+            var legal_doc = $('#id_legal_doc').val()
+            var current_use = $('#id_current_use').val()
+            var cadastral_no = $('#id_cadastral_no').val()
+            var land_book_no = $('#id_land_book_no').val()
+            var uat = $('#id_uat').val()
+            var charges = $('#id_charges').val()
+            var identification = $('#id_identification').val()
+            var access = $('#id_access').val()
+
+            if(sub_identi.length > 1 && sp_hypo.length > 1 && zona.length > 1 && strada.length > 0 && poi.length > 0 && pt.length > 0 && legal_doc.length > 0 && current_use.length > 0 && cadastral_no.length > 1 && land_book_no.length > 1 && uat.length > 1 && charges.length > 0 && identification.length > 0 && access.length > 1) {
+                $("#presentation-form").submit();
+            } else {
+                if(sub_identi.length < 1) {
+                    $("#id_sub_identi").addClass('required')
+                    $(".sub_identi").text('This field is required')
+                } else {
+                    $("#id_sub_identi").removeClass('required')
+                    $(".sub_identi").text('')
+                }
+                
+                if(sp_hypo.length < 1) {
+                    $("#id_sp_hypo").addClass('required')
+                    $(".sp_hypo").text('This field is required')
+                } else {
+                    $("#id_sp_hypo").removeClass('required')
+                    $(".sp_hypo").text('')
+                }
+                
+                if(zona.length < 1) {
+                    $("#id_zona").addClass('required')
+                    $(".zona").text('This field is required')
+                } else {
+                    $("#id_zona").removeClass('required')
+                    $(".zona").text('')
+                }
+                
+                if(strada.length < 1) {
+                    $("#id_strada").addClass('required')
+                    $(".strada").text('This field is required')
+                } else {
+                    $("#id_strada").removeClass('required')
+                    $(".strada").text('')
+                }
+                
+                if(poi.length < 1) {
+                    $(".poi-inputs").addClass('required')
+                    $(".poi-error").text('This field is required')
+                } else {
+                    $(".poi-inputs").removeClass('required')
+                    $(".poi-error").text('')
+                }
+                
+                if(pt.length < 1) {
+                    $(".transport .ms-parent").addClass('required')
+                    $(".pt").text('This field is required')
+                } else {
+                    $(".transport .ms-parent").removeClass('required')
+                    $(".pt").text('')
+                }
+                
+                if(legal_doc.length < 1) {
+                    $(".legal_doc .ms-parent").addClass('required')
+                    $(".legal_doc_error").text('This field is required')
+                } else {
+                    $(".legal_doc .ms-parent").removeClass('required')
+                    $(".legal_doc_error").text('')
+                }
+                
+                if(current_use.length < 1) {
+                    $("#id_current_use").addClass('required')
+                    $(".current_use").text('This field is required')
+                } else {
+                    $("#id_current_use").removeClass('required')
+                    $(".current_use").text('')
+                }
+                
+                if(cadastral_no.length < 1) {
+                    $("#id_cadastral_no").addClass('required')
+                    $(".cadastral_no").text('This field is required')
+                } else {
+                    $("#id_cadastral_no").removeClass('required')
+                    $(".cadastral_no").text('')
+                }
+                
+                if(land_book_no.length < 1) {
+                    $("#id_land_book_no").addClass('required')
+                    $(".land_book_no").text('This field is required')
+                } else {
+                    $("#id_land_book_no").removeClass('required')
+                    $(".land_book_no").text('')
+                }
+                
+                if(uat.length < 1) {
+                    $("#id_uat").addClass('required')
+                    $(".uat").text('This field is required')
+                } else {
+                    $("#id_uat").removeClass('required')
+                    $(".uat").text('')
+                }
+                
+                if(charges.length < 1) {
+                    $("#id_charges").addClass('required')
+                    $(".charges").text('This field is required')
+                } else {
+                    $("#id_charges").removeClass('required')
+                    $(".charges").text('')
+                }
+                
+                if(identification.length < 1) {
+                    $(".identification .ms-parent").addClass('required')
+                    $(".identification_error").text('This field is required')
+                } else {
+                    $(".identification .ms-parent").removeClass('required')
+                    $(".identification_error").text('')
+                }
+                
+                if(access.length < 1) {
+                    $("#id_access").addClass('required')
+                    $(".access").text('This field is required')
+                } else {
+                    $("#id_access").removeClass('required')
+                    $(".access").text('')
+                }
+            }
+
         })
 
-        // source of information 
+        // ====================== source of information ==========================
         $('#save_src').on('click', function() {
             var last = $(".documents").find('input').slice(-1)
             var val = last.val()
             if (val.length > 5) {
                 last.removeClass('required')
-                save_source(val)
+                save_source(val, "save_src")
             } else {
                 last.addClass('required')
             }
         })
+        
         $("#add_src").on('click', function() {
             var last = $(".documents").find('input').slice(-1)
             var val = last.val()
             if (val.length > 5) {
                 last.removeClass('required')
-                save_source(val)
+                save_source(val, "add_src")
                 var div = "<div class='col-md-6'>\
                             <div class='form-group'> \
                                 <label>Nume documente <span class='required-label'>*</span></label> \
@@ -266,12 +456,16 @@
         })
 
         // save source 
-        function save_source(val) {
+        function save_source(val, id) {
             $.ajax({
-                url: "{% url 'dashboard:add_src_doc' %}",
+                url: "{% url 'valuation:add_source' %}",
                 type: "POST",
                 cache: false,
-                data: {'vid': '{{valuation_id}}', 'source': val, "csrfmiddlewaretoken": '{{ csrf_token }}'},
+                data: {'vid': '{{valuation.id}}', 'source': val, "csrfmiddlewaretoken": '{{ csrf_token }}'},
+                beforeSend: function() {
+                    $('#'+id+' .loading').css('display', 'block');
+                    $('#'+id+' .save').css('display', 'none');
+                },
                 success: function (e) {
                     if(e.success=='true') {
                         $('#id_legal_doc').append("<option data-toggle='tooltip' data-placement='top' title='"+val+"' value=\"" + e.id + "\">" + val.substring(0,30) + "...</option>");
@@ -279,6 +473,10 @@
                     } else {
                         $(".msg").css('display', 'block')
                     }
+                },
+                complete: function() {
+                    $('#'+id+' .save').css('display', 'block');
+                    $('#'+id+' .loading').css('display', 'none');
                 },
                 error: function (err) {
                     $(".msg").css('display', 'block')

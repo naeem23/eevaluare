@@ -154,20 +154,20 @@ FINISH_CHOICE = [
 
 ZONA_TYPE_CHOICE = [
 	('medii', 'medii'),
-	('sub medie', 'Sub medie'),
-	('above average', 'De vârstă medie/medii sau peste medie'),
-	('medium age', 'De varsta medie'),
+	('sub medie', 'sau sub medie'),
+	('above average', 'de vârstă medie/medii sau peste medie'),
+	('medium age', 'de varsta medie'),
 ]
 
 CONST_DENSITY_CHOICE = [ 
-	('mare', 'Mare'),
-	('medie', 'Medie'),
+	('mare', 'mare'),
+	('medie', 'medie'),
 ]
 
 PROP_SIZE_CHOICE = [
-	('medie', 'Medie'),
-	('mare', 'Mare'),
-	('mica', 'Mica'),
+	('medie', 'medie'),
+	('mare', 'mare'),
+	('mica', 'mica'),
 ]
 
 EXPOSURE_CHOICE = [
@@ -177,20 +177,20 @@ EXPOSURE_CHOICE = [
 ]
 
 LIQUIDITY_CHOICE = [ 
-	('buna', 'Buna'),
-	('medie', 'Medie'),
-	('slaba', 'Slaba'),
+	('buna', 'buna'),
+	('medie', 'medie'),
+	('slaba', 'slaba'),
 ]
 
 TRANSACTIONS_CHOICE = [
-	('mediu','Mediu'),
-	('mare','Mare'),
-	('redus', 'Redus'),
+	('mediu','mediu'),
+	('mare','mare'),
+	('redus', 'redus'),
 ]
 
 EXPOSURE_PERIOD_CHOICE = [
-	('scurte', 'Scurte'),
-	('lungi', 'Lungi'),
+	('scurte', 'scurte'),
+	('lungi', 'lungi'),
 ]
 
 FILE_CHOICE = [

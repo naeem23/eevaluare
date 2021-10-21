@@ -124,6 +124,16 @@ class FinishType(models.Model):
 	def __str__(self):
 		return self.type
 
+class Utility(models.Model):
+	name = models.CharField(max_length=255)
+	def __str__(self):
+		return self.name
+
+class AdditionalEquipment(models.Model):
+	name = models.CharField(max_length=255)
+	def __str__(self):
+		return self.name
+
 
 # ==================== valuated property table =======================
 # ====================================================================
@@ -181,8 +191,6 @@ class CompartimentareValue(models.Model):
 	ref_no = models.ForeignKey(ValuatedProperty, on_delete=models.CASCADE)
 	attr_id = models.ForeignKey(Compartimentare, on_delete=models.CASCADE)
 	attr_value = models.CharField(max_length=10, blank=True, null=True) 
-	mav = models.DecimalField(max_digits=10, decimal_places=2, default=0.00) #market approach value
-	iav = models.DecimalField(max_digits=10, decimal_places=2, default=0.00) #income approach value
 	floor_type = models.ForeignKey(FloorType, models.SET_NULL, blank=True, null=True)
 
 	def __str__(self):
@@ -234,6 +242,46 @@ class ValuationSummary(models.Model):
 		return str(self.id)
 
 
+# ===================== construction data table ======================
+# ====================================================================
+class Construction(models.Model):
+	ref_no = models.ForeignKey(ValuatedProperty, on_delete=models.CASCADE)
+	etaj = models.CharField(max_length=55, blank=True, null=True)
+	build_in = models.CharField(max_length=10, blank=True, null=True) #eg: 2008
+	conform = models.ForeignKey(ConformType, models.SET_NULL, blank=True, null=True)
+	structure = models.ForeignKey(StructureType, models.SET_NULL, blank=True, null=True)
+	foundation = models.ForeignKey(FoundationType, models.SET_NULL, blank=True, null=True)
+	closure = models.ForeignKey(ClouserType, models.SET_NULL, blank=True, null=True)
+	subcompartment = models.ForeignKey(SubcompartmentType, models.SET_NULL, blank=True, null=True)
+	roof = models.ForeignKey(RoofType, models.SET_NULL, blank=True, null=True)
+	walls = models.CharField(max_length=500, blank=True, null=True)
+	interior_carpentry = models.CharField(max_length=500, blank=True, null=True)
+	ceiling = models.CharField(max_length=500, blank=True, null=True)
+	exterior_finishes = models.CharField(max_length=500, blank=True, null=True)
+	exterior_carpentry = models.CharField(max_length=500, blank=True, null=True)
+	invelitoare = models.ForeignKey(InvelitoareType, models.SET_NULL, blank=True, null=True)
+	utilities = models.ManyToManyField(Utility, blank=True) 
+	additional_equipment = models.ManyToManyField(AdditionalEquipment, blank=True) 
+	heating = models.ForeignKey(HeatingSystem, models.SET_NULL, blank=True, null=True)
+	finish = models.ForeignKey(FinishType, models.SET_NULL, blank=True, null=True)
+	comments = models.TextField(blank=True, null=True)
+
+	def __str__(self):
+		return self.ref_no
+
+
+# ========================= suprafete table ==========================
+# ====================================================================
+class Suprafete(models.Model):
+	ref_no = models.ForeignKey(ValuatedProperty, on_delete=models.CASCADE)
+	room_name = models.CharField(max_length=155, blank=True, null=True)
+	area = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+	utila = models.BooleanField(default=False)
+
+	def __str__(self):
+		return self.ref_no
+   
+   
 # =================== source of information table ====================
 # ====================================================================
 class SourceofInformation(models.Model):
@@ -269,46 +317,6 @@ class PresentationData(models.Model):
 		return self.ref_no
 
 
-# ===================== construction data table ======================
-# ====================================================================
-class Construction(models.Model):
-	ref_no = models.ForeignKey(ValuatedProperty, on_delete=models.CASCADE)
-	etaj = models.CharField(max_length=55, blank=True, null=True)
-	build_in = models.CharField(max_length=10, blank=True, null=True) #eg: 2008
-	conform = models.ForeignKey(ConformType, models.SET_NULL, blank=True, null=True)
-	structure = models.ForeignKey(StructureType, models.SET_NULL, blank=True, null=True)
-	foundation = models.ForeignKey(FoundationType, models.SET_NULL, blank=True, null=True)
-	closure = models.ForeignKey(ClouserType, models.SET_NULL, blank=True, null=True)
-	subcompartment = models.ForeignKey(SubcompartmentType, models.SET_NULL, blank=True, null=True)
-	roof = models.ForeignKey(RoofType, models.SET_NULL, blank=True, null=True)
-	walls = models.CharField(max_length=500, blank=True, null=True)
-	interior_carpentry = models.CharField(max_length=500, blank=True, null=True)
-	ceiling = models.CharField(max_length=500, blank=True, null=True)
-	exterior_finishes = models.CharField(max_length=500, blank=True, null=True)
-	exterior_carpentry = models.CharField(max_length=500, blank=True, null=True)
-	invelitoare = models.ForeignKey(InvelitoareType, models.SET_NULL, blank=True, null=True)
-	utilities = models.CharField(max_length=500, blank=True, null=True, choices=UTILITY_CHOICE) #multiple select 
-	additional_equipment = models.CharField(max_length=500, blank=True, null=True, choices=ADDITIONAL_EQUIPMENT) #multiple select 
-	heating = models.ForeignKey(HeatingSystem, models.SET_NULL, blank=True, null=True)
-	finish = models.ForeignKey(FinishType, models.SET_NULL, blank=True, null=True)
-	comments = models.TextField(blank=True, null=True)
-
-	def __str__(self):
-		return self.ref_no
-
-
-# ========================= suprafete table ==========================
-# ====================================================================
-class Suprafete(models.Model):
-	ref_no = models.ForeignKey(ValuatedProperty, on_delete=models.CASCADE)
-	room_name = models.CharField(max_length=155, blank=True, null=True)
-	area = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
-	utila = models.BooleanField(default=False)
-
-	def __str__(self):
-		return self.ref_no
-   
-
 # ====================== market analysis table =======================
 # ==================================================================== 
 class MarketAnalysis(models.Model):
@@ -317,6 +325,7 @@ class MarketAnalysis(models.Model):
 	area_between = models.CharField(max_length=155, blank=True, null=True)
 	ac = models.TextField(blank=True, null=True) #Analiza cererii
 	zona_type = models.CharField(max_length=155, blank=True, null=True, choices=ZONA_TYPE_CHOICE)
+	ac_optional = models.TextField(blank=True, null=True)
 	af = models.TextField(blank=True, null=True) #Analiza furnizarii
 	const_density = models.CharField(max_length=55, blank=True, null=True, choices=CONST_DENSITY_CHOICE)
 	ebby = models.CharField(max_length=155, blank=True, null=True) #existing building build year
@@ -362,31 +371,32 @@ class ComparableProperty(models.Model):
 	ref_no = models.ForeignKey(ValuatedProperty, on_delete=models.CASCADE, blank=True, null=True)
 	is_comparable = models.BooleanField(default=True) #ref_no & is_comparable is only for evaluated property
 	sale_price = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
-	mobila = models.ForeignKey(MobilaType, models.SET_NULL, blank=True, null=True)
+	mobila = models.CharField(max_length=55, blank=True, null=True)
 	ma = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True) #margin adjustment
 	parking_boxa = models.CharField(max_length=155, blank=True, null=True) 
 	pba = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True) #parking boxa adjustment
-	ad = models.CharField(max_length=55, blank=True, null=True, choices=AVAILABLE_DATA_CHOICE) #available data
-	pr = models.ForeignKey(PropertyRightType, models.SET_NULL, blank=True, null=True) #property rights
-	fc = models.CharField(max_length=55, blank=True, null=True, choices=FINANCING_CONDITION_CHOICE) #financial condition
-	sc = models.CharField(max_length=55, blank=True, null=True, choices=SALE_CONDITION_CHOICE) #sale condition
-	ape = models.CharField(max_length=55, blank=True, null=True, choices=APE_CHOICE) #after purchase expenditure
+	ad = models.CharField(max_length=55, blank=True, null=True) #available data
+	pr = models.CharField(max_length=55, blank=True, null=True) #property rights
+	fc = models.CharField(max_length=55, blank=True, null=True) #financial condition
+	sc = models.CharField(max_length=55, blank=True, null=True) #sale condition
+	ape = models.CharField(max_length=55, blank=True, null=True) #after purchase expenditure
 	me = models.CharField(max_length=55, blank=True, null=True) #month and year check field please
 	lc = models.CharField(max_length=255, blank=True, null=True) #location
-	cp = models.CharField(max_length=55, blank=True, null=True, choices=APARTMENT_CHOICE) #compartment
+	cp = models.CharField(max_length=55, blank=True, null=True) #compartment
 	cy = models.CharField(max_length=10, blank=True, null=True) #construction year
 	area = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
 	rent_sqm = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
-	finish = models.ForeignKey(FinishType, models.SET_NULL, blank=True, null=True)
+	finish = models.CharField(max_length=55, blank=True, null=True)
 	etaj = models.CharField(max_length=55, blank=True, null=True)
 	balcon = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True) 
-	hs = models.ForeignKey(HeatingSystem, models.SET_NULL, blank=True, null=True) #heating system 
+	price_persqm = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+	hs = models.CharField(max_length=55, blank=True, null=True) #heating system 
 	opt1_name = models.CharField(max_length=55, blank=True, null=True)  
-	opt1_val = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+	opt1_val = models.CharField(max_length=55, blank=True, null=True)
 	opt2_name = models.CharField(max_length=55, blank=True, null=True)  
-	opt1_val = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+	opt2_val = models.CharField(max_length=55, blank=True, null=True)
 	opt3_name = models.CharField(max_length=55, blank=True, null=True)  
-	opt1_val = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+	opt3_val = models.CharField(max_length=55, blank=True, null=True)
 
 	def __str__(self):
 		return str(self.id)
