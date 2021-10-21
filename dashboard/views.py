@@ -974,13 +974,11 @@ def go_module(request, key):
 		return redirect('dashboard:go_module_view', key)
 
 	module_keys = None
-	if key=="property-type":
-		module_keys = PropertyType.objects.all()
-	elif key=="status":
-		module_keys = Status.objects.all()
-	elif key=="area":
+	areas = None
+	if key=="area":
 		module_keys = Area.objects.all()
 	elif key=="city":
+		areas = Area.objects.all()
 		module_keys = City.objects.all()
 	elif key=="status":
 		module_keys = Status.objects.all()
@@ -1026,6 +1024,7 @@ def go_module(request, key):
 		'key': key,
 		'value': modules[key],
 		'module_keys':module_keys,
+		'areas':areas,
 	}
 	return render(request, template_name, context)
 
