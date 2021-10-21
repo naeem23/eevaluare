@@ -89,7 +89,7 @@ def add_summary(request, id):
     boxa = models.CompartimentareValue.objects.filter(ref_no=valuation,attr_id__pk=11).aggregate(boxa=Sum('attr_value')) 
     camara = models.CompartimentareValue.objects.filter(ref_no=valuation,attr_id__pk__in=[1,3,4]).aggregate(camara=Sum('attr_value'))
     pre_url = request.META.get("HTTP_REFERER")
-
+    
     # get forex exchange rate of yesterday 
     yesterday = datetime.datetime.now() - datetime.timedelta(1)
     yesterday = datetime.datetime.strftime(yesterday, "%Y-%m-%d")
