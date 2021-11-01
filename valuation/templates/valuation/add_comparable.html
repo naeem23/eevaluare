@@ -3795,7 +3795,6 @@
             minprice = Math.round(ve*pow)/pow;
             $('#estimated_value').val(minprice);
             $("#smallest_gross").val('ID-'+pos);
-            // $('#smallest_gross').val('ID-'+pos);
         })
         
         $('#id_sub_area').keyup(function() {
@@ -3852,9 +3851,14 @@
 
         $("#smallest_gross").change(function() {
             let pos = this.value.slice(-1);
+            let ve = Number($('#adjustment_price'+pos).val())
+            var pow = Math.pow(10,-3);
+            let minprice = Math.round(ve*pow)/pow;
+            $('#estimated_value').val(minprice);
             let mvb_min = Number($('#mvb_mvbp'+pos).val());
             $('#mvb_min').val(mvb_min);
             $('#sub_mvbp').val(mvb_min);
+            update_vpcd();
         });
 
         $("#mvb_refresh").on('click', function () {
@@ -3878,6 +3882,14 @@
             $('#sub_monthly_rent').val(sub_monthly_rent.toFixed(0));
             let sub_vbp = sub_monthly_rent * 12;
             $('#sub_vbp').val(sub_vbp.toFixed(0));
+            update_vpcd();
+        })
+
+        function update_vpcd() {
+            let sub_area = Number($('#vbp_area').val());
+            let rent = Number($('#sub_rent_sqm').val());
+            let sub_monthly_rent = sub_area * rent;
+            let sub_vbp = sub_monthly_rent * 12;
 
             let pos = $("#smallest_gross").val().slice(-1);
             let rent_sqm = Number($('#rent_sqm'+pos).val());
@@ -3892,7 +3904,7 @@
             let round_val = Math.round(vpcd*pow)/pow;
             let vpcd_rotund = (min_mvbp.toFixed(0)/vpcd.toFixed(0)) + round_val;
             $('#vpcd_rotund').val(vpcd_rotund.toFixed(0));
-        })
+        }
 
         $('#submitBtn').click(function () {
             var pass = false;
