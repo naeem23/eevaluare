@@ -2,6 +2,7 @@ from django.contrib.auth.decorators import login_required
 from django.urls import path, re_path
 from . import views
 from valuationform import views as valuation_view
+from valuation import views as v_view
 
 app_name="dashboard"
 
@@ -56,4 +57,8 @@ urlpatterns = [
     path('detalii-comparabile/<int:id>/', valuation_view.comparable_details, name="comparable_details"),
     path('edit-comparabile/<int:id>/', valuation_view.edit_comparable, name="edit_comparable"),
     path('api/delete-comparabile/', valuation_view.delete_comparable, name="delete_comparable"),
+
+
+    # new views for valuation 
+    path('valuation-details/<int:id>/', v_view.valuation_details, name="valuation_details"),
 ]

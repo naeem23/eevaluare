@@ -106,7 +106,11 @@
                             <div class="col-md-12">
                                 <div class="form-group">
                                     <label for="id_sub_identi">Identificarea proprietatii imobiliare subiect al evaluarii <span class="required-label">*</span></label>
-                                    <textarea name="sub_identi" rows="5" class="form-control" id="id_sub_identi">Dreptul deplin de proprietate asupra apartamentului cu nr. {{valuation.apartment_no}}, compus din {{camara|floatformat:"0"}} camere si dependinte cu o suprafata utila de {{ utila }} mp si trei balcoane cu suprafata lor totala de {{ totala|sub:utila }}, rezultand suprafata utila totala de {{ totala }} mp, impreuna cu dreptul de proprietate asupra cotei indivize de 56.72 mp din partile si dependintele comune ale imobilului si dreptul de proprietate asupra terenului in suprafata de indiviza de 53.59 mp.</textarea>
+                                    {% if valued_property.valued_property != None %}
+                                        <textarea name="sub_identi" rows="5" class="form-control" id="id_sub_identi">{{valued_property.valued_property}}</textarea>
+                                    {% else %}
+                                        <textarea name="sub_identi" rows="5" class="form-control" id="id_sub_identi">Dreptul deplin de proprietate asupra apartamentului cu nr. {{valuation.apartment_no}}, compus din {{camara|floatformat:"0"}} camere si dependinte cu o suprafata utila de {% if const.utila %}{{ const.utila }}{% else %}0.00{% endif %} mp si trei balcoane cu suprafata lor totala de {% if const.utila and const.totala %}{{ const.totala|sub:const.utila }}{% else %}0.00{% endif %}, rezultand suprafata utila totala de {% if const.totala %}{{ const.totala }}{% else %}0.00{% endif %} mp, impreuna cu dreptul de proprietate asupra cotei indivize de 56.72 mp din partile si dependintele comune ale imobilului si dreptul de proprietate asupra terenului in suprafata de indiviza de 53.59 mp.</textarea>
+                                    {% endif %}
                                     <small class="form-text text-danger sub_identi"></small>
                                 </div>
                             </div>
@@ -238,7 +242,7 @@
                             <div class="col-md-12">
                                 <div class="form-group">
                                     <label for="id_history">Acces <span class="required-label">*</span></label>
-                                    <p class="text-justify text-light">Din punct de vedere juridic accesul la proprietate pietonal si auto se face {{form.access}}. Imobilul se afla in zona {{valuation.locatie}} a intravilanului munincipiului Bucuresti, fiind reprezentat de un bloc cu regim de inaltime {{height.etaj}}. Apartamentului ii revin cote din partile comune si dependintele imobilului conform extrasului de carte funciara prezentat evaluatorului.</p>
+                                    <p class="text-justify text-light">Din punct de vedere juridic accesul la proprietate pietonal si auto se face {{form.access}}. Imobilul se afla in zona {{valuation.locatie}} a intravilanului munincipiului Bucuresti, fiind reprezentat de un bloc cu regim de inaltime {{valuation.height}}. Apartamentului ii revin cote din partile comune si dependintele imobilului conform extrasului de carte funciara prezentat evaluatorului.</p>
                                     <small class="form-text text-danger access"></small>
                                 </div>
                             </div>
@@ -429,7 +433,7 @@
         $('#save_src').on('click', function() {
             var last = $(".documents").find('input').slice(-1)
             var val = last.val()
-            if (val.length > 5) {
+            if (val.length > 0) {
                 last.removeClass('required')
                 save_source(val, "save_src")
             } else {
@@ -440,7 +444,7 @@
         $("#add_src").on('click', function() {
             var last = $(".documents").find('input').slice(-1)
             var val = last.val()
-            if (val.length > 5) {
+            if (val.length > 0) {
                 last.removeClass('required')
                 save_source(val, "add_src")
                 var div = "<div class='col-md-6'>\
@@ -470,11 +474,17 @@
                     if(e.success=='true') {
                         $('#id_legal_doc').append("<option data-toggle='tooltip' data-placement='top' title='"+val+"' value=\"" + e.id + "\">" + val.substring(0,30) + "...</option>");
                         $('#id_legal_doc').multipleSelect( 'refresh' );
-                    } else {
-                        $(".msg").css('display', 'block')
+                    } else {  
+                        $(".msg").css('display', 'block');  
+                        if (e.msg=='exists') {
+                            $(".msg").text('Source already added.');
+                        }
                     }
                 },
-                complete: function() {
+                complete: function(e) {
+                    // if(e.responseJSON.success=='false') {
+
+                    // }
                     $('#'+id+' .save').css('display', 'block');
                     $('#'+id+' .loading').css('display', 'none');
                 },

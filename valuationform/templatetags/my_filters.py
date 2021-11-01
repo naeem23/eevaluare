@@ -3,8 +3,11 @@ import math
 import re
 from decimal import Decimal
 from django import template
+from django.db.models import Sum
 from dashboard.choices import *
 from dashboard import models as db_model 
+from valuation import models
+from valuation import choices
 register = template.Library()
 
 @register.filter(name='myrange')
@@ -32,6 +35,25 @@ def speciallist(str):
     data = re.sub(r"[' ]", '', str)
     return data[1:-1].split(',')
 
+
+@register.filter(name='get_public_transport')
+def get_public_transport(str):
+    data = ast.literal_eval(str)
+    transport = models.Transport.objects.filter(id__in=data)
+    return transport
+
+@register.filter(name='get_identification')
+def get_identification(str):
+    data = ast.literal_eval(str)
+    iden = choices.IDENTIFICATION_CHOICE
+    if len(data) == 2:
+        identification = iden[0][1] + " si " + iden[1][1]
+    else:
+        if data[0] == iden[0][0]:
+            identification = iden[0][1]
+        else:
+            identification = iden[1][1]
+    return identification
 
 @register.filter(name="in_list")
 def in_list(var, the_list):
@@ -370,3 +392,50 @@ def get_offer_price(prop):
 @register.filter(name="get_area_diff")
 def get_area_diff(var1, var2):
     return round(var1-var2,2)
+
+
+# get market price 
+@register.filter(name="get_market_price")
+def get_market_price(s):
+    suprateran_mv = s.suprateran_mv if s.suprateran_mv else 0.00
+    subteran_mv = s.subteran_mv if s.subteran_mv else 0.00
+    boxa_mv = s.boxa_mv if s.boxa_mv else 0.00
+    total = s.amav + suprateran_mv + subteran_mv + boxa_mv
+    return round(total, 0)
+
+@register.filter(name="get_market_ron")
+def get_market_ron(s):
+    total = get_market_price(s)
+    return round((total*s.fer), 0)
+
+# get income price 
+@register.filter(name="get_income_price")
+def get_income_price(s):
+    suprateran_iv = s.suprateran_iv if s.suprateran_iv else 0.00
+    subteran_iv = s.subteran_iv if s.subteran_iv else 0.00
+    boxa_iv = s.boxa_iv if s.boxa_iv else 0.00
+    total = s.amav + suprateran_iv + subteran_iv + boxa_iv
+    return round(total, 0)
+
+@register.filter(name="get_income_ron")
+def get_income_ron(s):
+    total = get_income_price(s)
+    return round((total*s.fer), 0)
+
+# get above parking no 
+@register.filter(name="get_suprateran_nr")
+def get_suprateran_nr(compartment):
+    nr = compartment.filter(attr_id__id=9).aggregate(nr=Sum('attr_value'))
+    return nr['nr']
+    
+# get above parking no 
+@register.filter(name="get_subteran_nr")
+def get_subteran_nr(compartment):
+    nr = compartment.filter(attr_id__id=10).aggregate(nr=Sum('attr_value'))
+    return nr['nr']
+    
+# get above parking no 
+@register.filter(name="get_boxa_nr")
+def get_boxa_nr(compartment):
+    nr = compartment.filter(attr_id__id=11).aggregate(nr=Sum('attr_value'))
+    return nr['nr']

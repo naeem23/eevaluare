@@ -144,13 +144,16 @@ HEATING_CHOICE = [
 FINISH_CHOICE = [
 	('medii', 'Medii'),
 	('bune', 'Bune'),
+	('inferioare', 'inferioare'),
+	('slabe', 'slabe'),
+	('superioare', 'superioare'),
+	('in curs aplicare', 'in curs aplicare'),
 ]
 
-# TRANSPORT_CHOICE = [
-# 	('metrou', 'Metrou'),
-# 	('tramvai', 'Tramvai'), 
-# 	('autobuz', 'Autobuz'),
-# ]
+EXTERIOR_FINISHS = [
+	('medii', 'medii'),
+	('bune', 'bune'),
+]
 
 ZONA_TYPE_CHOICE = [
 	('medii', 'medii'),

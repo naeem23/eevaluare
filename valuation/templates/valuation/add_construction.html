@@ -24,13 +24,25 @@
             color: #1a2035!important;
         }
         .table td {
-            border-bottom: none!important;
             height: 40px!important;
-            padding-top: 8px!important;
         }
         .required {
             border-color: #F25961 !important;
             color: #F25961 !important;
+        }
+        #id_conform, #id_finish, #id_ef_choice {
+            display: inline-block;
+            width: 22%;
+            border: none;
+            border-bottom: 2px dotted!important;
+            padding: 0;
+            padding-top: 0.6rem;
+            border-radius: 0px;
+            margin-right: 8px;
+            margin-left: 8px;
+        }
+        .fa-pencil-alt {
+            cursor: pointer;
         }
     </style>
 {% endblock stylesheets %}
@@ -75,25 +87,14 @@
 
                     <div class="card-body">
                         <div class="row">
-                            <div class="col-md-4">
+                            <div class="col-md-12">
                                 <div class="form-group">
-                                    <label for="id_structure">Regim de inaltime imobil <span class="required-label">*</span></label>
-                                    {{ form.etaj }}
-                                    <small class="form-text text-danger etaj"></small>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label for="id_structure">An constructie <span class="required-label">*</span></label>
-                                    {{ form.build_in }}
-                                    <small class="form-text text-danger build_in"></small>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label for="id_structure">Conform <span class="required-label">*</span></label>
-                                    {{ form.conform }}
-                                    <small class="form-text text-danger conform"></small>
+                                    <label id="conform_label">Conform <span class="required-label mr-2">*</span><i class="fas fa-pencil-alt text-info" id="edit-conform"></i></label>
+                                    <p class="text-light conform">Conform {{ form.conform }}, constructia are un regim de intaltime {{valuation.height}} si a fost edificata in anul {{valuation.construction_year}}</p>
+
+                                    <input type="hidden" name="show_conform" id="show_conform" value="0">
+                                    <textarea name="conform_text" id="id_conform_text" rows="3" style="display: none;" class="form-control">Conform inspectiei, constructia are un regim de intaltime 8/S+P+11E si a fost edificata in anul 2008</textarea>
+                                    <small class="form-text text-danger conform_error"></small>
                                 </div>
                             </div>
                         </div>
@@ -115,21 +116,14 @@
                             </div>
                             <div class="col-md-4">
                                 <div class="form-group">
-                                    <label for="id_closure">Inchideri <span class="required-label">*</span></label>
-                                    {{ form.closure }}
-                                    <small class="form-text text-danger closure"></small>
+                                    <label for="id_floors">Plansee <span class="required-label">*</span></label>
+                                    {{ form.floors }}
+                                    <small class="form-text text-danger floors"></small>
                                 </div>
                             </div>
                         </div>
 
                         <div class="row">
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label for="id_subcompartment">Compartimentari <span class="required-label">*</span></label>
-                                    {{ form.subcompartment }}
-                                    <small class="form-text text-danger subcompartment"></small>
-                                </div>
-                            </div>
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="id_roof">Acoperis <span class="required-label">*</span></label>
@@ -139,80 +133,113 @@
                             </div>
                             <div class="col-md-4">
                                 <div class="form-group">
-                                    <label for="id_walls">Pereti <span class="required-label">*</span></label>
-                                    {{ form.walls }}
-                                    <small class="form-text text-danger walls"></small>
+                                    <label for="id_subcompartment">Invelitoare <span class="required-label">*</span></label>
+                                    {{ form.invelitoare }}
+                                    <small class="form-text text-danger invelitoare"></small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mt-2">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label id="finish_label">Finisaje Interioare <span class="required-label mr-2">*</span></label>
+                                    <p class="text-light finish">Finisajele interioare sunt {{ form.finish }} si constau in</p>
+                                    <small class="form-text text-danger finish_error"></small>
                                 </div>
                             </div>
                         </div>
 
                         <div class="row">
-                            <div class="col-md-4">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label for="id_pardoseli">Pardoseli <span class="required-label">*</span></label>
+                                    {{ form.pardoseli }}
+                                    <small class="form-text text-danger pardoseli_error"></small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label for="id_walls">Pereti <span class="required-label">*</span></label>
+                                    {{ form.walls }}
+                                    <small class="form-text text-danger walls_error"></small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="id_interior_carpentry">Tamplarie interioara <span class="required-label">*</span></label>
                                     {{ form.interior_carpentry }}
                                     <small class="form-text text-danger interior_carpentry"></small>
                                 </div>
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="id_ceiling">Ceiling <span class="required-label">*</span></label>
+                                    <label for="id_ceiling">Plafonul <span class="required-label">*</span></label>
                                     {{ form.ceiling }}
-                                    <small class="form-text text-danger ceiling"></small>
+                                    <small class="form-text text-danger ceiling_error"></small>
                                 </div>
                             </div>
-                            <div class="col-md-4">
+                        </div>
+
+                        <div class="row mt-2">
+                            <div class="col-md-12">
                                 <div class="form-group">
-                                    <label for="exterior_finishes">Exterior finishes <span class="required-label">*</span></label>
-                                    {{ form.exterior_finishes }}
-                                    <small class="form-text text-danger exterior_finishes"></small>
+                                    <label id="ef_label">Finisaje Exterioare <span class="required-label mr-2">*</span><i class="fas fa-pencil-alt text-info" id="edit-ef"></i></label>
+                                    <p class="text-light ef">Finisajele exterioare sunt {{form.ef_choice}} si constau in tencuieli driscuite decorative</p>
+
+                                    <input type="hidden" name="show_ef" id="show_ef" value="0">
+                                    <textarea name="exterior_finishes" id="id_exterior_finishes" rows="3" style="display: none;" class="form-control">Finisajele exterioare sunt medii si constau in tencuieli driscuite decorative</textarea>
+                                    <small class="form-text text-danger ef_error"></small>
                                 </div>
                             </div>
                         </div>
 
                         <div class="row">
-                            <div class="col-md-4">
+                            <div class="col-md-12">
                                 <div class="form-group">
                                     <label for="id_exterior_carpentry">Tamplarie exterioara <span class="required-label">*</span></label>
                                     {{ form.exterior_carpentry }}
-                                    <small class="form-text text-danger exterior_carpentry"></small>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label for="id_subcompartment">Invelitoare <span class="required-label">*</span></label>
-                                    {{ form.invelitoare }}
-                                    <small class="form-text text-danger invelitoare"></small>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label for="id_subcompartment">Utilities <span class="required-label">*</span></label>
-                                    {{ form.utilities }}
-                                    <small class="form-text text-danger utilities"></small>
+                                    <small class="form-text text-danger ec_error"></small>
                                 </div>
                             </div>
                         </div>
                         
                         <div class="row">
                             <div class="col-md-4">
+                                <div class="form-group utilities">
+                                    <label for="id_utilities">Bransamente <span class="required-label">*</span></label>
+                                    {{ form.utilities }}
+                                    <small class="form-text text-danger utilities_error"></small>
+                                </div>
+                            </div> 
+                            <div class="col-md-4"> 
                                 <div class="form-group">
-                                    <label for="id_subcompartment">Dotari suplimentare</label>
-                                    {{ form.additional_equipment }}
+                                    <label for="id_closure">Inchideri <span class="required-label">*</span></label>
+                                    {{ form.closure }}
+                                    <small class="form-text text-danger closure"></small>
                                 </div>
                             </div>
                             <div class="col-md-4">
                                 <div class="form-group">
-                                    <label for="id_heating">Sistem de incalzire <span class="required-label">*</span></label>
-                                    {{ form.heating }}
-                                    <small class="form-text text-danger heating"></small>
+                                    <label for="id_subcompartment">Compartimentari <span class="required-label">*</span></label>
+                                    {{ form.subcompartment }}
+                                    <small class="form-text text-danger subcompartment"></small>
                                 </div>
                             </div>
-                            <div class="col-md-4">
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-12">
                                 <div class="form-group">
-                                    <label for="id_finish">Finisaje <span class="required-label">*</span></label>
-                                    {{ form.finish }}
-                                    <small class="form-text text-danger finish"></small>
+                                    <label id="dotari_label">Dotari Suplimentare, Sistem de Incalzire si mentiuni <span class="required-label mr-2">*</span></label>
+                                    {{form.dotari}}
+                                    <small class="form-text text-danger dotari_error"></small>
                                 </div>
                             </div>
                         </div>
@@ -226,87 +253,121 @@
                             </div>
                         </div>
                     </div>
-                
-                    <!-- floors  -->
-                    <div class="card-header">
-                        <div class="card-title">Pardoseli</div>
-                    </div>
-
-                    <div class="card-body">
-                        <div class="row">
-                            {% for r in rooms %}
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label>{{r.attr_id.name}}</label>
-                                    <select class="form-control" name="floor[]">
-                                        {% for ft in floor_type %}
-                                        <option value="{{ft.id}}">{{ft.type}}</option>
-                                        {% endfor %}
-                                    </select>
-                                </div>
-                            </div>
-                            {% endfor %}
-                        </div>
-                    </div>
 
                     <!-- surface area -->
-                    <div class="card-header">
-                        <div class="card-title">Suprafete</div>
-                    </div>
-                    
                     <div class="card-body">
-                        <table class="table table-hover">
-                            <thead>
-                                <tr>
-                                    <th scope="col" width="15%">Nr. Crt.</th>
-                                    <th scope="col" width="30%">Denumire incapere</th>
-                                    <th scope="col" width="35%">Suprafata (mp)</th>
-                                    <th></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% load my_filters %}
-                                {% for r in rooms %}
-                                    {% if r.attr_value|add:"0" > 1 %}
-                                        {% for i in r.attr_value|myrange %}
-                                        <tr class="tr">
-                                            <td class="nr"></td>
-                                            <td>
-                                                <input type="text" name="room_name[]" value="{{ r.attr_id.name }} {{ i }}" class="form-control">
-                                            </td>
-                                            <td>
-                                                <input type="number" name="area[]" placeholder="0.00" class="form-control" step="0.01" required>
-                                            </td>
-                                            <td>
-                                                {% if 'Balcon' in r.attr_id.name or 'Terrace' in r.attr_id.name %}
-                                                    <input type="hidden" name="utila[]" value="0">
-                                                {% else %}
-                                                    <input type="hidden" name="utila[]" value="1">
-                                                {% endif %}
-                                            </td>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label for="id_suprafete">Suprafete <span class="required-label mr-2">*</span></label>
+                                    <textarea name="suprafete" id="id_suprafete" rows="3" class="form-control">Următoarele suprafețe au fost determinate utilizând documentația pusă la dispoziție – Extras de carte funciară si releveul avizat. Determinarea suprafețelor luate în calcul în evaluare s-a făcut pe baza suprafețelor măsurate, conform paragrafului 23 din GEV 630 :</textarea>
+                                    <small class="form-text text-danger suprafete_error"></small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mt-3">
+                            <div class="col-md-10">
+                                <table class="table table-bordered-bd-warning suprafete-tbl">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col" width="20%">Nr. Crt.</th>
+                                            <th scope="col" width="30%">Denumire incapere</th>
+                                            <th scope="col" width="30%">Suprafata (mp)</th>
+                                            <th scope="col" width="10%"></th>
                                         </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% load my_filters %}
+                                        {% for r in rooms %}
+                                            {% if r.attr_value|add:"0" > 1 %}
+                                                {% for i in r.attr_value|myrange %}
+                                                <tr class="tr">
+                                                    <td>
+                                                        <input type="text" name="nr_crt[]" class="form-control nr">
+                                                    </td>
+                                                    <td>
+                                                        <input type="text" name="room_name[]" value="{{ r.attr_id.name }} {{ i }}" class="form-control">
+                                                    </td>
+                                                    <td>
+                                                        <input type="number" name="area[]" placeholder="0.00" class="form-control usuable_area" step="0.01" required>
+                                                    </td>
+                                                </tr>
+                                                {% endfor %}
+                                            {% else %}
+                                                <tr class="tr">
+                                                    <td>
+                                                        <input type="text" name="nr_crt[]" class="form-control nr">
+                                                    </td>
+                                                    <td>
+                                                        <input type="text" name="room_name[]" value="{{ r.attr_id.name }}" class="form-control">
+                                                    </td>
+                                                    <td>
+                                                        <input type="number" name="area[]" placeholder="0.00" class="form-control usuable_area" step="0.01" required>
+                                                    </td>
+                                                </tr>
+                                            {% endif %}
                                         {% endfor %}
-                                    {% else %}
-                                        <tr class="tr">
-                                            <td class="nr"></td>
+                                        <tr>
+                                            <td colspan="2" class="text-center font-weight-bold text-light">Suprafata Utila</td>
                                             <td>
-                                                <input type="text" name="room_name[]" value="{{ r.attr_id.name }}" class="form-control">
-                                            </td>
-                                            <td>
-                                                <input type="number" name="area[]" placeholder="0.00" class="form-control" step="0.01" required>
-                                            </td>
-                                            <td>
-                                                {% if 'Balcon' in r.attr_id.name or 'Terrace' in r.attr_id.name %}
-                                                    <input type="hidden" name="utila[]" value="0">
-                                                {% else %}
-                                                    <input type="hidden" name="utila[]" value="1">
-                                                {% endif %}
+                                                <input type="number" name="utila" id="id_utila" value="0.00" class="form-control">
                                             </td>
                                         </tr>
-                                    {% endif %}
-                                {% endfor %}
-                            </tbody>
-                        </table>
+                                        {% for r in balcons %}
+                                            {% if r.attr_value|add:"0" > 1 %}
+                                                {% for i in r.attr_value|myrange %}
+                                                <tr class="tr">
+                                                    <td>
+                                                        <input type="text" name="nr_crt[]" class="form-control nr">
+                                                    </td>
+                                                    <td>
+                                                        <input type="text" name="room_name[]" value="{{ r.attr_id.name }} {{ i }}" class="form-control">
+                                                    </td>
+                                                    <td>
+                                                        <input type="number" name="area[]" placeholder="0.00" class="form-control area" step="0.01" required>
+                                                    </td>
+                                                    
+                                                    {% if forloop.last %}
+                                                    <td>
+                                                        <button type="button" class="btn btn-icon btn-round btn-secondary btn-sm" data-toggle="tooltip" data-placement="top" title="Add More" id="add_more">
+                                                            <i class="fa fa-plus"></i>
+                                                        </button>
+                                                    </td>
+                                                    {% endif %}
+                                                </tr>
+                                                {% endfor %}
+                                            {% else %}
+                                                <tr class="tr">
+                                                    <td>
+                                                        <input type="text" name="nr_crt[]" class="form-control nr">
+                                                    </td>
+                                                    <td>
+                                                        <input type="text" name="room_name[]" value="{{ r.attr_id.name }}" class="form-control">
+                                                    </td>
+                                                    <td>
+                                                        <input type="number" name="area[]" placeholder="0.00" class="form-control area" step="0.01" required>
+                                                    </td>
+                                                    
+                                                    {% if forloop.last %}
+                                                    <td>
+                                                        <button type="button" class="btn btn-icon btn-round btn-secondary btn-sm" data-toggle="tooltip" data-placement="top" title="Add More" id="add_more">
+                                                            <i class="fa fa-plus"></i>
+                                                        </button>
+                                                    </td>
+                                                    {% endif %}
+                                                </tr>
+                                            {% endif %}
+                                        {% endfor %}
+                                        <tr>
+                                            <td colspan="2" class="text-center font-weight-bold text-light">Suprafata Totala</td>
+                                            <td>
+                                                <input type="number" name="totala" id="id_totala" value="0.00" class="form-control">
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
                 </form>
             
@@ -331,55 +392,99 @@
         var table = document.getElementsByTagName('table')[0],
         rows = table.getElementsByClassName('tr'),
         tds = table.getElementsByClassName('nr');
-        for (let i = 0, len = rows.length; i < len; i++) {
-            tds[i].innerHTML = i+1;
+        for (let i = 0, len = tds.length; i < len; i++) {
+            tds[i].value = i + 1;
         }
+
+        // add more field 
+        $('#add_more').on('click', function() {
+            let tr = '<tr class="tr"><td><input type="text" name="nr_crt[]" class="form-control nr"></td><td><input type="text" name="room_name[]" class="form-control"></td><td><input type="number" name="area[]" placeholder="0.00" class="form-control area" step="0.01" required></td><td><button type="button" class="btn btn-icon btn-round btn-danger btn-sm" data-toggle="tooltip" data-placement="top" title="Remove" onclick="remove(this)"><i class="fa fa-minus"></i></button></td></tr>';
+            $(this).closest('table').find('tr:last').prev().after(tr);
+        })
+        // remove field 
+        function remove (e) {
+            let val = Number($(e).parents('tr').find('input[name="area[]"]').val());
+            let totala = Number($('#id_totala').val());
+            totala -= val;
+            $('#id_totala').val(totala.toFixed(2))
+            $(e).parents('tr').remove();
+        }
+
+        // calculate utila and totala 
+        $('.usuable_area').keyup(function(){
+            var utila = 0.00;
+            $('.usuable_area').each( function(){
+                utila += Number($(this).val());
+            });
+            $('#id_utila').val(utila.toFixed(2));
+            $('#id_totala').val(utila.toFixed(2));
+        });
+
+        $('.suprafete-tbl').keyup(function(){
+            var utitla = Number($('#id_utila').val());
+            var totala = 0.00
+            $('.area').each( function(){
+                totala += Number($(this).val());
+            });
+            $('#id_totala').val((utitla+totala).toFixed(2));
+        });
+
+        // edit conform 
+        $("#edit-conform").on('click', function() {
+            var val = $('#show_conform').val();
+            $('#show_conform').val(val=='0' ? '1' : '0');
+            $('.conform').toggle();
+            $('#id_conform_text').toggle();
+        })
+        // edit exterior finish 
+        $("#edit-ef").on('click', function() {
+            var val = $('#show_ef').val();
+            $('#show_ef').val(val=='0' ? '1' : '0');
+            $('.ef').toggle();
+            $('#id_exterior_finishes').toggle();
+        })
 
         // form validity check 
         $('#submitBtn').on('click', function () {
-            var etaj = $('#id_etaj').val();
-            var build_in = $('#id_build_in').val();
             var conform = $('#id_conform').val();
+            var show_conform = $('#show_conform').val()
+            var conform_text = $("#id_conform_text").val();
             var structure = $('#id_structure').val();
             var foundation = $('#id_foundation').val();
-            var closure = $('#id_closure').val();
-            var subcompartment = $('#id_subcompartment').val();
+            var floors = $('#id_floors').val();
             var roof = $('#id_roof').val();
+            var invelitoare = $('#id_invelitoare').val();
+            var finish = $('#id_finish').val();
+            var pardoseli = $('#id_pardoseli').val();
             var walls = $('#id_walls').val();
             var interior_carpentry = $('#id_interior_carpentry').val();
             var ceiling = $('#id_ceiling').val();
+            var ef_choice = $('#id_ef_choice').val();
+            var show_ef = $('#show_ef').val()
             var exterior_finishes = $('#id_exterior_finishes').val();
             var exterior_carpentry = $('#id_exterior_carpentry').val();
-            var invelitoare = $('#id_invelitoare').val();
             var utilities = $('#id_utilities').val();
-            var heating = $('#id_heating').val();
-            var finish = $('#id_finish').val();
+            var closure = $('#id_closure').val();
+            var subcompartment = $('#id_subcompartment').val();
+            var dotari = $('#id_dotari').val();
+            var suprafete = $('#id_suprafete').val();
+            var nr_pass = check_nrcrt();
+            var room_pass = room_name_validation();
+            var area_pass = area_validation();
             
-            if (etaj.length > 1 && build_in.length > 1 && conform.length > 0 && structure.length > 0 && foundation.length > 0 && closure.length > 0 && subcompartment.length > 0 && roof.length > 0 && walls.length > 1 && interior_carpentry.length > 1 && ceiling.length > 1 && exterior_carpentry.length > 1 && exterior_finishes.length > 1 && invelitoare.length > 0 && utilities.length > 0 && heating.length > 0 && finish.length > 0) {
+            if (((show_conform == '1' && conform_text.length > 1) || conform.length > 0) && structure.length > 0 && foundation.length > 0 && floors.length > 0 && roof.length > 0 && invelitoare.length > 0 && finish.length > 0 && pardoseli.length > 1 && walls.length > 1 && interior_carpentry.length > 1 && ceiling.length > 1 && ((show_ef == '1' && exterior_finishes.length > 1) || ef_choice.length > 0) && exterior_carpentry.length > 1 && utilities.length > 0 && closure.length > 0 && subcompartment.length > 0 && dotari.length > 1 && suprafete.length > 1 && nr_pass == true && room_pass == true && area_pass == true) {
                 $("#construction-form").submit();
             } else {
-                if (etaj.length < 1) {
-                    $("#id_etaj").addClass('required')
-                    $(".etaj").text('This field is required')
+                if(show_conform == '1' && conform_text.length < 1) { 
+                    $('#id_conform_text').addClass('required')
+                    $(".conform_error").text('This field is required')
+                } else if (conform.length < 1) {
+                    $('#id_conform').addClass('required')
+                    $(".conform_error").text('This field is required')
                 } else {
-                    $("#id_etaj").removeClass('required')
-                    $(".etaj").text('')
-                }
-
-                if (build_in.length < 1) {
-                    $("#id_build_in").addClass('required')
-                    $(".build_in").text('This field is required')
-                } else {
-                    $("#id_build_in").removeClass('required')
-                    $(".build_in").text('')
-                }
-                
-                if (conform.length < 1) {
-                    $("#id_conform").addClass('required')
-                    $(".conform").text('This field is required')
-                } else {
-                    $("#id_conform").removeClass('required')
-                    $(".conform").text('')
+                    $('#id_conform_text').removeClass('required')
+                    $('#id_conform').removeClass('required')
+                    $(".conform_error").text('')
                 }
                 
                 if (structure.length < 1) {
@@ -398,6 +503,98 @@
                     $(".foundation").text('')
                 }
                 
+                if (floors.length < 1) {
+                    $("#id_floors").addClass('required')
+                    $(".floors").text('This field is required')
+                } else {
+                    $("#id_floors").removeClass('required')
+                    $(".floors").text('')
+                }
+                
+                if (roof.length < 1) {
+                    $("#id_roof").addClass('required')
+                    $(".roof").text('This field is required')
+                } else {
+                    $("#id_roof").removeClass('required')
+                    $(".roof").text('')
+                }
+                
+                if (invelitoare.length < 1) {
+                    $("#id_invelitoare").addClass('required')
+                    $(".invelitoare").text('This field is required')
+                } else {
+                    $("#id_invelitoare").removeClass('required')
+                    $(".invelitoare").text('')
+                }
+                
+                if (finish.length < 1) {
+                    $("#id_finish").addClass('required')
+                    $(".finish_error").text('This field is required')
+                } else {
+                    $("#id_finish").removeClass('required')
+                    $(".finish_error").text('')
+                }
+                
+                if (pardoseli.length < 1) {
+                    $("#id_pardoseli").addClass('required')
+                    $(".pardoseli_error").text('This field is required')
+                } else {
+                    $("#id_pardoseli").removeClass('required')
+                    $(".pardoseli_error").text('')
+                }
+                
+                if (walls.length < 1) {
+                    $("#id_walls").addClass('required')
+                    $(".walls_error").text('This field is required')
+                } else {
+                    $("#id_walls").removeClass('required')
+                    $(".walls_error").text('')
+                }
+
+                if (interior_carpentry.length < 1) {
+                    $("#id_interior_carpentry").addClass('required')
+                    $(".interior_carpentry").text('This field is required')
+                } else {
+                    $("#id_interior_carpentry").removeClass('required')
+                    $(".interior_carpentry").text('')
+                }
+                
+                if (ceiling.length < 1) {
+                    $("#id_ceiling").addClass('required')
+                    $(".ceiling_error").text('This field is required')
+                } else {
+                    $("#id_ceiling").removeClass('required')
+                    $(".ceiling_error").text('')
+                }
+
+                if(show_ef == '1' && exterior_finishes.length < 1) { 
+                    $('#id_exterior_finishes').addClass('required')
+                    $(".ef_error").text('This field is required')
+                } else if (ef_choice.length < 1) {
+                    $('#id_ef_choice').addClass('required')
+                    $(".ef_error").text('This field is required')
+                } else {
+                    $('#id_exterior_finishes').removeClass('required')
+                    $('#id_ef_choice').removeClass('required')
+                    $(".ef_error").text('')
+                }
+                
+                if (exterior_carpentry.length < 1) {
+                    $("#id_exterior_carpentry").addClass('required')
+                    $(".ec_error").text('This field is required')
+                } else {
+                    $("#id_exterior_carpentry").removeClass('required')
+                    $(".ec_error").text('')
+                }
+                
+                if (utilities.length < 1) {
+                    $(".utilities .ms-parent").addClass('required')
+                    $(".utilities_error").text('This field is required')
+                } else {
+                    $(".utilities .ms-parent").removeClass('required')
+                    $(".utilities_error").text('')
+                }
+                
                 if (closure.length < 1) {
                     $("#id_closure").addClass('required')
                     $(".closure").text('This field is required')
@@ -413,87 +610,65 @@
                     $("#id_subcompartment").removeClass('required')
                     $(".subcompartment").text('')
                 }
-                
-                if (roof.length < 1) {
-                    $("#id_roof").addClass('required')
-                    $(".roof").text('This field is required')
+
+                if (dotari.length < 1) {
+                    $("#id_dotari").addClass('required')
+                    $(".dotari_error").text('This field is required')
                 } else {
-                    $("#id_roof").removeClass('required')
-                    $(".roof").text('')
+                    $("#id_dotari").removeClass('required')
+                    $(".dotari_error").text('')
                 }
-                
-                if (walls.length < 1) {
-                    $("#id_walls").addClass('required')
-                    $(".walls").text('This field is required')
+
+                if (suprafete.length < 1) {
+                    $("#id_suprafete").addClass('required')
+                    $(".suprafete_error").text('This field is required')
                 } else {
-                    $("#id_walls").removeClass('required')
-                    $(".walls").text('')
-                }
-                
-                if (interior_carpentry.length < 1) {
-                    $("#id_interior_carpentry").addClass('required')
-                    $(".interior_carpentry").text('This field is required')
-                } else {
-                    $("#id_interior_carpentry").removeClass('required')
-                    $(".interior_carpentry").text('')
-                }
-                
-                if (ceiling.length < 1) {
-                    $("#id_ceiling").addClass('required')
-                    $(".ceiling").text('This field is required')
-                } else {
-                    $("#id_ceiling").removeClass('required')
-                    $(".ceiling").text('')
-                }
-                
-                if (exterior_finishes.length < 1) {
-                    $("#id_exterior_finishes").addClass('required')
-                    $(".exterior_finishes").text('This field is required')
-                } else {
-                    $("#id_exterior_finishes").removeClass('required')
-                    $(".exterior_finishes").text('')
-                }
-                
-                if (exterior_carpentry.length < 1) {
-                    $("#id_exterior_carpentry").addClass('required')
-                    $(".exterior_carpentry").text('This field is required')
-                } else {
-                    $("#id_exterior_carpentry").removeClass('required')
-                    $(".exterior_carpentry").text('')
-                }
-                
-                if (invelitoare.length < 1) {
-                    $("#id_invelitoare").addClass('required')
-                    $(".invelitoare").text('This field is required')
-                } else {
-                    $("#id_invelitoare").removeClass('required')
-                    $(".invelitoare").text('')
-                }
-                
-                if (utilities.length < 1) {
-                    $("#id_utilities").addClass('required')
-                    $(".utilities").text('This field is required')
-                } else {
-                    $("#id_utilities").removeClass('required')
-                    $(".utilities").text('')
-                }
-                
-                if (heating.length < 1) {
-                    $("#id_heating").addClass('required')
-                    $(".heating").text('This field is required')
-                } else {
-                    $("#id_heating").removeClass('required')
-                    $(".heating").text('')
-                }
-                
-                if (finish.length < 1) {
-                    $("#id_finish").addClass('required')
-                    $(".finish").text('This field is required')
-                } else {
-                    $("#id_finish").removeClass('required')
-                    $(".finish").text('')
+                    $("#id_suprafete").removeClass('required')
+                    $(".suprafete_error").text('')
                 }
             }
         })
+
+        function check_nrcrt() {
+            var pass = false;
+            $('.nr').each(function() {
+                if ($(this).val().length > 0) {
+                    pass = true;
+                    $(this).removeClass('required')
+                } else {
+                    pass = false;
+                    $(this).addClass('required')
+                }
+            })
+            return pass;
+        }
+
+        function room_name_validation() {
+            var pass = false;
+            $('input[name="room_name[]"]').each(function() {
+                if($(this).val().length > 0) {
+                    pass = true;
+                    $(this).removeClass('required')
+                } else {
+                    pass = false;
+                    $(this).addClass('required')
+                }
+            })
+            return pass;
+        }
+
+        function area_validation() {
+            var pass = false;
+            $('input[name="area[]"]').each(function() {
+                if($(this).val().length > 0) {
+                    pass = true;
+                    $(this).removeClass('required')
+                } else {
+                    pass = false;
+                    $(this).addClass('required')
+                }
+            })
+            return pass;
+        }
     </script>
 {% endblock javascripts %}  

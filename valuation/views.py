@@ -1,14 +1,13 @@
 import ast
 import datetime
 import json
-from math import perm
-from django import db
 from django.utils.translation import templatize
 import requests
 import string
 import urllib.parse
+from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
-from django.db.models import Sum
+from django.db.models import Sum, Q
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
@@ -18,7 +17,7 @@ from requests.api import get
 from dashboard import models as db_model 
 from valuation import models
 from . import forms
-import valuation 
+User = get_user_model()
 
 
 # ========================================================
@@ -35,7 +34,7 @@ def initial_form(request):
         form = forms.InitialForm(request.POST)
         if form.is_valid():
             data = form.save(commit=False)
-            data.status = models.Status.objects.get(id=1)
+            data.status = models.Status.objects.get(status__icontains='progress')
             data.inspection_date = timezone.now()
             data.save()
 
@@ -108,6 +107,20 @@ def add_summary(request, id):
             data.ref_no = valuation
             data.save()
             # data.approach.set() to-do
+
+            # save summary value 
+            mv_name = request.POST.getlist('field_name_mv[]')
+            mv_value = request.POST.getlist('field_value_mv[]')
+            for n, v in zip(mv_name, mv_value):
+                if v != None:
+                    models.SummaryValue.objects.create(summary=data, field_name=n, field_value=v, approache="market")
+
+            iv_name = request.POST.getlist('field_name_iv[]')
+            iv_value = request.POST.getlist('field_value_iv[]')
+            for name, val in zip(iv_name, iv_value):
+                if val != None:
+                    models.SummaryValue.objects.create(summary=data, field_name=name, field_value=val, approache="income")
+
             if request.POST.get("pre_url") == 'details':
                 return redirect('dashboard:details', id=valuation.id)
             else:
@@ -152,7 +165,11 @@ def save_photos(request):
 def add_construction(request, id):
     template = 'valuation/add_construction.html'
     valuation = get_object_or_404(models.ValuatedProperty, id=id)
-    rooms = models.CompartimentareValue.objects.filter(ref_no=valuation)
+    utila_filter = Q()
+    for x in ['balcon','terasa','parcare','boxa']:
+        utila_filter = utila_filter | Q(attr_id__name__icontains=x)
+    rooms = models.CompartimentareValue.objects.filter(ref_no=valuation).exclude(utila_filter)
+    balcons = models.CompartimentareValue.objects.filter(ref_no=valuation, attr_id__name__icontains='balcon')
     floor_type = models.FloorType.objects.all()
     pre_url = request.META.get("HTTP_REFERER")
 
@@ -161,28 +178,18 @@ def add_construction(request, id):
         if form.is_valid():
             data = form.save(commit=False)
             data.ref_no = valuation
+            data.dps = form.cleaned_data.get('conform_text') if request.POST.get('show_conform') == '1' else None 
+            data.ac = form.cleaned_data.get('exterior_finishes') if request.POST.get('show_ef') == '1' else None
             data.save()
             data.utilities.set(form.cleaned_data['utilities'])
-            data.additional_equipment.set(form.cleaned_data['additional_equipment'])
-
-            # create floor type
-            i = 0
-            floors = request.POST.getlist('floor[]')
-            for r in rooms:
-                ft = models.FloorType.objects.get(id=floors[i])
-                r.floor_type = ft
-                r.save()
-                i += 1
             
             # create Suprafete
+            nr_crt = request.POST.getlist('nr_crt[]')
             room_name = request.POST.getlist('room_name[]')
             areas = request.POST.getlist('area[]')
-            utila = request.POST.getlist('utila[]')
-            print(utila)
 
-            for r, a, u in zip(room_name, areas, utila):
-                usable = True if u == '1' else False
-                models.Suprafete.objects.create(ref_no=valuation, room_name=r, area=a, utila=usable)
+            for n, r, a in zip(nr_crt, room_name, areas):
+                models.Suprafete.objects.create(ref_no=valuation, nr_crt=n, room_name=r, area=a)
             
             if request.POST.get('pre_url') == 'details':
                 return redirect('dashboard:details', id=id)
@@ -195,6 +202,7 @@ def add_construction(request, id):
         'valuation': valuation,
         'form': form,
         'rooms': rooms,
+        'balcons': balcons,
         'floor_type': floor_type,
         'pre_url': pre_url,
         'segment': 'construction',
@@ -210,10 +218,17 @@ def add_presentation(request, id):
     template = 'valuation/add_presentation.html'
     valuation = get_object_or_404(models.ValuatedProperty, id=id) 
     camara = models.CompartimentareValue.objects.filter(ref_no=valuation,attr_id__pk__in=[1,3,4]).aggregate(camara=Sum('attr_value'))
-    utila = models.Suprafete.objects.filter(ref_no=valuation, utila=True).aggregate(utila = Sum('area'))
-    totala = models.Suprafete.objects.filter(ref_no=valuation).aggregate(totala=Sum('area'))
     transport = models.Transport.objects.all()
-    height = models.Construction.objects.filter(ref_no=valuation).values('etaj')
+    try:
+        valued_property = models.ValuationSummary.objects.values('valued_property').filter(ref_no=valuation).latest('id')
+    except:
+        valued_property = None
+    try:
+        const = models.Construction.objects.filter(ref_no=valuation).latest('id')
+    except:
+        const = None
+    
+    print('const ====== '+ str(const))
     pre_url = request.META.get("HTTP_REFERER")
 
     if request.method == 'POST':
@@ -235,10 +250,9 @@ def add_presentation(request, id):
     context = {
         'valuation': valuation,
         'camara': camara['camara'],
-        'utila': utila['utila'],
-        'totala': totala['totala'],
+        'const': const,
         'transport': transport,
-        'height': height,
+        'valued_property': valued_property,
         'form': form,
         'segment': 'presentation',
         'pre_url': pre_url,
@@ -252,13 +266,18 @@ def add_source(request):
         vid = request.POST.get('vid')
         valuation = get_object_or_404(models.ValuatedProperty, id=vid)
         source = request.POST.get('source')
-        response = models.SourceofInformation.objects.create(ref_no=valuation, source=source)
+        check_source = models.SourceofInformation.objects.filter(ref_no=valuation, source=source)
+        if check_source:
+            response = None
+        else:
+            response = models.SourceofInformation.objects.create(ref_no=valuation, source=source)
+        
         if response:
             return JsonResponse({'success': 'true', 'id': response.id})
         else:
-            return JsonResponse({'success': 'false'})
+            return JsonResponse({'success': 'false', 'msg': 'exists'})
     else:
-        return JsonResponse({'success': 'false'})
+        return JsonResponse({'success': 'false', 'msg': 'none'})
 
 
 # ============================================================
@@ -287,7 +306,7 @@ def add_market_analysis(request, id):
             if request.POST.get('pre_url') == 'details':
                 return redirect('dashboard:details', id=id)
             else:
-                return redirect('valuation:add_anexa', id=id)
+                return redirect('valuation:select_comparable', id=id)
     else:
         form = forms.MarketAnalysisForm()
 
@@ -301,14 +320,6 @@ def add_market_analysis(request, id):
     return render(request, template, context)
 
 
-# ==========================================================
-# ====================== anexa data ========================
-# ==========================================================
-@login_required(login_url='/signin/')
-def add_anexa(request, id):
-    return HttpResponse('soemthing')
-
-
 # =====================================================================
 # =================== search and select comparable ====================
 # =====================================================================
@@ -316,14 +327,21 @@ def add_anexa(request, id):
 def select_comparable(request, id):
     template = 'valuation/select_comparable.html'
     valuation = get_object_or_404(models.ValuatedProperty, id=id)
+    pre_url = request.META.get("HTTP_REFERER")
 
     if request.method == 'POST':
         comp = request.POST.getlist('comp[]')
         nr_comp = request.POST.get('nr_comapratii')
-        return redirect(reverse('valuation:add_comparable', args=[id])+'?comp='+urllib.parse.quote(str(comp))+'&nr_comp='+str(nr_comp))
+
+        if request.POST.get('pre_url') == 'details':
+            return redirect(reverse('valuation:add_comparable', args=[id])+'?comp='+urllib.parse.quote(str(comp))+'&nr_comp='+str(nr_comp)+'?page=details')
+        else:
+            return redirect(reverse('valuation:add_comparable', args=[id])+'?comp='+urllib.parse.quote(str(comp))+'&nr_comp='+str(nr_comp))
 
     context = {
         'valuation': valuation,
+        'pre_url': pre_url,
+        'segment': 'comparable',
     }
     return render(request, template, context)
 
@@ -343,20 +361,23 @@ def add_comparable(request, id):
     template = 'valuation/add_comparable.html'
     valuation = get_object_or_404(models.ValuatedProperty, id=id)
     comp = ast.literal_eval(request.GET.get('comp'))
-    utila = models.Suprafete.objects.filter(ref_no__id=id, utila=True).aggregate(utila=Sum('area'))
-    sbalcon = models.Suprafete.objects.filter(ref_no__id=id, utila=False).aggregate(balcon=Sum('area'))
+    pre_url = 'details' if request.GET.get('page') else None
     mobila = models.MobilaType.objects.all()
     prop_rights = models.PropertyRightType.objects.all()
     comp_type = models.CompartmentType.objects.all()
     finish_type = models.FinishType.objects.all()
     heating = models.HeatingSystem.objects.all()
-    const = models.Construction.objects.filter(ref_no__id=id).values('etaj', 'build_in', 'heating_id', 'finish_id').latest('-id')
+    try:
+        const = models.Construction.objects.filter(ref_no__id=id).latest('id')
+    except:
+        const = None
     if comp:
         comparable = models.ComparableProperty.objects.filter(id__in=comp)
     else:
         comparable = None
     nr_comp = request.GET.get('nr_comp')
     letters = string.ascii_uppercase
+    msg = None
 
     if request.method == 'POST':
         sale_price = request.POST.getlist('sale_price[]')
@@ -473,7 +494,7 @@ def add_comparable(request, id):
         estimated_value = request.POST.get('estimated_value')
         smallest_gross = request.POST.get('smallest_gross')
 
-        sub_prop = models.ComparableProperty.objects.create(ref_no=valuation, is_comparable=0, ad=sub_avdata, pr=sub_pr, fc=sub_fc, sc=sub_sc, ape=sub_ape, me=sub_me,lc=sub_location, cp=sub_cp, cy=sub_cy, area=subarea, finish=sub_finish, etaj=sub_etaj, balcon=subbalcon, price_persqm=price_persqm, hs=sub_hs, opt1_name=opt1_name, opt1_val=sub_opt1_val, opt2_name=opt2_name, opt2_val=sub_opt2_val, opt3_name=opt3_name, opt3_val=sub_opt3_val)
+        sub_prop = models.ComparableProperty.objects.create(ref_no=valuation, is_comparable=0, ad=sub_avdata, pr=sub_pr, fc=sub_fc, sc=sub_sc, ape=sub_ape, me=sub_me,lc=sub_location, cp=sub_cp, cy=sub_cy, area=subarea, finish=sub_finish, etaj=sub_etaj, balcon=subbalcon, hs=sub_hs, opt1_name=opt1_name, opt1_val=sub_opt1_val, opt2_name=opt2_name, opt2_val=sub_opt2_val, opt3_name=opt3_name, opt3_val=sub_opt3_val)
 
         comp_list = []
         if comparable:
@@ -487,14 +508,31 @@ def add_comparable(request, id):
                 prop = models.ComparableProperty.objects.create(sale_price=sale_price[i], mobila=mobila[i], ma=ma[i], parking_boxa=parking_boxa[i], pba=pba[i], ad=ad[i], pr=pr[i], fc=fc[i], sc=sc[i], ape=ape[i], me=me[i],lc=lc[i], cp=cp[i], cy=cy[i], area=area[i], finish=finish[i], etaj=etaj[i], balcon=balcon[i], hs=hs[i], opt1_name=opt1_name, opt1_val=opt1_val[i], opt2_name=opt2_name, opt2_val=opt2_val[i], opt3_name=opt3_name, opt3_val=opt3_val[i])
                 comp_list.append(prop.id)
                 
-        table = models.ComparableTable.objects.create(ref_no=valuation, comparable=comp_list, name=letters[:int(nr_comp)], op=op, margin=margin, cv=cv, mp=mp, motivation=motivation, pr_percent=pr_percent, pr_euro=pr_euro, pr_price=pr_price, pr_motivation=pr_motivation, fc_percent=fc_percent, fc_euro=fc_euro, fc_price=fc_price, fc_motivation=fc_motivation, sc_percent=sc_percent, sc_euro=sc_euro, sc_price=sc_price, sc_motivation=sc_motivation, ape_percent=ape_percent, ape_euro=ape_euro, ape_price=ape_price, ape_motivation=ape_motivation, me_percent=me_percent, me_euro=me_euro, me_price=me_price, me_motivation=me_motivation, lc_percent=lc_percent, lc_euro=lc_euro, lc_motivation=lc_motivation, cp_percent=cp_percent, cp_euro=cp_euro, cp_motivation=cp_motivation, cy_percent=cy_percent, cy_euro=cy_euro, cy_motivation=cy_motivation, su_diff=su_diff, su_percent=su_percent, su_euro=su_euro, su_motivation=su_motivation, finish_percent=finish_percent, finish_euro=finish_euro, finish_motivation=finish_motivation, etaj_percent=etaj_percent, etaj_euro=etaj_euro, etaj_motivation=etaj_motivation, balcon_percent=balcon_percent, balcon_euro=balcon_euro, balcon_motivation=balcon_motivation, hs_percent=hs_percent, hs_euro=hs_euro, hs_motivation=hs_motivation, opt1_percent=opt1_percent, opt1_euro=opt1_euro, opt1_motivation=opt1_motivation, opt2_percent=opt2_percent, opt2_euro=opt2_euro, opt2_motivation=opt2_motivation, opt3_percent=opt3_percent, opt3_euro=opt3_euro, opt3_motivation=opt3_motivation, net_adjustment=net_adjustment,adjustment_price=adjustment_price, adjustment_no=adjustment_no,total_percent=total_percent,total_euro=total_euro,gross_percent=gross_percent,gross_euro=gross_euro,estimated_value=estimated_value,smallest_gross=smallest_gross)
+        table = models.ComparableTable.objects.create(ref_no=valuation, comparable=comp_list, name=letters[:int(nr_comp)], op=op, margin=margin, cv=cv, mp=mp, motivation=motivation, pr_percent=pr_percent, pr_euro=pr_euro, pr_price=pr_price, pr_motivation=pr_motivation, fc_percent=fc_percent, fc_euro=fc_euro, fc_price=fc_price, fc_motivation=fc_motivation, sc_percent=sc_percent, sc_euro=sc_euro, sc_price=sc_price, sc_motivation=sc_motivation, ape_percent=ape_percent, ape_euro=ape_euro, ape_price=ape_price, ape_motivation=ape_motivation, me_percent=me_percent, me_euro=me_euro, me_price=me_price, me_motivation=me_motivation, lc_percent=lc_percent, lc_euro=lc_euro, lc_motivation=lc_motivation, cp_percent=cp_percent, cp_euro=cp_euro, cp_motivation=cp_motivation, cy_percent=cy_percent, cy_euro=cy_euro, cy_motivation=cy_motivation, su_diff=su_diff, su_percent=su_percent, su_euro=su_euro, su_motivation=su_motivation, finish_percent=finish_percent, finish_euro=finish_euro, finish_motivation=finish_motivation, etaj_percent=etaj_percent, etaj_euro=etaj_euro, etaj_motivation=etaj_motivation, price_persqm=price_persqm, balcon_percent=balcon_percent, balcon_euro=balcon_euro, balcon_motivation=balcon_motivation, hs_percent=hs_percent, hs_euro=hs_euro, hs_motivation=hs_motivation, opt1_percent=opt1_percent, opt1_euro=opt1_euro, opt1_motivation=opt1_motivation, opt2_percent=opt2_percent, opt2_euro=opt2_euro, opt2_motivation=opt2_motivation, opt3_percent=opt3_percent, opt3_euro=opt3_euro, opt3_motivation=opt3_motivation, net_adjustment=net_adjustment,adjustment_price=adjustment_price, adjustment_no=adjustment_no,total_percent=total_percent,total_euro=total_euro,gross_percent=gross_percent,gross_euro=gross_euro,estimated_value=estimated_value,smallest_gross=smallest_gross)
 
-        return redirect('dashboard:details', id=id)
+        # mvb table creation 
+        sub_rent_sqm = request.POST.get('sub_rent_sqm')
+        sub_monthly_rent = request.POST.get('sub_monthly_rent')
+        sub_vbp = request.POST.get('sub_vbp')
+        vpcd = request.POST.get('vpcd')
+        vpcd_rotund = request.POST.get('vpcd_rotund')
+        monthly_rent = request.POST.getlist('monthly_rent[]')
+        rent_sqm = request.POST.getlist('rent_sqm[]')
+        vbp = request.POST.getlist('mvb_vbp[]')
+        mvbp = request.POST.getlist('mvb_mvbp[]')
+        min_mvbp = request.POST.get('mvb_min')
+        mvb_table = models.MvbTable.objects.create(ref_no=valuation, sub_rent_sqm=sub_rent_sqm, sub_monthly_rent=sub_monthly_rent, sub_vbp=sub_vbp,vpcd=vpcd, vpcd_rotund=vpcd_rotund,monthly_rent=monthly_rent,rent_sqm=rent_sqm,vbp=vbp,mvbp=mvbp,min_mvbp=min_mvbp)
+    
+        if table and mvb_table:
+            if request.POST.get('pre_url') == 'details':
+                return redirect('dashboard:details', id=id)
+            else:
+                return redirect('valuation:add_anexa', id=id)
+        else:
+            msg = 'Something went wrong.'
 
     context = {
         'valuation': valuation,
-        's_area': utila['utila'],
-        's_balcon': sbalcon['balcon'],
         'comparable': comparable,
         'nr_comp': int(nr_comp),
         'mobila': mobila,
@@ -503,9 +541,160 @@ def add_comparable(request, id):
         'finish_type': finish_type,
         'heating': heating,
         'const': const,
+        'msg': msg,
+        'pre_url': pre_url,
+        'segment': 'comparable',
     }
     return render(request, template, context)
 
 
+# ==========================================================
+# ====================== anexa data ========================
+# ==========================================================
+@login_required(login_url='/signin/')
+def add_anexa(request, id):
+    return HttpResponse('soemthing')
 
+
+# =========================================================================
+# ========================== edit initial form ============================
+# =========================================================================
+
+
+
+# =========================================================================
+# ========================== evaluare details =============================
+# =========================================================================
+@login_required(login_url='/signin/')
+def valuation_details(request, id):
+    template = 'valuation/valuation_details.html'
+    valuation = get_object_or_404(models.ValuatedProperty, id=id)
+    compartments = models.CompartimentareValue.objects.filter(ref_no=valuation)
+    camara = models.CompartimentareValue.objects.filter(ref_no=valuation,attr_id__pk__in=[1,3,4]).aggregate(camara=Sum('attr_value'))
+    custom_fields = models.CustomFieldValue.objects.filter(ref_no=valuation)
+    photos = models.Photo.objects.filter(ref_no=valuation)
+    try:
+        summary = models.ValuationSummary.objects.filter(ref_no=valuation).latest('id')
+    except:
+        summary = None 
+    try:
+        const = models.Construction.objects.filter(ref_no=valuation).latest('id')
+    except:
+        const = None 
+    source = models.SourceofInformation.objects.filter(ref_no=valuation)
+    try:
+        presentation = models.PresentationData.objects.filter(ref_no=valuation).latest('id')
+    except:
+        presentation = None 
+    try:
+        market = models.MarketAnalysis.objects.filter(ref_no=valuation).latest('id')
+    except:
+        market = None 
+    status = models.Status.objects.all()
+    context = {
+        'valuation': valuation,
+        'compartments': compartments,
+        'camara': camara,
+        'custom_fields': custom_fields,
+        'photos': photos,
+        'summary': summary,
+        'const': const,
+        'source': source,
+        'presentation': presentation,
+        'market': market,
+        'status': status,
+    }
+    return render(request, template, context)
+
+
+# =========================================================================
+# ===================== manage comparable properties ======================
+# =========================================================================
+# @login_required(login_url='/signin/')
+# def add_comparable(request):
+#     template = 'valuation/add_comp_property.html'
+#     mobila = models.MobilaType.objects.all()
+#     prop_rights = models.PropertyRightType.objects.all()
+#     comp_type = models.CompartmentType.objects.all()
+#     finish_type = models.FinishType.objects.all()
+#     heating = models.HeatingSystem.objects.all()
+
+#     if request.method == 'POST':
+#         form = models.ComparableForm(request.POST)
+#         if form.is_valid():
+#             form.save()
+#             request.session['comp_added'] = True
+#             return redirect('dashboard:comparable_list')
+#     else:
+#         form = models.ComparableForm()
+
+#     context = {
+#         'segment': 'comparable',
+#         'mobila': mobila,
+#         'prop_rights': prop_rights,
+#         'comp_type': comp_type,
+#         'finish_type': finish_type,
+#         'heating': heating,
+#         'form': form,
+#     }
+#     return render(request, template, context)
+
+
+# @login_required(login_url='/signin/')
+# def comparable_details(request, id):
+# 	if request.session.get('comp_edit'):
+# 		msg = 'updated'
+# 		try:
+# 			del request.session['updated']
+# 		except KeyError:
+# 			pass 
+# 	else:
+# 		msg = None
+
+# 	template = 'valuationform/comparable_details.html'
+# 	comparable = get_object_or_404(db_model.ComparableProperty, id=id)
+# 	context = {
+# 		'comparable': comparable,
+# 		'segment': 'comparable',
+# 		'msg': msg,
+# 	}
+# 	return render(request, template, context)
+	
+
+# @login_required(login_url='/signin/')
+# def delete_comparable(request):
+# 	cid = request.GET.get('id')
+# 	instance = get_object_or_404(db_model.ComparableProperty, id=cid)
+# 	try:
+# 		response = instance.delete()
+# 		if response:
+# 			return JsonResponse({'success': 'true'})
+# 	except:
+# 		return JsonResponse({'success': 'false'})
+
+
+# @login_required(login_url='/signin/')
+# def edit_comparable(request, id):
+# 	template = 'valuationform/add_comparable.html'
+# 	msg = None
+# 	instance = get_object_or_404(db_model.ComparableProperty, id=id)
+
+# 	if request.method == 'POST':
+# 		form = db_form.ComparableEditForm(request.POST, instance=instance)
+# 		if form.is_valid():
+# 			form.save()
+# 			request.session['comp_edit'] = True
+# 			return redirect('dashboard:comparable_details', id=id)
+# 		else:
+# 			msg = "Something went wrong."
+# 	else:
+# 		form = db_form.ComparableEditForm(instance=instance)
+
+# 	context = {
+# 		'instance': instance,
+# 		'segment': 'comparable',
+# 		'form': form,
+# 		'msg': msg,
+# 	}
+# 	return render(request, template, context)
 

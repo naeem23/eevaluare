@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "base-form.html" %}
 
 {% block title %} Comparabile Selection {% endblock %} 
 
@@ -81,6 +81,10 @@
 
                 <form method="POST" id="comp_form">
                     {% csrf_token %}
+                    {% if 'details' in pre_url %}
+                        <input type="hidden" name="pre_url" value="details">
+                    {% endif %}
+                    
                     <div class="card-body pt-0">
                         <div class="row search-result">
                             <div class="col-md-12">

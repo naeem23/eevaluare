@@ -26,6 +26,8 @@ class InitialForm(forms.ModelForm):
 	locatie = forms.ChoiceField(required=False, choices=LOCATIE_CHOICE, widget=forms.Select(attrs={'class': 'form-control'}))
 	latitude = forms.CharField(max_length=255, widget=forms.TextInput(attrs={'class': 'form-control', 'type': 'hidden'}))
 	longitude = forms.CharField(max_length=255, widget=forms.TextInput(attrs={'class': 'form-control', 'type': 'hidden'}))
+	height = forms.CharField(max_length=55, widget=forms.TextInput(attrs={'class': 'form-control'}))
+	construction_year = forms.CharField(max_length=5, widget=forms.TextInput(attrs={'class': 'form-control'}))
 	owner = forms.CharField(max_length=150, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Proprietar'}))
 	nume_client = forms.CharField(max_length=150, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nume Client'}))
 	ct_address = forms.CharField(required=False, max_length=150, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Client Address'}))
@@ -40,13 +42,7 @@ class InitialForm(forms.ModelForm):
 class AddValuationSummary(forms.ModelForm):
 	purpose = forms.ModelChoiceField(queryset=ValuationPurpose.objects.all(), widget=forms.Select(attrs={'class': 'form-control',}))
 	amav = forms.DecimalField(max_digits=10, decimal_places=2, widget=forms.NumberInput(attrs={'class': 'form-control', 'placeholder': '0.00', 'step': '0.01'}))
-	suprateran_mv = forms.DecimalField(required=False, max_digits=10, decimal_places=2, widget=forms.NumberInput(attrs={'class': 'form-control', 'placeholder': '0.00', 'step': '0.01'}))
-	subteran_mv = forms.DecimalField(required=False, max_digits=10, decimal_places=2, widget=forms.NumberInput(attrs={'class': 'form-control', 'placeholder': '0.00', 'step': '0.01'}))
-	boxa_mv = forms.DecimalField(required=False, max_digits=10, decimal_places=2, widget=forms.NumberInput(attrs={'class': 'form-control', 'placeholder': '0.00', 'step': '0.01'}))
 	aiav = forms.DecimalField(max_digits=10, decimal_places=2, widget=forms.NumberInput(attrs={'class': 'form-control', 'placeholder': '0.00', 'step': '0.01'}))
-	suprateran_iv = forms.DecimalField(required=False, max_digits=10, decimal_places=2, widget=forms.NumberInput(attrs={'class': 'form-control', 'placeholder': '0.00', 'step': '0.01'}))
-	subteran_iv = forms.DecimalField(required=False, max_digits=10, decimal_places=2, widget=forms.NumberInput(attrs={'class': 'form-control', 'placeholder': '0.00', 'step': '0.01'}))
-	boxa_iv = forms.DecimalField(required=False, max_digits=10, decimal_places=2, widget=forms.NumberInput(attrs={'class': 'form-control', 'placeholder': '0.00', 'step': '0.01'}))
 
 	class Meta:
 		model = ValuationSummary
@@ -54,24 +50,27 @@ class AddValuationSummary(forms.ModelForm):
 
 
 class ConstructionForm(forms.ModelForm):
-	etaj = forms.CharField(max_length=55, widget=forms.TextInput(attrs={'class': 'form-control'}))
-	build_in = forms.CharField(max_length=55, widget=forms.TextInput(attrs={'class': 'form-control'}))
+	# etaj = forms.CharField(max_length=55, widget=forms.TextInput(attrs={'class': 'form-control'}))
+	# build_in = forms.CharField(max_length=55, widget=forms.TextInput(attrs={'class': 'form-control'}))
 	conform = forms.ModelChoiceField(queryset=ConformType.objects.all(), widget=forms.Select(attrs={'class': 'form-control',})) 
 	structure = forms.ModelChoiceField(queryset=StructureType.objects.all(), widget=forms.Select(attrs={'class': 'form-control',}))
 	foundation = forms.ModelChoiceField(queryset=FoundationType.objects.all(), widget=forms.Select(attrs={'class': 'form-control',}))
-	closure = forms.ModelChoiceField(queryset=ClouserType.objects.all(), widget=forms.Select(attrs={'class': 'form-control',}))
-	subcompartment = forms.ModelChoiceField(queryset=SubcompartmentType.objects.all(), widget=forms.Select(attrs={'class': 'form-control',}))
+	floors = forms.ModelChoiceField(queryset=FloorType.objects.all(), widget=forms.Select(attrs={'class': 'form-control',}))
 	roof = forms.ModelChoiceField(queryset=RoofType.objects.all(), widget=forms.Select(attrs={'class': 'form-control',}))
-	walls = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}))
+	invelitoare = forms.ModelChoiceField(queryset=InvelitoareType.objects.all(), widget=forms.Select(attrs={'class': 'form-control'}))
+	finish = forms.ModelChoiceField(queryset=FinishType.objects.all(), widget=forms.Select(attrs={'class': 'form-control'}))
+	pardoseli = forms.CharField(widget=forms.Textarea(attrs={'class': 'form-control', 'rows': '5'}))
+	walls = forms.CharField(widget=forms.Textarea(attrs={'class': 'form-control', 'rows': '5'}))
 	interior_carpentry = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}))
 	ceiling = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}))
-	exterior_finishes = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}))
-	exterior_carpentry = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}))
-	invelitoare = forms.ModelChoiceField(queryset=InvelitoareType.objects.all(), widget=forms.Select(attrs={'class': 'form-control'}))
+	exterior_finishes = forms.CharField(widget=forms.Textarea(attrs={'class': 'form-control', 'rows': '5'}))
+	ef_choice = forms.ChoiceField(choices=EXTERIOR_FINISHS, widget=forms.Select(attrs={'class': 'form-control'}))
+	exterior_carpentry = forms.CharField(widget=forms.Textarea(attrs={'class': 'form-control', 'rows': '5'}))
 	utilities = forms.ModelMultipleChoiceField(queryset=Utility.objects.all(), widget=forms.SelectMultiple(attrs={'class': 'form-control', 'multiple': 'multiple'}))
-	additional_equipment = forms.ModelMultipleChoiceField(required=False, queryset=AdditionalEquipment.objects.all(), widget=forms.SelectMultiple(attrs={'class': 'form-control', 'multiple': 'multiple'}))
-	heating = forms.ModelChoiceField(queryset=HeatingSystem.objects.all(), widget=forms.Select(attrs={'class': 'form-control',}))
-	finish = forms.ModelChoiceField(queryset=FinishType.objects.all(), widget=forms.Select(attrs={'class': 'form-control'}))
+	closure = forms.ModelChoiceField(queryset=ClouserType.objects.all(), widget=forms.Select(attrs={'class': 'form-control',}))
+	subcompartment = forms.ModelChoiceField(queryset=SubcompartmentType.objects.all(), widget=forms.Select(attrs={'class': 'form-control',}))
+	dotari = forms.CharField(required=False, widget=forms.Textarea(attrs={'class': 'form-control', 'rows': '5'}))
+	# heating = forms.ModelChoiceField(queryset=HeatingSystem.objects.all(), widget=forms.Select(attrs={'class': 'form-control',}))
 	comments = forms.CharField(required=False, widget=forms.Textarea(attrs={'class': 'form-control', 'rows': '5'}))
 
 	class Meta:
@@ -112,4 +111,26 @@ class MarketAnalysisForm(forms.ModelForm):
 	class Meta:
 		model = MarketAnalysis
 		exclude = ('ref_no',)
+
+
+class ComparableForm(forms.ModelForm):
+	sale_price = forms.DecimalField(max_digits=10, decimal_places=2, widget=forms.NumberInput(attrs={'class': 'form-control'}))
+	ma = forms.DecimalField(max_digits=10, decimal_places=2, widget=forms.NumberInput(attrs={'class': 'form-control'}))
+	parking_boxa = forms.CharField(max_length=55, widget=forms.TextInput(attrs={'class': 'form-control'})) 
+	pba = forms.DecimalField(max_digits=10, decimal_places=2, widget=forms.NumberInput(attrs={'class': 'form-control'}))
+	lc = forms.CharField(max_length=255, widget=forms.TextInput(attrs={'class': 'form-control'}))
+	cy = forms.CharField(max_length=10, widget=forms.TextInput(attrs={'class': 'form-control'}))
+	area = forms.DecimalField(max_digits=10, decimal_places=2, widget=forms.NumberInput(attrs={'class': 'form-control'}))
+	etaj = forms.CharField(max_length=55, widget=forms.TextInput(attrs={'class': 'form-control'}))
+	balcon = forms.DecimalField(max_digits=10, decimal_places=2, widget=forms.NumberInput(attrs={'class': 'form-control'}))
+	opt1_name = forms.CharField(required=False, max_length=55, widget=forms.TextInput(attrs={'class': 'form-control'})) 
+	opt1_val = forms.CharField(required=False, max_length=55, widget=forms.TextInput(attrs={'class': 'form-control'})) 
+	opt2_name = forms.CharField(required=False, max_length=55, widget=forms.TextInput(attrs={'class': 'form-control'})) 
+	opt2_val = forms.CharField(required=False, max_length=55, widget=forms.TextInput(attrs={'class': 'form-control'})) 
+	opt3_name = forms.CharField(required=False, max_length=55, widget=forms.TextInput(attrs={'class': 'form-control'})) 
+	opt3_val = forms.CharField(required=False, max_length=55, widget=forms.TextInput(attrs={'class': 'form-control'})) 
+	
+	class Meta: 
+		model = ComparableProperty
+		exclude = ('ref_no', 'is_comparable') 
 

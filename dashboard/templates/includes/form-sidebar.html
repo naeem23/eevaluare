@@ -34,6 +34,12 @@
 								<p>Analiza Pieței</p>
 							</a>
 						</li>
+						
+						<li class="nav-item {% if 'comparable' in segment %} active {% endif %}">
+							<a href="{% if valuation %}{% url 'valuation:select_comparable' id=valuation.id %}{% endif %}">
+								<p>Comparable</p>
+							</a>
+						</li>
 
 						<li class="nav-item {% if 'anexa' in segment %} active {% endif %}">
 							<a href="{% if valuation.id %}{% url 'valuation:add_anexa' id=valuation.id %}{% endif %}">

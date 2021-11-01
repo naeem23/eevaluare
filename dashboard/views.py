@@ -1,9 +1,7 @@
 import ast
 import json
 import datetime
-from json.decoder import JSONDecodeError
 import requests
-from decimal import Decimal
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.core import serializers

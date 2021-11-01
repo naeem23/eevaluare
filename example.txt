@@ -3,5 +3,5 @@ https://www.pdffiller.com/467179181--Valuation-Review-Form-Residential-Property-
 
 
 
-git hub push - 
+git hub push command for existing repojitory- 
 git add . && git commit -m "initial commit" && git push

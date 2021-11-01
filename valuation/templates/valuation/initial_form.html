@@ -197,6 +197,23 @@
                             </div>
                             <div class="col-md-4">
                                 <div class="form-group">
+                                    <label for="id_height">Regim de inaltime imobil <span class="required-label">*</span></label>
+                                    {{ form.height }}
+                                    <small class="form-text text-danger height"></small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="id_construction_year">An constructie <span class="required-label">*</span></label>
+                                    {{ form.construction_year }}
+                                    <small class="form-text text-danger construction_year"></small>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
                                     <label for="id_owner">Proprietar <span class="required-label">*</span></label>
                                     {{ form.owner }}
                                     <small class="form-text text-danger owner"></small>
@@ -410,8 +427,10 @@
             var owner = $("#id_owner").val()
             var client = $("#id_nume_client").val()
             var recipient = $("#id_report_recipient").val()
+            var height = $("#id_height").val()
+            var cy = $("#id_construction_year").val()
             
-            if(prop_type.length > 0 && address.length > 1 && lat.length > 1 && lng.length > 1 && area.length > 0 && city.length > 0 && owner.length > 1 && client.length > 1 && recipient.length > 1) {
+            if(prop_type.length > 0 && address.length > 1 && lat.length > 1 && lng.length > 1 && area.length > 0 && city.length > 0 && height.length > 0 && cy.length > 0 && owner.length > 1 && client.length > 1 && recipient.length > 1) {
                 $("#initial_form").submit();
             } else {
                 if (prop_type.length < 1) {
@@ -474,6 +493,22 @@
                 } else {
                     $("#id_report_recipient").removeClass('required')
                     $(".recipient").text('')
+                }
+
+                if (height.length < 1) {
+                    $("#id_height").addClass('required')
+                    $(".height").text('This field is required')
+                } else {
+                    $("#id_height").removeClass('required')
+                    $(".height").text('')
+                }
+
+                if (cy.length < 1) {
+                    $("#id_construction_year").addClass('required')
+                    $(".construction_year").text('This field is required')
+                } else {
+                    $("#id_construction_year").removeClass('required')
+                    $(".construction_year").text('')
                 }
             }
         })
