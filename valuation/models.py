@@ -220,7 +220,7 @@ class Photo(models.Model):
 	image = models.FileField(upload_to='coverphoto/%Y/%m/%d', blank=True)
 
 	def __str__(self):
-		return str(self.id) 
+		return str(self.ref_no) 
 
 
 # ====================== valuation summary table =====================
@@ -289,6 +289,7 @@ class Suprafete(models.Model):
 	nr_crt = models.CharField(max_length=55, blank=True, null=True)
 	room_name = models.CharField(max_length=155, blank=True, null=True)
 	area = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+	is_utila = models.BooleanField(default=1)
 
 	def __str__(self):
 		return str(self.id)

@@ -8,7 +8,7 @@ import urllib.parse
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.db.models import Sum, Q
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse, JsonResponse, response
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
 from django.utils import timezone
@@ -99,7 +99,18 @@ def add_summary(request, id):
     data = response.json()
     fer = "{:.2f}".format(data['info']['rate'])
 
-    # post method control
+    # check if valued propery has summary, summary value, photos
+    try:
+        cover_photo = models.Photo.objects.filter(ref_no=valuation, refer_to='cover')
+        summary = models.ValuationSummary.objects.filter(ref_no=valuation).latest('id')
+        summary_value = models.SummaryValue.objects.filter(summary=summary)
+        summary_photo = models.Photo.objects.filter(ref_no=valuation, refer_to='summary')
+    except:
+        cover_photo = None
+        summary = None 
+        summary_value = None 
+        summary_photo = None
+
     if request.method == 'POST':
         form = forms.AddValuationSummary(request.POST)
         if form.is_valid():
@@ -139,23 +150,27 @@ def add_summary(request, id):
         'segment': 'summary',
         'pre_url': pre_url,
         'form': form,
+        'cover_photo': cover_photo,
+        'summary': summary,
+        'summary_value': summary_value,
+        'summary_photo': summary_photo,
     }
     return render(request, template, context)
 
 
 @login_required(login_url='/signin/')
 def save_photos(request):	
-	if request.method == 'POST':
-		valuation = get_object_or_404(models.ValuatedProperty, id=request.POST.get('vid'))
-		image_order = request.POST.get('order')
-		file = request.FILES['file']
-		refer_to = request.POST.get('refer_to')
-		save = models.Photo.objects.create(ref_no=valuation, refer_to=refer_to, image_order=image_order, image=file)
-		if save:
-			return JsonResponse({'success': 'true'})
-		else: 
-			return JsonResponse({'success': 'false'})
-	return JsonResponse({'success': 'false'})
+    if request.method == 'POST':
+        valuation = get_object_or_404(models.ValuatedProperty, id=request.POST.get('vid'))
+        file = request.FILES['file']
+        image_order = request.POST.get('order')
+        refer_to = request.POST.get('refer_to')
+        save = models.Photo.objects.create(ref_no=valuation, refer_to=refer_to, image_order=image_order, image=file)
+        if save:
+            return JsonResponse({'success': 'true'})
+        else: 
+            return JsonResponse({'success': 'false'})
+    return JsonResponse({'success': 'false'})
     
 
 # ==========================================================
@@ -169,6 +184,7 @@ def add_construction(request, id):
     for x in ['balcon','terasa','parcare','boxa']:
         utila_filter = utila_filter | Q(attr_id__name__icontains=x)
     rooms = models.CompartimentareValue.objects.filter(ref_no=valuation).exclude(utila_filter)
+    customs = models.CustomFieldValue.objects.filter(ref_no=valuation)
     balcons = models.CompartimentareValue.objects.filter(ref_no=valuation, attr_id__name__icontains='balcon')
     floor_type = models.FloorType.objects.all()
     pre_url = request.META.get("HTTP_REFERER")
@@ -187,9 +203,10 @@ def add_construction(request, id):
             nr_crt = request.POST.getlist('nr_crt[]')
             room_name = request.POST.getlist('room_name[]')
             areas = request.POST.getlist('area[]')
+            is_utila = request.POST.getlist('is_utila[]')
 
-            for n, r, a in zip(nr_crt, room_name, areas):
-                models.Suprafete.objects.create(ref_no=valuation, nr_crt=n, room_name=r, area=a)
+            for n, r, a, iu in zip(nr_crt, room_name, areas, is_utila):
+                models.Suprafete.objects.create(ref_no=valuation, nr_crt=n, room_name=r, area=a, is_utila=iu)
             
             if request.POST.get('pre_url') == 'details':
                 return redirect('dashboard:details', id=id)
@@ -202,6 +219,7 @@ def add_construction(request, id):
         'valuation': valuation,
         'form': form,
         'rooms': rooms,
+        'customs': customs,
         'balcons': balcons,
         'floor_type': floor_type,
         'pre_url': pre_url,
@@ -698,3 +716,31 @@ def valuation_details(request, id):
 # 	}
 # 	return render(request, template, context)
 
+
+# ==========================================================================
+# ==================== manage photos reorder & delete ======================
+# ==========================================================================
+@login_required(login_url='/signin/')
+def reorder_photos(request):
+    if request.method == 'POST':
+        imageIds = request.POST.get('ids')
+        ids = imageIds.split(',')
+        i = 1
+        for id in ids:
+            cover = get_object_or_404(models.Photo, id=id)
+            cover.image_order = i
+            cover.save()
+            i+=1
+        return JsonResponse({'response': 'true'})
+    return JsonResponse({'response': 'false'})
+
+@login_required(login_url='/signin/')
+def delete_photos(request):
+    id = request.GET.get('id')
+    photo = get_object_or_404(models.Photo, id=id)
+    try:
+        response = 1 #photo.delete()
+        if response:
+            return JsonResponse({'success': 'true'})
+    except:
+        return JsonResponse({'success': 'false'})

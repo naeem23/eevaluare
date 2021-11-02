@@ -146,7 +146,7 @@
                         <div class="row">
                             <div class="col-md-12">
                                 <div class="form-group">
-                                    <label for="id_poi">Place of Interest <span class="required-label">*</span></label>
+                                    <label for="id_poi">Puncte de interes <span class="required-label">*</span></label>
                                     <div class="poi-inputs">
                                         <div class="pois"></div>
                                         {{ form.poi }}
@@ -160,7 +160,7 @@
                         <div class="row">
                             <div class="col-md-4">
                                 <div class="form-group transport">
-                                    <label for="id_pt">Public Transport <span class="required-label">*</span></label>
+                                    <label for="id_pt">Transport public <span class="required-label">*</span></label>
                                     <select multiple="multiple" id="id_pt" class="form-control" name="pt[]">
                                         {% for t in transport %}
                                         <option value="{{t.id}}">{{t.name}}</option>
@@ -180,7 +180,7 @@
                             </div>
                             <div class="col-md-4">
                                 <div class="form-group">
-                                    <label for="id_current_use">Current Use <span class="required-label">*</span></label>
+                                    <label for="id_current_use">Utilizarea actuala <span class="required-label">*</span></label>
                                     {{ form.current_use }}
                                     <small class="form-text text-danger current_use"></small>
                                 </div>
@@ -198,7 +198,7 @@
 
                             <div class="col-md-4">
                                 <div class="form-group">
-                                    <label for="id_land_book_no">Land Book Nr <span class="required-label">*</span></label>
+                                    <label for="id_land_book_no">Carte funciară nr <span class="required-label">*</span></label>
                                     {{ form.land_book_no }}
                                     <small class="form-text text-danger land_book_no"></small>
                                 </div>
@@ -216,7 +216,7 @@
                         <div class="row">
                             <div class="col-md-4">
                                 <div class="form-group">
-                                    <label for="id_charges">Charges <span class="required-label">*</span></label>
+                                    <label for="id_charges">Sarcini <span class="required-label">*</span></label>
                                     {{ form.charges }}
                                     <small class="form-text text-danger charges"></small>
                                 </div>
@@ -251,7 +251,7 @@
                         <div class="row"> 
                             <div class="col-md-12">
                                 <div class="form-group">
-                                    <label for="id_history">History</label>
+                                    <label for="id_history">Istoricul proprietatii subiect</label>
                                     {{ form.history }}
                                 </div>
                             </div>

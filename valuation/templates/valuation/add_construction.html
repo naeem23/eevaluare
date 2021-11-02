@@ -290,6 +290,7 @@
                                                     </td>
                                                     <td>
                                                         <input type="number" name="area[]" placeholder="0.00" class="form-control usuable_area" step="0.01" required>
+                                                        <input type="hidden" name="is_utila[]" vlaue="1">
                                                     </td>
                                                 </tr>
                                                 {% endfor %}
@@ -303,6 +304,39 @@
                                                     </td>
                                                     <td>
                                                         <input type="number" name="area[]" placeholder="0.00" class="form-control usuable_area" step="0.01" required>
+                                                        <input type="hidden" name="is_utila[]" vlaue="1">
+                                                    </td>
+                                                </tr>
+                                            {% endif %}
+                                        {% endfor %}
+                                        
+                                        {% for ct in customs %}
+                                            {% if ct.attr_value|add:"0" > 1 %}
+                                                {% for i in ct.attr_value|myrange %}
+                                                <tr class="tr">
+                                                    <td>
+                                                        <input type="text" name="nr_crt[]" class="form-control nr">
+                                                    </td>
+                                                    <td>
+                                                        <input type="text" name="room_name[]" value="{{ ct.attr_name }} {{ i }}" class="form-control">
+                                                    </td>
+                                                    <td>
+                                                        <input type="number" name="area[]" placeholder="0.00" class="form-control usuable_area" step="0.01" required>
+                                                        <input type="hidden" name="is_utila[]" vlaue="1">
+                                                    </td>
+                                                </tr>
+                                                {% endfor %}
+                                            {% else %}
+                                                <tr class="tr">
+                                                    <td>
+                                                        <input type="text" name="nr_crt[]" class="form-control nr">
+                                                    </td>
+                                                    <td>
+                                                        <input type="text" name="room_name[]" value="{{ ct.attr_name }}" class="form-control">
+                                                    </td>
+                                                    <td>
+                                                        <input type="number" name="area[]" placeholder="0.00" class="form-control usuable_area" step="0.01" required>
+                                                        <input type="hidden" name="is_utila[]" vlaue="1">
                                                     </td>
                                                 </tr>
                                             {% endif %}
@@ -313,51 +347,64 @@
                                                 <input type="number" name="utila" id="id_utila" value="0.00" class="form-control">
                                             </td>
                                         </tr>
-                                        {% for r in balcons %}
-                                            {% if r.attr_value|add:"0" > 1 %}
-                                                {% for i in r.attr_value|myrange %}
-                                                <tr class="tr">
-                                                    <td>
-                                                        <input type="text" name="nr_crt[]" class="form-control nr">
-                                                    </td>
-                                                    <td>
-                                                        <input type="text" name="room_name[]" value="{{ r.attr_id.name }} {{ i }}" class="form-control">
-                                                    </td>
-                                                    <td>
-                                                        <input type="number" name="area[]" placeholder="0.00" class="form-control area" step="0.01" required>
-                                                    </td>
-                                                    
-                                                    {% if forloop.last %}
-                                                    <td>
-                                                        <button type="button" class="btn btn-icon btn-round btn-secondary btn-sm" data-toggle="tooltip" data-placement="top" title="Add More" id="add_more">
-                                                            <i class="fa fa-plus"></i>
-                                                        </button>
-                                                    </td>
-                                                    {% endif %}
-                                                </tr>
-                                                {% endfor %}
-                                            {% else %}
-                                                <tr class="tr">
-                                                    <td>
-                                                        <input type="text" name="nr_crt[]" class="form-control nr">
-                                                    </td>
-                                                    <td>
-                                                        <input type="text" name="room_name[]" value="{{ r.attr_id.name }}" class="form-control">
-                                                    </td>
-                                                    <td>
-                                                        <input type="number" name="area[]" placeholder="0.00" class="form-control area" step="0.01" required>
-                                                    </td>
-                                                    
-                                                    {% if forloop.last %}
-                                                    <td>
-                                                        <button type="button" class="btn btn-icon btn-round btn-secondary btn-sm" data-toggle="tooltip" data-placement="top" title="Add More" id="add_more">
-                                                            <i class="fa fa-plus"></i>
-                                                        </button>
-                                                    </td>
-                                                    {% endif %}
-                                                </tr>
-                                            {% endif %}
-                                        {% endfor %}
+
+                                        {% if balcons %}
+                                            {% for r in balcons %}
+                                                {% if r.attr_value|add:"0" > 1 %}
+                                                    {% for i in r.attr_value|myrange %}
+                                                    <tr class="tr">
+                                                        <td>
+                                                            <input type="text" name="nr_crt[]" class="form-control nr">
+                                                        </td>
+                                                        <td>
+                                                            <input type="text" name="room_name[]" value="{{ r.attr_id.name }} {{ i }}" class="form-control">
+                                                        </td>
+                                                        <td>
+                                                            <input type="number" name="area[]" placeholder="0.00" class="form-control area" step="0.01" required>
+                                                            <input type="hidden" name="is_utila[]" vlaue="0">
+                                                        </td>
+                                                        
+                                                        {% if forloop.last %}
+                                                        <td>
+                                                            <button type="button" class="btn btn-icon btn-round btn-secondary btn-sm" data-toggle="tooltip" data-placement="top" title="Add More" id="add_more">
+                                                                <i class="fa fa-plus"></i>
+                                                            </button>
+                                                        </td>
+                                                        {% endif %}
+                                                    </tr>
+                                                    {% endfor %}
+                                                {% else %}
+                                                    <tr class="tr">
+                                                        <td>
+                                                            <input type="text" name="nr_crt[]" class="form-control nr">
+                                                        </td>
+                                                        <td>
+                                                            <input type="text" name="room_name[]" value="{{ r.attr_id.name }}" class="form-control">
+                                                        </td>
+                                                        <td>
+                                                            <input type="number" name="area[]" placeholder="0.00" class="form-control area" step="0.01" required>
+                                                            <input type="hidden" name="is_utila[]" vlaue="0">
+                                                        </td>
+                                                        
+                                                        {% if forloop.last %}
+                                                        <td>
+                                                            <button type="button" class="btn btn-icon btn-round btn-secondary btn-sm" data-toggle="tooltip" data-placement="top" title="Add More" id="add_more">
+                                                                <i class="fa fa-plus"></i>
+                                                            </button>
+                                                        </td>
+                                                        {% endif %}
+                                                    </tr>
+                                                {% endif %}
+                                            {% endfor %}
+                                        {% else %}
+                                            <tr>
+                                                <td>
+                                                    <button type="button" class="btn btn-icon btn-round btn-secondary btn-sm" data-toggle="tooltip" data-placement="top" title="Add More" id="add_more">
+                                                        <i class="fa fa-plus"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        {% endif %}
                                         <tr>
                                             <td colspan="2" class="text-center font-weight-bold text-light">Suprafata Totala</td>
                                             <td>
@@ -398,7 +445,7 @@
 
         // add more field 
         $('#add_more').on('click', function() {
-            let tr = '<tr class="tr"><td><input type="text" name="nr_crt[]" class="form-control nr"></td><td><input type="text" name="room_name[]" class="form-control"></td><td><input type="number" name="area[]" placeholder="0.00" class="form-control area" step="0.01" required></td><td><button type="button" class="btn btn-icon btn-round btn-danger btn-sm" data-toggle="tooltip" data-placement="top" title="Remove" onclick="remove(this)"><i class="fa fa-minus"></i></button></td></tr>';
+            let tr = '<tr class="tr"><td><input type="text" name="nr_crt[]" class="form-control nr"></td><td><input type="text" name="room_name[]" class="form-control"></td><td><input type="number" name="area[]" placeholder="0.00" class="form-control area" step="0.01" required><input type="hidden" name="is_utila[]" vlaue="0"></td><td><button type="button" class="btn btn-icon btn-round btn-danger btn-sm" data-toggle="tooltip" data-placement="top" title="Remove" onclick="remove(this)"><i class="fa fa-minus"></i></button></td></tr>';
             $(this).closest('table').find('tr:last').prev().after(tr);
         })
         // remove field 

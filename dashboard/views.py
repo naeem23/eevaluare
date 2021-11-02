@@ -7,7 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.core import serializers
 from django.core.mail import send_mail
 from django.db import connection
-from django.db.models import Sum
+from django.db.models import Sum, Q
 from django.http import HttpResponse, JsonResponse, response
 from django.shortcuts import render, HttpResponse, redirect, get_object_or_404
 from django.template.loader import get_template, render_to_string
@@ -17,6 +17,7 @@ from xhtml2pdf import pisa
 
 from dashboard.forms import * 
 from dashboard.models import *
+from valuation import models
 User = get_user_model()
 
 
@@ -765,16 +766,89 @@ def comparable_properties(request):
 
 
 def test(request):
-	vid = request.GET.get('id')
-	instance = get_object_or_404(EvaluareForm, id=vid)
-	return JsonResponse({'success': 'false'})
-	# valuation = get_object_or_404(EvaluareForm, id=1)
-	# sub = get_object_or_404(ComparableProperty, ref_no=valuation)
-	# ct = ComparableTable.objects.filter(ref_no=valuation)
+	template_path = 'valuation/report.html'
+	valuation = get_object_or_404(models.ValuatedProperty, id=4)
+	utila_filter = Q()
+	for x in ['balcon','terasa','parcare','boxa']:
+		utila_filter = utila_filter | Q(attr_id__name__icontains=x)
+	rooms = models.CompartimentareValue.objects.filter(ref_no=valuation).exclude(utila_filter)
+	customs = models.CustomFieldValue.objects.filter(ref_no=valuation)
+	try:
+		camara = models.CompartimentareValue.objects.filter(ref_no=valuation,attr_id__pk__in=[1,3,4]).aggregate(camara=Sum('attr_value'))
+	except:
+		camara = None
+	balcons = models.CompartimentareValue.objects.filter(ref_no=valuation, attr_id__name__icontains='balcon')
+	try:
+		cover_photo = models.Photo.objects.filter(ref_no__id=id, refer_to="cover").order_by('image_order')[:4]
+		summary_photo = models.Photo.objects.filter(ref_no__id=id, refer_to="summary").order_by('image_order')[:4]
+	except:
+		cover_photo = None
+		summary_photo = None
+	try:
+		summary = models.ValuationSummary.objects.filter(ref_no=valuation).latest('id')
+		summary_value = models.SummaryValue.objects.filter(summary=summary)
+	except:
+		summary = None
+		summary_value = None 
+	try:
+		const = models.Construction.objects.filter(ref_no=valuation).latest('id')
+	except:
+		const = None 
+	suprafete = models.Suprafete.objects.filter(ref_no=valuation)
+	source = models.SourceofInformation.objects.filter(ref_no=valuation)
+	try:
+		presentation = models.PresentationData.objects.filter(ref_no=valuation).latest('id')
+	except:
+		presentation = None 
+	try:
+		market = models.MarketAnalysis.objects.filter(ref_no=valuation).latest('id')
+	except:
+		market = None 
+	try:
+		comp_table = models.ComparableTable.objects.filter(ref_no=valuation).latest('id')
+		ids = ast.literal_eval(comp_table.comparable)
+		comp_prop = models.ComparableProperty.objects.filter(id__in=ids)
+		sub_prop = models.ComparableProperty.objects.filter(ref_no=valuation).latest('id')
+	except:
+		comp_table = None 
+		comp_prop = None
+		sub_prop = None
+	try:
+		mvb_table = models.MvbTable.objects.filter(ref_no=valuation).latest('id')
+	except:
+		mvb_table = None
+	utility = models.Utility.objects.all()
+	context = {
+		'valuation': valuation, 
+		'rooms': rooms,
+		'customs': customs,
+		'camara': camara,
+		'balcons': balcons,
+		'cover_photo': cover_photo,
+		'summary_photo': summary_photo,
+		'summary': summary,
+		'summary_value': summary_value,
+		'const': const,
+		'suprafete': suprafete,
+		'source': source,
+		'pdata': presentation,
+		'market': market,
+		'comp_table': comp_table,
+		'comp_prop': comp_prop,
+		'sub_prop': sub_prop,
+		'mvb_table': mvb_table,
+		'utility': utility,
+	}
 
-	# context = {
-	# 	'valuation': valuation,
-	# 	'ct': ct,
-	# 	'sub': sub,
-	# }
-	# return render(request, 'dashboard/test.html', context)
+	# Create a Django response object, and specify content_type as pdf
+	response = HttpResponse(content_type='application/pdf')
+	response['Content-Disposition'] = 'filename="EPI-'+ valuation.reference_no + '-' + valuation.inspection_date.strftime("dmy") + '.pdf"'
+	# find the template and render it.
+	template = get_template(template_path)
+	html = template.render(context)
+	# create a pdf
+	pisa_status = pisa.CreatePDF(html, dest=response)
+	# if error then show some funy view
+	if pisa_status.err:
+		return HttpResponse('We had some errors <pre>' + html + '</pre>')
+	return response

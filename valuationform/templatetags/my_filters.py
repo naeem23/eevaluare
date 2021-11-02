@@ -439,3 +439,16 @@ def get_subteran_nr(compartment):
 def get_boxa_nr(compartment):
     nr = compartment.filter(attr_id__id=11).aggregate(nr=Sum('attr_value'))
     return nr['nr']
+
+
+# ============================ new report ===============================
+# convert to list 
+@register.filter(name="list_convert")
+def list_convert(var):
+    return ast.literal_eval(var)
+
+# get_corresponding_letter 
+@register.filter(name="get_corresponding_letter")
+def get_corresponding_letter(comp_table):
+    pos = int(comp_table.smallest_gross[-1]) - 1
+    return comp_table.name[pos]

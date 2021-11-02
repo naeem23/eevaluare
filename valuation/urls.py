@@ -19,4 +19,6 @@ urlpatterns = [
     path('api/search-comparable/', views.search_comparable, name='search_comparable'),
     path('api/save-photos/', views.save_photos, name="save_photos"),
     path('api/add-source/', views.add_source, name='add_source'),
+    path('api/reorder-photos/', views.reorder_photos, name='reorder_photos'),
+    path('api/delete-photos/', views.delete_photos, name='delete_photos'),
 ]

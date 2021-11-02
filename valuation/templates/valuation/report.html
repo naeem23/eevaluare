@@ -1,0 +1,1833 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>EPI-{{valuation.reference_no}}-{{valuation.inspection_date|date:"dmy"}}</title>
+    <meta content='width=device-width, initial-scale=1.0, shrink-to-fit=no' name='viewport' />
+    <link rel="stylesheet" href="http://127.0.0.1:8000/static/dashboard/css/report.css">
+    <style>
+        /* page config */
+        @page {
+            size: a4 portrait;
+            @frame header_frame {
+                -pdf-frame-content: header_content;
+                left: 40pt; width: 522pt; top: 40pt; height: 50pt;
+            }
+            @frame content_frame {
+                left: 40pt; width: 522pt; top: 100pt; height: 632pt;
+            }
+            @frame footer_frame {
+                -pdf-frame-content: footer_content;
+                left: 40pt; width: 522pt; top: 782pt; height: 30pt;
+            }
+        }
+        body {
+            font-family: Helvetica;
+            font-size: 14px;
+        }
+        h1, h2, h3, h4, h5, h6, p, a, ul, li {
+            margin: 0;
+            padding: 0;
+        }
+        #header_content {
+            padding-bottom: 5px;
+            border-bottom: 3px solid blueviolet;
+        }
+        .info {
+            font-size: 12px;
+        }
+        .logo {
+            text-align: right;padding-right: 3px;
+        }
+        /* content  */
+        #grid-table td, #mvb-table td, #vbp-table td {
+            font-size: 12px;
+            text-align: center;
+            padding-top: 5px;
+        }
+        #comparable_tbl td {
+            font-size: 12px;
+            text-align: center;
+            font-weight: bold;
+            padding-top: 5px;
+        }
+        /* footer  */
+        #footer_content {
+            font-size: 12px;
+            text-align: right;padding-right: 3px;
+            padding-top: 10px;
+            border-top: 1px solid gray;
+        }
+    </style>
+</head>
+<body>
+    <!-- Content for Static Frame 'header_frame' -->
+    <div id="header_content">
+        <table>
+            <tr>
+                <td>
+                    <div class="info">
+                        Tel: 0208 422 0497 or 0208 866 8220 <br>
+                        Web: www.grahamfittsurveyors.co.uk
+                    </div>
+                </td>
+                <td>
+                    <div class="logo">
+                        <img src="http://127.0.0.1:8000/static/dashboard/image/LOGO_CON.png" width="100" height="40">    
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
+    
+    <!-- Content for Static Frame 'footer_frame' -->
+    <div id="footer_content">
+        page <pdf:pagenumber> of <pdf:pagecount>
+    </div>
+
+    <div id="content">
+        <div style="text-align: center; margin-top: 20px;">
+            <h1 style="font-size: 26px;">Report de evaluare</h1>
+            <p class="ref_no">EPI-{{valuation.reference_no}}-{{valuation.inspection_date|date:"dmy"}}</p>
+
+            <h3 style="margin-top: 40px; font-size: 16px;">REPORT DATE</h3>
+            <p>{{valuation.valuation_date|date:"F d, Y"}}</p> 
+
+            <h3 style="margin-top: 20px; font-size: 16px;">CARTE</h3>
+            <p>{{valuation.nume_client}}</p>
+
+            <h3 style="margin-top: 20px; font-size: 16px;">PROPERTY</h3>
+            <p>Title: 
+                {% if valuation.title %}
+                    {{ valuation.title }}
+                {% else %}
+                    {{ valuation.property_type.type }} cu {{camere.camere|floatformat:0}} si dependinte
+                {% endif %}
+            </p>    
+            <p>Adresa: {{valuation.address}}, {{valuation.city.name}}, {{valuation.area.name}}</p>  
+
+            <h3 style="margin-top: 20px; font-size: 16px;">PROPERTY VALUE</h3>
+            <p>
+                {% if summary.amav %}
+                {{summary.amav}} EUR
+                {% elif summary.aiav %}
+                {{summary.aiav}} EUR
+                {% endif %}
+            </p>  
+
+            <p style="margin: 20px 0; text-align: justify;">Valoarea de piata a fost stabilita de catre un Evaluator, membru al Asociatiei Nationale a Evaluatorilor Autorizati din Romania, avand la baza Standardele de evaluare a bunurilor, editia 2020. In completarea misiunii de evaluare am utilizat informatiile si documentele furnizate de catre client cat si date furnizate din piata si baza de date proprie</p>  
+            <br><br>
+            <img src="{{cover_photo.0.image.path}}" alt="Cover photo" width="300" height="250">
+        </div>
+
+        <div>
+            <pdf:nextpage />
+        </div>
+
+        {% if cover_photo %}
+            <div class="cover_photos">
+                <table>
+                    <tr>
+                    {% for cimg in cover_photo %}
+                        <td style="padding: 0 5px;"><img src="{{cimg.image.path}}" alt="Cover photo {{img.id}}" width="160" height="150"></td>
+                    {% endfor %}
+                    </tr>
+                </table>
+            </div>
+            
+            <div>
+                <pdf:nextpage />
+            </div>
+        {% endif %}
+
+        <div class="cuprins">
+            <h2 style="margin:0; padding:0;">Cuprins</h2>
+            <table>
+                <tr style="padding-top: 10px;">
+                    <td width="8%" style="padding-left: 5px;">03</td>
+                    <td>Rezumental Evaluarii</td>
+                </tr>
+                <tr style="height: 30px;">
+                    <td width="8%" style="padding-left: 5px;">05</td>
+                    <td>CERTIFICARE</td>
+                </tr>
+                <tr style="height: 30px;">
+                    <td width="8%" style="padding-left: 5px;">06</td>
+                    <td>TERMENI DE REFERINTA AI EVALUARII</td>
+                </tr>
+                <tr style="height: 30px;">
+                    <td width="8%" style="padding-left: 5px;">12</td>
+                    <td>PREZENTAREA DATELOR</td>
+                </tr>
+                <tr style="height: 30px;">
+                    <td width="8%" style="padding-left: 5px;">16</td>
+                    <td>ANALIZA PIETEI IMOBILIARE</td>
+                </tr>
+                <tr style="height: 30px;">
+                    <td width="8%" style="padding-left: 5px;">22</td>
+                    <td>CEA MAI BUNA UTILIZARE (CMBU)</td>
+                </tr>
+                <tr style="height: 30px;">
+                    <td width="8%" style="padding-left: 5px;">23</td>
+                    <td>EVALUAREA PROPRIETATII IMOBILIARE</td>
+                </tr>
+                <tr style="height: 30px;">
+                    <td width="8%" style="padding-left: 5px;">28</td>
+                    <td>Anexa 1 – Documente</td>
+                </tr>
+                <tr style="height: 30px;">
+                    <td width="8%" style="padding-left: 5px;">37</td>
+                    <td>Anexa 2 – Harta localizare</td>
+                </tr>
+                <tr style="height: 30px;">
+                    <td width="8%" style="padding-left: 5px;">39</td>
+                    <td>Anexa 3 – Fotografii</td>
+                </tr>
+            </table>
+        </div>
+
+        <div>
+            <pdf:nextpage />
+        </div>
+        
+        {% load my_filters %}
+        <div class="summary">
+            <h2 style="margin-bottom: 10px; padding: 0; text-align: center; font-size: 24px;">Rezumatul Evaluarii</h2>
+            <p style="text-align: justify;"><b>Proprietatea evaluata:</b> 
+                {% if pdata.sub_identi %}
+                    {{ pdata.sub_identi }}
+                {% else %}
+                    Dreptul deplin de proprietate asupra apartamentului cu nr. {{valuation.apartment_no}}, compus din {{camere.camere|floatformat:"0"}} camere si dependinte cu o suprafata utila de {{ const.utila }} mp si trei balcoane cu suprafata lor totala de {{ const.totala|sub:const.utila }}, rezultand suprafata utila totala de {{ const.totala }} mp. Apartamentul are numarul cadastral {{pdata.cadastral_no}} si este intabulat in Cartea Funciara numarul {{pdata.land_book_no}}.
+                {% endif %}
+            </p>
+            <br>
+            <p style="margin-bottom: 10px;"><b>Tip imobil:</b>
+                {% if valuation.title %}
+                    {{ valuation.title }}
+                {% else %}
+                    {{ valuation.property_type.type }} cu {{camere.camere|floatformat:0}} si dependinte
+                {% endif %}
+            </p>
+            <p style="margin-bottom: 10px;"><b>Adresa:</b> {{valuation.address}}, {{valuation.city.name}}, {{valuation.area.name}}</p>
+            <p style="margin-bottom: 10px;"><b>Utilizator:</b>{{valuation.report_recipient}}</p>
+            <p style="margin-bottom: 10px;"><b>Client:</b> {{valuation.nume_client}}</p>
+            <p style="margin-bottom: 10px;"><b>Proprietar:</b> {{valuation.owner}}</p>
+            <p><b>Scopul Evaluarii:</b> {{ summary.purpose.purpose }}</p>
+            <br>
+            <h2 style="font-size: 18px; text-align: center;">Valoarea de {% if summary.amav %}piata a proprietatii: {{summary.amav}} Euro{% else %}venit a proprietatii: {{summary.aiav}} Euro{% endif %}</h2>
+            <br> 
+            <table>
+                <tr>
+                    {% for simg in summary_photo %}
+                    <td style="padding: 0 5px;"><img src="{{ simg.image.path }}" alt="Summary photo {{img.id}}" width="160" height="150"></td>
+                    {% endfor %}
+                </tr>
+            </table>
+            <br> <br>
+            <table>
+                <tr valign="middle" style="height: 150px;">
+                    <td style="text-align:center;">
+                        <span>Evaulator</span> <br>
+                        <span style="font-weight: bold; margin: 10px 0;">{{ valuation.evaluator.get_full_name }}</span> <br>
+                        <span>Trainee Member</span><br> 
+                        <span>E.P.I. Legitimacy {{valuation.evaluator.certification_number}}</span>
+                    </td>
+                    <td style="text-align: center;">
+                        <img src="{{valuation.evaluator.stamp.path}}" alt="Evaluator Stamp" width="150px" height="150px">
+                    </td>
+                </tr>
+            </table>
+            
+            <div>
+                <pdf:nextpage />
+            </div>
+            
+            <p style="margin-bottom: 10px;"><b>Curs:</b> 1 EUR = {{ summary.fer }} RON</p>
+            <p style="margin-bottom: 10px;"><b>Data Inspection:</b> {{valuation.inspection_date|date:"d.m.Y"}}</p>
+            <p style="margin-bottom: 10px;"><b>Data Evaluare:</b> {{valuation.valuation_date|date:"d.m.Y"}}</p>
+            <p><b>Data Report:</b> {{valuation.report_date|date:"d.m.Y"}}</p>
+        </div>
+
+        <div>
+            <pdf:nextpage />
+        </div>
+
+        <div class="certificare">
+            <h2 style="margin-bottom: 10px; padding: 0; text-align: center; font-size: 24px;">I. CERTIFICARE</h2>
+            <p>Certific, dupacelemaibunecunostinte ale mele, ca:</p>
+            <table>
+                <tr>
+                    <td>-afirmatiilesustinute in prezentulraport sunt realesicorecte;</td>
+                </tr>
+                <tr>
+                    <td>-analizele, opiniilesiconcluziile sunt limitatenumai la ipotezelesiipotezelespecificeprezentate in raportsireprezintaopiniameaimpartiala, opinie care nu a fostinfluentata de terte parti si nu este in niciun mod supusavreuneicerinte de a ajunge la concluzii predeterminate;</td>     
+                </tr> 
+                <tr>
+                    <td>-nu am niciuninteres actual sau de perspectiva, referitor la bunul care face obiectulevaluariisi nu am niciuninteres personal fata de vreuna din partile implicate;</td>  
+                </tr>  
+                <tr>  
+                    <td>-nu sunt influentat de nicioconstrangerelegata de bunulevaluat in raportul de evaluaresau de partile implicate in aceastaactivitate de evaluare;</td>    
+                </tr>  
+                <tr>   
+                    <td>-implicareamea in aceastaactivitate de evaluare nu se bazeaza pe solicitarea din parteanimanui, de obtinere a unorrezultate predeterminate;</td>     
+                </tr>   
+                <tr> 
+                    <td>-onorariulplatit de catre client nu are niciolegatura cu obtinereaunorrezultate predeterminate sau cu vreoactiunesaueveniment, rezultate in urmautilizariianalizelor, opiniilorsiconcluziilorprezentuluiraport;</td>  
+                </tr>    
+                <tr>   
+                    <td>-analizele, opiniilesiconcluziile au fostexprimate in conformitate cu prevederilestandardelor de evaluaresi cu respectareaCodului de etica al profesiei de evaluator autorizat;</td>     
+                </tr>   
+                <tr> 
+                    <td>-detin cunostintelesiexperientanecesarapentruefectuarea, in mod competent, a acesteilucrari;</td>    
+                </tr> 
+                <tr>    
+                    <td>-pentrurealizarearaportului nu am primitasistenta din parteaaltorpersoanenesemnatare ale certificarii; </td>   
+                </tr> 
+                <tr>    
+                    <td>-la data acestuiraport, subsemnatulestemembrustagiarsiurmeazacursul de formareprofesionalainitiala in domeniulevaluariibunurilorimobile; </td>   
+                </tr>    
+                <tr>  
+                    <td>-rezentulraport a fostefectuat in concordanta cu Standardele de evaluare a bunurilor 2020, respectiv se supunenormelornationale;</td>    
+                </tr>  
+                <tr>   
+                    <td>-acestraport de evaluareeste confidential atatpentru client cat sipentru evaluator siestevalabilnumaipentruscopulmentionat in prezentulraport; nu se acceptanicioresponsabilitatedacaestetransmisalteipersoane, fie pentruscopuldeclarat, fie pentruoricare alt scop.</td>    
+                </tr>
+                <tr>     
+                    <td>-raportul de evaluare nu vaputea fi inclus, in intregimesau partial, in documente, circularesau in declaratii, nicipublicatsaumentionat in alt fel, faraacordulscrissiprealabil al evaluatoruluisi al clientuluiacestuia, cu specificatiaformeisi a contextului in care arurmasaapara. </td> 
+                </tr>
+                <tr>        
+                    <td>-rezentulraport de evaluaretrebuieluat ca un intreg, nefiindacceptatautilizareadivizata a acestuia.</td>  
+                </tr>   
+            </table>
+            <br> <br>
+            <table>
+                <tr valign="middle" style="height: 150px;">
+                    <td style="text-align:center;">
+                        <span>Evaulator</span> <br>
+                        <span style="font-weight: bold; margin: 10px 0;">{{ valuation.evaluator.get_full_name }}</span> <br>
+                        <span>Trainee Member</span><br> 
+                        <span>E.P.I. Legitimacy {{valuation.evaluator.certification_number}}</span>
+                    </td>
+                    <td style="text-align: center;">
+                        <img src="{{valuation.evaluator.stamp.path}}" alt="Evaluator Stamp" width="150px" height="150px">
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <div>
+            <pdf:nextpage />
+        </div>
+
+        <div class="terms">
+            <h2 style="margin-bottom: 20px; padding: 0; text-align: center; font-size: 24px;">II. TERMENI DE REFERINTA AI EVALUARII</h2>
+            <p style="margin-bottom: 10px; text-indent: 3rem; font-weight: bold;">1. Identificarea evaluatorului</p>
+            <p style="margin-bottom: 10px;">
+                <span>{{ valuation.evaluator.get_full_name }} - Legitimatie numar {{valuation.evaluator.certification_number}}</span> <br>
+                <span>Telefon: </span> <br>
+                <span>E-mail: {{ valuation.evaluator.email }}</span>
+            </p>
+            <p style="text-align: justify;">Evaluatorul declara ca nu are niciun interes cu privire la imobilul care face obiectul prezentului raport de evaluare si niciun interes sau influenta legate de partile implicate.</p>
+            <p style="margin-bottom: 10px;text-align: justify;">In elaborarea prezentului raport nu s-a primit asistenta externa din partea niciunei alte persoane. Analizele, opiniile si concluziile exprimate au fost realizate respectand codul de etica si in conformitate cu Standardele de evaluare a bunurilor ANEVAR 2020 (Asociatia Nationala a Evaluatorilor Autorizati din Romania).</p>
+
+            <p style="margin-bottom: 10px; text-indent: 3rem; font-weight: bold;">2. Identificarea clientului</p>
+            <p style="margin-bottom: 10px;">
+                <span>Client: {{valuation.nume_client}}</span>  <br>
+                <span>Adresa: {{valuation.ct_address}}</span> <br>
+                <span>CUI: {{valuation.cui}}</span> <br>
+            </p>
+            <p style="margin-bottom: 10px;text-align: justify;">Acest raport de evaluare este confidential atat pentru client cat si pentru evaluator si utilizatorii desemnati si este valabil numai pentru scopul mentionat in prezentul raport. Nu se accepta nicio responsabilitate daca este transmis altei persoane, fie pentru scopul declarat, fie pentru oricare alt scop.</p>
+
+            <p style="margin-bottom: 10px; text-indent: 3rem; font-weight: bold;">3. Identificarea utilizatorilor desemnati</p>
+            <p style="margin-bottom: 10px;text-align: justify;">Acest raport de evaluare este adresat {{valuation.report_recipient}} si nu poate fi utilizat in alte scopuri sau de catre alti utilizatori.</p>
+
+            <p style="margin-bottom: 10px; text-indent: 3rem; font-weight: bold;">4. Scopul evaluarii</p>
+            <p style="margin-bottom: 10px;text-align: justify;">Estimarea valorii de {% if summary.amav %}piata{% else %}venit{% endif %} a proprietatii imobiliare in vederea {{ summary.purpose.purpose }}. Prezentul raport de evaluare este valabil numai pentru scopul mentionat in prezentul raport. Nu se accepta nicio responsabilitate daca este transmis altei persoane indiferent de scopul acestuia.</p>
+
+            <p style="margin-bottom: 10px; text-indent: 3rem; font-weight: bold;">5. Moneda evaluarii</p>
+            <p style="margin-bottom: 10px;text-align: justify;">Rezultatul evaluarii se va raporta in moneda europeana (Euro) si in moneda nationala (Leu), cursul de schimb intre cele doua monede fiind cel raportat de Banca Nationala a Romaniei pentru data evaluarii.</p>
+
+            <p style="margin-bottom: 10px; text-indent: 3rem; font-weight: bold;">6. Identificarea proprietatii imobiliare subiect al evaluarii</p>
+            <p style="margin-bottom: 10px;text-align: justify;">{% if pdata.sub_identi %}{{ pdata.sub_identi }}{% else %}Dreptul deplin de proprietate asupra apartamentului cu nr. {{valuation.apartment_no}}, compus din {{camere.camere|floatformat:"0"}} camere si dependinte cu o suprafata utila de {{ const.utila }} mp si trei balcoane cu suprafata lor totala de {{ const.totala|sub:const.utila }}, rezultand suprafata utila totala de {{ const.totala }} mp. Apartamentul are numarul cadastral {{pdata.cadastral_no}} si este intabulat in Cartea Funciara numarul {{pdata.land_book_no}}.{% endif %}</p>
+
+            <p style="margin-bottom: 10px; text-indent: 3rem; font-weight: bold;">7. Tipul valorii utilizate</p>
+            <p style="margin-bottom: 10px;text-align: justify;">
+                <span>Se estimeaza valoarea de {% if summary.amav %}piata{% else %}venit{% endif %} a proprietatii supuse evaluarii.</span> <br> 
+                <span>In conformitate cu Standardul de Evaluare a bunurilor SEV 104 – Tipuri ale valorii "Valoarea de piata reprezinta suma estimata pentru care un activ sau o datorie ar putea fi schimbat(a) la data evaluarii, intre un cumparator hotarat si un vanzator hotarat, intr-o tranzactie nepartinitoare, dupa un marketing adecvat si in care partile au actionat fiecare in cunostinta de cauza, prudent si faraconstrangere".</span>
+            </p>
+
+            <p style="margin-bottom: 10px; text-indent: 3rem; font-weight: bold;">8. Data evaluarii</p>
+            <p style="margin-bottom: 10px;">
+                <span>Data evaluarii {{valuation.valuation_date|date:"d.m.Y"}}</span> <br> 
+                <span>Data inspectiei {{valuation.inspection_date|date:"d.m.Y"}}</span> <br>
+                <span>Data raportului {{valuation.report_date|date:"d.m.Y"}}</span>
+            </p>
+
+            <p style="margin-bottom: 10px; text-indent: 3rem; font-weight: bold;">9. Inspectia proprietatii</p>
+            <p style="margin-bottom: 10px;text-align: justify;">nspectia proprietatii s-a efectuat de catre evaluator {{ valuation.evaluator.get_full_name }} la data de {{valuation.inspection_date|date:"d.m.Y"}} in prezenta proprietarei <i>Pauna Gabriela</i>. Cu ocazia inspectiei proprietatii nu au fost identificate diferente intre situatia scriptica si cea faptica.</p>
+
+            <p style="margin-bottom: 10px; text-indent: 3rem; font-weight: bold;">10. Prezentul raport de evaluare a fost intocmit folosind urmatoarele documente furnizate de client</p>
+            <p style="margin-bottom: 10px;">
+                {% for si in source %}
+                    {% if forloop.last %}
+                    <span>- {{si.source}}</span>
+                    {% else %}
+                    <span>- {{si.source}}</span> <br>
+                    {% endif %}
+                {% endfor %}
+            </p>
+
+            <p style="margin-bottom: 10px; text-indent: 3rem; font-weight: bold;">11. Natura si sursa informatiilor pe care se va baza evaluarea</p>
+            <p style="text-align: justify;">Prezentul raport de evaluare se bazeaza pe informatiile din documentele transmise de client. Evaluatorul nu are competenta de a verifica informatiile din documentele legale sau tehnice furnizate de client pe care le considera corecte in prezenta evaluare. In masura in care unele dintre informatiile continute in aceste documente se dovedesc inexacte, se rezerva dreptul de a revizui evaluarea.</p>
+            <p style="margin-bottom: 10px;text-align: justify;">Evaluatorul a avut de asemenea in vedere informatiile obtinute cu ocazia inspectiei proprietatii conform celor expuse mai sus, precum si informatii din baza de date proprie a evaluatorului, din cea a companiilor de profil imobiliar (agentii imobiliare, companii de consultanta imobiliara etc), precum si informatii verificate pe site-uri de specialitate – www.imobiliare.ro, www.olx.ro, www.homezz.ro.</p>
+
+            <p style="margin-bottom: 10px; text-indent: 3rem; font-weight: bold;">12. Ipoteze semnificative</p>
+            <table>
+                <tr>
+                    <td width="3%" valign="top">-</td>
+                    <td>Nu s-a facut nicio investigatie si nici nu s-au inspectat acele parti ce erau acoperite, neexpuse sau inaccesibile si s-a presupus astfel ca aceste parti sunt in stare tehnica buna. Nu se poate exprima nicio opinie despre starea tehnica a partilor neinspectate si acest raport nu trebuie considerat ca ar valida integritatea elementelor.</td>
+                </tr>    
+                <tr>
+                    <td width="3%" valign="top">-</td>
+                    <td>Nu imi asum nicio responsabilitate pentru orice vicii ascunse sau informatii neconcludente ale dreptului de proprietate, structurilor sau infrastructurilor care ar putea afecta valoarea imobilului. Mai mult, nu fac investigatii pentru a le descoperi.</td>
+                </tr>  
+                <tr>
+                    <td width="3%" valign="top">-</td>
+                    <td>Suprafetele pe baza carora se estimeaza valoarea sunt cele din documentele puse la dispozitia evaluatorului. Calitatea de evaluator autorizat nu ofera competente in domeniul masurarii suprafetelor, responsabilitatea corectitudinii acestora fiind a persoanelor ce au intocmit documentele ce stau la baza evaluarii.</span> </td>
+                </tr>  
+                <tr>
+                    <td width="3%" valign="top">-</td>
+                    <td>Nu s-au realizat estimari cu privire la starea structurala a imbunatatirilor sau la dimensiunea si adecvarea sistemelor mecanice si a altor componente precum incalzire, canalizare, sistemul electric, etc. Valorile estimate in raportul de fata au plecat de la premisa ca imobilul evaluat este construit si utilizat in concordanta cu toate autorizatiile de constructie, neexistand nicio disputa cu vecinii, ocupantii spatiilor invecinate sau administratia locala.</td>
+                </tr>  
+                <tr>
+                    <td width="3%" valign="top">-</td>
+                    <td>Evaluatorul a presupus ca imobilul evaluat se conformeaza restrictiilor urbanistice din zona, detine toate licentele, autorizatiile, certificatele necesare utilizarii sale.</td>
+                </tr>  
+                <tr>
+                    <td width="3%" valign="top">-</td>
+                    <td>Am considerat ca toate informatiile obtinute de la client sunt adevarate si corecte. Toate informatiile (inclusiv situatiile financiare, estimari si avize) obtinute de la terte parti se presupun a fi adevarate si corecte. Nu imi asum nicio responsabilitate pentru neconcordantele generate de informatii eronate oferite de client.</td>
+                </tr>  
+                <tr>
+                    <td width="3%" valign="top">-</td>
+                    <td>Daca nu este precizat, se presupune ca nu exista abuzuri sau incalcari ale legii, care sa afecteze proprietatea evaluata.</td>
+                </tr>  
+                <tr>
+                    <td width="3%" valign="top">-</td>
+                    <td>Se presupune ca proprietatea este in deplina conformitate cu toate codurile, legile, consimtamintele, licentele sau reglementarile relevante la nivel national, orasenesc, local sau privat, si ca toate autorizatiile, permisele, certificatele, francizele si asa mai departe pot fi reinoite si / sau transferate catre un eventual cumparator sau alt ocupant;</td>
+                </tr>  
+                <tr>
+                    <td width="3%" valign="top">-</td>
+                    <td>Evaluatorul, prin reglementarile profesionale carora se supune, nu are calitatea juridica de a certifica corectitudinea, din punct de vedere legal, a actelor mentionate si nici a dreptului deplin de proprietate asupra bunului imobil evaluat, considerat existent in prezenta lucrare, ca ipoteza de lucru.</td>
+                </tr>  
+                <tr>
+                    <td width="3%" valign="top">-</td>
+                    <td>Nu s-a efectuat nicio investigatie referitoare la prezenta sau absenta substantelor poluante si, prin urmare, nu se poate oferi nicio asigurare a potentialului sau impact asupra evaluarii. In consecinta, pentru scopul acestei evaluari, am presupus ca nu exista, pe sau in cadrul proprietatii, niciun fel de substanta poluanta, care ar putea contamina proprietatea si diminua valoarea acesteia. Orice identificare ulterioara nu imi este imputabila.</td>
+                </tr>  
+                <tr>
+                    <td width="3%" valign="top">-</td>
+                    <td>Valorile estimate in raport se aplica intregii proprietati si orice divizare sau distribuire a acestora pe interese fractionate va invalida valorile estimate.</td>
+                </tr>  
+                <tr>
+                    <td width="3%" valign="top">-</td>
+                    <td>Evaluatorul, prin natura muncii sale, nu este obligat sa ofere in continuare consultanta sau sa depuna marturie in instanta relativ la proprietatea in chestiune.</td>
+                </tr>  
+                <tr>
+                    <td width="3%" valign="top">-</td>
+                    <td>In cazul in care cititorul este pe punctul de a lua o decizie pe plan investitional, chiar si personal, fiduciar sau corporativ, si are orice nelamurire in ceea ce priveste continutul material al acestui raport, se recomanda contactarea evaluatorului.</td>
+                </tr>  
+                <tr>
+                    <td width="3%" valign="top">-</td>
+                    <td>Evaluatorul nu isi asuma nicio responsabilitate pentru orice eveniment, conditie sau circumstante care pot sa afecteze valoarea proprietatii, ce pot aparea ulterior, fie datei de evaluare mentionata in acest raport, fie datei inspectiei, oricare ar fi ordinea.</td>
+                </tr> 
+                <tr>
+                    <td width="3%" valign="top">-</td>
+                    <td>Calitatea managementului proprietatii are un efect direct asupra viabilitatii economice si valorii de piata a acesteia. Previziunile financiare prezentate in acest raport presupun un drept de proprietate responsabil si competenta manageriala. Orice variatie de la aceasta ipoteza ar putea avea un impact semnificativ asupra estimarilor de valoare rezultate.</td>
+                </tr> 
+                <tr>
+                    <td width="3%" valign="top">-</td>
+                    <td>Estimarea rezultatelor prezentate in acest raport se bazeaza pe o evaluare a economiei actuale la nivel national si local, fara a exclude niciun element si fara a face previziuni cu privire la efectele de crestere sau scadere brusca, in conditiile economice locale. Nu pot si nu garantez ca estimarile vor fi atinse, insa acestea au fost intocmite pe baza informatiilor obtinute in cursul acestui studiu, si sunt destinate sa tina seama de experienta investitorilor.</td>
+                </tr> 
+                <tr>
+                    <td width="3%" valign="top">-</td>
+                    <td>Unele dintre cifrele prezentate in acest raport se poate sa fi fost generate de modele financiare, facand calcule bazate pe numere cu trei sau mai multe zecimale. Din motive de claritate si simplificare, cele mai multe cifre prezentate in acest raport au fost rotunjite si pot fi, prin urmare, pasibile de mici erori de rotunjire, in anumite cazuri.</td>
+                </tr> 
+                <tr>
+                    <td width="3%" valign="top">-</td>
+                    <td>Evaluarea proprietatilor imobiliare trebuie sa fie considerata ca fiind in acelasi timp o stiinta si o arta. Desi aceasta evaluare utilizeaza diferite calcule matematice pentru a oferi indicatii de valoare, decizia finala a valorii este subiectiva si poate fi influentata de experienta anterioara a evaluatorului si de alti factori care sunt sau nu, specificati in prezentul raport.</td>
+                </tr> 
+                <tr>
+                    <td width="3%" valign="top">-</td>
+                    <td>Dreptul deplin de proprietate se presupune a fi transmisibil cu usurinta, fara nicio restrictie nejustificata, cu exceptia cazurilor in care este altfel specificat.</td>
+                </tr> 
+                <tr>
+                    <td width="3%" valign="top">-</td>
+                    <td>Chiar daca toate informatiile continute in acest raport sunt considerate a fi corecte, acestea se pot schimba. Nicio parte a continutului acestui raport nu trebuie sa fie interpretata ca o garantie de orice fel.</td>
+                </tr>
+                <tr>
+                    <td width="3%" valign="top">-</td>
+                    <td>Nu s-au facut verificari in ceea ce priveste probleme legate de buget, de sarcini si monitorizari ale constructiei. In acest domeniu, ne-am bazat, inca o data, pe informatiile furnizate de catre proprietar / dezvoltator.</td>
+                </tr>
+                <tr>
+                    <td width="3%" valign="top">-</td>
+                    <td>Evaluatorul nu isi asuma nicio responsabilitate pentru evenimentele ce influenteaza valoarea proprietatii care au avut loc dupa data evaluarii sau data inspectiei si care nu au fost indicate.</td>
+                </tr>
+                <tr>
+                    <td width="3%" valign="top">-</td>
+                    <td>Raportul de evaluare nu poate fi folosit ca proba in instanta fiind o expertiza extrajudiciara.</td>
+                </tr>
+                <tr>
+                    <td width="3%" valign="top">-</td>
+                    <td>Natura pietelor emergente cum este si Romania presupune anumite dificultati in cuantificarea unor valori de piata. Oricum, valorile exprimate in cadrul acestui raport trebuie sa fie considerate ca fiind cea mai buna estimare a proprietatii in cauza. Subliniez ca valoarearecomandata a fost determinata strict prin perspectiva situatiei pietei, la data de referinta a 10 evaluarii, situatie care se poate modifica, intr-un interval mai scurt sau mai lung, in functie de dinamica economica, ceea ce ar implica reconsiderarea pozitiei mele.</td>
+                </tr>
+                <tr>
+                    <td width="3%" valign="top">-</td>
+                    <td>In cazul in care clientul sau destinatarul raportului de evaluare solicita in mod expres, evaluatorul poate realiza alocarea valorii pe elemente componente ale proprietatii (de exemplu, teren si constructii) in conformitate cu metodologia agreata de ANEVAR. Va rugam sa luati in considerare ca valoarea alocata pe fiecare element al proprietatii nu exprimavaloarea de piata a respectivului element considerat separat, ci este estimata exclusiv in scop administrativ.</td>
+                </tr>
+            </table>
+
+            <p style="margin: 10px 0; text-indent: 3rem; font-weight: bold;">13. Ipoteze speciale semnificative</p>
+            <p style="margin-bottom: 10px;text-align: justify;">{{pdata.sp_hypo}}</p>
+            
+            <p style="margin: 10px 0; text-indent: 3rem; font-weight: bold;">14. Restrictii de utilizare, difuzare sau publicare</p>
+            <p style="margin-bottom: 10px;">
+                <p style="text-align: justify;">Prezentul raport este intocmit la cererea clientului pentru utilizatorul desemnat in scopul precizat. Nu este permisa folosirea raportului de catre o terta persoana fara obtinerea in prealabil a acordului scris al evaluatorului si al clientului. Nu se asuma responsabilitatea fata de alte persoane in afara clientului, utilizatorului desemnat si celor care au obtinut.</p>
+                <p style="text-align: justify;">Acordul scris si nu se accepta responsabilitatea pentru nici un fel de pagube suferite de orice astfel de persoana, pagube rezultate in urma deciziilor sau actiunilor intreprinse pe baza acestui raport. Continutul acestui raport este confidential pentru client si utilizatorul desemnat si evaluatorul nu il va dezvalui unei terte persoane.</p>
+                <p style="text-align: justify;">Consimtamantul scris al evaluatorului trebuie obtinut inainte ca oricare parte a raportului de evaluare sa poata fi utilizata, in orice scop, de catre orice persoana, cu exceptia utilizatorului desemnat. Consimtamantul scris si aprobarea trebuie obtinute inainte ca raportul de evaluare (sau oricare parte a sa) sa poata fi modificat sau transmis unei terte parti, alta decat utilizatorul desemnat sau altor categorii de public, prin prospecte, memorii, publicitate, relatii publice, informatii, vanzare sau alte mijloace.</p>
+            </p>
+
+            <p style="margin: 10px 0; text-indent: 3rem; font-weight: bold;">15. Declararea conformitatii cu SEV</p>
+            <p style="margin-bottom: 10px;">
+                Prezentul raport a fost efectuat in concordanta cu Standardele de evaluare a bunurilor SEV 2020, respectiv se supune normelor nationale ANEVAR si poate fi expertizat (la cerere) si verificat. <br><br>
+                Standarde de evaluare: <br>
+                - SEV 100 – Cadrul general <br>
+                - SEV 101 – Termenii de referinta ai evaluarii <br>
+                - SEV 102 – Documentare si conformare <br>
+                - SEV 103 – Raportare <br>
+                - SEV 104 – Tipuri ale valorii  <br>
+                - SEV 105 – Abordari si metode de evaluare <br>
+                - SEV 230 – Drepturi asupra proprietatii imobiliare <br>
+                - SEV 310 – Evaluari ale drepturilor asupra proprietatii imobiliare pentru garantarea imprumutului <br>
+                - GEV 520 – Evaluarea pentru garantarea imprumutului <br>
+                - GEV 630 – Evaluarea bunurilor imobile <br>
+                - Cadrul legal – Legislatia in vigoare  <br>
+            </p>
+
+            <p style="margin: 10px 0; text-indent: 3rem; font-weight: bold;">16. Tipul Raportului</p>
+            <p>
+                Raportul prezent este unul descriptiv, narativ, si a fost structurat dupa cum urmeaza: <br> 
+                1. Rezumatul evaluarii. Certificarea evaluarii; <br>
+                2. Termenii de referinta ai evaluarii; <br>
+                3. Prezentarea datelor; <br>
+                4. Analiza pietei imobiliare;  <br>
+                5. Analiza celei mai bune utilizari (CMBU); <br>
+                6. Evaluarea proprietatii imobiliare; <br>
+                7. Anexe <br>
+            </p>
+        </div>
+
+        <div>
+            <pdf:nextpage />
+        </div>
+
+        <div class="presentation">
+            <h2 style="margin-bottom: 10px; padding: 0; text-align: center; font-size: 24px;">III. PREZENTAREA DATELOR</h2>
+            <p style="margin-bottom: 10px;">Date despre aria de piata, oras, vecinatati si localizare</p>
+
+            <p style="margin-bottom: 10px; text-indent: 3rem; font-weight: bold;">1. Informatii generale</p>
+            <p style="margin-bottom: 10px;text-align: justify;">Proprietatea este amplasta pe {{valuation.address}} din orasul {{valuation.city.name}}, in zona {{valuation.area.name}}, zona {{ valuation.urbana }} {{ valuation.locatie }} a localitatii.</p>
+            
+            <p style="margin-bottom: 10px; text-indent: 3rem; font-weight: bold;">2. Zona</p>
+            <p style="margin-bottom: 10px;"></p>
+
+            <p style="margin-bottom: 10px; text-indent: 3rem; font-weight: bold;">3. Informatii specifice</p>
+            <div>
+                <img src="http://127.0.0.1:8000/static/dashboard/location.png" alt="Location" width="100%" height="auto">
+            </div><br>  
+            <p style="margin: 10px 0;text-align: justify;">Proprietatea are caracter rezidential este amplasata in zona {{ valuation.urbana }} {{ valuation.locatie }} din orasul {{valuation.city.name}}, pe {{valuation.address}}, strada asfaltata cu {{ pdata.strada.type }} pe sens. Strada de acces are caracter public.</p>
+
+            <p style="margin-bottom: 10px; text-indent: 3rem; font-weight: bold;">Transportul public</p>
+            <p style="margin-bottom: 10px;">Proprietatea este conectata la mijloacele de transport in comun: 
+                {% for p in pdata.pt|speciallist %}
+                    {% if forloop.last %}
+                        {{p}}.
+                    {% else%}
+                        {{p}},
+                    {% endif %}
+                {% endfor %}
+            </p>
+
+            <pdf:nextpage />
+
+            <p style="margin-bottom: 10px; text-indent: 3rem; font-weight: bold;">4. Puncte de interes</p>
+            <p>Locatia beneficiaza de invecinarea cu urmatoarele puncte de interes:</p>
+            <table>
+                {% for p in pdata.poi|covertlist %}
+                <tr>
+                    <td width="5%" style="text-align: center;">-</td>
+                    <td>{{p}}</td>
+                </tr>
+                {% endfor %}
+            </table>
+
+            <p style="margin: 10px 0; text-indent: 3rem; font-weight: bold;">5. Descrierea si adresa</p>
+            <p style="text-align: justify;">{% if pdata.sub_identi %}{{ pdata.sub_identi }}{% else %}Dreptul deplin de proprietate asupra apartamentului cu nr. {{valuation.apartment_no}}, compus din {{camere.camere|floatformat:"0"}} camere si dependinte cu o suprafata utila de {{ const.utila }} mp si trei balcoane cu suprafata lor totala de {{ const.totala|sub:const.utila }}, rezultand suprafata utila totala de {{ const.totala }} mp. Apartamentul are numarul cadastral {{pdata.cadastral_no}} si este intabulat in Cartea Funciara numarul {{pdata.land_book_no}}{% endif %}.</p>
+            <p style="margin-top: 5px;">Adresa proprietatii este</p>
+            <p style="margin-bottom: 10px;">{{valuation.address}}, {{valuation.city.name}}, {{valuation.area.name}}</p>
+ 
+            <p style="margin-bottom: 10px; text-indent: 3rem; font-weight: bold;">6. Proprietar si situatia juridica</p>
+            <p style="margin-bottom: 5px;text-align: justify;">
+                Se evalueaza dreptul absolut de proprietate asupra imobilului descris mai sus. Proprietatea este detinuta de <i>Pauna Valentin si Pauna Gabriela-Monica</i> in baza:
+            </p>
+            <div style="margin-bottom: 10px;">
+                {% for src in source %}
+                    {% if src.id|stringformat:"i" in pdata.legal_doc %}
+                    <p style="text-indent: 2rem;">- {{ src.source }}</p>
+                    {% endif %}
+                {% endfor %}
+            </div>
+
+            <p style="margin-bottom: 10px; text-indent: 3rem; font-weight: bold;">7. Date privind documentatia cadastrala</p>
+            <p style="margin-bottom: 10px;text-align: justify;">Apartamentul are numarul cadastral {{ pdata.cadastral_no }} si este intabulat in Cartea Funciara numarul {{ pdata.land_book_no }} {{ pdata.uat }}.</p>
+
+            <p style="margin-bottom: 10px; text-indent: 3rem; font-weight: bold;">8. Sarcini</p>
+            <p style="margin-bottom: 10px;text-align: justify;">Conform Extrasului de Carte Funciara pus la dispozitie, proprietatea {{ pdata.get_charges_display }} {% if pdata.charges == 'yes' %}de sarcini in favoarea {{ pdata.sarcini }}{% else %}de sarcini{% endif %}. La data evaluarii proprietatea este considerata libera de sarcini. </p>
+
+            <p style="margin-bottom: 10px; text-indent: 3rem; font-weight: bold;">9. Utilizarea actuala</p>
+            <p style="margin-bottom: 10px;text-align: justify;">La data inspectiei proprietatea avea utilizare rezidentiala si era {{ pdata.get_current_use_display }} de proprietar.</p>
+            
+            <p style="margin-bottom: 10px; text-indent: 3rem; font-weight: bold;">10. Identificare</p>
+            <p style="margin-bottom: 10px;text-align: justify;"></p>
+            
+            <p style="margin-bottom: 10px; text-indent: 3rem; font-weight: bold;">11. Acces</p>
+            <p style="margin-bottom: 10px;text-align: justify;"></p> 
+
+            <p style="margin-bottom: 10px; text-indent: 3rem; font-weight: bold;">12. Constructia</p>
+            <p style="margin-bottom: 5px;">Conform inspectiei / certificatului de performanta energetica, constructia are un regim de inaltime {{ valuation.height }} si a fost edificata in anul {{ valuation.construction_year }}</p>
+            <p style="margin-bottom: 5px;"><b>Structura</b> – {{ const.structure.type }}</p>
+            <p style="margin-bottom: 5px;"><b>Fundatii</b> – {{ const.foundation.type }}</p>
+            <p style="margin-bottom: 5px;"><b>Inchideri</b> – {{ const.closure.type }}</p>
+            <p style="margin-bottom: 5px;"><b>Compartimentari</b> – {{ const.subcompartment.type }}</p>
+            <p style="margin-bottom: 15px;"><b>Acoperis</b> – {{ const.roof.type }}</p>
+
+            <p style="margin-bottom: 5px; font-weight: bold;">Finisajele interioare sunt medii si constau in:</p>
+            <p style="margin-bottom: 5px;"><b>Pardoseli</b> – {{const.pardoseli}}</p>
+            <p style="margin-bottom: 5px;"><b>Pereti</b> – {{ const.walls }}</p>
+            <p style="margin-bottom: 5px;"><b>Tamplaria interioara</b> – {{ const.interior_carpentry }}</p>
+            <p style="margin-bottom: 5px;"><b>Plafonul</b> – {{ const.ceiling }}</p>
+            <p style="margin-bottom: 5px;"><b>Finisaje exterioare</b> – {{ const.exterior_finishes }}</p>
+            <p style="margin-bottom: 15px;"><b>Tamplarie exterioara</b> – {{ const.exterior_carpentry }}</p>
+            <p><b>Bransamente</b> – Constructia este bransata la urmatoarele utilitati:</p>
+            <table width="30%">
+            {% for u in const.utilities.all %}
+                <tr>
+                    <td>{{u.name}}</td>
+                    <td width="10%">Da</td>
+                </tr>
+            {% endfor %}
+            </table>
+
+            <p style="margin-top: 10px;"><b>Incalzirea</b> - Incalzirea se realizeaza cu ajutorul caloriferelor conectate la <i>centrala termica a blocului</i>.</p>
+            <p><b>Dotari suplimentare:</b> <i>update this part</i></p>
+
+            <p style="margin: 10px 0;text-align: justify;"><b>Suprafete</b> - Urmatoarele suprafete au fost determinate utilizand documentatia pusa la dispozitie, respectiv extras de carte funciara si releveul avizat. Determinarea suprafetelor luate in calcul in evaluare s-a facut pe baza suprafetelor masurate, conform paragrafului 23 din GEV 630:</p>
+            <table border="1" width="60%">
+                <tr valign="middel">
+                    <th style="padding-top: 5px;">Nr.crt.</th>
+                    <th style="padding-top: 5px;">Denumire incapere</th>
+                    <th style="padding-top: 5px;">Suprafata (mp)</th>
+                </tr>
+                {% for s in suprafete %}
+                    {% if s.is_utila %}
+                    <tr valign="middel">
+                        <td style="text-align: center;padding-top: 5px;">{{ forloop.counter }}</td>
+                        <td style="text-align: center;padding-top: 5px;">{{ s.room_name }}</td>
+                        <td style="text-align: center;padding-top: 5px;">{{ s.area }}</td>
+                    </tr>
+                    {% endif %}
+                {% endfor %}
+                <tr valign="middel">
+                    <td colspan="2" style="text-align: center;padding-top: 5px;font-weight: bold;">Suprafata utila</td>
+                    <td style="text-align: center;padding-top: 5px;font-weight: bold;">{{ const.utila }}</td>
+                </tr>
+                {% for s in suprafete %}
+                    {% if s.is_utila %}
+                    <tr valign="middel">
+                        <td style="text-align: center;padding-top: 5px;">{{ forloop.counter }}</td>
+                        <td style="text-align: center;padding-top: 5px;">{{ s.room_name }}</td>
+                        <td style="text-align: center;padding-top: 5px;">{{ s.area }}</td>
+                    </tr>
+                    {% endif %}
+                {% endfor %}
+                <tr valign="middel">
+                    <td colspan="2" style="text-align: center;padding-top: 5px;font-weight: bold;">Suprafata totala</td>
+                    <td style="text-align: center;padding-top: 5px;font-weight: bold;">{{ const.totala }}</td>
+                </tr>
+            </table>
+            <br>
+            <p style="margin: 10px 0;text-align: justify;"><b>Mentiuni:</b>{{ const.comments }}</p>
+
+            <p style="margin-bottom: 10px; text-indent: 3rem; font-weight: bold;">13. Istoricul proprietatii subiect</p>
+            <p style="margin-bottom: 10px;text-align: justify;">{{ pdata.history }}</p>
+        </div>
+
+        <div>
+            <pdf:nextpage />
+        </div>
+
+        <div class="analysis">
+            <h2 style="margin-bottom: 10px; padding: 0; text-align: center; font-size: 24px;">IV. ANALIZA PIETEI IMOBILIARE</h2>
+            <p style="margin-bottom: 5px;font-weight: bold;">Contextul general al pietei imobiliare</p>
+
+            <p style="text-align: justify;">Dupa o crestere economica importanta, de 7% in 2017, economia romaneasca a evoluat in perioada 2018- 2019 spre o crestere sustenabila pe termen lung estimata de analisti in jurul valorii de 3%. Cresterea economica a ramas robusta, de peste 4% in 2018 si aproximativ 4% in 2019, dar in scadere fata de anii precedenti. Aceasta tendinta este de asteptat sa continue si pe termen lung, in timp ce pe termen scurt nivelul de incertitudine extrem de ridicat de pe pietele internationale face imposibila estimarea realista a unor tendinte.</p>
+            <p style="text-align: justify;">Un factor important de influenta a contextului economic national in anul 2019 a fost reprezentat de politicile economice publice. Cea mai mare parte a anului 2019 a stat sub semnul unei politici financiare publice expansioniste, in conditiile unui deficit bugetar programat foarte aproape de limita maxima de 3% si a executiei bugetare relaxate din primele 9 luni ale anului. </p>
+            <p style="text-align: justify;">Luna octombrie a fost marcata de o schimbare politica neasteptata prin care guvernarea cu o orientare politica de stanga a fost inlocuita cu una de dreapta, cu optiuni de decizie economica semnificativ diferite. Aceasta schimbare a fost insotita de o revizuire a principalilor indicatori macroeconomici in sensul indepartarii lor de la echilibru, ceea ce s-a reflectat si in perceptia agentilor economici interni si internationali despre mediul economic romanesc.</p>
+            <p style="text-align: justify;">Astfel, anul 2019 s-a incheiat cu un deficit bugetar peste nivelul proiectat, cu o rata a inflatiei peste asteptari, de 3,8% conform estimarii Bancii Nationale a Romaniei si cu o devalorizare a monedei nationale fata de principalele valute care a continuat si in primele luni ale anului 2020, cursul de schimb la 31 decembrie 2019 fiind de 4,7793 lei/euro.</p>
+            <p style="text-align: justify;">Contextul macroeconomic descris mai sus s-a dovedit cu deosebire favorabil pietei imobiliare in anul 2019, toate segmentele acesteia inregistrand o activitate intensa de tranzactionare, dar si de investitii. Anul 2019 a inregistrat totodata intrarea sau consolidarea pozitiei pe piata imobiliara romaneasca a unor investitori interni si internationali de talie mare. Dintre tranzactiile de referinta ale anului 2019 amintim achizitia de catre AFI Properties de la NEPI Rockastle a unui portofoliu de cladiri de birouri de referinta in peisajul capitalei pentru o valoare de aproximativ 290 mil. Euro, dupa ce acelasi fond de investitii a vandut participatia sa in cea mai reprezentativa cladire de birouri din Cluj-Napoca – The Office – intr-o tranzactie cu valoare totala de aproximativ 120 mil Euro care a facut din cumparatori– fratii Paval – cei mai importanti investitori autohtoni pe piata de spatii de birouri. O alta tranzactie de peste 100 mil Euro s-a desfasurat intre Prime Kapital Developments si MAS Real Estate si a vizat achizitia a noua centre comerciale aflate in orase secundare, aceasta reprezentand cea mai mare tranzactie pe segmentul de retail pentru anul 2019.</p>
+            <p style="text-align: justify;">Activitatea de dezvoltare imobiliara a atins niveluri mari pe toate segmentele in anul 2019, fiind centrata, ca tendinta, pe proiecte de anvergura, cu risc redus si care speculeaza oportunitati pe o piata aflata in crestere solida.</p>
+            <p style="text-align: justify;">Politica expansionista dusa de autoritatile publice in primele noua luni ale anului 2019 si care a vizat cu deosebire cresterea salariilor in sistemul bugetar si cresterea pensiilor publice s-a reflectat in mentinerea unui apetit ridicat pentru consum in randul populatiei. Acest lucru a facut ca activitatea investitionala, ca si nivelul tranzactiilor, sa inregistreze valori importante atat pe segmentul rezidential al pietei imobiliare, cat si pe segmentul spatiilor de retail </p>
+            <p style="text-align: justify;">In piata rezidentiala, prioritate s-a acordat proiectelor de calitate ridicata, aflate in zone centrale sau in dezvoltare rapida, care ofera un confort ridicat in utilizare si prezinta niveluri de risc reduse pentru dezvoltatori. In acest sens, este de amintit activitatea intensa de dezvoltare dusa de ONE United in capitala, unde dezvoltatorul are in prezent in derulare patru proiecte rezidentiale de anvergura situate in zone premium precum Floreasca, Aviatiei, Timpuri Noi. Alti dezvoltatori importanti pe segmentul rezidential precum Forte Partners sau Forty Management s-au orientat de asemenea spre zone premium – Aviatiei sau zona centrala a capitalei in vecinatatea bd. Stefan cel Mare.</p>
+            <p style="text-align: justify;">Programul National “Prima Casa” care a constituit o lunga perioada motorul cresterii pietei rezidentiale va fi functional si in anul 2020, dar cu conditii usor schimbate care adreseaza dimensiunea sociala a programului. Este de asteptat ca acesta sa contribuie cu precadere la mentinerea lichiditatii in zonele periferice nou-dezvoltate ale marilor orase. Pentru capitala, este de asteptat ca zonele vizate sa fie cele din sud – Metalurgiei Park si proiectele adiacente, vest – Prelungirea Ghencea, Militari residence si dezvoltarile din comunele Rosu, Chiajna si Bragadiru si est – zona Pallady. Este de asteptat ca efectul programului Prima Casa asupra volumului pietei rezidentiale in 2020 sa fie usor mai redus, segmentul far fiind cel al proprietatilor rezidentiale adresate cumparatorilor cu venituri medii si mari care a inregistrat cresteri semnificative si in anul 2019.</p>
+            <p style="text-align: justify;">Pe segmentul spatiilor comerciale de retail, activitatea de investitii a continuat in 2019, cu proiecte de centre comerciale mari in orase principale si secundare precum cel dezvoltat de AFI la Brasov sau prin extinderi ale unor centre existente. Pentru anul 2020, activitatea de dezvoltare va cunoaste un ritm mai moderat, vizand cateva extinderi ale unor centre comerciale in orase principale, dar si dezvoltari de astfel de centre in orase secundare, cele mai reprezentative fiind proiectele centrelor comerciale de la Targu Mures si Targoviste dezvoltate de NEPI Rockastle. Alti investitori semnificativi in acest domeniu sunt Oasis Retail, Development &Consulting si Supernova cu proiecte anuntate la Sibiu si Timisoara si Prime Kapital care a anuntat proiecte de anvergura mai redusa la Sfantu Gheorghe si Pitesti pentru anii urmatori. Capitala va cunoaste in 2020 extinderea unui centru comercial important – Colosseum Mall aflat in zona de Nord-Vest, cu o suprafata inchiriabila suplimentara de aproximativ 16500 mp.</p>
+            <p style="text-align: justify;">Stocul de spatii industriale moderne a depasit in 2019 4 mil. de metri patrati la nivel national, in conditiile in care numeroase alte proiecte sunt in curs de realizare, cele mai reprezentative fiind cele anuntate de Globalworth la Pitesti si Constanta. Cererea de spatii industriale ramane importanta in ciuda numerosilor factori de incertitudine de pe piata internationala, in special referitoare la evolutia exporturilor si la cresterea economica fragila in Uniunea Europeana in contextul separarii Marii Britanii de blocul comunitar. Mentinerea unui nivel ridicat al consumului prin politici publice expansioniste a condus in ultimii ani la dezvoltarea remarcabila in ultima perioada a comertului electronic si de aici la o crestere seminficativa a cererii pe sectorul spatiilor de depozitare si serviciilor de logistica.</p>
+            <p style="text-align: justify;">Pe piata spatiilor de birouri, nivelul ridicat atins de activitatea de dezvoltare imobiliara in anii 2018-2019 a facut ca in prezent investitorii sa se orienteze in special spre proiecte premium, cu risc redus si aflate in centre de afaceri importante si in hub-urile principale de cladiri de birouri. Activitatea de tranzactionare a cunoscut valori record in 2019, cele mai importante doua tranzactii imobiliare vizand acest segment. Ambele au reprezentat dezinvestiri ale fondului NEPI Rockastle prin vanzarea unor cladiri reprezentative de birouri in Bucuresti (in valoare de 290 mil. Euro vandute catre AFI Proporties care a devenit astfel unul din jucatorii importanti la nivel national pe piata spatiilor de birouri) si Cluj-Napoca (aprox. 120 mil. euro, vandute catre grupul Dedeman detinut de fratii Paval). Pentru anii urmatori, in lipsa unor socuri majore, analistii economici previzioneaza o moderare a cresterii economice, care va ramane totusi robusta – cu ritmuri de crestere economica de 3% sau peste in urmatorii ani. O asemenea evolutie este de natura sa mentina o cerere robusta pe segmentul spatiilor de birouri, in paralel cu operatiunile de consolidare a activitatii si de relocare in spatii de lucru cu confort ridicat pe care le desfasoara unii utilizatori de calibru. Principalul factor de incertitudine pe aceasta piata este reprezentat de efectele epidemiei de COVID-19 care in functie de dezvoltarile viitoare poate crea modificari semnificative ale comportamentului chiriasilor cu efect asupra renegocierilor viitoare de chirii pe termen scurt.</p>
+            <p style="text-align: justify;">Tendinta anului 2019 ce se va mentine si in viitor in domeniul spatiilor de birouri si industriale este data de preferinta mai accentuata a utilizatorilor pentru incorporarea in proiectele de constructie a celor mai noi tehnologii SMART care le ofera un confort mai mare in utilizare, precum si de accentul mare pus pe certificarea spatiilor inchiriate ca si cladiri verzi.</p>
+            <p style="text-align: justify;">Principalele surse de incertitudine ale finalului de an 2019 vin pe plan intern din interventiile publice asupra echilibrelor economice, cu atat mai greu de anticipat cu cat anul 2020 este si an electoral, precum si din provocarile importante din plan international. Astfel,izbucnirea epidemiei de COVID-19 precum si raspandirea ei rapida la nivel mondial a condus la o cadere a principalelor piete bursiere pe plan mondial ca urmare a nivelului sentimentului generalizat de panica. Aceste dezvoltari sunt mult prea recente pentru a anticipa efectele lor pe termen lung pe diferite piete, dar este totusi de mentionat ca ar putea avea ca si consecinte pe termen scurt o orientare a investitorilor catre activele cu risc scazut in incercarea de a prezerva valoarea capitalului investit. Din acest punct de vedere, piata imobiliara poate inregistra influente complexe dintre care amintim o posibila amanare a unor proiecte inca neincepute sau in stadiu incipient, o perioada mai mare de marketabilitate si o reducere a lichiditatii pe anumite segmente ale pietei imobiliare. Nu trebuie totusi sa ignoram si un posibil rol de activ de refugiu al pietei imobiliare sau macar al unora dintre produsele sale, in contextul in care fluctuatia de pe pietele bursiere a devenit extrem de importanta. Printre alti factori de incertitudine pe plan international, mentionam iesirea Marii Britanii din Uniunea Europeana si incertitudinile legate de desfasurarea pe baze noi a comertului international al Uniunii Europene cu noua iesita, precum si politicile de migratie ce ar putea insoti aceasta iesire, care sunt elemente cu consecinte importante asupra contextului economic al anului 2020. Totodata, apropiatele alegeri prezidentiale din Statele Unite ale Americii, precum si scaderea importanta a pretului petrolului in prima parte a anului 2020 reprezinta alti factori de incertitudine demni de considerat pe plan international.</p>
+            <p style="text-align: justify;">Pentru prima jumatate a anului 2020 este de asteptat sa se mentina o politica financiara publica relaxata, avand in vedere ca acesta este an electoral, preocuparea principala a autoritatilor publice ramanand centrata pe acumularea de capital electoral. Acest lucru va face probabil ca si nivelul cresterii economice sa fie sustinut in acest fel, desi este hazardat sa facem estimari in acest moment asupra valorii ce va fi atinsa, avand in vedere efectele inregistrate in plan financiar in urma extinderii in plan mondial a epidemiei de COVID-19. Drept urmare, mentionam ca foarte probabila o tendinta de moderare a pietei imobiliare, dar nu putem face precizari asupra modului in care evenimentele recente vor afecta comportamentul investitorilor de pe aceasta piata sau amplitudinea fluctuatiilor ce vor fi inregistrate. De asemenea, avand in vedere activitatea investitionala importanta din ultimii ani, este de asteptat sa se inregistreze o tendinta pe termen mediu si lung de maturizare a pietei imobiliare, caracterizata prin randamente investitionale in scadere, care se apropie astfel de cele de pe alte piete europene importante.</p>
+            <p style="text-align: justify;margin-bottom: 10px">Avand in vedere elementele precizate mai sus, care contureaza peisajul unei piete imobiliare cu un nivel de incertitudine neobisnuit de ridicat, evaluatorul avertizeaza asupra posibilitatii ca pe termen scurt si mediu sa se inregistreze o scadere semnificativa a lichiditatii si o crestere corespunzatoare a perioadelor de marketabilitate pe piata imobiliara, cu efect in afectarea valorii de executare a garantiilor, in special pe termen scurt.</p>
+
+            <p style="margin-bottom: 10px;font-weight: bold;">Delimitarea pietei specifice</p>
+            <p style="margin-bottom: 10px;text-align: justify;">{% if dps %}{{ dps }}{% else %}Piata specifica a proprietatii analizate este reprezentata de apartamentele cu {{camere.camere|floatformat:0}} camere si suprafete cuprinse intre {{market.area_between}}, situate in zona {{valuation.area.name}}{% endif %}.</p>
+
+            <p style="margin-bottom: 10px;font-weight: bold;">Analiza cererii</p>
+            <p style="text-align: justify;">Pe pietele imobiliare, cererea reprezinta numarul dintr-un anumit tip de proprietate pentru care se manifesta dorinta pentru cumparare sau inchiriere la diferite preturi, pe o anumita piata, intr-un anumit interval de timp.</p>
+            <p style="text-align: justify;">Pentru ca pe o piata imobiliara oferta se ajusteaza incet la nivelul cererii, valoarea proprietatilor tinde sa varieze direct cu schimbarile de cerere, fiind astfel influentata de cererea curenta. Cererea poate fi analizata sub cele doua dimensiuni ale sale: cantitativ si calitativ.</p>
+            <p style="text-align: justify;">Cererea este influentata si de accesul in acest moment limitat al unui numar tot mai mare de persoane la credite. Imbunatatirea si dezvoltarea rapida a sistemului de credite ipotecare, concurenta bancara acerba care a dus la scaderea dobanzilor si imbunatatirea conditiilor de creditare au impulsionat in mod cert cererea de imobile.</p>
+            <p style="text-align: justify;">Cererea pentru proprietati de tipul celei analizate s-a observat a fi formata din familii cu un nivel de venituri peste medie sau mari, de toate varstele.</p>
+            <p style="text-align: justify;">Populatia zonei este formata din persoane cu un nivel <i>mediu si ridicat</i> de educatie, ceea ce contribuie la mentinerea unui mediu de siguranta si confort al rezidentilor.</p>
+            <p style="text-align: justify;margin-bottom: 10px;">Zona in care este situata proprietatea beneficiaza de suprafete acoperite de parcuri si alte amenajari urbanistice destinate petrecerii in conditii optime a timpului liber, ceea ce contribuie la confortul locuitorilor, crescand atractivitatea zonei. De asemenea, apropierea de centre administrative, comerciale, educationale si de sanatate publica, precum si existenta unei retele eficiente de transport in comun determina o atractivitate ridicata a proprietatilor rezidentiale din zona.</p>
+
+            <p style="margin-bottom: 10px;font-weight: bold;">Analiza ofertei</p>
+            <p style="text-align: justify;">Oferta se refera la disponibilitatea produsului imobiliar in diferitele lui faze de dezvoltare. Un cumparator are alternativa de a achizitiona/inchiria de pe piata un numar mai mare de proprietati cu caracteristici asemanatoare. In competitie cu acestea intra si proprietatea subiect, care este doar una dintre variantele alternative din totalul celor disponibile pe piata.</p>
+            <p style="text-align: justify;">Oferta aferenta proprietatilor disponibile spre vanzare/inchiriere (doar acestea prezinta interes, nu cele care sunt similare dar nu sunt expuse spre vanzare/inchiriere), care sunt asimilabile (caracteristicilor si utilitatii) proprietatii subiect se numeste oferta competitiva.</p>
+            <p style="text-align: justify;margin-bottom: 5px;">Existenta ofertei pentru o anumita proprietate la un anumit moment, anumit pret si un anumit loc indica gradul de raritate a acestui tip de proprietate.</p>
+
+            <p style="margin-bottom: 5px;">In tabelul urmator este prezentata oferta de apartamente situate in zona analizata si vecinatati:</p>
+
+            <p style="margin-top: 10px;text-align: justify;">In zona considerata si pentru segmentul de proprietati de tipul celei analizate se remarca o densitate a constructiilor mare, motiv pentru care activitatea de investitii imobiliare este moderata in zona.</p>
+            <p style="margin-bottom: 10px;text-align: justify;">n acest context, pe piata sunt listate un numar mare de proprietati similare la vanzare, imobilele existente in zona fiind construite atat <i>inainte cat si dupa anii 2000</i> si respecta standardele normativele in constructive specifice perioadelor respective, motiv pentru care concurenta pentru proprietatea considerata poate fi apreciata ca fiind una medie. Acest context face ca perioada de expunere pe piata a unei proprietati similare sa fie medie de aproximativ <i>3-6</i> luni.</p>
+
+            <p style="margin-bottom: 10px;font-weight: bold;">Analiza interactiunii dintre cerere si oferta</p>
+            <p style="text-align: justify;">Avand in vedere cele prezentate mai sus, se apreciaza ca piata locala pentru segmentul de proprietati similare celei analizate este caracterizata de o lichiditate <i>buna</i>, cu un numar <i>mare</i> de tranzactii si perioade relativ scurte de expunere a proprietatilor pe piata.</p>
+            <p style="margin-bottom: 10px;text-align: justify;">Analiza cererii si ofertei efectuata mai sus arata ca pentru imobile de tipul celui analizat, piata este una activa, atractivitatea pentru cumparatori fiind peste medie in conditiile unei oferte in echilibru ceea ce conduce la un relativ <i>echilibru</i> intre cerere si oferta si creeaza premisele vanzarii intr-o perioada relativ scurta a proprietatilor similare. </p>
+
+            <p style="margin-bottom: 10px;text-align: justify;font-weight: bold;">Previziunea absorbtiei proprietatii subiect in piata</p>
+            <p style="margin-bottom: 10px;text-align: justify;">Din punctul de vedere al gradului de absorbtie a proprietatilor de tipul celor analizate, avand in vedere elementele expuse mai sus se apreciaza ca proprietatea, avand in vedere caracteristicile sale constructive si de localizare prezinta un grad ridicat de absorbtie, cu o perioada de expunere pe piata de aproximativ 3-6 luni.</p>
+
+            <p style="margin-bottom: 10px;font-weight: bold;">Concluzii</p>
+            <p style="margin-bottom: 10px;text-align: justify;">Echilibrul pietei imobiliare poate fi determinat prin raportul cerere-oferta. La momentul evaluarii, avand in vedere numarul mare de tranzactii si perioade relativ scurte de expunere a proprietatilor pe piata imobiliara analizata, dar si marimea si respectiv preturile apartamentelor din segmentul de piata analizat, concluzionam faptul ca piata apartine vanzatorilor.</p>
+
+            <p style="margin-bottom: 10px;font-weight:bold;">
+                Oferta de proprietati similare – <span style="color: blueviolet;">In crestere</span> <br>
+                Cererea de proprietati similare – <span style="color: blueviolet;">In crestere</span> <br>
+                Echilibrul pietei – <span style="color: blueviolet;">Echilibru relativ</span>
+            </p>
+
+            <p style="margin-bottom: 10px;">
+                <b>Plaja de valori ofertate spre vanzare pentru proprietati similare Apartamente:</b> <br>
+                Minim: <span style="color: blueviolet;">2600 euro/mp</span> <br>
+                Maxim: <span style="color: blueviolet;">3200 euro/mp</span>
+            </p>
+
+            <p style="text-align: justify;">Oferte de proprietati similare cu proprietatea subiect ofertite spre vanzare, identificate pe piata imobiliara analizata sunt prezentate in anexa 4 a raportului.</p>
+        </div>
+
+        <div>
+            <pdf:nextpage />
+        </div>
+
+        <div class="cmbu">
+            <h2 style="margin-bottom: 10px; padding: 0; text-align: center; font-size: 24px;">V. CEA MAI BUNA UTILIZARE (CMBU)</h2>
+
+            <p style="margin-bottom: 10px; text-align:justify;">Ca si valoarea de piata, cea mai buna utilizare este un concept de piata. Conceptul de cea mai buna utilizare reprezinta alternativa de utilizare a proprietatii selectata din diferite variante posibile care va constitui baza de pornire si va genera ipotezele de lucru necesare aplicarii abordarilor de evaluare.  <br>
+
+            Cea mai buna utilizare este definita de Standardele Internationale de Evaluare (SEV) ca fiind "utilizarea care, din perspectiva unui participant de pe piata, are ca rezultat cea mai mare valoare a unui activ". <br>
+
+            Analiza CMBU este un studiu economic al impactului fortelor de piata asupra proprietatii analizate. CMBU se bazeaza pe datele colectate si analizate pentru estimarea valorii proprietatii prin analizarea fezabilitatii legata, respectiv, de estimarea profitului potential generat de proprietate, de investitii, precum si de cresterea potentiala a valorii. <br>
+
+            Cea mai buna utilizare trebuie sa fie posibila fizic (daca este cazul), fezabila din punct de vedere financiar, permisa din punct de vedere legal si sa genereze cea mai mare valoare a activului. Daca cea mai buna utilizare este diferita de utilizarea curenta, valoarea este influentata de costul conversiei activului la cea mai buna utilizare a sa. <br>
+            
+            Potrivit standardelor de evaluare a bunurilor (GEV 630), utilizarea curenta se presupune a fi cea mai buna utilizare daca nu exista indicatii din piata sau alti factori care sa conduca la concluzia ca exista o alta utilizare care ar maximiza valoarea subiectului evaluarii.</p>
+
+            <p style="margin-bottom: 5px;font-weight: bold;">Cea mai buna utilizare a proprietatii construite</p>
+            <p style="text-align: justify;">Obiectivul acestei analize este alegerea argumentata a celei mai bune utilizari a proprietatii imobiliare evaluate la data evaluarii. <br>
+            Aplicarea secventiala a celor patru criterii de analiza a celei mai bune utilizari conduce la urmatoarele rezultate.</p>
+            <table>
+                <tr>
+                    <td width="8%" style="text-align: center;" valign="top">-</td>
+                    <td style="text-align: justify;">Posibila fizic. Caracteristicile constructive, nivelul la care este situat in cadrul cladirii, dimensiunea si compartimentarea imobilului sunt coerente cu utilizarea sa rezidentiala, o eventual utilizare alternativa implicand costuri importante de reconversie.</td>
+                </tr>
+                <tr>
+                    <td width="8%" style="text-align: center;" valign="top">-</td>
+                    <td style="text-align: justify;">Permisa legal. Potrivit documentatiei cadastrale, imobilul este destinat a avea utilizare rezidentiala, aceasta fiind singura utilizare admisa din punct de vedere legal.</td>
+                </tr>
+                <tr>
+                    <td width="8%" style="text-align: center;" valign="top">-</td>
+                    <td style="text-align: justify;">Fezabila financiar. Aplicarea secventiala a criteriilor anterioare a demonstrat ca utilizarea rezidentiala este singura admisa. In capitolul Evaluarea proprietatii imobiliare se demonstreaza si ca aceasta este fezabila din punct de vedere financiar.</td>
+                </tr>
+                <tr>
+                    <td width="8%" style="text-align: center;" valign="top">-</td>
+                    <td style="text-align: justify;">Maxim productiva. Asadar, utilizarea maxim productiva a proprietatii este cea rezidentiala, care corespunde utilizarii sale actuale.</td>
+                </tr>
+            </table>
+
+            <p style="margin-top: 15px;text-align: justify;">Avand in vedere compartimentarea fiecarui nivel, cat si specificul zonei din care face parte proprietatea evaluata, opinia mea este ca CMBU este <i>rezidentiala.</i></p>
+        </div>
+
+        <div>
+            <pdf:nextpage />
+        </div>
+
+        <div class="imobiliare">
+            <h2 style="margin-bottom: 10px; padding: 0; text-align: center; font-size: 24px;">VI. EVALUAREA PROPRIETATII IMOBILIARE</h2>
+            <p style="margin-bottom: 10px;font-weight: bold;">Metodologia de evaluare</p>
+            <p style="margin-bottom: 10px;text-align: justify;">
+                Pentru determinarea valorii de piata a unei proprietati imobiliare de tipul celei de fata, Standardele Internationale de Evaluare prevad posibilitatea utilizarii a mai multor abordari de evaluare si anume: abordarea prin piata, abordarea prin venit si abordarea prin cost. <br>
+
+                Evaluatorilor nu li se cere sa utilizeze mai multe metode pentru evaluarea unui activ, mai ales atunci cand evaluatorul are un grad mare de incredere in precizia si credibilitatea unei singure metode. Cu toate acestea, evaluatorii ar trebui sa ia in considerare mai multe abordari si metode, si ar trebui sa foloseasca nu doar o singura abordare sau metoda de evaluare pentru a obtine o indicatie asupra valorii, in special, atunci cand datele de intrare concrete sau observabile sunt insuficiente pentru ca o singura metoda sa conduca la o concluzie credibila. <br>
+
+                In cazul de fata s-a considerat oportun a se aplica abordarea prin piata intrucat datele din zona analizata sunt suficiente pentru a ajunge la o concluzie ferma si de incredere asupra valorii proprietatii analizata. 
+            </p>
+
+            <p style="margin-bottom: 10px;font-weight: bold;text-align: center;font-size: 18px;">Abordarea prin piata</p>
+            <p style="text-align: justify; margin-bottom: 10px;">
+                Premisa majora a abordarii prin piata este aceea ca valoarea de piata a unei proprietati imobiliare este in relatie directa cu preturile/ofertele unor proprietati competitive si comparabile. Aceasta abordare utilizeaza analiza pietei in vederea identificarii de tranzactii ale unor proprietati similare si compararii acestora cu subiectul de evaluat. Astfel, valorile si informatiile referitoare la tranzactiile si ofertele de imobile similare sunt analizate, comparate si corectate in functie de asemanari si diferentieri. <br>
+
+                Potrivit GEV630, prin informatii despre preturile bunurilor comparabile se inteleg informatii privind preturile activelor similare care au fost tranzactionate sau oferite spre vanzare pe piata, cu conditia ca relevanta acestor informatii sa fie clar stabilita si analizata critic. Elaborarea rapoartelor de evaluare prin utilizarea partiala sau exclusiva a ofertelor de piata, avand ca obiect bunuri imobile comparabile, este conforma cu prezentele Standarde de evaluare. <br>
+
+                In cazul de fata, ca metoda de evaluare, se va utiliza comparatia vanzarilor. Aceasta reprezinta un proces prin care se stabilesc diferentele intre proprietatea supusa evaluarii si comparabile, prin cuantificarea ajustarilor. Ajustarile care se aplica preturilor unor tranzactii comparabile, reflecta superioritatea sau inferioritatea proprietatii comparabile, avand in vedere elementele de comparatie.  <br>
+                
+                Instrumentul de lucru pentru efectuarea ajustarilor este grila de piata care reprezinta un tablou ce are pe linii elementele de comparatie, pe prima coloana proprietatea evaluata iar pe celelalte coloane, proprietatile comparabile. Uneori pentru fiecare element de comparatie se aloca doua linii: una pentru comparare si alta pentru ajustare. <br>
+
+                In partea de jos a grilei exista o sectiune de analiza a rezultatelor cu doua linii: total ajustari exprimate absolut si procentual din pretul de vanzare. Cu aceste rezultate, evaluatorul poate estima comparabilitatea tranzactiilor fata de proprietatea evaluata si sa selecteze valoarea finala. Tranzactiile care necesita cele mai mici ajustari vor avea importanta cea mai mare in alegerea valorii finale. In acelasi timp, importanta va reflecta si increderea pe care o are evaluatorul in datele privind tranzactiile comparabile. <br>
+
+                Pentru a aplica aceasta abordare, evaluatorii analizeaza tranzactii comparabile in scopul determinarii caracteristicilor diferite de cele ale proprietatii subiect. <br>
+                
+                Ca surse de informatii s-au folosit ofertele de vanzare de proprietati similare din zona studiata existente in ziarele/revistele de specialitate, din paginile de web ale diferitelor firme imobiliare precum si din baza de date proprie aferenta departamentelor de evaluare respectiv de tranzactii imobiliare. Proprietatile selectate pentru analiza imobilului sunt comparabilele 1,2,3,4 si 8(vezi Anexa 4). Trebuie precizat faptul ca, pentru toate proprietatile comparabile, s-a considerat ca dreptul de proprietate transmis este integral, iar conditiile de vanzare – plata cash. <br>
+
+                In acest raport de evaluare tehnicile cantitative folosite pentru estimarea ajustarilor sunt analiza pe perechi de date, analiza datelor secundare. 
+            </p>
+            
+            <table border="1" id="grid-table">
+                <tr valign="middel"><td colspan="5" style="font-weight:bold;">Date de piata</td></tr>
+                <tr valign="middel">
+                    <td style="font-weight: bold;">Element de comparatie</td>
+                    <td style="font-weight: bold;">Subiect</td>
+                    <td colspan="3" style="font-weight: bold;">Proprietati comparabile</td>
+                </tr>
+                <tr valign="middel">
+                    <td></td>
+                    <td></td>
+                    {% for c in comp_table.name %}
+                    <td style="font-weight: bold;">{{c}}</td>
+                    {% endfor %}
+                </tr>
+                <tr valign="middel">
+                    <td>Pret (EURO)</td>
+                    <td></td>
+                    {% for c in comp_prop %}
+                    <td>{{c.sale_price|floatformat:"0"}}</td>
+                    {% endfor %}
+                </tr>
+                <tr valign="middel">
+                    <td>Date disponibile</td>
+                    <td></td>
+                    {% for p in comp_prop %}
+                    <td>{{p.ad}}</td>
+                    {% endfor %}
+                </tr>
+                <tr valign="middel">
+                    <td>Drepturi de proprietate</td>
+                    <td>{{sub_prop.pr}}</td>
+                    {% for p in comp_prop %}
+                    <td>{{p.pr}}</td>
+                    {% endfor %}
+                </tr>
+                <tr valign="middel">
+                    <td>Conditii de finantare</td>
+                    <td>{{sub_prop.fc}}</td>
+                    {% for p in comp_prop %}
+                    <td>{{p.fc}}</td>
+                    {% endfor %}
+                </tr>
+                <tr valign="middel">
+                    <td>Conditii de vanzare</td>
+                    <td>{{sub_prop.sc}}</td>
+                    {% for p in comp_prop %}
+                    <td>{{p.sc}}</td>
+                    {% endfor %}
+                </tr>
+                <tr valign="middel">
+                    <td>Cheltuieli necesare imediat dupa cumparare</td>
+                    <td>{{sub_prop.ape}}</td>
+                    {% for p in comp_prop %}
+                    <td>{{p.ape}}</td>
+                    {% endfor %}
+                </tr>
+                <tr valign="middel">
+                    <td>Conditii de piata</td>
+                    <td>{{sub_prop.me}}</td>
+                    {% for p in comp_prop %}
+                    <td>{{p.me}}</td>
+                    {% endfor %}
+                </tr>
+                <tr valign="middel">
+                    <td>Localizare</td>
+                    <td>{{sub_prop.lc}}</td>
+                    {% for p in comp_prop %}
+                    <td>{{p.lc}}</td>
+                    {% endfor %}
+                </tr>
+                <tr valign="middel">
+                    <td>Compartimentare</td>
+                    <td>{{sub_prop.cp}}</td>
+                    {% for p in comp_prop %}
+                    <td>{{p.cp}}</td>
+                    {% endfor %}
+                </tr>
+                <tr valign="middel">
+                    <td>AN PIF</td>
+                    <td>{{sub_prop.cy}}</td>
+                    {% for p in comp_prop %}
+                    <td>{{p.cy}}</td>
+                    {% endfor %}
+                </tr>
+                <tr valign="middel">
+                    <td>Suprafata utila (mp)</td>
+                    <td>{{sub_prop.area}}</td>
+                    {% for p in comp_prop %}
+                    <td>{{p.area}}</td>
+                    {% endfor %}
+                </tr>
+                <tr valign="middel">
+                    <td>Finisaje</td>
+                    <td>{{sub.finish}}</td>
+                    {% for p in comp_prop %}
+                    <td>{{p.finish}}</td>
+                    {% endfor %}
+                </tr>
+                <tr valign="middel">
+                    <td>Regim de inaltime</td>
+                    <td>{{sub_prop.etaj}}</td>
+                    {% for p in comp_prop %}
+                    <td>{{p.etaj}}</td>
+                    {% endfor %}
+                </tr>
+                <tr valign="middel">
+                    <td>Balcon (mp)</td>
+                    <td>{{sub_prop.balcon}}</td>
+                    {% for p in comp_prop %}
+                    <td>{{p.balcon}}</td>
+                    {% endfor %}
+                </tr>
+                <tr valign="middel">
+                    <td>Sistem de incalzire</td>
+                    <td>{{sub_prop.hs}}</td>
+                    {% for p in comp_prop %}
+                    <td>{{p.hs}}</td>
+                    {% endfor %}
+                </tr>
+                {% if sub_prop.opt1_name %}
+                <tr valign="middel">
+                    <td>{{sub_prop.opt1_name}}</td>
+                    <td>{{sub_prop.opt1_val}}</td>
+                    {% for p in comp_prop %}
+                    <td>{{p.opt1_val}}</td>
+                    {% endfor %}
+                </tr>
+                {% endif %}
+                {% if sub_prop.opt2_name %}
+                <tr valign="middel">
+                    <td>{{sub_prop.opt2_name}}</td>
+                    <td>{{sub_prop.opt2_val}}</td>
+                    {% for p in comp_prop %}
+                    <td>{{p.opt2_val}}</td>
+                    {% endfor %}
+                </tr>
+                {% endif %}
+                {% if sub_prop.opt3_name %}
+                <tr valign="middel">
+                    <td>{{sub_prop.opt3_name}}</td>
+                    <td>{{sub_prop.opt3_val}}</td>
+                    {% for p in comp_prop %}
+                    <td>{{p.opt3_val}}</td>
+                    {% endfor %}
+                </tr>
+                {% endif %}
+            </table>
+            <br>
+
+            <p style="margin: 10px 0; text-align: justify;">
+                Deoarece acestea sunt componente non-imobiliare, valoarea lor a fost scazuta anterior grilei de calcul pentru a nu influenta procentajul ajustarilor brute, respectiv a fost scazuta suma de 12.000 euro pentru un loc de parcare subteran, 20.000 euro pentru un loc de parcare subteran dublu, 3.000 euro pentru comparabilele mobilate si 1.500 euro pentru cele partial mobilate. Aceste informatii, precum si marja de negociere medie au fost obtinute din conversatiile cu agentii imobiliari si proprietarii apartamentelor din complexul Central Park. 
+            </p>
+            <p style="margin: 15px 0;text-align:justify;">
+                Din analiza efectuata a rezultat ca cea mai apropiata comparabila de subiect este comparabila A (are cele mai mici ajustari totale brute). <br> <br>
+                Ajustarile luate in considerare au fost prezentate in grila comparatiilor de piata:
+            </p>
+
+            <table border="1" id="comparable_tbl">
+                <tr valign="middel"><td colspan="5">ABORDAREA PRIN PIATA, METODA COMPARATIILOR DE PIATA</td></tr>
+                <tr valign="middel">
+                    <td>Element de comparatie</td>
+                    <td>Subiect</td>
+                    <td colspan="3">Proprietati comparabile</td>
+                </tr>
+                <tr valign="middel">
+                    <td></td>
+                    <td></td>
+                    {% for p in comp_table.name %}
+                    <td>{{p}}</td>
+                    {% endfor %}
+                </tr>
+                <tr valign="middel">
+                    <td style="text-align: left;padding-left:3px">Pret de oferta/vanzare (EURO)</td>
+                    <td></td>
+                    {% for p in comp_prop %}
+                    <td>{{p.sale_price|floatformat:"0"}}</td>
+                    {% endfor %}
+                </tr>
+                
+                <tr valign="middel">
+                    <td rowspan="3">Componente non imobiliare (non real-estate component)</td>
+                    <td rowspan="2">Mobila</td>
+                    {% for p in comp_prop %}
+                    <td>{{p.mobila}}</td>
+                    {% endfor %}
+                </tr>
+                <tr valign="middel">
+                    {% for c in comp_prop %}
+                    <td>{{c.ma|floatformat:"0"}}</td>
+                    {% endfor %}
+                </tr>
+                <tr valign="middel"> 
+                    <td rowspan="2">Loc de parcare/boxa</td>
+                    {% for p in comp_prop %}
+                    <td>{{p.parking_boxa}}</td>
+                    {% endfor %}
+                </tr>
+                <tr valign="middel">
+                    <td style="text-align:left;padding-left:3px;">Ajustare (EUR)</td>
+                    {% for c in comp_prop %}
+                    <td>{{c.pba|floatformat:"0"}}</td>
+                    {% endfor %}
+                </tr>
+
+                <tr valign="middel">
+                    <td style="text-align: left;padding-left:3px">Pret de oferta/vanzare imobil (EURO)</td>
+                    <td></td>
+                    {% for p in comp_table.op|list_convert %}
+                    <td>{{p}}</td>
+                    {% endfor %}
+                </tr>
+                <tr valign="middel">
+                    <td style="text-align: left;padding-left:3px">Date disponibile</td>
+                    <td></td>
+                    {% for p in comp_prop %}
+                    <td>{{p.ad}}</td>
+                    {% endfor %}
+                </tr>
+                <tr valign="middel">
+                    <td style="text-align: left;padding-left:3px;font-weight: normal;">Marja negociere (%)</td>
+                    <td></td>
+                    {% for c in comp_table.margin|list_convert %}
+                    <td style="text-align: right;padding-right: 3px;font-weight: normal;">{{c}}%</td>
+                    {% endfor %}
+                </tr>
+                <tr valign="middel">
+                    <td style="text-align: left;padding-left:3px;font-weight: normal;">Valoare corectie (EURO)</td>
+                    <td></td>
+                    {% for p in comp_table.cv|list_convert %}
+                    <td style="text-align: right;padding-right: 3px;font-weight: normal;">{{p}}</td>
+                    {% endfor %}
+                </tr>
+                <tr valign="middel">
+                    <td style="text-align: left;padding-left:3px">Pret corectat (EURO)</td>
+                    <td></td>
+                    {% for p in comp_table.mp|list_convert %}
+                    <td style="text-align: right;padding-right: 3px;">{{p}}</td>
+                    {% endfor %}
+                </tr>
+                <tr valign="middel">
+                    <td style="text-align: left;padding-left:3px" valign="top">Motivare corectie</td>
+                    <td colspan="4" style="font-weight: normal; text-align: left;padding-left:3px">{{comp_table.motivation}}</td>
+                </tr>
+
+                <tr valign="middel"><td colspan="5">Ajustari pentru conditiile tranzactiilor</td></tr>
+                <tr valign="middel">
+                    <td style="text-align: left;padding-left:3px">Drepturi de proprietate</td>
+                    <td style="font-weight: normal;">{{sub_prop.pr}}</td>
+                    {% for p in comp_prop %}
+                    <td style="font-weight: normal;">{{p.pr}}</td>
+                    {% endfor %}
+                </tr>
+                <tr valign="middel">
+                    <td style="text-align: left;padding-left:3px;font-weight: normal;">Ajustare (%)</td>
+                    <td></td>
+                    {% for c in comp_table.pr_percent|list_convert %}
+                    <td style="font-weight: normal;text-align: right;padding-right: 3px;">{{c}}%</td>
+                    {% endfor %}
+                </tr>
+                <tr valign="middel">
+                    <td style="text-align: left;padding-left:3px;font-weight: normal;">Ajustare (EURO)</td>
+                    <td></td>
+                    {% for c in comp_table.pr_euro|list_convert %}
+                    <td style="font-weight: normal;text-align: right;padding-right: 3px;">{{c}}</td>
+                    {% endfor %}
+                </tr>
+                <tr valign="middel">
+                    <td style="text-align: left;padding-left:3px">Pret ajustat (EURO)</td>
+                    <td></td>
+                    {% for c in comp_table.pr_price|list_convert %}
+                    <td style="text-align: right;padding-right: 3px;">{{c}}</td>
+                    {% endfor %}
+                </tr>
+                <tr valign="middel">
+                    <td style="text-align: left;padding-left:3px">Motivare corectie</td>
+                    <td colspan="4" style="text-align: left;padding-left:3px;font-weight: normal;">{{comp_table.pr_motivation}}</td>
+                </tr>
+                
+                <tr>
+                    <td style="text-align: left;padding-left:3px">Conditii de finantare</td>
+                    <td style="font-weight: normal;">{{sub_prop.fc}}</td>
+                    {% for p in comp_prop %}
+                    <td style="font-weight: normal;">{{p.fc}}</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td style="text-align: left;padding-left:3px;font-weight: normal;">Ajustare (%)</td>
+                    <td></td>
+                    {% for c in comp_table.fc_percent|list_convert %}
+                    <td style="font-weight: normal;text-align: right;padding-right: 3px;">{{c}}%</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td style="text-align: left;padding-left:3px;font-weight: normal;">Ajustare (EURO)</td>
+                    <td></td>
+                    {% for c in comp_table.fc_euro|list_convert %}
+                    <td style="font-weight: normal;text-align: right;padding-right: 3px;">{{c}}</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td style="text-align: left;padding-left:3px">Pret ajustat (EURO)</td>
+                    <td></td>
+                    {% for c in comp_table.fc_price|list_convert %}
+                    <td style="text-align: right;padding-right: 3px;">{{c}}</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td style="text-align: left;padding-left:3px">Motivare corectie</td>
+                    <td colspan="4" style="text-align: left;padding-left:3px;font-weight: normal;">{{comp_table.fc_motivation}}</td>
+                </tr>
+                
+                <tr>
+                    <td style="text-align: left;padding-left:3px">Conditii de vanzare</td>
+                    <td style="font-weight: normal;">{{sub_prop.sc}}</td>
+                    {% for p in comp_prop %}
+                    <td style="font-weight: normal;">{{p.sc}}</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td style="text-align: left;padding-left:3px;font-weight: normal;">Ajustare (%)</td>
+                    <td></td>
+                    {% for c in comp_table.sc_percent|list_convert %}
+                    <td style="font-weight: normal;text-align: right;padding-right: 3px;">{{c}}%</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td style="text-align: left;padding-left:3px;font-weight: normal;">Ajustare (EURO)</td>
+                    <td></td>
+                    {% for c in comp_table.sc_euro|list_convert %}
+                    <td style="font-weight: normal;text-align: right;padding-right: 3px;">{{c}}</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td style="text-align: left;padding-left:3px">Pret ajustat (EURO)</td>
+                    <td></td>
+                    {% for c in comp_table.sc_price|list_convert %}
+                    <td style="text-align: right;padding-right: 3px;">{{c}}</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td style="text-align: left;padding-left:3px">Motivare corectie</td>
+                    <td colspan="4" style="text-align: left;padding-left:3px;font-weight: normal;">{{comp_table.sc_motivation}}</td>
+                </tr>
+                
+                <tr>
+                    <td style="text-align: left;padding-left:3px">Cheltuieli necesare imediat dupa cumparare</td>
+                    <td style="font-weight: normal;">{{sub_prop.ape}}</td>
+                    {% for p in comp_prop %}
+                    <td style="font-weight: normal;">{{p.ape}}</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td style="text-align: left;padding-left:3px;font-weight: normal;">Ajustare (%)</td>
+                    <td></td>
+                    {% for c in comp_table.ape_percent|list_convert %}
+                    <td style="font-weight: normal;text-align: right;padding-right: 3px;">{{c}}%</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td style="text-align: left;padding-left:3px;font-weight: normal;">Ajustare (EURO)</td>
+                    <td></td>
+                    {% for c in comp_table.ape_euro|list_convert %}
+                    <td style="font-weight: normal;text-align: right;padding-right: 3px;">{{c}}</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td style="text-align: left;padding-left:3px">Pret ajustat (EURO)</td>
+                    <td></td>
+                    {% for c in comp_table.ape_price|list_convert %}
+                    <td style="text-align: right;padding-right: 3px;">{{c}}</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td style="text-align: left;padding-left:3px">Motivare corectie</td>
+                    <td colspan="4" style="text-align: left;padding-left:3px;font-weight: normal;">{{comp_table.ape_motivation}}</td>
+                </tr>
+                
+                <tr>
+                    <td style="text-align: left;padding-left:3px">Conditii de piata</td>
+                    <td>{{sub_prop.me}}</td>
+                    {% for p in comp_prop %}
+                    <td style="font-weight: normal;">{{p.comparable.me}}</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td style="text-align: left;padding-left:3px;font-weight: normal;">Ajustare (%)</td>
+                    <td></td>
+                    {% for c in comp_table.me_percent|list_convert %}
+                    <td style="font-weight: normal;text-align: right;padding-right: 3px;">{{c}}%</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td style="text-align: left;padding-left:3px;font-weight: normal;">Ajustare (EURO)</td>
+                    <td></td>
+                    {% for c in comp_table.me_euro|list_convert %}
+                    <td style="font-weight: normal;text-align: right;padding-right: 3px;">{{c}}</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td style="text-align: left;padding-left:3px">Pret ajustat (EURO)</td>
+                    <td></td>
+                    {% for c in comp_table.me_price|list_convert %}
+                    <td style="text-align: right;padding-right: 3px;">{{c}}</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td style="text-align: left;padding-left:3px">Motivare corectie</td>
+                    <td colspan="4" style="text-align: left;padding-left:3px;font-weight: normal;">{{comp_table.me_motivation}}</td>
+                </tr>
+
+                <tr><td colspan="5">Ajustari specifice proprietatii</td></tr>
+                <tr>
+                    <td style="text-align: left;padding-left:3px">Localizare</td>
+                    <td>{{sub_prop.lc}}</td>
+                    {% for p in comp_table %}
+                    <td>{{p.lc}}</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td style="text-align: left;padding-left:3px;font-weight: normal;">Ajustare (%)</td>
+                    <td></td>
+                    {% for c in comp_table.lc_percent|list_convert %}
+                    <td style="font-weight: normal;text-align: right;padding-right: 3px;">{{c}}%</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td style="text-align: left;padding-left:3px;font-weight: normal;">Ajustare (EURO)</td>
+                    <td></td>
+                    {% for c in comp_table.lc_euro|list_convert %}
+                    <td style="font-weight: normal;text-align: right;padding-right: 3px;">{{c}}</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td style="text-align: left;padding-left:3px">Motivare corectie</td>
+                    <td colspan="4" style="text-align: left;padding-left:3px;font-weight: normal;">{{comp_table.lc_motivation}}</td>
+                </tr>
+
+                <tr>
+                    <td style="text-align: left;padding-left:3px">Compartimentare</td>
+                    <td>{{sub_prop.cp}}</td>
+                    {% for p in ct %}
+                    <td>{{p.cp}}</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td style="text-align: left;padding-left:3px;font-weight: normal;">Ajustare (%)</td>
+                    <td></td>
+                    {% for c in comp_table.cp_percent|list_convert %}
+                    <td style="font-weight: normal;text-align: right;padding-right: 3px;">{{c}}%</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td style="text-align: left;padding-left:3px;font-weight: normal;">Ajustare (EURO)</td>
+                    <td></td>
+                    {% for c in comp_table.cp_euro|list_convert %}
+                    <td style="font-weight: normal;text-align: right;padding-right: 3px;">{{c}}</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td style="text-align: left;padding-left:3px">Motivare corectie</td>
+                    <td colspan="4" style="text-align: left;padding-left:3px;font-weight: normal;">{{comp_table.cp_motivation}}</td>
+                </tr>
+
+                <tr>
+                    <td style="text-align: left;padding-left:3px">AN PIF</td>
+                    <td>{{sub_prop.cy}}</td>
+                    {% for p in comp_prop %}
+                    <td>{{p.cy}}</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td style="text-align: left;padding-left:3px;font-weight: normal;">Ajustare (%)</td>
+                    <td></td>
+                    {% for c in comp_table.cy_percent|list_convert %}
+                    <td style="font-weight: normal;text-align: right;padding-right: 3px;">{{c}}%</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td style="text-align: left;padding-left:3px;font-weight: normal;">Ajustare (EURO)</td>
+                    <td></td>
+                    {% for c in comp_table.cy_euro|list_convert %}
+                    <td style="font-weight: normal;text-align: right;padding-right: 3px;">{{c}}%</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td style="text-align: left;padding-left:3px">Motivare corectie</td>
+                    <td colspan="4" style="text-align: left;padding-left:3px;font-weight: normal;">{{ comp_table.cy_motivation}}</td>
+                </tr>
+
+                <tr>
+                    <td style="text-align: left;padding-left:3px">Suprafata utila (mp)</td>
+                    <td>{{sub_prop.area}}</td>
+                    {% for p in comp_prop %}
+                    <td>{{p.area}}</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td style="text-align: left;padding-left:3px;font-weight: normal;">Diferenta de suprafata (mp)</td>
+                    <td></td>
+                    {% for p in comp_table.su_diff|list_convert %}
+                    <td style="font-weight: normal;text-align: right;padding-right: 3px;">{{p}}</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td style="text-align: left;padding-left:3px;font-weight: normal;">Ajustare (%)</td>
+                    <td></td>
+                    {% for p in comp_table.su_percent|list_convert %}
+                    <td style="font-weight: normal;text-align: right;padding-right: 3px;">{{p}}%</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td style="text-align: left;padding-left:3px;font-weight: normal;">Ajustare (EURO)</td>
+                    <td></td>
+                    {% for p in comp_table.su_euro|list_convert %}
+                    <td style="font-weight: normal;text-align: right;padding-right: 3px;">{{p}}</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td style="text-align: left;padding-left:3px">Motivare corectie</td>
+                    <td colspan="4" style="text-align: left;padding-left:3px;font-weight: normal;">{{comp_table.su_motivation}}</td>
+                </tr>
+
+                <tr>
+                    <td style="text-align: left;padding-left:3px">Finisaje</td>
+                    <td>{{sub_prop.finish}}</td>
+                    {% for p in comp_prop %}
+                    <td>{{p.finish}}</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td style="text-align: left;padding-left:3px;font-weight: normal;">Ajustare (%)</td>
+                    <td></td>
+                    {% for c in comp_table.finish_percent|list_convert %}
+                    <td style="font-weight: normal;text-align: right;padding-right: 3px;">{{c}}%</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td style="text-align: left;padding-left:3px;font-weight: normal;">Ajustare (EURO)</td>
+                    <td></td>
+                    {% for c in comp_table.finish_euro|list_convert  %}
+                    <td style="font-weight: normal;text-align: right;padding-right: 3px;">{{c}}</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td style="text-align: left;padding-left:3px">Motivare corectie</td>
+                    <td colspan="4" style="text-align: left;padding-left:3px;font-weight: normal;">{{comp_table.finish_motivation}}</td>
+                </tr>
+
+                <tr>
+                    <td style="text-align: left;padding-left:3px">Regim de inaltime</td>
+                    <td>{{sub_prop.etaj}}</td>
+                    {% for p in comp_prop %}
+                    <td>{{p.etaj}}</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td style="text-align: left;padding-left:3px;font-weight: normal;">Ajustare (%)</td>
+                    <td></td>
+                    {% for c in comp_table.etaj_percent|list_convert %}
+                    <td style="font-weight: normal;text-align: right;padding-right: 3px;">{{c}}%</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td style="text-align: left;padding-left:3px;font-weight: normal;">Ajustare (EURO)</td>
+                    <td></td>
+                    {% for c in comp_table.etaj_euro|list_convert %}
+                    <td style="font-weight: normal;text-align: right;padding-right: 3px;">{{c}}</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td style="text-align: left;padding-left:3px">Motivare corectie</td>
+                    <td colspan="4" style="text-align: left;padding-left:3px;font-weight: normal;">{{comp_table.etaj_motivation}}</td>
+                </tr>
+
+                <tr>
+                    <td style="text-align: left;padding-left:3px">Balcon (mp)</td>
+                    <td>{{sub_prop.balcon}}</td>
+                    {% for p in comp_prop %}
+                    <td>{{p.balcon}}</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td style="text-align: left;padding-left:3px;font-weight: normal;">Ajustare (%)</td>
+                    <td></td>
+                    {% for p in comp_table.balcon_percent|list_convert %}
+                    <td style="font-weight: normal;text-align: right;padding-right: 3px;">{{p}}%</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td style="text-align: left;padding-left:3px;font-weight: normal;">Ajustare (EURO)</td>
+                    <td></td>
+                    {% for p in comp_table.balcon_euro|list_convert %}
+                    <td style="font-weight: normal;text-align: right;padding-right: 3px;">{{p}}</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td style="text-align: left;padding-left:3px">Motivare corectie</td>
+                    <td colspan="4" style="text-align: left;padding-left:3px;font-weight: normal;">{{comp_table.balcon_motivation}}</td>
+                </tr>
+
+                <tr>
+                    <td style="text-align: left;padding-left:3px">Sistem de incalzire</td>
+                    <td>{{sub_prop.hs}}</td>
+                    {% for p in comp_prop %}
+                    <td>{{p.hs}}</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td style="text-align: left;padding-left:3px;font-weight: normal;">Ajustare (%)</td>
+                    <td></td>
+                    {% for c in comp_table.hs_percent|list_convert %}
+                    <td style="font-weight: normal;text-align: right;padding-right: 3px;">{{c}}%</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td style="text-align: left;padding-left:3px;font-weight: normal;">Ajustare (EURO)</td>
+                    <td></td>
+                    {% for c in comp_table.hs_euro|list_convert %}
+                    <td style="font-weight: normal;text-align: right;padding-right: 3px;">{{c}}</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td style="text-align: left;padding-left:3px">Motivare corectie</td>
+                    <td colspan="4" style="text-align: left;padding-left:3px;font-weight: normal;">{{comp_table.hs_motivation}}</td>
+                </tr>
+
+                {% if sub_prop.opt1_name %}
+                <tr>
+                    <td style="text-align: left;padding-left:3px">{{sub_prop.opt1_name }}</td>
+                    <td>{{sub_prop.opt1_val }}</td>
+                    {% for p in comp_prop %}
+                    <td>{{p.opt1_val}}</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td style="text-align: left;padding-left:3px;font-weight: normal;">Ajustare (%)</td>
+                    <td></td>
+                    {% for c in comp_table.opt1_percent|list_convert %}
+                    <td style="font-weight: normal;text-align: right;padding-right: 3px;">{{c}}%</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td style="text-align: left;padding-left:3px;font-weight: normal;">Ajustare (EURO)</td>
+                    <td></td>
+                    {% for c in comp_table.opt1_euro|list_convert %}
+                    <td style="font-weight: normal;text-align: right;padding-right: 3px;">{{c}}</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td style="text-align: left;padding-left:3px">Motivare corectie</td>
+                    <td colspan="4" style="text-align: left;padding-left:3px;font-weight: normal;">{{comp_table.opt1_motivation}}</td>
+                </tr>
+                {% endif %}
+
+                {% if sub_prop.opt2_name %}
+                <tr>
+                    <td style="text-align: left;padding-left:3px">{{sub_prop.opt2_name }}</td>
+                    <td>{{sub_prop.opt2_val }}</td>
+                    {% for p in comp_prop %}
+                    <td>{{p.opt2_val}}</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td style="text-align: left;padding-left:3px;font-weight: normal;">Ajustare (%)</td>
+                    <td></td>
+                    {% for c in comp_table.opt2_percent|list_convert %}
+                    <td style="font-weight: normal;text-align: right;padding-right: 3px;">{{c}}%</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td style="text-align: left;padding-left:3px;font-weight: normal;">Ajustare (EURO)</td>
+                    <td></td>
+                    {% for c in comp_table.opt2_euro|list_convert %}
+                    <td style="font-weight: normal;text-align: right;padding-right: 3px;">{{c}}</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td style="text-align: left;padding-left:3px">Motivare corectie</td>
+                    <td colspan="4" style="text-align: left;padding-left:3px;font-weight: normal;">{{comp_table.opt2_motivation}}</td>
+                </tr>
+                {% endif %}
+
+                {% if sub_prop.opt3_name %}
+                <tr>
+                    <td style="text-align: left;padding-left:3px">{{sub_prop.opt3_name }}</td>
+                    <td>{{sub_prop.opt3_val }}</td>
+                    {% for p in comp_prop %}
+                    <td>{{p.opt3_val}}</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td style="text-align: left;padding-left:3px;font-weight: normal;">Ajustare (%)</td>
+                    <td></td>
+                    {% for c in comp_table.opt3_percent|list_convert %}
+                    <td style="font-weight: normal;text-align: right;padding-right: 3px;">{{c}}%</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td style="text-align: left;padding-left:3px;font-weight: normal;">Ajustare (EURO)</td>
+                    <td></td>
+                    {% for c in comp_table.opt3_euro|list_convert %}
+                    <td style="font-weight: normal;text-align: right;padding-right: 3px;">{{c}}</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td style="text-align: left;padding-left:3px">Motivare corectie</td>
+                    <td colspan="4" style="text-align: left;padding-left:3px;font-weight: normal;">{{comp_table.opt3_motivation}}</td>
+                </tr>
+                {% endif %}
+
+                <tr>
+                    <td style="text-align: left;padding-left:3px">Ajustare neta pentru caracteristici specifice proprietatii</td>
+                    <td></td>
+                    {% for c in comp_table.net_adjustment|list_convert %}
+                    <td>{{c}}</td>
+                    {% endfor %}
+                </tr>
+
+                <tr>
+                    <td style="text-align: left;padding-left:3px">Pret ajustat (EURO)</td>
+                    <td></td>
+                    {% for c in comp_table.adjustment_price|list_convert %}
+                    <td>{{c}}</td>
+                    {% endfor %}
+                </tr>
+
+                <tr>
+                    <td style="text-align: left;padding-left:3px">Numar de ajustari</td>
+                    <td></td>
+                    {% for c in comp_table.adjustment_no|list_convert %}
+                    <td>{{c}}</td>
+                    {% endfor %}
+                </tr>
+
+                <tr>
+                    <td style="text-align: left;padding-left:3px">Ajustare totala neta (%)</td>
+                    <td></td>
+                    {% for c in comp_table.total_percent|list_convert %}
+                    <td>{{c}}%</td>
+                    {% endfor %}
+                </tr>
+
+                <tr>
+                    <td style="text-align: left;padding-left:3px">Ajustare totala neta (EURO)</td>
+                    <td></td>
+                    {% for c in comp_table.total_euro|list_convert %}
+                    <td>{{c}}</td>
+                    {% endfor %}
+                </tr>
+
+                <tr>
+                    <td style="text-align: left;padding-left:3px">Ajustare totala bruta (%)</td>
+                    <td></td>
+                    {% for c in comp_table.gross_percent|list_convert %}
+                    <td>{{c}}%</td>
+                    {% endfor %}
+                </tr>
+
+                <tr>
+                    <td style="text-align: left;padding-left:3px">Ajustare totala bruta (EURO)</td>
+                    <td></td>
+                    {% for c in comp_table.gross_euro|list_convert %}
+                    <td>{{c}}</td>
+                    {% endfor %}
+                </tr>
+
+                <tr>
+                    <td style="text-align: left;padding-left:3px">VALOARE ESTIMATA (EURO)</td>
+                    <td>{{comp_table.estimated_value|floatformat:'0'}} €</td>
+                    {% for c in comp_prop %}
+                    <td></td>
+                    {% endfor %}
+                </tr>
+
+                <tr>
+                    <td colspan="4" style="text-align: left;padding-left:3px">* cea mai mica corectie totala bruta s-a a efectuat pentru comparabila:</td>
+                    <td>{{comp_table|get_corresponding_letter}}</td>
+                </tr>
+            </table>
+            <br>
+            <p style="margin: 15px 0;font-weight: bold;text-align: center;font-size: 16px;">Valoare de piata: {{comp_table.estimated_value|floatformat:'0'}} EUR</p>
+            <br>
+
+            <p style="margin-bottom: 10px;font-weight: bold;text-align: center;font-size: 18px;">Abordarea prin venit</p>
+            <p style="text-align: justify; margin-bottom: 10px;">
+                S-a utilizat metoda bazată pe capitalizarea veniturilor. Aceasta presupune că un imobil, în funcție de caracteristicile sale constructive și de localizare, constituie un potențial venit pe termen îndelungat prin închiriere etc. Cu alte cuvinte, proprietatea are o valoare de randament.<br>
+
+                Esența acestei metode derivă din teoria utilitații, care conferă o anumită valoare unui bun (sau proprietăți) cumpărat(e) numai în măsura în care cumpăratorul realizează o satisfacție din achiziția respectivă. În cazul proprietății, această satisfacție se reflectă prin câștigurile viitoare realizabile din exploatarea proprietății.<br>
+
+                Capitalizarea directa este o metoda utilizata pentru a converti venitul dintr-un singur an intr-o indicatie a valorii proprietatii, intr-un singur pas, utilizand una dintre cele doua proceduri: <br>
+                1) prin impartirea venitului estimat cu o rata de capitalizare adecvata acestui tip de venit; <br>
+                2) prin inmultirea venitului estimat cu un factor corespunzator (multiplicator al venitului). <br>
+                
+                Se utilizeaza doar venitul obtinut dintr-un singur an de exploatare de catre un cumparator/investitor tipic pe piata locala. Capitalizarea directa se bazeaza pe venitul brut potential, venitul brut efectiv, venitul net din exploatare, profit net etc.<br>
+
+                Capitalizarea directa utilizeaza rate de capitalizare si multiplicatori obtinuti din date de piata. Este esential ca proprietatile imobiliare comparabile utilizate in acest scop sa reflecte riscul, venitul, cheltuielile si caracteristicile fizice si de localizare aferente proprietatii imobiliare ce trebuie evaluate. In consecinta, multiplicatorii si ratele de capitalizare trebuie sa fie extrase din informatii privind proprietatile imobiliare care prezinta aceleasi rapoarte intre cheltuieli si venituri, valoare teren si valoare constructii, caracteristici ale riscului asociat si previziuni de fluctuatie a veniturilor si valorii proprietatii, de-a lungul perioadei tipice de investitie.<br>
+
+                Valoarea proprietății imobiliare a fost determinată prin metoda capitalizării directe utilizand a doua procedura mentionata anterior.<br>
+                
+                Conform teoriei in domeniu, pentru calcularea multiplicatorilor de venit trebuie sa fie disponibile vanzari de proprietati similare cu cea subiect care au fost inchiriate la momentul vanzarii sau ar fi fost inchiriate intr-un timp scurt. Nu am avut acces la o baza de date cu tranzactii cu proprietati comparabile din zona de interes. Astfel, pentru aplicarea metodei capitalizarii directe am considerat oportuna utilizarea proprietatilor comparabile utilizate la abordarea prin piata. <br>
+
+                In evaluarea proprietatii subiect, am ales sa utilizam multiplicatorul chiriei brute in detrimentul altor tipuri de multiplicatori precum: multiplicatorul venitului brut, multiplicatorul venitului brut efectiv etc. <br>
+                
+                In continuare, am estimat mutiplicatorul chiriei brute pentru proprietatile comparabile utilizate in abordarea prin piata impartind chiria bruta anuala la pretul solicitat de catre vanzator (pretul solicitat a fost ajustat cu marja de negociere). <br>
+
+                Din analiza pieței, am identificat o chirie lunara cuprinsă între [enter number range here] euro/mp/luna pentru proprietati comparabile. Pentru determinarea multiplicatorului chirie brute am estimat o chirie de [enter number range here] euro/luna/mp pentru toate comparabilele luate in considerare. Totodata, pentru proprietatea subiect am estimat o chirie lunara de [	extract from chirie/luna cell next to the MVB table] euro/mp/luna. <br>
+
+                In tabelul urmator sunt prezentate calculele privind multiplicatorul chiriei brute: 
+            </p>
+                
+            <table border="1" id="mvb-table">
+                <tr valign="middel"><td colspan="4" style="font-weight:bold;text-align: left;padding-left: 3px;">Multiplicatorul venitului brut potential</td></tr>
+                <tr valign="middel">
+                    <td style="font-weight: bold;width: 45%;">COMPARABILE</td>
+                    {% for c in comp_table.name %}
+                    <td style="font-weight: bold;">{{ c }}</td>
+                    {% endfor %}
+                </tr>
+                <tr valign="middel">
+                    <td style="text-align: left;padding-left: 3px;width: 45%">Chirie lunara solicitata</td>
+                    {% for c in mvb_table.monthly_rent|list_convert %}
+                    <td style="font-weight: bold;">{{ c }}</td>
+                    {% endfor %}
+                </tr>
+                <tr valign="middel">
+                    <td style="text-align: left;padding-left: 3px;width: 45%">Regim inaltime</td>
+                    {% for c in comp_prop %}
+                    <td style="font-weight: bold;">{{ c.etaj }}</td>
+                    {% endfor %}
+                </tr>
+                <tr valign="middel">
+                    <td style="text-align: left;padding-left: 3px;width: 45%">Suprafata utila</td>
+                    {% for c in comp_prop %}
+                    <td style="font-weight: bold;">{{ c.area }}</td>
+                    {% endfor %}
+                </tr>
+                <tr valign="middel">
+                    <td style="text-align: left;padding-left: 3px;width: 45%">Chirie lunara solicitata /mp</td>
+                    {% for c in mvb_table.rent_sqm|list_convert %}
+                    <td style="font-weight: bold;">{{ c.rent_sqm }}</td>
+                    {% endfor %}
+                </tr>
+                <tr valign="middel">
+                    <td style="text-align: left; font-weight: bold;padding-left: 3px;width: 45%">Venit Brut Potential (EUR/an)</td>
+                    {% for c in mvb_table.vbp|list_convert %}
+                    <td style="font-weight: bold;">{{ c }}</td>
+                    {% endfor %}
+                </tr>
+                <tr valign="middel">
+                    <td style="text-align: left;font-weight: bold;padding-left: 3px;width: 45%">Pret solicitat  proprietate (EUR) - marja de negociere</td>
+                    {% for c in comp_table.mp|list_convert %}
+                    <td style="font-weight: bold;">{{ c }}</td>
+                    {% endfor %}
+                </tr>
+                <tr valign="middel">
+                    <td style="text-align: left;padding-left: 3px;width: 45%">Multiplicatorul venitului brut potential (MVBP)</td>
+                    {% for c in mvb_table.mvbp|list_convert %}
+                    <td style="font-weight: bold;">{{ c }}</td>
+                    {% endfor %}
+                </tr>
+            </table>
+            <table>
+                <tr valign="middel">
+                    <td style="font-weight: bold;font-size: 12px;padding-top: 5px;width: 45%;padding-left: 3px;">Multiplicatorul venitului brut potential</td>
+                    <td style="font-size: 12px;padding-top: 5px;text-align: center;">{{ mvb_table.min_mvbp }}</td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </table>
+            <br>
+
+            <p style="text-align: justify; margin-bottom: 10px;">
+                In continuare, pentru determinarea valorii de piata a proprietatii subiect am selectat multiplicatorul chirie brute din tabelul de mai sus. In cazul de fata, am ales multiplicatorul comparabilei {B} [– this field will be filled automatically based on cell G104 from the main table- please see screenshot attached to email for help] deoarece prezinta caracteristicile cele mai apropiate de cele ale proprietatii subiect. <br>
+
+                Pornind de la o chirie lunara [	extract from chirie/luna cell next to the MVB table] euro/mp/luna, aplicarea metodei capitalizarii directe pe baza multiplului venitului brut potenital conduce la o valoare a proprietatii evaluate calculata astfel: V = VBP * MVBP.
+            </p>
+            
+            <table border="1" id="vbp-table">
+                <tr valign="middel">
+                    <td style="font-weight:bold;text-align: left;padding-left: 3px;width: 70%;">Venit brut potential  VBP</td>
+                    <td style="font-weight:bold;">{{mvb_table.sub_vbp}}</td>
+                </tr>
+                <tr valign="middel">
+                    <td style="text-align: right;padding-right: 3px;width: 70%">chirie/luna apartament</td>
+                    <td>{{mvb_table.sub_monthly_rent}}</td>
+                </tr>
+                <tr valign="middel">
+                    <td style="text-align: left;font-weight: bold;padding-left: 3px;width: 70%">Multiplicatorul venitului brut potential (MVBP)</td>
+                    <td style="font-weight: bold;">{{ mvb_table.min_mvbp }}</td>
+                </tr>
+                <tr valign="middel">
+                    <td style="text-align: left;font-weight: bold;padding-left: 3px;width: 70%">VALOARE PRIN CAPITALIZARE DIRECTA (EURO)</td>
+                    <td style="font-weight: bold;">{{ mvb_table.vpcd }}</td>
+                </tr>
+                <tr valign="middel">
+                    <td style="text-align: left;font-weight: bold;padding-left: 3px;width: 70%">VALOARE PRIN CAPITALIZARE DIRECTA (EURO) - ROTUND</td>
+                    <td style="font-weight: bold;">{{ mvb_table.vpcd_rotund }}</td>
+                </tr>
+            </table>
+            <br>
+
+            <p style="text-align: center;margin-bottom: 10px;font-weight: bold;">Valoare de venit {{ mvb_table.vpcd_rotund }} EUR</p>
+            <br>
+
+            <p style="margin-bottom: 15px;text-align: center;font-weight: bold;font-size: 16px;">1. Analiza rezultatelor si concluzia asupra valorii</p>
+
+            <p>Prezentarea rezultatelor:</p>
+            <table>
+                <tr>
+                    <td style="font-weight:bold;width:30%">Abordarea prin piata</td>
+                    <td style="font-weight: bold;">{{comp_table.estimated_value|floatformat:'0'}} EUR</td>
+                </tr>
+                <tr>
+                    <td style="font-weight:bold;width:30%">Abordarea prin venit</td>
+                    <td style="font-weight: bold;">{{mvb_table.vpcd_rotund}} EUR</td>
+                </tr>
+            </table>
+            <br>
+
+            <div style="margin: 10px 0; text-align:justify;">
+                <p>Conform standardelor de evaluare a bunurilor, obiectivul selectarii abordarilor si metodelor aplicate la evaluarea unui imobil este acela de a gasi metoda cea mai adecvata pentru circumstantele date. Nu exista nicio metoda care sa fie adecvata tuturor situatiilor posibile. Procesul de selectie ar trebui sa ia in considerare ca cerinte minime:</p>
+                <table>
+                    <tr>
+                        <td width="8%" valign="top" style="text-align: center">-</td>
+                        <td style="text-align: justify;">tipurile valorii si premisele valorii adecvate, determinate prin termenii de referinta ai evaluarii si de scopul evaluarii,</td>
+                    </tr>
+                    <tr>
+                        <td width="8%" valign="top" style="text-align: center">-</td>
+                        <td style="text-align: justify;">punctele tari si punctele slabe ale abordarilor si metodelor de evaluare care pot fi aplicate,</td>
+                    </tr>
+                    <tr>
+                        <td width="8%" valign="top" style="text-align: center">-</td>
+                        <td style="text-align: justify;">gradul de adecvare al fiecarei metode, tinand cont de natura activului si de abordarile sau metodele utilizate de catre participantii de pe piata relevanta si</td>
+                    </tr>
+                    <tr>
+                        <td width="8%" valign="top" style="text-align: center">-</td>
+                        <td style="text-align: justify;">disponibilitatea informatiilor credibile necesare pentru aplicarea metodei (metodelor). </td>
+                    </tr>
+                </table>
+            </div>
+
+            <p style="text-align: justify;">Selectarea <b><i>valorii finale</i></b> a fost efectuata in conformitate cu criteriile de analiza a rezultatelor:</p>
+            <ul style="list-style-type: square; text-indent: 1.5rem;margin-left: 2rem;margin-bottom: 10px;">
+                <li>adecvarea;</li>
+                <li>precizia</li>
+                <li>cantitatea si calitatea informatiilor</li>
+            </ul>
+
+            <table border="1">
+                <tr valign="middel">
+                    <td style="font-weight: bold; text-align: left;font-size: 12px;padding-top: 5px;padding-left: 3px;">Criterii</td>
+                    <td style="font-weight: bold; text-align: center;font-size: 12px;padding-top: 5px;">Abordarea prin piata</td>
+                    <td style="font-weight: bold; text-align: center;font-size: 12px;padding-top: 5px;">Abordarea prin venit</td>
+                </tr>
+                <tr valign="middel">
+                    <td style="text-align: left;font-size: 12px;padding-top: 5px;padding-left: 3px;">Adecvarea</td>
+                    <td style="text-align: center;font-size: 12px;padding-top: 5px;">+</td>
+                    <td style="text-align: center;font-size: 12px;padding-top: 5px;">+</td>
+                </tr>
+                <tr valign="middel">
+                    <td style="text-align: left;font-size: 12px;padding-top: 5px;padding-left: 3px;">Precizia</td>
+                    <td style="text-align: center;font-size: 12px;padding-top: 5px;">+</td>
+                    <td style="text-align: center;font-size: 12px;padding-top: 5px;">+</td>
+                </tr>
+                <tr valign="middel">
+                    <td style="text-align: left;font-size: 12px;padding-top: 5px;padding-left: 3px;">Cantitatea si calitatea informatiilor</td>
+                    <td style="text-align: center;font-size: 12px;padding-top: 5px;">+</td>
+                    <td style="text-align: center;font-size: 12px;padding-top: 5px;">-</td>
+                </tr>
+            </table>
+            
+            <p style="margin-top: 20px;text-align: justify;">Valoarea de piață a fost stabilită utilizând abordarea prin piață datorită următoarelor considerente:</p>
+            <p style="margin-bottom: 10px;">- valoarea obţinută prin abordarea prin piață este cea mai adecvată şi precisă întrucât la baza aplicării abordarii au existat numai informaţii de pe piaţă.</p>
+
+            <p style="margin-bottom: 10px;text-align: justify;">Pentru determinarea valorii de piata a proprietatii analizate am ales abordarea prin piata ca fiind cea mai relevanta in acest caz. Avand in vedere cantitatea, calitatea informatiilor detinute ca urmare a analizelor, adecvarea abordarilor prezentate si conditiile limitative expuse in prezentul raport de evaluare, evaluatorul opineaza ca valoarea de piata a proprietatii imobiliare supuse evaluarii asa cum se prezenta la data inspectiei, este estimata prin aborarea prin piata la:</p>
+            <p style="text-align: center;font-weight: bold;font-size: 16px;">{{comp_table.estimated_value|floatformat:"0"}} EUR</p>
+            <br>
+
+            <p style="margin-bottom: 10px;font-weight: bold;text-align: center;font-size: 16px;">Riscul de garantie (Guarantee risk)</p>
+            <p style="margin-bottom: 10px;text-align: justify;">
+                Riscul de garanție este un risc asociat riscului de credit, fiind reprezentat de posibilitatea apariției unor dificultăți legate de valorificarea bunurilor aduse ca garanție în momentul acordării creditului, în situația în care cel care împrumuta nu rambursează creditul și nu platește dobânzile aferente. Evaluarea riscului de garanție se face în functie de valoarea garanțiilor și de rapiditatea posibilității de valorificare a acestora. <br>
+
+                În acest moment, pe piața imobiliară din zonă, sunt valabile la vânzare mai multe oferte cu proprietăți similare. În condițiile actuale de piață (fluctuații economice importante, criza economică și sanitară la nivel mondial), numărul tranzacțiilor în acest sector este de asteptat sa scadă, iar perioadele de marketabilitate a activelor imobiliare să crească. <br>
+
+                Astfel, luând în considerare localizarea și caracteristicile imobilului analizat, apreciem că riscul de garantie este redus, în comparație cu cel al altor clase de active. <br>
+            </p>
+            
+            <br> <br>
+            <table>
+                <tr valign="middle" style="height: 150px;">
+                    <td style="text-align:center;">
+                        <span>Evaulator</span> <br>
+                        <span style="font-weight: bold; margin: 10px 0;">{{ valuation.evaluator.get_full_name }}</span> <br>
+                        <span>Trainee Member</span><br> 
+                        <span>E.P.I. Legitimacy {{valuation.evaluator.certification_number}}</span>
+                    </td>
+                    <td style="text-align: center;">
+                        <img src="{{valuation.evaluator.stamp.path}}" alt="Evaluator Stamp" width="150px" height="150px">
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <div>
+            <pdf:nextpage />
+        </div>
+
+        <div class="anexa-1">
+            <h2 style="margin-bottom: 10px; padding: 0; text-align: center; font-size: 24px;">Anexa 1 – Documente</h2>
+        </div>
+    </div>
+</body>
+</html>

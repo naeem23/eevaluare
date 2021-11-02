@@ -9,6 +9,9 @@
     <script src="{% static 'dashboard/js/dropzone.js' %}"></script>
     <link rel="stylesheet" href="{% static 'dashboard/css/dropzone.css' %}">
     
+    <!-- re-order image -->
+    <link rel="stylesheet" href="{% static 'dashboard/css/jquery-ui.css' %}">
+    
     <style>
         .msg {
             padding-left: 10px;
@@ -43,6 +46,32 @@
             background: #1a2035!important;
             border-color: #2f374b!important;
             opacity: 1!important;
+        }
+        
+        #cover-container, #summary-container{
+            margin-bottom: 14px;
+        }
+        #cover-list, #summary-list { 
+            list-style-type: none; 
+            margin: 0; 
+            padding: 0; 
+        }
+        #cover-list li, #summary-list li { 
+            margin: 10px 20px 10px 0px; 
+            display: inline-block;
+        }
+        #cover-list li img, #summary-list li img {
+            width: 150px;
+            height: 100px;
+        }
+        #txtresponse, #summary-txtresponse{
+            padding: 10px 20px;
+            border-radius: 3px;
+            margin-bottom: 10px;
+            display: none;
+            width: 100%;
+            border :#E0E0E0 1px solid;
+            color: white;  
         }
     </style>
 {% endblock stylesheets %}
@@ -79,9 +108,26 @@
                     <div class="card-title">Cover Fotografii</div>
                 </div>
 
-                <div class="card-body">
+                <div class="card-body cover_photos">
                     <div class="row">
-                        <div class="col-md-12">
+                        {% if cover_photo %}
+                            <div class="col-md-12">
+                                <div id="cover-container">
+                                    <div id="txtresponse" >Images order is updated</div>
+                                    <ul id="cover-list" class="mb-2">
+                                        {% for c in cover_photo %}
+                                            <li id="cover_{{ c.id }}" class="text-center">
+                                                <img src="{{ c.image.url }}" alt="Cover photo" class="photos"> <br>
+                                                <span onclick="delete_cover('{{c.id}}')" class="text-info" style="cursor: pointer;"><u>Remove</u></span>
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                    <button class="btn btn-secondary re-order btn-sm">REORDER</button>
+                                </div>
+                            </div>
+                        {% endif %}
+
+                        <div class="col-md-12 cover_upload">
                             <form action="{% url 'valuation:save_photos' %}" class="dropzone dz-clickable" id="coverphotos">
                                 {% csrf_token %}
                                 <input type="hidden" name="vid" value="{{ valuation.id }}">
@@ -311,9 +357,25 @@
                     <div class="card-title">Rezumatul Fotografii</div>
                 </div>
                 
-                <div class="card-body">
+                <div class="card-body summary_photos">
                     <div class="row">
-                        <div class="col-md-12">
+                        {% if summary_photo %}
+                            <div class="col-md-12">
+                                <div id="summary-container">
+                                    <div id="summary-txtresponse" >Images order is updated</div>
+                                    <ul id="summary-list" class="mb-2">
+                                        {% for c in summary_photo %}
+                                            <li id="summary_{{ c.id }}" class="text-center">
+                                                <img src="{{ c.image.url }}" alt="Summary photo"> <br>
+                                                <span onclick="delete_summary('{{c.id}}')" class="text-info" style="cursor: pointer;"><u>Remove</u></span>
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                    <button class="btn btn-secondary summary-reorder btn-sm">REORDER</button>
+                                </div>
+                            </div>
+                        {% endif %}
+                        <div class="col-md-12 summary_upload">
                             <form action="{% url 'valuation:save_photos' %}" class="dropzone dz-clickable" id="summaryphotos">
                                 {% csrf_token %}
                                 <input type="hidden" name="vid" value="{{ valuation.id }}">
@@ -345,8 +407,19 @@
 
 <!-- Specific Page JS goes HERE  -->
 {% block javascripts %}
+    <!-- re-order photo -->
+    <script src="{% static 'dashboard/js/jquery-ui.js' %}" type="text/javascript"></script>
     <script type="text/javascript">
         // upload cover photos 
+        var cover_size = parseInt('{{cover_photo|length}}');
+        check_cover_upload();
+        function check_cover_upload() {
+            if (cover_size < 4) {
+                $('.cover_upload').css('display', 'block');
+            } else {
+                $('.cover_upload').css('display', 'none');
+            }
+        }
         var corder = 1;
         $("#coverphotos").click(function () {
             $('#cover-order').val(corder);
@@ -361,6 +434,15 @@
             }
         };
         // upload photos
+        var summary_size = parseInt('{{summary_photo|length}}');
+        check_summary_upload();
+        function check_summary_upload() {
+            if (summary_size < 4) {
+                $('.summary_upload').css('display', 'block');
+            } else {
+                $('.summary_upload').css('display', 'none');
+            }
+        }
         var sorder = 1;
         $("#summaryphotos").click(function () {
             $('#summary-order').val(sorder);
@@ -376,20 +458,112 @@
         };
         // upload photos
 
-        // select approach and change data field
-        $("#id_approach").change(function() {
-            var value = $(this).children("option:selected").val();
-            if (value == 'market') {
-                $('.income').css('display', 'none');
-                $('.show-approach').attr("style", "display: none !important");
-                $('.market').css('display', 'block');
-            } else if (value == 'income') {
-                $('.market').css('display', 'none');
-                $('.show-approach').attr("style", "display: none !important");
-                $('.income').css('display', 'block');
+        // ========================= re-order photos ==========================
+        var cdropIndex;
+        $("#cover-list").sortable({
+            update: function(event, ui) { 
+                dropIndex = ui.item.index();
             }
         });
-        // select approach and change data field
+
+        // summary photo
+        var sdropIndex;
+        $("#summary-list").sortable({
+            update: function(event, ui) { 
+                sdropIndex = ui.item.index();
+            }
+        });
+
+        // cover photo
+        $('.re-order').click(function (e) {
+            $("#cover-list").sortable('destroy');
+            var h = [];
+            $("#cover-list li").each(function() {
+                h.push($(this).attr('id').substr(6));
+            });
+            $.ajax({
+                url: "{% url 'valuation:reorder_photos' %}",
+                type: 'POST',
+                data: {ids: " " + h + "", csrfmiddlewaretoken:'{{csrf_token}}'},
+                success: function (e) {
+                    $("#txtresponse").css('display', 'inline-block');
+                    if(e.response == 'true'){
+                        $("#txtresponse").text('Images order is updated');
+                    } else {
+                        $("#txtresponse").text('Problem changing image order');
+                    }
+                }
+            });
+            e.preventDefault();
+        });
+
+        // summary photo
+        $('.summary-reorder').click(function (e) {
+            $("#summary-list").sortable('destroy');
+            var sh = [];
+            $("#summary-list li").each(function() {
+                sh.push($(this).attr('id').substr(14));
+            });
+            $.ajax({
+                url: "{% url 'valuation:reorder_photos' %}",
+                type: 'POST',
+                data: {ids: " " + sh + "", csrfmiddlewaretoken:'{{csrf_token}}'},
+                success: function (e) {
+                    $("#summary-txtresponse").css('display', 'inline-block');
+                    if(e.response == 'true'){
+                        $("#summary-txtresponse").text('Images order is updated');
+                    } else {
+                        $("#summary-txtresponse").text('Problem changing image order');
+                    }
+                }
+            });
+            e.preventDefault();
+        });
+        
+        var last_cover_id = '{{cover_photo.last.id}}';
+        function delete_cover(pid) {
+            $.ajax({
+                url: "{% url 'valuation:delete_photos' %}",
+                type: 'GET',
+                data: {id: pid},
+                success: function (e) {
+                    if(e.success=='true') {
+                        if(pid==last_cover_id) {
+                            $('.cover_photos').find('#cover-container').remove();
+                        } else {
+                            $('#cover-list').find('#cover_'+pid).remove();
+                        }
+                        cover_size -= 1;
+                        check_cover_upload();
+                    } else {
+                        $("#txtresponse").text('Problem deleting the photo');
+                    }
+                }
+            });
+        }
+        
+        var last_summary_id = '{{summary_photo.last.id}}';
+        function delete_summary(pid) {
+            $.ajax({
+                url: "{% url 'valuation:delete_photos' %}",
+                type: 'GET',
+                data: {id: pid},
+                success: function (e) {
+                    if(e.success=='true') {
+                        if(pid==last_cover_id) {
+                            $('.summary_photos').find('#summary-container').remove();
+                        } else {
+                            $('#summary-list').find('#summary_'+pid).remove();
+                        }
+                        cover_size -= 1;
+                        check_cover_upload();
+                    } else {
+                        $("#summary-txtresponse").text('Problem deleting the photo');
+                    }
+                }
+            });
+        }
+        // ========================= re-order photos ==========================
 
         // submit form
         $("#finish").click(function () {
