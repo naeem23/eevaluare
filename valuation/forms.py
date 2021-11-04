@@ -36,7 +36,7 @@ class InitialForm(forms.ModelForm):
 
 	class Meta:
 		model = ValuatedProperty
-		exclude = ('reference_no', 'title', 'status', 'inspection_date', 'valuation_date', 'report_date')
+		exclude = ('reference_no', 'title', 'status', 'inspection_date', 'valuation_date', 'report_date', 'assigned_to')
 		
 
 class AddValuationSummary(forms.ModelForm):
@@ -80,7 +80,7 @@ class ConstructionForm(forms.ModelForm):
 
 class PresentationForm(forms.ModelForm):
 	strada = forms.ModelChoiceField(queryset=StradaType.objects.all(), widget=forms.Select(attrs={'class': 'form-control'}))
-	poi = forms.CharField(widget=forms.TextInput(attrs={'autofocus': 'autofocus',}))
+	# poi = forms.CharField(widget=forms.TextInput(attrs={'autofocus': 'autofocus',}))
 	cadastral_no = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Cadastral Nr'}))
 	land_book_no = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Land Book Nr'}))
 	uat = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Uat'}))

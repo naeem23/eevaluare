@@ -1,0 +1,2130 @@
+{% extends "base-form.html" %}
+
+{% block title %} Comparabile Table {% endblock %} 
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}
+    {% load static %}
+    <!-- bootstrap datepicker  -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.2.0/css/datepicker.min.css" rel="stylesheet">
+
+    <style>
+        .ms-choice {
+            background: transparent;
+            border: none;
+            height: 19px;
+        }
+        .ms-choice>span {
+            color: #fff;
+            top: 5px;
+            left: 8px;
+        }
+        .ms-drop {
+            left: 0;
+        }
+        .ms-drop span {
+            color: #1a2035!important;
+        }
+        .table td {
+            padding: 0 5px!important;
+            height: 40px!important;
+        }
+        #refresh, #mvb_refresh {
+            cursor: pointer;
+        }
+        .form-control[readonly] {
+            background: transparent!important;
+            border: none!important;
+            border-color: transparent!important;
+        }
+        .required {
+            border-color: #F25961 !important;
+            color: #F25961 !important;
+        }
+    </style>
+{% endblock stylesheets %}
+
+{% block content %}
+
+    <div class="content">
+        <div class="page-inner">
+            <div class="page-header">
+                <h4 class="page-title">Comparabile Table</h4>
+                <ul class="breadcrumbs">
+                    <li class="nav-home">
+                        <a href="#">
+                            <i class="flaticon-home"></i>
+                        </a>
+                    </li>
+                    <li class="separator">
+                        <i class="flaticon-right-arrow"></i>
+                    </li>
+                    <li class="nav-item">
+                        <a href="">Comparabile Table</a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">Comparable Selection</div>
+                </div>
+
+                {% load my_filters %}
+                <form method="POST" id="all_tables">
+                    {% csrf_token %}
+                    {% if 'details' in pre_url %}
+                        <input type="hidden" name="pre_url" value="details">
+                    {% endif %}
+
+                    <div class="card-body">
+                        {% if msg %}<p class="text-danger">{{msg}}</p>{% endif %}
+                        <p class="text-danger error" style="display: none;">Red box fields are required.</p>
+                        <table class="table table-bordered">
+                            <tbody>
+                                <tr>
+                                    <td colspan="{{nr_comp|add:'2'}}" class="text-center text-light font-weight-bold">ABORDAREA PRIN PIATA, METODA COMPARATIILOR DE PIATA (LOCUINTA UNIFAMILIALA)</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-center text-light font-weight-bold">Element de comparatie</td>
+                                    <td class="text-center text-light font-weight-bold">Subject</td>
+                                    <td class="text-center text-light font-weight-bold" colspan="{{nr_comp}}">Proprietati comparabile</td>
+                                </tr>
+                                <tr>
+                                    <td>&nbsp;</td>
+                                    <td>&nbsp;</td>
+                                    {% for n in comparable %}
+                                        <td class="text-center text-light font-weight-bold">ID-{{forloop.counter}}</td>
+                                    {% endfor %}
+                                </tr>
+                                <tr>
+                                    <td>Preţ de oferta/vanzare (EURO)</td>
+                                    <td></td>
+                                    {% for n in comparable %}
+                                        <td><input type="number" name="sale_price[]" class="form-control" step="0.01" value="{{n.sale_price|floatformat:'0'}}" id="sp_{{forloop.counter}}"></td>
+                                    {% endfor %}
+                                </tr>
+                                <tr>
+                                    <td rowspan="3" class="text-center">Componente non imobiliare</td>
+                                    <td class="text-center" rowspan="2">Mobila</td>
+                                    {% for n in comparable %}
+                                        <td>
+                                            <select id="id_mobila" class="form-control" name="mobila[]">
+                                                {% for mt in mobila %}
+                                                <option value="{{mt.type}}" {% if n.mobila == mt.type %}selected{% endif %}>{{mt.type}}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </td>
+                                    {% endfor %}
+                                </tr>
+                                <tr>
+                                {% for n in comparable %}
+                                    <td>
+                                        <input type="number" name="ma[]" id="ma_{{forloop.counter}}" class="form-control" step="0.01" value="{{n.ma|floatformat:'0'}}">
+                                    </td>
+                                {% endfor %}
+                                </tr>
+                                <tr>
+                                    <td rowspan="2">Loc de parcare/boxa</td>
+                                    {% for n in comparable %}
+                                        <td>
+                                            <input type="text" name="parking_boxa[]" class="form-control" value="{{n.parking_boxa}}">
+                                        </td>
+                                    {% endfor %}
+                                </tr>
+                                <tr>
+                                    <td class="text-center">Ajustare (EUR)</td>
+                                    {% for n in comparable %}
+                                        <td>
+                                            <input type="number" name="pba[]" class="form-control" step="0.01" value="{{n.pba|floatformat:'0'}}" id="pba_{{forloop.counter}}">
+                                        </td>
+                                    {% endfor %}
+                                </tr>
+                                <tr>
+                                    <td>Pret de oferta/vanzare imobil (EURO)</td>
+                                    <td></td>
+                                    {% for n in comparable %}
+                                        <td>
+                                            <input type="number" name="op[]" class="form-control" step="0.01" id="op_{{forloop.counter}}" value="{% if n.sale_price and n.ma and n.pba %}{{n|get_offer_price}}{% endif %}">
+                                        </td>
+                                    {% endfor %}
+                                </tr>
+
+                                <tr>
+                                    <td>Date disponibile</td>
+                                    <td>
+                                        <input type="text" id="id_sub_avdata" name="sub_avdata" value="{{sub_prop.ad}}" class="form-control" disabled>
+                                    </td>
+                                    {% for n in comparable %}
+                                        <td>
+                                            <select id="id_ad{{forloop.counter}}" class="form-control ad" name="ad[]">
+                                                <option value="Oferta" {% if n.ad == 'Oferta' %}selected{% endif%}>Oferta</option>
+                                                <option value="Tranzactie" {% if n.ad == 'Tranzactie' %}selected{% endif%}>Tranzactie</option>
+                                            </select>
+                                        </td>
+                                    {% endfor %}
+                                </tr>
+                                <tr>
+                                    <td>Marja negociere (%)</td>
+                                    <td></td>
+                                    {% for n in comp_table.margin|list_convert %}
+                                        <td>
+                                            <div class="input-group">
+                                                <input type="text" name="margin[]" class="form-control" id="margin_{{forloop.counter}}" value="{{n}}">
+                                                <div class="input-group-append">
+                                                    <span class="input-group-text">%</span>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    {% endfor %}
+                                </tr>
+                                <tr>
+                                    <td>Valoare corectie (EURO)</td>
+                                    <td></td>
+                                    {% for n in comp_table.cv|list_convert %}
+                                        <td><input type="number" name="cv[]" class="form-control" step="0.01" value="{{n}}" id="cv_{{forloop.counter}}"></td>
+                                    {% endfor %}
+                                </tr>
+                                <tr>
+                                    <td>Pret corectat (EURO)</td>
+                                    <td></td>
+                                    {% for n in comp_table.mp|list_convert %}
+                                        <td>
+                                            <input type="number" name="mp[]" class="form-control" step="0.01" id="mp_{{forloop.counter}}" value="{{n}}">
+                                        </td>
+                                    {% endfor %}
+                                </tr>
+                                <tr>
+                                    <td>Motivare corectie</td>
+                                    <td colspan="{{nr_comp|add:'1'}}" style="height: 60px!important;"><textarea name="motivation" rows="5" class="form-control">{{comp_table.motivation}}</textarea></td>
+                                </tr>
+
+                                <tr>
+                                    <td colspan="{{nr_comp|add:'2'}}" class="text-center text-light font-weight-bold">Ajustari pentru conditiile tranzactiilor</td>
+                                </tr>
+                                <tr>
+                                    <td>Drepturi de proprietate</td>
+                                    <td>
+                                        <select id="id_sub_pr" class="form-control" name="sub_pr">
+                                            {% for p in prop_rights %}
+                                            <option value="{{p.type}}" {% if sub_prop.pr == p.type %}selected{% endif%}>{{p.type}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </td>
+                                    {% for n in comparable %}
+                                        <td>
+                                            <select id="id_pr" class="form-control" name="pr[]">
+                                                {% for p in prop_rights %}
+                                                <option value="{{p.type}}" {% if n.pr == p.type %}selected{% endif%}>{{p.type}}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </td>
+                                    {% endfor %}
+                                </tr>
+                                <tr>
+                                    <td>Ajustare (%)</td>
+                                    <td></td>
+                                    {% for n in comp_table.pr_percent|list_convert %}
+                                        <td>
+                                            <div class="input-group">
+                                                <input type="number" name="pr_percent[]" class="form-control" step="0.01" id="pr_percent{{forloop.counter}}" value="{{n}}">
+                                                <div class="input-group-append">
+                                                    <span class="input-group-text">%</span>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    {% endfor %}
+                                </tr>
+                                <tr>
+                                    <td>Ajustare (EURO)</td>
+                                    <td></td>
+                                    {% for n in comp_table.pr_euro|list_convert %}
+                                        <td>
+                                            <input type="number" name="pr_euro[]" class="form-control" step="0.01" id="pr_euro{{forloop.counter}}" value="{{n}}">
+                                        </td>
+                                    {% endfor %}
+                                </tr>
+                                <tr>
+                                    <td>Pret ajustat (EURO)</td>
+                                    <td></td>
+                                    {% for n in comp_table.pr_price|list_convert %}
+                                        <td>
+                                            <input type="number" name="pr_price[]" class="form-control" step="0.01" id="pr_price{{forloop.counter}}" value="{{n}}">
+                                        </td>
+                                    {% endfor %}
+                                </tr>
+                                <tr>
+                                    <td>Motivare corectie</td>
+                                    <td colspan="{{nr_comp|add:'1'}}" style="height: 60px!important;"><textarea name="pr_motivation" rows="5" class="form-control">{{comp_table.pr_motivation}}</textarea></td>
+                                </tr>
+
+                                <tr>
+                                    <td>Condiţii de finanţare</td>
+                                    <td>
+                                        <select id="id_sub_fc" class="form-control" name="sub_fc">
+                                            <option value="Normale">Normale</option>
+                                        </select>
+                                    </td>
+                                    {% for n in comparable %}
+                                        <td>
+                                            <select id="id_fc" class="form-control" name="fc[]">
+                                                <option value="Normale">Normale</option>
+                                            </select>
+                                        </td>
+                                    {% endfor %}
+                                </tr>
+                                <tr>
+                                    <td>Ajustare (%)</td>
+                                    <td></td>
+                                    {% for n in comp_table.fc_percent|list_convert %}
+                                        <td>
+                                            <div class="input-group">
+                                                <input type="number" name="fc_percent[]" class="form-control" step="0.01" id="fc_percent{{forloop.counter}}" value="{{n}}">
+                                                <div class="input-group-append">
+                                                    <span class="input-group-text">%</span>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    {% endfor %}
+                                </tr>
+                                <tr>
+                                    <td>Ajustare (EURO)</td>
+                                    <td></td>
+                                    {% for n in comp_table.fc_euro|list_convert %}
+                                        <td>
+                                            <input type="number" name="fc_euro[]" class="form-control" step="0.01" id="fc_euro{{forloop.counter}}" value="{{n}}">
+                                        </td>
+                                    {% endfor %}
+                                </tr>
+                                <tr>
+                                    <td>Pret ajustat (EURO)</td>
+                                    <td></td>
+                                    {% for n in comp_table.fc_price|list_convert %}
+                                        <td>
+                                            <input type="number" name="fc_price[]" class="form-control" step="0.01" id="fc_price{{forloop.counter}}" value="{{n}}">
+                                        </td>
+                                    {% endfor %}
+                                </tr>
+                                <tr>
+                                    <td>Motivare corectie</td>
+                                    <td colspan="{{nr_comp|add:'1'}}" style="height: 60px!important;"><textarea name="fc_motivation" rows="5" class="form-control">{{comp_table.fc_motivation}}</textarea></td>
+                                </tr>
+
+                                <tr>
+                                    <td>Conditii de vanzare</td>
+                                    <td>
+                                        <select id="id_sub_sc" class="form-control" name="sub_sc">
+                                            <option value="Independente">Independente</option>
+                                        </select>
+                                    </td>
+                                    {% for n in comparable %}
+                                        <td>
+                                            <select id="id_sc" class="form-control" name="sc[]">
+                                                <option value="Independente">Independente</option>
+                                            </select>
+                                        </td>
+                                    {% endfor %}
+                                </tr>
+                                <tr>
+                                    <td>Ajustare (%)</td>
+                                    <td></td>
+                                    {% for n in comp_table.sc_percent|list_convert %}
+                                        <td>
+                                            <div class="input-group">
+                                                <input type="number" name="sc_percent[]" class="form-control" step="0.01" id="sc_percent{{forloop.counter}}" value="{{n}}">
+                                                <div class="input-group-append">
+                                                    <span class="input-group-text">%</span>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    {% endfor %}
+                                </tr>
+                                <tr>
+                                    <td>Ajustare (EURO)</td>
+                                    <td></td>
+                                    {% for n in comp_table.sc_euro|list_convert %}
+                                        <td>
+                                            <input type="number" name="sc_euro[]" class="form-control" step="0.01" id="sc_euro{{forloop.counter}}" value="{{n}}">
+                                        </td>
+                                    {% endfor %}
+                                </tr>
+                                <tr>
+                                    <td>Pret ajustat (EURO)</td>
+                                    <td></td>
+                                    {% for n in comp_table.sc_price|list_convert %}
+                                        <td>
+                                            <input type="number" name="sc_price[]" class="form-control" step="0.01" id="sc_price{{forloop.counter}}" value="{{n}}">
+                                        </td>
+                                    {% endfor %}
+                                </tr>
+                                <tr>
+                                    <td>Motivare corectie</td>
+                                    <td colspan="{{nr_comp|add:'1'}}" style="height: 60px!important;"><textarea name="sc_motivation" rows="5" class="form-control">{{comp_table.sc_motivation}}</textarea></td>
+                                </tr>
+
+                                <tr>
+                                    <td>Cheltuieli necesare imediat dupa cumparare</td>
+                                    <td>
+                                        <select id="id_sub_ape" class="form-control" name="sub_ape">
+                                            <option value="Nu" {% if sub_prop.ape == 'Nu' %}selected{% endif%}>Nu</option>
+                                            <option value="Da" {% if sub_prop.ape == 'Da' %}selected{% endif%}>Da</option>
+                                        </select>
+                                    </td>
+                                    {% for n in comparable %}
+                                        <td>
+                                            <select id="id_ape" class="form-control" name="ape[]">
+                                                <option value="Nu" {% if n.ape == 'Nu' %}selected{% endif%}>Nu</option>
+                                                <option value="Da" {% if n.ape == 'Da' %}selected{% endif%}>Da</option>
+                                            </select>
+                                        </td>
+                                    {% endfor %}
+                                </tr>
+                                <tr>
+                                    <td>Ajustare (%)</td>
+                                    <td></td>
+                                    {% for n in comp_table.ape_percent|list_convert %}
+                                        <td>
+                                            <div class="input-group">
+                                                <input type="number" name="ape_percent[]" class="form-control" step="0.01" id="ape_percent{{forloop.counter}}" value="{{n}}">
+                                                <div class="input-group-append">
+                                                    <span class="input-group-text">%</span>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    {% endfor %}
+                                </tr>
+                                <tr>
+                                    <td>Ajustare (EURO)</td>
+                                    <td></td>
+                                    {% for n in comp_table.ape_euro|list_convert %}
+                                        <td>
+                                            <input type="number" name="ape_euro[]" class="form-control" step="0.01" id="ape_euro{{forloop.counter}}" value="{{n}}">
+                                        </td>
+                                    {% endfor %}
+                                </tr>
+                                <tr>
+                                    <td>Pret ajustat (EURO)</td>
+                                    <td></td>
+                                    {% for n in comp_table.ape_price|list_convert %}
+                                        <td>
+                                            <input type="number" name="ape_price[]" class="form-control" step="0.01" id="ape_price{{forloop.counter}}" value="{{n}}">
+                                        </td>
+                                    {% endfor %}
+                                </tr>
+                                <tr>
+                                    <td>Motivare corectie</td>
+                                    <td colspan="{{nr_comp|add:'1'}}" style="height: 60px!important;"><textarea name="ape_motivation" rows="5" class="form-control">{{comp_table.ape_motivation}}</textarea></td>
+                                </tr>
+
+                                <tr>
+                                    <td>Conditii de piata</td>
+                                    <td>
+                                        <input type="text" class="form-control" name="sub_me" id="id_sub_me" value="{{sub_prop.me}}"/>
+                                    </td>
+                                    {% for n in comparable %}
+                                        <td>
+                                            <input type="text" class="form-control market_env" name="me[]" value="{{n.me}}"/>
+                                        </td>
+                                    {% endfor %}
+                                </tr>
+                                <tr>
+                                    <td>Ajustare (%)</td>
+                                    <td></td>
+                                    {% for n in comp_table.me_percent|list_convert %}
+                                        <td>
+                                            <div class="input-group">
+                                                <input type="number" name="me_percent[]" class="form-control" step="0.01" id="me_percent{{forloop.counter}}" value="{{n}}">
+                                                <div class="input-group-append">
+                                                    <span class="input-group-text">%</span>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    {% endfor %}
+                                </tr>
+                                <tr>
+                                    <td>Ajustare (EURO)</td>
+                                    <td></td>
+                                    {% for n in comp_table.me_euro|list_convert %}
+                                        <td>
+                                            <input type="number" name="me_euro[]" class="form-control" step="0.01" id="me_euro{{forloop.counter}}" value="{{n}}">
+                                        </td>
+                                    {% endfor %}
+                                </tr>
+                                <tr>
+                                    <td>Pret ajustat (EURO)</td>
+                                    <td></td>
+                                    {% for n in comp_table.me_price|list_convert %}
+                                        <td>
+                                            <input type="number" name="me_price[]" class="form-control" step="0.01" id="me_price{{forloop.counter}}" value="{{n}}">
+                                        </td>
+                                    {% endfor %}
+                                </tr>
+                                <tr>
+                                    <td>Motivare corectie</td>
+                                    <td colspan="{{nr_comp|add:'1'}}" style="height: 60px!important;"><textarea name="me_motivation" rows="5" class="form-control">{{comp_table.me_motivation}}</textarea></td>
+                                </tr>
+
+                                <tr>
+                                    <td colspan="{{nr_comp|add:'2'}}" class="text-center text-light font-weight-bold">Ajustari specifice proprietatii</td>
+                                </tr>
+                                <tr>
+                                    <td>Localizare</td>
+                                    <td>
+                                        <input type="text" class="form-control" name="sub_location" id="id_sub_location" value="{{sub_prop.lc}}"/>
+                                    </td>
+                                    {% for n in comparable %}
+                                        <td>
+                                            <input type="text" class="form-control" name="lc[]" value="{{n.lc}}"/>
+                                        </td>
+                                    {% endfor %}
+                                </tr>
+                                <tr>
+                                    <td>Ajustare (%)</td>
+                                    <td></td>
+                                    {% for n in comp_table.lc_percent|list_convert %}
+                                        <td>
+                                            <div class="input-group">
+                                                <input type="number" name="lc_percent[]" class="form-control" step="0.01" id="lc_percent{{forloop.counter}}" value="{{n}}">
+                                                <div class="input-group-append">
+                                                    <span class="input-group-text">%</span>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    {% endfor %}
+                                </tr>
+                                <tr>
+                                    <td>Ajustare (EURO)</td>
+                                    <td></td>
+                                    {% for n in comp_table.lc_euro|list_convert %}
+                                        <td>
+                                            <input type="number" name="lc_euro[]" class="form-control" step="0.01" id="lc_euro{{forloop.counter}}" value="{{n}}">
+                                        </td>
+                                    {% endfor %}
+                                </tr>
+                                <tr>
+                                    <td>Motivare corectie</td>
+                                    <td colspan="{{nr_comp|add:'1'}}" style="height: 60px!important;"><textarea name="lc_motivation" rows="5" class="form-control">{{comp_table.lc_motivation}}</textarea></td>
+                                </tr>
+                                
+                                <tr>
+                                    <td>Compartimentare</td>
+                                    <td>
+                                        <select id="id_sub_cp" class="form-control" name="sub_cp">
+                                            {% for c in comp_type %}
+                                            <option value="{{c.type}}" {% if c.type == sub_prop.cp %}selected{% endif %}>{{c.type}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </td>
+                                    {% for n in comparable %}
+                                        <td>
+                                            <select id="id_cp" class="form-control" name="cp[]">
+                                                {% for c in comp_type %}
+                                                <option value="{{c.type}}" {% if c.type == n.cp %}selected{% endif %}>{{c.type}}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </td>
+                                    {% endfor %}
+                                </tr>
+                                <tr>
+                                    <td>Ajustare (%)</td>
+                                    <td></td>
+                                    {% for n in comp_table.cp_percent|list_convert %}
+                                        <td>
+                                            <div class="input-group">
+                                                <input type="number" name="cp_percent[]" class="form-control" step="0.01" id="cp_percent{{forloop.counter}}" value="{{n}}">
+                                                <div class="input-group-append">
+                                                    <span class="input-group-text">%</span>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    {% endfor %}
+                                </tr>
+                                <tr>
+                                    <td>Ajustare (EURO)</td>
+                                    <td></td>
+                                    {% for n in comp_table.cp_euro|list_convert %}
+                                        <td>
+                                            <input type="number" name="cp_euro[]" class="form-control" step="0.01" id="cp_euro{{forloop.counter}}" value="{{n}}">
+                                        </td>
+                                    {% endfor %}
+                                </tr>
+                                <tr>
+                                    <td>Motivare corectie</td>
+                                    <td colspan="{{nr_comp|add:'1'}}" style="height: 60px!important;"><textarea name="cp_motivation" rows="5" class="form-control">{{comp_table.cp_motivation}}</textarea></td>
+                                </tr>
+                                
+                                <tr>
+                                    <td>AN PIF</td>
+                                    <td>
+                                        <input type="text" class="form-control" name="sub_cy" id="id_cy" value="{{sub_prop.cy}}"/>
+                                    </td>
+                                    {% for n in comparable %}
+                                        <td>
+                                            <input type="text" class="form-control" name="cy[]" value="{{n.cy}}"/>
+                                        </td>
+                                    {% endfor %}
+                                </tr>
+                                <tr>
+                                    <td>Ajustare (%)</td>
+                                    <td></td>
+                                    {% for n in comp_table.cy_percent|list_convert %}
+                                        <td>
+                                            <div class="input-group">
+                                                <input type="number" name="cy_percent[]" class="form-control" step="0.01" id="cy_percent{{forloop.counter}}" value="{{n}}">
+                                                <div class="input-group-append">
+                                                    <span class="input-group-text">%</span>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    {% endfor %}
+                                </tr>
+                                <tr>
+                                    <td>Ajustare (EURO)</td>
+                                    <td></td>
+                                    {% for n in comp_table.cy_euro|list_convert %}
+                                        <td>
+                                            <input type="number" name="cy_euro[]" class="form-control" step="0.01" id="cy_euro{{forloop.counter}}" value="{{n}}">
+                                        </td>
+                                    {% endfor %}
+                                </tr>
+                                <tr>
+                                    <td>Motivare corectie</td>
+                                    <td colspan="{{nr_comp|add:'1'}}" style="height: 60px!important;"><textarea name="cy_motivation" rows="5" class="form-control">{{comp_table.cy_motivation}}</textarea></td>
+                                </tr>
+                                
+                                <tr>
+                                    <td>Suprafata utila (mp)</td>
+                                    <td>
+                                        <input type="number" class="form-control" name="sub_area" id="id_sub_area" step="0.01" value="{{sub_prop.area}}"/>
+                                    </td>
+                                    {% for n in comparable %}
+                                        <td>
+                                            <input type="number" class="form-control" name="area[]" id="id_area{{forloop.counter}}" value="{{n.area}}" step="0.01"/>
+                                        </td>
+                                    {% endfor %}
+                                </tr>
+                                <tr>
+                                    <td>Diferenta de suprafata (mp)</td>
+                                    <td></td>
+                                    {% for n in comp_table.su_diff|list_convert %}
+                                        <td>
+                                            <input type="number" name="su_diff[]" class="form-control" step="0.01" id="su_diff{{forloop.counter}}" value="{{n}}">
+                                        </td>
+                                    {% endfor %}
+                                </tr>
+                                <tr>
+                                    <td>Ajustare (%)</td>
+                                    <td></td>
+                                    {% for n in comp_table.su_percent|list_convert %}
+                                        <td>
+                                            <div class="input-group">
+                                                <input type="number" name="su_percent[]" class="form-control" step="0.01" id="su_percent{{forloop.counter}}" value="{{n}}">
+                                                <div class="input-group-append">
+                                                    <span class="input-group-text">%</span>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    {% endfor %}
+                                </tr>
+                                <tr>
+                                    <td>Ajustare (EURO)</td>
+                                    <td></td>
+                                    {% for n in comp_table.su_euro|list_convert %}
+                                        <td>
+                                            <input type="number" name="su_euro[]" class="form-control" step="0.01" id="su_euro{{forloop.counter}}" value="{{n}}">
+                                        </td>
+                                    {% endfor %}
+                                </tr>
+                                <tr>
+                                    <td>Motivare corectie</td>
+                                    <td colspan="{{nr_comp|add:'1'}}" style="height: 60px!important;"><textarea name="su_motivation" rows="5" class="form-control">{{comp_table.su_motivation}}</textarea></td>
+                                </tr>
+                                
+                                <tr>
+                                    <td>Finisaje</td>
+                                    <td>
+                                        <select id="id_sub_finish" class="form-control" name="sub_finish">
+                                            {% for f in finish_type %}
+                                            <option value="{{f.type}}" {% if f.id == sub_prop.finish %}selected{% endif %}>{{f.type}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </td>
+                                    {% for n in comparable %}
+                                        <td>
+                                            <select id="id_finish" class="form-control" name="finish[]">
+                                                {% for f in finish_type %}
+                                                <option value="{{f.type}}" {% if f.type == n.finish %}selected{% endif %}>{{f.type}}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </td>
+                                    {% endfor %}
+                                </tr>
+                                <tr>
+                                    <td>Ajustare (%)</td>
+                                    <td></td>
+                                    {% for n in comp_table.finish_percent|list_convert %}
+                                        <td>
+                                            <div class="input-group">
+                                                <input type="number" name="finish_percent[]" class="form-control" step="0.01" id="finish_percent{{forloop.counter}}" value="{{n}}">
+                                                <div class="input-group-append">
+                                                    <span class="input-group-text">%</span>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    {% endfor %}
+                                </tr>
+                                <tr>
+                                    <td>Ajustare (EURO)</td>
+                                    <td></td>
+                                    {% for n in comp_table.finish_euro|list_convert %}
+                                        <td>
+                                            <input type="number" name="finish_euro[]" class="form-control" step="0.01" id="finish_euro{{forloop.counter}}" value="{{n}}">
+                                        </td>
+                                    {% endfor %}
+                                </tr>
+                                <tr>
+                                    <td>Motivare corectie</td>
+                                    <td colspan="{{nr_comp|add:'1'}}" style="height: 60px!important;"><textarea name="finish_motivation" rows="5" class="form-control">{{comp_table.finish_motivation}}</textarea></td>
+                                </tr>
+                                
+                                <tr>
+                                    <td>Regim de inaltime</td>
+                                    <td>
+                                        <input type="text" name="sub_etaj" class="form-control" value="{{sub_prop.etaj}}">
+                                    </td>
+                                    {% for n in comparable %}
+                                        <td>
+                                            <input type="text" name="etaj[]" id="etaj_{{forloop.counter}}" class="form-control" value="{{n.etaj}}">
+                                        </td>
+                                    {% endfor %}
+                                </tr>
+                                <tr>
+                                    <td>Ajustare (%)</td>
+                                    <td></td>
+                                    {% for n in comp_table.etaj_percent|list_convert %}
+                                        <td>
+                                            <div class="input-group">
+                                                <input type="number" name="etaj_percent[]" class="form-control" step="0.01" id="etaj_percent{{forloop.counter}}" value="{{n}}">
+                                                <div class="input-group-append">
+                                                    <span class="input-group-text">%</span>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    {% endfor %}
+                                </tr>
+                                <tr>
+                                    <td>Ajustare (EURO)</td>
+                                    <td></td>
+                                    {% for n in comp_table.etaj_euro|list_convert  %}
+                                        <td>
+                                            <input type="number" name="etaj_euro[]" class="form-control" step="0.01" id="etaj_euro{{forloop.counter}}" value="{{n}}">
+                                        </td>
+                                    {% endfor %}
+                                </tr>
+                                <tr>
+                                    <td>Motivare corectie</td>
+                                    <td colspan="{{nr_comp|add:'1'}}" style="height: 60px!important;"><textarea name="etaj_motivation" rows="5" class="form-control">{{comp_table.etaj_motivation}}</textarea></td>
+                                </tr>
+                                
+                                <tr>
+                                    <td>Balcon (mp)</td>
+                                    <td>
+                                        <input type="number" class="form-control" name="sub_balcon" step="0.01" id="sub_balcon" value="{{sub_prop.balcon}}"/>
+                                    </td>
+                                    {% for n in comparable %}
+                                        <td>
+                                            <input type="number" class="form-control" name="balcon[]" value="{{n.balcon}}" step="0.01" id="balcon_{{forloop.counter}}"/>
+                                        </td>
+                                    {% endfor %}
+                                </tr>
+                                <tr>
+                                    <td>Pret pe mp</td>
+                                    <td>
+                                        <input type="number" name="price_persqm" id="price_persqm" step="0.01" class="form-control" value="{{comp_table.price_persqm}}">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Ajustare (%)</td>
+                                    <td></td>
+                                    {% for n in comp_table.balcon_percent|list_convert %}
+                                        <td>
+                                            <div class="input-group">
+                                                <input type="number" name="balcon_percent[]" class="form-control" step="0.01" id="balcon_percent{{forloop.counter}}" value="{{n}}">
+                                                <div class="input-group-append">
+                                                    <span class="input-group-text">%</span>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    {% endfor %}
+                                </tr>
+                                <tr>
+                                    <td>Ajustare (EURO)</td>
+                                    <td></td>
+                                    {% for n in comp_table.balcon_euro|list_convert %}
+                                        <td>
+                                            <input type="number" name="balcon_euro[]" class="form-control" step="0.01" id="balcon_euro{{forloop.counter}}" value="{{n}}">
+                                        </td>
+                                    {% endfor %}
+                                </tr>
+                                <tr>
+                                    <td>Motivare corectie</td>
+                                    <td colspan="{{nr_comp|add:'1'}}" style="height: 60px!important;"><textarea name="balcon_motivation" rows="5" class="form-control">{{comp_table.balcon_motivation}}</textarea></td>
+                                </tr>
+                                
+                                <tr>
+                                    <td>Sistem de incalzire</td>
+                                    <td>
+                                        <select class="form-control" name="sub_hs">
+                                            {% for h in heating %}
+                                            <option value="{{h.name}}" {% if h.name == sub_prop.hs %}selected{% endif %}>{{h.name}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </td>
+                                    {% for n in comparable %}
+                                        <td>
+                                            <select class="form-control" name="hs[]">
+                                                {% for h in heating %}
+                                                <option value="{{h.name}}" {% if h.name == n.hs %}selected{% endif %}>{{h.name}}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </td>
+                                    {% endfor %}
+                                </tr>
+                                <tr>
+                                    <td>Ajustare (%)</td>
+                                    <td></td>
+                                    {% for n in comp_table.hs_percent|list_convert %}
+                                        <td>
+                                            <div class="input-group">
+                                                <input type="number" name="hs_percent[]" class="form-control" step="0.01" id="hs_percent{{forloop.counter}}" value="{{n}}">
+                                                <div class="input-group-append">
+                                                    <span class="input-group-text">%</span>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    {% endfor %}
+                                </tr>
+                                <tr>
+                                    <td>Ajustare (EURO)</td>
+                                    <td></td>
+                                    {% for n in comp_table.hs_euro|list_convert %}
+                                        <td>
+                                            <input type="number" name="hs_euro[]" class="form-control" step="0.01" id="hs_euro{{forloop.counter}}" value="{{n}}">
+                                        </td>
+                                    {% endfor %}
+                                </tr>
+                                <tr>
+                                    <td>Motivare corectie</td>
+                                    <td colspan="{{nr_comp|add:'1'}}" style="height: 60px!important;"><textarea name="hs_motivation" rows="5" class="form-control">{{comp_table.hs_motivation}}</textarea></td>
+                                </tr>
+                                
+                                <tr class="optional">
+                                    <td>
+                                        <input type="text" class="form-control" name="opt1_name" value="{{sub_prop.opt1_name}}">
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control" name="sub_opt1_val" value="{{sub_prop.opt1_val}}">
+                                    </td>
+                                    {% for n in comparable %}
+                                        <td>
+                                            <input type="text" class="form-control" name="opt1_val[]" value="{{n.opt1_val}}">
+                                        </td>
+                                    {% endfor %}
+                                </tr>
+                                <tr class="optional">
+                                    <td>Ajustare (%)</td>
+                                    <td></td>
+                                    {% for n in comp_table.opt1_percent|list_convert %}
+                                        <td>
+                                            <div class="input-group">
+                                                <input type="number" name="opt1_percent[]" class="form-control" step="0.01" id="opt1_percent{{forloop.counter}}" value="{{n}}">
+                                                <div class="input-group-append">
+                                                    <span class="input-group-text">%</span>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    {% endfor %}
+                                </tr>
+                                <tr class="optional">
+                                    <td>Ajustare (EURO)</td>
+                                    <td></td>
+                                    {% for n in comp_table.opt1_euro|list_convert %}
+                                        <td>
+                                            <input type="number" name="opt1_euro[]" class="form-control" step="0.01" id="opt1_euro{{forloop.counter}}" value="{{n}}">
+                                        </td>
+                                    {% endfor %}
+                                </tr>
+                                <tr class="optional">
+                                    <td>Motivare corectie</td>
+                                    <td colspan="{{nr_comp|add:'1'}}" style="height: 60px!important;"><textarea name="opt1_motivation" rows="5" class="form-control">{{comp_table.opt1_motivation}}</textarea></td>
+                                </tr>
+                                
+                                <tr class="optional">
+                                    <td>
+                                        <input type="text" class="form-control" name="opt2_name" value="{{sub_prop.opt2_name}}">
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control" name="sub_opt2_val" value="{{sub_prop.opt2_val}}">
+                                    </td>
+                                    {% for n in comparable %}
+                                        <td>
+                                            <input type="text" class="form-control" name="opt2_val[]" value="{{n.opt2_val}}">
+                                        </td>
+                                    {% endfor %}
+                                </tr>
+                                <tr class="optional">
+                                    <td>Ajustare (%)</td>
+                                    <td></td>
+                                    {% for n in comp_table.opt2_percent|list_convert %}
+                                        <td>
+                                            <div class="input-group">
+                                                <input type="number" name="opt2_percent[]" class="form-control" step="0.01" id="opt2_percent{{forloop.counter}}" value="{{n}}">
+                                                <div class="input-group-append">
+                                                    <span class="input-group-text">%</span>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    {% endfor %}
+                                </tr>
+                                <tr class="optional">
+                                    <td>Ajustare (EURO)</td>
+                                    <td></td>
+                                    {% for n in comp_table.opt2_euro|list_convert %}
+                                        <td>
+                                            <input type="number" name="opt2_euro[]" class="form-control" step="0.01" id="opt2_euro{{forloop.counter}}" value="{{n}}">
+                                        </td>
+                                    {% endfor %}
+                                </tr>
+                                <tr class="optional">
+                                    <td>Motivare corectie</td>
+                                    <td colspan="{{nr_comp|add:'1'}}" style="height: 60px!important;"><textarea name="opt2_motivation" rows="5" class="form-control">{{comp_table.opt2_motivation}}</textarea></td>
+                                </tr>
+                                
+                                <tr class="optional">
+                                    <td>
+                                        <input type="text" class="form-control" name="opt3_name" value="{{sub_prop.opt3_name}}">
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control" name="sub_opt3_val" value="{{sub_prop.opt3_val}}">
+                                    </td>
+                                    {% for n in comparable %}
+                                    <td>
+                                        <input type="text" class="form-control" name="opt3_val[]" value="{{n.opt3_val}}">
+                                    </td>
+                                    {% endfor %}
+                                </tr>
+                                <tr class="optional">
+                                    <td>Ajustare (%)</td>
+                                    <td></td>
+                                    {% for n in comp_table.opt3_percent|list_convert %}
+                                        <td>
+                                            <div class="input-group">
+                                                <input type="number" name="opt3_percent[]" class="form-control" step="0.01" id="opt3_percent{{forloop.counter}}" value="{{n}}">
+                                                <div class="input-group-append">
+                                                    <span class="input-group-text">%</span>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    {% endfor %}
+                                </tr>
+                                <tr class="optional">
+                                    <td>Ajustare (EURO)</td>
+                                    <td></td>
+                                    {% for n in comp_table.opt3_euro|list_convert %}
+                                        <td>
+                                            <input type="number" name="opt3_euro[]" class="form-control" step="0.01" id="opt3_euro{{forloop.counter}}" value="{{n}}">
+                                        </td>
+                                    {% endfor %}
+                                </tr>
+                                <tr class="optional">
+                                    <td>Motivare corectie</td>
+                                    <td colspan="{{nr_comp|add:'1'}}" style="height: 60px!important;"><textarea name="opt3_motivation" rows="5" class="form-control">{{comp_table.opt3_motivation}}</textarea></td>
+                                </tr>
+
+                                <tr>
+                                    <td>Ajustare neta pentru caracteristici specifice proprietatii</td>
+                                    <td></td>
+                                    {% for n in comp_table.net_adjustment|list_convert %}
+                                    <td><input type="number" class="form-control" name="net_adjustment[]" id="net_adjustment{{forloop.counter}}" step="0.01" value="{{n}}" readonly></td>
+                                    {% endfor %}
+                                </tr>
+                                <tr>
+                                    <td>Pret ajustat (EURO)</td>
+                                    <td></td>
+                                    {% for n in comp_table.adjustment_price|list_convert %}
+                                    <td><input type="number" class="form-control" name="adjustment_price[]"  id="adjustment_price{{forloop.counter}}" step="0.01" value="{{n}}" readonly></td>
+                                    {% endfor %}
+                                </tr>
+                                <tr>
+                                    <td>Numar de ajustări</td>
+                                    <td></td>
+                                    {% for n in comp_table.adjustment_no|list_convert %}
+                                    <td><input type="number" class="form-control" name="adjustment_no[]" id="adjustment_no{{forloop.counter}}" value="{{n}}" readonly></td>
+                                    {% endfor %}
+                                </tr>
+                                <tr>
+                                    <td>Ajustare totală netă (%)</td>
+                                    <td></td>
+                                    {% for n in comp_table.total_percent|list_convert %}
+                                    <td>
+                                        <div class="input-group">
+                                            <input type="number" class="form-control" name="total_percent[]" id="total_percent{{forloop.counter}}" step="0.01" value="{{n}}" readonly>
+                                            <div class="input-group-append">
+                                                <span class="input-group-text">%</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    {% endfor %}
+                                </tr>
+                                <tr>
+                                    <td>Ajustare totală netă (EURO)</td>
+                                    <td></td>
+                                    {% for n in comp_table.total_euro|list_convert %}
+                                    <td><input type="number" class="form-control" name="total_euro[]" id="total_euro{{forloop.counter}}" step="0.01" value="{{n}}" readonly></td>
+                                    {% endfor %}
+                                </tr>
+                                <tr>
+                                    <td>Ajustare totală brută (%)</td>
+                                    <td></td>
+                                    {% for n in comp_table.gross_percent|list_convert %}
+                                    <td>
+                                        <div class="input-group">
+                                            <input type="number" class="form-control" name="gross_percent[]" id="gross_percent{{forloop.counter}}" value="{{n}}" step="0.01" readonly>
+                                            <div class="input-group-append">
+                                                <span class="input-group-text">%</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    {% endfor %}
+                                </tr>
+                                <tr>
+                                    <td>Ajustare totală brută (EURO)</td>
+                                    <td></td>
+                                    {% for n in comp_table.gross_euro|list_convert %}
+                                    <td><input type="number" class="form-control" name="gross_euro[]" id="gross_euro{{forloop.counter}}" value="{{n}}" step="0.01" readonly></td>
+                                    {% endfor %}
+                                </tr>
+                                <tr>
+                                    <td>VALOARE ESTIMATA (EURO)</td>
+                                    <td>
+                                        <div class="input-group">
+                                            <input type="number" class="form-control" name="estimated_value" id="estimated_value" step="0.01" value="{{comp_table.estimated_value}}" readonly>
+                                            <div class="input-group-append">
+                                                <span class="input-group-text">&euro;</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td colspan="{{nr_comp}}"><i class="fas fa-redo text-white" id="refresh"></i></td>
+                                </tr>
+                                <tr>
+                                    <td colspan="{{nr_comp|add:'1'}}">* cea mai mica corectie totala bruta s-a a efectuat pentru comparabila:</td>
+                                    <td>
+                                        <select id="smallest_gross" class="form-control" name="smallest_gross">
+                                            {% for n in comparable %}
+                                            <option value="ID-{{forloop.counter}}" {% if forloop.counter|stringformat:"i" in comp_table.smallest_gross %}selected{% endif %}>ID-{{forloop.counter}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="card-body">
+                        <table class="table table-bordered" style="border: none;">
+                            <tr>
+                                <td colspan="{{nr_comp|add:'1'}}" class="text-center text-light font-weight-bold">Multiplicatorul venitului brut potential</td>
+                            </tr>
+                            <tr>
+                                <td class="text-center text-light font-weight-bold">COMPARABILE</td>
+                                {% for n in comparable %}
+                                    <td class="text-center text-light font-weight-bold">ID-{{forloop.counter}}</td>
+                                {% endfor %}
+                            </tr>
+                            <tr>
+                                <td>Chirie lunara solicitata</td>
+                                {% if mvb_table %}
+                                    {% for n in mvb_table.monthly_rent|list_convert %}
+                                        <td><input type="number" name="monthly_rent[]" class="form-control" step="0.01" id="monthly_rent{{forloop.counter}}" value="{{n}}" readonly></td>
+                                    {% endfor %}
+                                {% else %}
+                                    {% for n in nr_comp|list_range %}
+                                    <td><input type="number" name="monthly_rent[]" class="form-control" step="0.01" id="monthly_rent{{forloop.counter}}" readonly></td>
+                                    {% endfor %}
+                                {% endif %}
+                            </tr>
+                            <tr>
+                                <td>Regim inaltime</td>
+                                {% for n in comparable %}
+                                    <td><input type="text" name="mvb_height[]" class="form-control mvb_height" id="mvb_height{{forloop.counter}}" value="{{n.etaj}}" readonly></td>
+                                {% endfor %}
+                            </tr>
+                            <tr>
+                                <td>Suprafata utila</td>
+                                {% for n in comparable %}
+                                    <td><input type="number" name="mvb_area[]" class="form-control" id="mvb_area{{forloop.counter}}" step="0.01" value="{{n.area}}" readonly></td>
+                                {% endfor %}
+                            </tr>
+                            <tr>
+                                <td>Chirie lunara solicitata/mp</td>
+                                {% if mvb_table %}
+                                    {% for n in mvb_table.rent_sqm|list_convert %}
+                                        <td>
+                                            <input type="number" class="form-control" id="rent_sqm{{forloop.counter}}" name="rent_sqm[]" value="{{n}}" step="0.01"/>
+                                        </td>
+                                    {% endfor %}
+                                {% else %}
+                                    {% for n in nr_comp|list_range %}
+                                    <td>
+                                        <input type="number" class="form-control" id="rent_sqm{{forloop.counter}}" name="rent_sqm[]" step="0.01"/>
+                                    </td>
+                                    {% endfor %}
+                                {% endif %}
+                            </tr>
+                            <tr>
+                                <td class="font-weight-bold">Venit Brut Potential (EUR/an)</td>
+                                {% if mvb_table %}
+                                    {% for n in mvb_table.vbp|list_convert %}
+                                        <td>
+                                            <input type="number" class="form-control" name="mvb_vbp[]" id="mvb_vbp{{forloop.counter}}" value="{{n}}" step="0.01" readonly/>
+                                        </td>
+                                    {% endfor %}
+                                {% else %}
+                                    {% for n in nr_comp|list_range %}
+                                    <td>
+                                        <input type="number" class="form-control" name="mvb_vbp[]" id="mvb_vbp{{forloop.counter}}" step="0.01" readonly/>
+                                    </td>
+                                    {% endfor %}
+                                {% endif %}
+                            </tr>
+                            <tr>
+                                <td class="font-weight-bold">Pret solicitat  proprietate (EUR) - marja de negociere</td>
+                                {% if mvb_table %}
+                                    {% for n in comp_table.mp|list_convert %}
+                                        <td>
+                                            <input type="number" class="form-control" id="mvb_pc{{forloop.counter}}" name="mvb_pc[]" value="{{n}}" step="0.01" readonly/>
+                                        </td>
+                                    {% endfor %}
+                                {% else %}
+                                    {% for n in comp_table.mp|list_convert %}
+                                    <td>
+                                        <input type="number" class="form-control" id="mvb_pc{{forloop.counter}}" name="mvb_pc[]" value={{n}} step="0.01" readonly/>
+                                    </td>
+                                    {% endfor %}
+                                {% endif %}
+                            </tr>
+                            <tr>
+                                <td>Multiplicatorul venitului brut potential (MVBP)</td>
+                                {% if mvb_table %}
+                                    {% for n in mvb_table.mvbp|list_convert %}
+                                        <td>
+                                            <input type="number" class="form-control" name="mvb_mvbp[]" id="mvb_mvbp{{forloop.counter}}" value="{{n}}" step="0.01" readonly/>
+                                        </td>
+                                    {% endfor %}
+                                {% else %}
+                                    {% for n in nr_comp|list_range %}
+                                    <td>
+                                        <input type="number" class="form-control" name="mvb_mvbp[]" id="mvb_mvbp{{forloop.counter}}" step="0.01" readonly/>
+                                    </td>
+                                    {% endfor %}
+                                {% endif %}
+                            </tr>
+                            <tr>
+                                <td>Multiplicatorul venitului brut potential <i class="fas fa-redo text-white ml-3" id="mvb_refresh"></i></td>
+                                <td><input type="number" class="form-control" name="mvb_min" id="mvb_min" {% if mvb_table %}value="{{mvb_table.min_mvbp}}"{% endif %} step="0.01" readonly/></td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <div class="card-body">
+                        <table class="table table-bordered">
+                            <tr>
+                                <td class="text-light font-weight-bold">Venit brut potential VBP</td>
+                                <td><input type="number" name="sub_vbp" class="form-control" {% if mvb_table %}value="{{mvb_table.sub_vbp}}"{% endif %} step="0.01" id="sub_vbp" readonly></td>
+                            </tr>
+                            <tr>
+                                <td>Suprafata utila</td>
+                                <td><input type="number" name="vbp_area" class="form-control" step="0.01" id="vbp_area" value="{{sub_prop.area}}" readonly></td>
+                            </tr>
+                            <tr>
+                                <td>Chirie lunara solicitata/mp</td>
+                                <td><input type="number" name="sub_rent_sqm" class="form-control" step="0.01" {% if mvb_table %}value="{{mvb_table.sub_rent_sqm}}"{% endif %} id="sub_rent_sqm"></td>
+                            </tr>
+                            <tr>
+                                <td>Chirie/luna apartament</td>
+                                <td><input type="number" name="sub_monthly_rent" class="form-control" {% if mvb_table %}value="{{mvb_table.sub_monthly_rent}}"{% endif %} step="0.01" id="sub_monthly_rent" readonly></td>
+                            </tr>
+                            <tr>
+                                <td class="text-light font-weight-bold">Multiplicatorul venitului brut potential (MVBP)</td>
+                                <td><input type="number" name="sub_mvbp" class="form-control" {% if mvb_table %}value="{{mvb_table.min_mvbp}}"{% endif %} step="0.01" id="sub_mvbp" readonly></td>
+                            </tr>
+                            <tr>
+                                <td class="text-light font-weight-bold">VALOARE PRIN CAPITALIZARE DIRECTA (EURO)</td>
+                                <td><input type="number" name="vpcd" class="form-control" {% if mvb_table %}value="{{mvb_table.vpcd}}"{% endif %} step="0.01" id="vpcd" readonly></td>
+                            </tr>
+                            <tr>
+                                <td class="text-light font-weight-bold">VALOARE PRIN CAPITALIZARE DIRECTA (EURO) - ROTUND</td>
+                                <td><input type="number" name="vpcd_rotund" class="form-control" {% if mvb_table %}value="{{mvb_table.vpcd_rotund}}"{% endif %} step="0.01" id="vpcd_rotund" readonly></td>
+                            </tr>
+                        </table>
+                    </div>
+                </form>
+
+                <div class="card-action">
+                    <button class="btn btn-success" id="submitBtn">Update</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+    <!-- bootstrap datepicker  -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.2.0/js/bootstrap-datepicker.min.js"></script>
+    <script type="text/javascript">
+        $("#id_sub_me").datepicker( {
+            format: "MM yyyy",
+            startView: "months", 
+            minViewMode: "months"
+        });
+        $(".market_env").datepicker( {
+            format: "MM yyyy",
+            startView: "months", 
+            minViewMode: "months"
+        });
+
+        var nr = "{{nr_comp}}";
+        $(document).ready(function() {
+            for(let i=1; i<=nr; i++) {
+                let sp = Number($('#sp_'+i+'').val());
+                let ma = Number($('#ma_'+i+'').val());
+                let pba = Number($('#pba_'+i+'').val());
+                if(sp != '' && ma != '' && pba != '') {
+                    let offer_price = sp + ma + pba;
+                    $("#op_"+i+"").val(offer_price);
+                }
+                let area = Number($('#id_area'+i+'').val());
+                let su_diff = Number($('#id_sub_area').val()) - area;
+                $('#su_diff'+i+'').val(su_diff.toFixed(2));
+            }
+        })
+        
+        // update pret corectie 
+        $('input[name="margin[]"]').keyup(function() {
+            let margin = isNaN(Number(this.value)) ? 0 : Number(this.value);
+            for(let i=1; i<=nr; i++) { 
+                if($('#id_ad'+i+'').val()=='Oferta') {
+                    $('#margin_'+i).val(this.value);
+                    let op = Number($('#op_'+i).val());
+                    let cv = (op*margin)/100;
+                    $('#cv_'+i+'').val(cv);
+                    let mp = op + cv;
+                    $('#mp_'+i+'').val(mp);
+                    $('#mvb_pc'+i+'').val(mp);
+                    if ($('#pr_percent'+i+'').val() == '0' && $('#pr_euro'+i+'').val() == '0') {
+                        $('#pr_price'+i+'').val(mp.toFixed(0));
+                    }
+                    if ($('#fc_percent'+i+'').val() == '0' && $('#fc_percent'+i+'').val() == '0') {
+                        $('#fc_price'+i+'').val(mp.toFixed(0));
+                    }
+                    if ($('#sc_percent'+i+'').val() == '0' && $('#sc_euro'+i+'').val() == '0') {
+                        $('#sc_price'+i+'').val(mp.toFixed(0));
+                    }
+                    if ($('#ape_percent'+i+'').val() == '0' && $('#ape_euro'+i+'').val() == '0') {
+                        $('#ape_price'+i+'').val(mp.toFixed(0));
+                    }
+                    if ($('#me_percent'+i+'').val() == '0' && $('#me_euro'+i+'').val() == '0') {
+                        $('#me_price'+i+'').val(mp.toFixed(0));
+                    }
+                    update_pr(i);
+                    get_adjustment(i);
+                    get_adjustment_no(i);
+                    get_total(i);
+                    get_gross_total(i);
+                }
+            }
+        })
+
+        for(let i=1; i<=nr; i++) {
+            let sp = ($('#sp_'+i+'').val() != '') ? Number($('#sp_'+i+'').val()) : 0.00;
+            let ma = ($('#ma_'+i+'').val() != '') ? Number($('#ma_'+i+'').val()) : 0.00;
+            let pba = ($('#pba_'+i+'').val() != '') ? Number($('#pba_'+i+'').val()) : 0.00;
+            let offer_price = 0.00;
+            $('#sp_'+i+'').keyup(function() {
+                sp = Number(this.value);
+                offer_price = sp + ma + pba;
+                $("#op_"+i+"").val(offer_price);
+                
+                if($('#margin_'+i+'').val() != '') {
+                    update_margin(i)
+                }
+            });
+            $('#ma_'+i+'').keyup(function() {
+                ma = Number(this.value);
+                offer_price = sp + ma + pba;
+                $("#op_"+i+"").val(offer_price);
+                update_margin(i);
+            })
+            $('#pba_'+i+'').keyup(function() {
+                pba = Number(this.value);
+                offer_price = sp + ma + pba;
+                $("#op_"+i+"").val(offer_price);
+                update_margin(i);
+            })
+            
+            // update available data 
+            $('#id_ad'+i+'').change(function() {
+                var ad_val = this.value;
+                if (ad_val=='Tranzactie') {
+                    $('#margin_'+i+'').val('0');
+                    $('#margin_'+i+'').attr('disabled','disabled');
+                    $('#cv_'+i+'').val(0);
+                    $('#cv_'+i+'').attr('disabled','disabled');
+                    let mp = Number($('#op_'+i+'').val()) + Number($('#cv_'+i+'').val());
+                    $('#mp_'+i+'').val(mp);
+                    $('#mvb_pc'+i+'').val(mp);
+                    if ($('#pr_percent'+i+'').val() == '0' && $('#pr_euro'+i+'').val() == '0') {
+                        $('#pr_price'+i+'').val(mp.toFixed(0));
+                    }
+                    if ($('#fc_percent'+i+'').val() == '0' && $('#fc_percent'+i+'').val() == '0') {
+                        $('#fc_price'+i+'').val(mp.toFixed(0));
+                    }
+                    if ($('#sc_percent'+i+'').val() == '0' && $('#sc_euro'+i+'').val() == '0') {
+                        $('#sc_price'+i+'').val(mp.toFixed(0));
+                    }
+                    if ($('#ape_percent'+i+'').val() == '0' && $('#ape_euro'+i+'').val() == '0') {
+                        $('#ape_price'+i+'').val(mp.toFixed(0));
+                    }
+                    if ($('#me_percent'+i+'').val() == '0' && $('#me_euro'+i+'').val() == '0') {
+                        $('#me_price'+i+'').val(mp.toFixed(0));
+                    }
+                    update_pr(i);
+                    get_adjustment(i);
+                    get_adjustment_no(i);
+                    get_total(i);
+                    get_gross_total(i);
+                } else {
+                    $('#margin_'+i+'').prop("disabled", false);
+                    $('#cv_'+i+'').prop("disabled", false);
+                }
+            });
+
+            // property rights 
+            let pr_percent = 0.00;
+            let pr_euro = 0.00;
+            let pr_price = 0.00;
+            $('#pr_percent'+i+'').keyup(function() {
+                var mp = Number($('#mp_'+i+'').val())
+                pr_percent = Number(this.value);
+                pr_euro = (mp*pr_percent)/100;
+                $('#pr_euro'+i+'').val(pr_euro.toFixed(0));
+                pr_price = mp + pr_euro;
+                $('#pr_price'+i+'').val(pr_price.toFixed(0));
+
+                if ($('#fc_percent'+i+'').val() == '0' && $('#fc_percent'+i+'').val() == '0') {
+                    $('#fc_price'+i+'').val(pr_price.toFixed(0));
+                }
+                if ($('#sc_percent'+i+'').val() == '0' && $('#sc_euro'+i+'').val() == '0') {
+                    $('#sc_price'+i+'').val(pr_price.toFixed(0));
+                }
+                if ($('#ape_percent'+i+'').val() == '0' && $('#ape_euro'+i+'').val() == '0') {
+                    $('#ape_price'+i+'').val(pr_price.toFixed(0));
+                }
+                if ($('#me_percent'+i+'').val() == '0' && $('#me_euro'+i+'').val() == '0') {
+                    $('#me_price'+i+'').val(pr_price.toFixed(0));
+                }
+                update_fc(i);
+                get_adjustment(i);
+                get_adjustment_no(i);
+                get_total(i);
+                get_gross_total(i);
+            })
+            $('#pr_euro'+i+'').keyup(function() {
+                let mp = Number($('#mp_'+i+'').val())
+                pr_euro = Number(this.value);
+                pr_percent = (pr_euro/mp)*100;
+                $('#pr_percent'+i+'').val(pr_percent.toFixed(0));
+                pr_price = mp + pr_euro;
+                $('#pr_price'+i+'').val(pr_price.toFixed(0));
+
+                if ($('#fc_percent'+i+'').val() == '0' && $('#fc_percent'+i+'').val() == '0') {
+                    $('#fc_price'+i+'').val(pr_price.toFixed(0));
+                }
+                if ($('#sc_percent'+i+'').val() == '0' && $('#sc_euro'+i+'').val() == '0') {
+                    $('#sc_price'+i+'').val(pr_price.toFixed(0));
+                }
+                if ($('#ape_percent'+i+'').val() == '0' && $('#ape_euro'+i+'').val() == '0') {
+                    $('#ape_price'+i+'').val(pr_price.toFixed(0));
+                }
+                if ($('#me_percent'+i+'').val() == '0' && $('#me_euro'+i+'').val() == '0') {
+                    $('#me_price'+i+'').val(pr_price.toFixed(0));
+                }
+                update_fc(i);
+                get_adjustment(i);
+                get_adjustment_no(i);
+                get_total(i);
+                get_gross_total(i);
+            })
+
+            // financial condition
+            let fc_percent = 0.00;
+            let fc_euro = 0.00;
+            let fc_price = 0.00;
+            $('#fc_percent'+i+'').keyup(function() {
+                pr_price = Number($('#pr_price'+i+'').val());
+                fc_percent = Number(this.value);
+                fc_euro = (pr_price*fc_percent)/100;
+                $('#fc_euro'+i+'').val(fc_euro.toFixed(0));
+                fc_price = pr_price + fc_euro;
+                $('#fc_price'+i+'').val(fc_price.toFixed(0));
+
+                if ($('#sc_percent'+i+'').val() == '0' && $('#sc_euro'+i+'').val() == '0') {
+                    $('#sc_price'+i+'').val(fc_price.toFixed(0));
+                }
+                if ($('#ape_percent'+i+'').val() == '0' && $('#ape_euro'+i+'').val() == '0') {
+                    $('#ape_price'+i+'').val(fc_price.toFixed(0));
+                }
+                if ($('#me_percent'+i+'').val() == '0' && $('#me_euro'+i+'').val() == '0') {
+                    $('#me_price'+i+'').val(fc_price.toFixed(0));
+                }
+                update_sc(i);
+                get_adjustment(i);
+                get_adjustment_no(i);
+                get_total(i);
+                get_gross_total(i);
+            })
+            $('#fc_euro'+i+'').keyup(function() {
+                pr_price = Number($('#pr_price'+i+'').val());
+                fc_euro = Number(this.value);
+                fc_percent = (fc_euro/pr_price)*100;
+                $('#fc_percent'+i+'').val(fc_percent.toFixed(0));
+                fc_price = pr_price + fc_euro;
+                $('#fc_price'+i+'').val(fc_price.toFixed(0));
+                
+                if ($('#sc_percent'+i+'').val() == '0' && $('#sc_euro'+i+'').val() == '0') {
+                    $('#sc_price'+i+'').val(fc_price.toFixed(0));
+                }
+                if ($('#ape_percent'+i+'').val() == '0' && $('#ape_euro'+i+'').val() == '0') {
+                    $('#ape_price'+i+'').val(fc_price.toFixed(0));
+                }
+                if ($('#me_percent'+i+'').val() == '0' && $('#me_euro'+i+'').val() == '0') {
+                    $('#me_price'+i+'').val(fc_price.toFixed(0));
+                }
+                update_sc(i);
+                get_adjustment(i);
+                get_adjustment_no(i);
+                get_total(i);
+                get_gross_total(i);
+            })
+
+            // sale condition 
+            let sc_percent = 0.00;
+            let sc_euro = 0.00;
+            let sc_price = 0.00;
+            $('#sc_percent'+i+'').keyup(function() {
+                fc_price = Number($('#fc_price'+i+'').val());
+                sc_percent = Number(this.value);
+                sc_euro = (fc_price*sc_percent)/100;
+                $('#sc_euro'+i+'').val(sc_euro.toFixed(0));
+                sc_price = fc_price + sc_euro;
+                $('#sc_price'+i+'').val(sc_price.toFixed(0));
+                
+                if ($('#ape_percent'+i+'').val() == '0' && $('#ape_euro'+i+'').val() == '0') {
+                    $('#ape_price'+i+'').val(sc_price.toFixed(0));
+                }
+                if ($('#me_percent'+i+'').val() == '0' && $('#me_euro'+i+'').val() == '0') {
+                    $('#me_price'+i+'').val(sc_price.toFixed(0));
+                }
+                update_ape(i);
+                get_adjustment(i);
+                get_adjustment_no(i);
+                get_total(i);
+                get_gross_total(i);
+            })
+            $('#sc_euro'+i+'').keyup(function() {
+                fc_price = Number($('#fc_price'+i+'').val());
+                sc_euro = Number(this.value);
+                sc_percent = (sc_euro/fc_price)*100;
+                $('#sc_percent'+i+'').val(sc_percent.toFixed(0));
+                sc_price = fc_price + sc_euro;
+                $('#sc_price'+i+'').val(sc_price.toFixed(0));
+                
+                if ($('#ape_percent'+i+'').val() == '0' && $('#ape_euro'+i+'').val() == '0') {
+                    $('#ape_price'+i+'').val(sc_price.toFixed(0));
+                }
+                if ($('#me_percent'+i+'').val() == '0' && $('#me_euro'+i+'').val() == '0') {
+                    $('#me_price'+i+'').val(sc_price.toFixed(0));
+                }
+                update_ape(i);
+                get_adjustment(i);
+                get_adjustment_no(i);
+                get_total(i);
+                get_gross_total(i);
+            })
+
+            // after purchase 
+            let ape_percent = 0.00;
+            let ape_euro = 0.00;
+            let ape_price = 0.00;
+            $('#ape_euro'+i+'').keyup(function() {
+                sc_price = Number($('#sc_price'+i+'').val());
+                ape_euro = Number(this.value);
+                ape_percent = (ape_euro/sc_price)*100;
+                $('#ape_percent'+i+'').val(ape_percent.toFixed(0));
+                ape_price = sc_price + ape_euro;
+                $('#ape_price'+i+'').val(ape_price.toFixed(0));
+                
+                if ($('#me_percent'+i+'').val() == '0' && $('#me_euro'+i+'').val() == '0') {
+                    $('#me_price'+i+'').val(ape_price.toFixed(0));
+                }
+                update_me(i);
+                get_adjustment(i);
+                get_adjustment_no(i);
+                get_total(i);
+                get_gross_total(i);
+            })
+            $('#ape_percent'+i+'').keyup(function() {
+                sc_price = Number($('#sc_price'+i+'').val());
+                ape_percent = Number(this.value);
+                ape_euro = (sc_price*ape_percent)/100;
+                $('#ape_euro'+i+'').val(ape_euro.toFixed(0));
+                ape_price = sc_price + ape_euro;
+                $('#ape_price'+i+'').val(ape_price.toFixed(0));
+                
+                if ($('#me_percent'+i+'').val() == '0' && $('#me_euro'+i+'').val() == '0') {
+                    $('#me_price'+i+'').val(ape_price.toFixed(0));
+                }
+                update_me(i);
+                get_adjustment(i);
+                get_adjustment_no(i);
+                get_total(i);
+                get_gross_total(i);
+            })
+
+            // market environment
+            let me_percent = 0.00;
+            let me_euro = 0.00;
+            let me_price = 0.00;
+            $('#me_percent'+i+'').keyup(function() {
+                ape_price = Number($('#ape_price'+i+'').val());
+                me_percent = Number(this.value);
+                me_euro = (ape_price*me_percent)/100;
+                $('#me_euro'+i+'').val(me_euro.toFixed(0));
+                me_price = ape_price + me_euro;
+                $('#me_price'+i+'').val(me_price.toFixed(0));
+                update_rest(i);
+                get_adjustment(i);
+                get_adjustment_no(i);
+                get_total(i);
+                get_gross_total(i);
+            })
+            $('#me_euro'+i+'').keyup(function() {
+                ape_price = Number($('#ape_price'+i+'').val());
+                me_euro = Number(this.value);
+                me_percent = (me_euro/ape_price)*100;
+                $('#me_percent'+i+'').val(me_percent.toFixed(0));
+                me_price = ape_price + me_euro;
+                $('#me_price'+i+'').val(me_price.toFixed(0));
+                update_rest(i);
+                get_adjustment(i);
+                get_adjustment_no(i);
+                get_total(i);
+                get_gross_total(i);
+            })
+
+            // location
+            let lc_percent = 0.00;
+            let lc_euro = 0.00;
+            $('#lc_percent'+i+'').keyup(function() {
+                me_price = Number($('#me_price'+i+'').val());
+                lc_percent = Number(this.value);
+                lc_euro = (me_price*lc_percent)/100;
+                $('#lc_euro'+i+'').val(lc_euro.toFixed(0));
+                get_adjustment(i);
+                get_adjustment_no(i);
+                get_total(i);
+                get_gross_total(i);
+            })
+            $('#lc_euro'+i+'').keyup(function() {
+                me_price = Number($('#me_price'+i+'').val());
+                lc_euro = Number(this.value);
+                lc_percent = (lc_euro/me_price)*100;
+                $('#lc_percent'+i+'').val(lc_percent.toFixed(0));
+                get_adjustment(i);
+                get_adjustment_no(i);
+                get_total(i);
+                get_gross_total(i);
+            })
+
+            // compartment
+            let cp_percent = 0.00;
+            let cp_euro = 0.00;
+            $('#cp_percent'+i+'').keyup(function() {
+                me_price = Number($('#me_price'+i+'').val());
+                cp_percent = Number(this.value);
+                cp_euro = (me_price*cp_percent)/100;
+                $('#cp_euro'+i+'').val(cp_euro.toFixed(0));
+                get_adjustment(i);
+                get_adjustment_no(i);
+                get_total(i);
+                get_gross_total(i);
+            })
+            $('#cp_euro'+i+'').keyup(function() {
+                me_price = Number($('#me_price'+i+'').val());
+                cp_euro = Number(this.value);
+                cp_percent = (cp_euro/me_price)*100;
+                $('#cp_percent'+i+'').val(cp_percent.toFixed(0));
+                get_adjustment(i);
+                get_adjustment_no(i);
+                get_total(i);
+                get_gross_total(i);
+            })
+
+            // construction year
+            let cy_percent = 0.00;
+            let cy_euro = 0.00;
+            $('#cy_percent'+i+'').keyup(function() {
+                me_price = Number($('#me_price'+i+'').val());
+                cy_percent = Number(this.value);
+                cy_euro = (me_price*cy_percent)/100;
+                $('#cy_euro'+i+'').val(cy_euro.toFixed(0));
+                get_adjustment(i);
+                get_adjustment_no(i);
+                get_total(i);
+                get_gross_total(i);
+            })
+            $('#cy_euro'+i+'').keyup(function() {
+                me_price = Number($('#me_price'+i+'').val());
+                cy_euro = Number(this.value);
+                cy_percent = (cy_euro/me_price)*100;
+                $('#cy_percent'+i+'').val(cy_percent.toFixed(0));
+                get_adjustment(i);
+                get_adjustment_no(i);
+                get_total(i);
+                get_gross_total(i);
+            })
+
+            let area = 0.00;
+            let su_diff = 0.00;
+            let su_percent = 0.00;
+            let su_euro = 0.00;
+            $('#id_area'+i+'').keyup(function() {
+                $('#mvb_area'+i+'').val(this.value);
+                me_price = Number($('#me_price'+i+'').val());
+                area = Number(this.value);
+                su_diff = Number($('#id_sub_area').val()) - area;
+                $('#su_diff'+i+'').val(su_diff.toFixed(2));
+                su_euro = (su_diff/area) * me_price;
+                $('#su_euro'+i+'').val(su_euro.toFixed(0));
+                su_percent = (su_euro/me_price)*100;
+                $('#su_percent'+i+'').val(su_percent.toFixed(0));
+                get_adjustment(i);
+                get_adjustment_no(i);
+                get_total(i);
+                get_gross_total(i);
+            })
+
+            // finish
+            let finish_percent = 0.00;
+            let finish_euro = 0.00;
+            $('#finish_euro'+i+'').keyup(function() {
+                me_price = Number($('#me_price'+i+'').val());
+                finish_euro = Number(this.value);
+                finish_percent = (finish_euro/me_price)*100;
+                $('#finish_percent'+i+'').val(finish_percent.toFixed(0));
+                get_adjustment(i);
+                get_adjustment_no(i);
+                get_total(i);
+                get_gross_total(i);
+            })
+            $('#finish_percent'+i+'').keyup(function() {
+                me_price = Number($('#me_price'+i+'').val());
+                finish_percent = Number(this.value);
+                finish_euro = (me_price*finish_percent)/100;
+                $('#finish_euro'+i+'').val(finish_euro.toFixed(0));
+                get_adjustment(i);
+                get_adjustment_no(i);
+                get_total(i);
+                get_gross_total(i);
+            })
+            
+            // etaj 
+            $('#etaj_'+i+'').keyup(function() {
+                $('#mvb_height'+i+'').val(this.value);
+            });
+            let etaj_percent = 0.00;
+            let etaj_euro = 0.00;
+            $('#etaj_percent'+i+'').keyup(function() {
+                me_price = Number($('#me_price'+i+'').val());
+                etaj_percent = Number(this.value);
+                etaj_euro = (me_price*etaj_percent)/100;
+                $('#etaj_euro'+i+'').val(etaj_euro.toFixed(0));
+                get_adjustment(i);
+                get_adjustment_no(i);
+                get_total(i);
+                get_gross_total(i);
+            })
+            $('#etaj_euro'+i+'').keyup(function() {
+                me_price = Number($('#me_price'+i+'').val());
+                etaj_euro = Number(this.value);
+                etaj_percent = (etaj_euro/me_price)*100;
+                $('#etaj_percent'+i+'').val(etaj_percent.toFixed(0));
+                get_adjustment(i);
+                get_adjustment_no(i);
+                get_total(i);
+                get_gross_total(i);
+            })
+
+            let balcon = 0.00;
+            let balcon_diff = 0.00;
+            let balcon_percent = 0.00;
+            let balcon_euro = 0.00;
+            $('#balcon_'+i+'').keyup(function() {
+                me_price = Number($('#me_price'+i+'').val());
+                balcon = Number(this.value);
+                balcon_diff = Number($('#sub_balcon').val()) - balcon;
+                balcon_euro = balcon_diff*Number($('#price_persqm').val());
+                $('#balcon_euro'+i+'').val(balcon_euro.toFixed(0));
+                balcon_percent = (balcon_euro/me_price)*100;
+                $('#balcon_percent'+i+'').val(balcon_percent.toFixed(0));
+                get_adjustment(i);
+                get_adjustment_no(i);
+                get_total(i);
+                get_gross_total(i);
+            })
+            $('#price_persqm').keyup(function() {
+                me_price = Number($('#me_price'+i+'').val());
+                price = Number(this.value);
+                balcon_diff = Number($('#sub_balcon').val()) - Number($('#balcon_'+i+'').val());
+                balcon_euro = balcon_diff*price;
+                $('#balcon_euro'+i+'').val(balcon_euro.toFixed(0));
+                balcon_percent = (balcon_euro/me_price)*100;
+                $('#balcon_percent'+i+'').val(balcon_percent.toFixed(0));
+                get_adjustment(i);
+                get_adjustment_no(i);
+                get_total(i);
+                get_gross_total(i);
+            })
+
+
+            // heating system
+            let hs_percent = 0.00;
+            let hs_euro = 0.00;
+            let net_adjustment = 0.00;
+            let adjustment_price = 0.00;
+            let adjustment_no = 0;
+            let total_percent = 0.00;
+            let total_euro = 0.00;
+            let gross_percent = 0.00;
+            let gross_euro = 0.00;
+            $('#hs_euro'+i+'').keyup(function() {
+                me_price = Number($('#me_price'+i+'').val());
+                hs_euro = Number(this.value);
+                hs_percent = (hs_euro/me_price)*100;
+                $('#hs_percent'+i+'').val(hs_percent.toFixed(0));
+                get_adjustment(i);
+                get_adjustment_no(i);
+                get_total(i);
+                get_gross_total(i);
+            })
+            $('#hs_percent'+i+'').keyup(function() {
+                me_price = Number($('#me_price'+i+'').val());
+                hs_percent = Number(this.value);
+                hs_euro = (me_price*hs_percent)/100;
+                $('#hs_euro'+i+'').val(hs_euro.toFixed(0));
+                get_adjustment(i);
+                get_adjustment_no(i);
+                get_total(i);
+                get_gross_total(i);
+            })
+
+            // optional element one
+            let opt1_percent = 0.00;
+            let opt1_euro = 0.00;
+            $('#opt1_euro'+i+'').keyup(function() {
+                me_price = Number($('#me_price'+i+'').val());
+                opt1_euro = Number(this.value);
+                opt1_percent = (opt1_euro/me_price)*100;
+                $('#opt1_percent'+i+'').val(opt1_percent.toFixed(0));
+                get_adjustment(i);
+                get_adjustment_no(i);
+                get_total(i);
+                get_gross_total(i);
+            })
+            $('#opt1_percent'+i+'').keyup(function() {
+                me_price = Number($('#me_price'+i+'').val());
+                opt1_percent = Number(this.value);
+                opt1_euro = (me_price*opt1_percent)/100;
+                $('#opt1_euro'+i+'').val(opt1_euro.toFixed(0));
+                get_adjustment(i);
+                get_adjustment_no(i);
+                get_total(i);
+                get_gross_total(i);
+            })
+
+            // optional element two
+            let opt2_percent = 0.00;
+            let opt2_euro = 0.00;
+            $('#opt2_euro'+i+'').keyup(function() {
+                me_price = Number($('#me_price'+i+'').val());
+                opt2_euro = Number(this.value);
+                opt2_percent = (opt2_euro/me_price)*100;
+                $('#opt2_percent'+i+'').val(opt2_percent.toFixed(0));
+                get_adjustment(i);
+                get_adjustment_no(i);
+                get_total(i);
+                get_gross_total(i);
+            })
+            $('#opt2_percent'+i+'').keyup(function() {
+                me_price = Number($('#me_price'+i+'').val());
+                opt2_percent = Number(this.value);
+                opt2_euro = (me_price*opt2_percent)/100;
+                $('#opt2_euro'+i+'').val(opt2_euro.toFixed(0));
+                get_adjustment(i);
+                get_adjustment_no(i);
+                get_total(i);
+                get_gross_total(i);
+            })
+
+            // optional element three
+            let opt3_percent = 0.00;
+            let opt3_euro = 0.00;
+            $('#opt3_euro'+i+'').keyup(function() {
+                me_price = Number($('#me_price'+i+'').val());
+                opt3_euro = Number(this.value);
+                opt3_percent = (opt3_euro/me_price)*100;
+                $('#opt3_percent'+i+'').val(opt3_percent.toFixed(0));
+                get_adjustment(i);
+                get_adjustment_no(i);
+                get_total(i);
+                get_gross_total(i);
+            })
+            $('#opt3_percent'+i+'').keyup(function() {
+                me_price = Number($('#me_price'+i+'').val());
+                opt3_percent = Number(this.value);
+                opt3_euro = (me_price*opt3_percent)/100;
+                $('#opt3_euro'+i+'').val(opt3_euro.toFixed(0));
+                get_adjustment(i);
+                get_adjustment_no(i);
+                get_total(i);
+                get_gross_total(i);
+            })
+        }
+
+        function update_margin(i) {
+            let op = Number($('#op_'+i+'').val());
+            let margin = Number($('#margin_'+i+'').val());
+            let cv = (op*margin)/100;
+            $('#cv_'+i+'').val(cv.toFixed(0));
+            var mp = op + cv;
+            $('#mp_'+i+'').val(mp.toFixed(0));
+            $('#mvb_pc'+i+'').val(mp);
+            update_pr(i);
+        }
+
+        function update_pr(i) {
+            var mp = Number($('#mp_'+i+'').val());
+            var pr_percent = Number($('#pr_percent'+i+'').val());
+            var pr_euro = (mp*pr_percent)/100;
+            $('#pr_euro'+i+'').val(pr_euro.toFixed(0));
+            var pr_price = mp + pr_euro;
+            $('#pr_price'+i+'').val(pr_price.toFixed(0));
+            update_fc(i);
+        }
+
+        function update_fc(i) {
+            var pr_price = Number($('#pr_price'+i+'').val());
+            var fc_percent = Number($('#fc_percent'+i+'').val());
+            var fc_euro = (pr_price*fc_percent)/100;
+            $('#fc_euro'+i+'').val(fc_euro.toFixed(0));
+            var fc_price = pr_price + fc_euro;
+            $('#fc_price'+i+'').val(fc_price.toFixed(0));
+            update_sc(i);
+        }
+
+        function update_sc(i) {
+            var fc_price = Number($('#fc_price'+i+'').val());
+            var sc_percent = Number( $('#sc_percent'+i+'').val());
+            var sc_euro = (fc_price*sc_percent)/100;
+            $('#sc_euro'+i+'').val(sc_euro.toFixed(0));
+            var sc_price = fc_price + sc_euro;
+            $('#sc_price'+i+'').val(sc_price.toFixed(0));
+            update_ape(i);
+        }
+
+        function update_ape(i) {
+            var sc_price = Number($('#sc_price'+i+'').val());
+            var ape_percent = Number($('#ape_percent'+i+'').val());
+            var ape_euro = (sc_price*ape_percent)/100;
+            $('#ape_euro'+i+'').val(ape_euro.toFixed(0));
+            var ape_price = sc_price + ape_euro;
+            $('#ape_price'+i+'').val(ape_price.toFixed(0));
+            update_me(i);
+        }
+
+        function update_me(i) {
+            var ape_price = Number($('#ape_price'+i+'').val());
+            var me_percent = Number($('#me_percent'+i+'').val());
+            var me_euro = (ape_price*me_percent)/100;
+            $('#me_euro'+i+'').val(me_euro.toFixed(0));
+            var me_price = ape_price + me_euro;
+            $('#me_price'+i+'').val(me_price.toFixed(0));
+            update_rest(i);
+        }
+
+        function update_rest(i) {
+            var me_price = Number($('#me_price'+i+'').val());
+            var lc_percent = Number($('#lc_percent'+i+'').val());
+            var lc_euro = (me_price*lc_percent)/100;
+            $('#lc_euro'+i+'').val(lc_euro.toFixed(0));
+            var cp_percent = Number($('#cp_percent'+i+'').val());
+            var cp_euro = (me_price*cp_percent)/100;
+            $('#cp_euro'+i+'').val(cp_euro.toFixed(0));
+            var cy_percent = Number($('#cy_percent'+i+'').val());
+            var cy_euro = (me_price*cy_percent)/100;
+            $('#cy_euro'+i+'').val(cy_euro.toFixed(0));
+
+            var area = Number($('#id_area'+i+'').val());
+            var su_diff = Number($('#su_diff'+i+'').val());
+            var su_euro = (su_diff/area) * me_price;
+            $('#su_euro'+i+'').val(su_euro.toFixed(0));
+            var su_percent = (su_euro/me_price)*100;
+            $('#su_percent'+i+'').val(su_percent.toFixed(0));
+
+            var finish_percent = Number($('#finish_percent'+i+'').val());
+            var finish_euro = (me_price*finish_percent)/100;
+            $('#finish_euro'+i+'').val(finish_euro.toFixed(0));
+            var etaj_percent = Number($('#etaj_percent'+i+'').val());
+            var etaj_euro = (me_price*etaj_percent)/100;
+            $('#etaj_euro'+i+'').val(etaj_euro.toFixed(0));
+
+            var price = Number($('#price_persqm').val());
+            var balcon_diff = Number($('#sub_balcon').val()) - Number($('#balcon_'+i+'').val());
+            var balcon_euro = balcon_diff*price;
+            $('#balcon_euro'+i+'').val(balcon_euro.toFixed(0));
+            var balcon_percent = (balcon_euro/me_price)*100;
+            $('#balcon_percent'+i+'').val(balcon_percent.toFixed(0));
+            
+            var hs_euro = Number($('#hs_euro'+i+'').val());
+            var hs_percent = (hs_euro/me_price)*100;
+            $('#hs_percent'+i+'').val(hs_percent.toFixed(0));
+            var opt1_euro = Number($('#opt1_euro'+i+'').val());
+            var opt1_percent = (opt1_euro/me_price)*100;
+            $('#opt1_percent'+i+'').val(opt1_percent.toFixed(0));
+            var opt2_euro = Number($('#opt2_euro'+i+'').val());
+            opt2_percent = (opt2_euro/me_price)*100;
+            $('#opt2_percent'+i+'').val(opt2_percent.toFixed(0));
+            var opt3_euro = Number($('#opt3_euro'+i+'').val());
+            var opt3_percent = (opt3_euro/me_price)*100;
+            $('#opt3_percent'+i+'').val(opt3_percent.toFixed(0));
+            get_adjustment(i);
+            get_adjustment_no(i);
+            get_total(i);
+            get_gross_total(i);
+        }
+
+        function get_adjustment(i) {
+            var net_adjustment = Number($('#lc_euro'+i+'').val()) + Number($('#cp_euro'+i+'').val()) + Number($('#cy_euro'+i+'').val()) + Number($('#su_euro'+i+'').val()) + Number($('#finish_euro'+i+'').val()) + Number($('#etaj_euro'+i+'').val()) + Number($('#balcon_euro'+i+'').val()) + Number($('#hs_euro'+i+'').val()) + Number($('#opt1_euro'+i+'').val()) + Number($('#opt2_euro'+i+'').val()) + Number($('#opt3_euro'+i+'').val()); 
+            $('#net_adjustment'+i+'').val(net_adjustment.toFixed(0));
+            var adjustment_price = net_adjustment + Number($('#me_price'+i+'').val());
+            $('#adjustment_price'+i+'').val(adjustment_price.toFixed(0));
+            return net_adjustment;
+        }
+
+        function get_adjustment_no(i) {
+            let count = 0;
+            (Number($('#pr_euro'+i+'').val()) != 0) ? count += 1 : count += 0;
+            (Number($('#fc_euro'+i+'').val()) != 0) ? count += 1 : count += 0;
+            (Number($('#sc_euro'+i+'').val()) != 0) ? count += 1 : count += 0;
+            (Number($('#ape_euro'+i+'').val()) != 0) ? count += 1 : count += 0;
+            (Number($('#me_euro'+i+'').val()) != 0) ? count += 1 : count += 0;
+            (Number($('#lc_euro'+i+'').val()) != 0) ? count += 1 : count += 0;
+            (Number($('#cp_euro'+i+'').val()) != 0) ? count += 1 : count += 0;
+            (Number($('#cy_euro'+i+'').val()) != 0) ? count += 1 : count += 0;
+            (Number($('#su_euro'+i+'').val()) != 0) ? count += 1 : count += 0;
+            (Number($('#finish_euro'+i+'').val()) != 0) ? count += 1 : count += 0;
+            (Number($('#etaj_euro'+i+'').val()) != 0) ? count += 1 : count += 0;
+            (Number($('#balcon_euro'+i+'').val()) != 0) ? count += 1 : count += 0;
+            (Number($('#hs_euro'+i+'').val()) != 0) ? count += 1 : count += 0;
+            (Number($('#opt1_euro'+i+'').val()) != 0) ? count += 1 : count += 0;
+            (Number($('#opt2_euro'+i+'').val()) != 0) ? count += 1 : count += 0;
+            (Number($('#opt3_euro'+i+'').val()) != 0) ? count += 1 : count += 0;
+            $('#adjustment_no'+i+'').val(count);
+        }
+
+        function get_total(i) {
+            var net_adjustment = get_adjustment(i);
+            var total_euro = Number($('#pr_euro'+i+'').val()) + Number($('#fc_euro'+i+'').val()) + Number($('#sc_euro'+i+'').val()) + Number($('#ape_euro'+i+'').val()) + Number($('#me_euro'+i+'').val()) + net_adjustment;
+            $('#total_euro'+i+'').val(total_euro.toFixed(0));
+            var mp = Number($('#mp_'+i+'').val());
+            var total_percent = (total_euro/mp)*100;
+            $('#total_percent'+i+'').val(total_percent.toFixed(0));
+        }
+
+        function get_gross_total(i) {
+            var gross_euro = Math.abs($('#pr_euro'+i+'').val()) + Math.abs($('#fc_euro'+i+'').val()) + Math.abs($('#sc_euro'+i+'').val()) + Math.abs($('#ape_euro'+i+'').val()) + Math.abs($('#me_euro'+i+'').val()) + Math.abs($('#lc_euro'+i+'').val()) + Math.abs($('#cp_euro'+i+'').val()) + Math.abs($('#cy_euro'+i+'').val()) + Math.abs($('#su_euro'+i+'').val()) + Math.abs($('#finish_euro'+i+'').val()) + Math.abs($('#etaj_euro'+i+'').val()) + Math.abs($('#balcon_euro'+i+'').val()) + Math.abs($('#hs_euro'+i+'').val()) + Math.abs($('#opt1_euro'+i+'').val()) + Math.abs($('#opt2_euro'+i+'').val()) + Math.abs($('#opt3_euro'+i+'').val());
+            $('#gross_euro'+i+'').val(gross_euro.toFixed(0));
+            var mp = Number($('#mp_'+i+'').val());
+            var gross_percent = (gross_euro/mp)*100;
+            $('#gross_percent'+i+'').val(gross_percent.toFixed(1));
+        }
+
+        $("#refresh").on('click', function () {
+            var minprice = Number($('#gross_percent1').val());
+            var pos = 1;
+            for(let i=2; i<=nr; i++) {
+                let val = Number($('#gross_percent'+i+'').val());
+                if(minprice>val) {
+                    minprice = val;
+                    pos = i;
+                }
+            }
+            let ve = Number($('#adjustment_price'+pos).val())
+            var pow = Math.pow(10,-3);
+            minprice = Math.round(ve*pow)/pow;
+            $('#estimated_value').val(minprice);
+            $("#smallest_gross").val('ID-'+pos);
+        })
+        
+        $('#id_sub_area').keyup(function() {
+            let sub_area = Number(this.value);
+            for(let i=1; i<=nr; i++) {
+                let me_price = Number($('#me_price'+i+'').val());
+                let area = Number($('#id_area'+i+'').val());
+                let su_diff = sub_area - area;
+                $('#su_diff'+i+'').val(su_diff.toFixed(2));
+                let su_euro = (su_diff/area) * me_price;
+                $('#su_euro'+i+'').val(su_euro.toFixed(0));
+                let su_percent = (su_euro/me_price)*100;
+                $('#su_percent'+i+'').val(su_percent.toFixed(0));
+                get_adjustment(i);
+                get_adjustment_no(i);
+                get_total(i);
+                get_gross_total(i);
+            }
+            $('#vbp_area').val(this.value)
+        })
+
+        $('#sub_balcon').keyup(function() {
+            let sub_balcon = Number(this.value);
+            for(let i=1; i<=nr; i++) {
+                let me_price = Number($('#me_price'+i+'').val());
+                let balcon = Number($('#balcon_'+i+'').val());
+                let balcon_diff = sub_balcon - balcon;
+                let balcon_euro = balcon_diff*Number($('#price_persqm').val());
+                $('#balcon_euro'+i+'').val(balcon_euro.toFixed(0));
+                let balcon_percent = (balcon_euro/me_price)*100;
+                $('#balcon_percent'+i+'').val(balcon_percent.toFixed(0));
+                get_adjustment(i);
+                get_adjustment_no(i);
+                get_total(i);
+                get_gross_total(i);
+            }
+        })
+
+        // MVB table calculation 
+        for(let i=1; i<=nr; i++) {
+            let rent_sqm = 0.00;
+            $('#rent_sqm'+i+'').keyup(function() {
+                rent_sqm = Number(this.value);
+                let mvb_area = Number($('#mvb_area'+i+'').val());
+                let monthly_rent = rent_sqm * mvb_area;
+                $('#monthly_rent'+i+'').val(monthly_rent.toFixed(0))
+                let mvb_vbp = monthly_rent * 12;
+                $('#mvb_vbp'+i+'').val(mvb_vbp.toFixed(0));
+                let mvb_pc = Number($('#mvb_pc'+i+'').val());
+                let mvb_mvbp = mvb_pc/mvb_vbp;
+                $('#mvb_mvbp'+i+'').val(mvb_mvbp.toFixed(1));
+            })
+        }
+
+        $("#smallest_gross").change(function() {
+            let pos = this.value.slice(-1);
+            let ve = Number($('#adjustment_price'+pos).val())
+            var pow = Math.pow(10,-3);
+            let minprice = Math.round(ve*pow)/pow;
+            $('#estimated_value').val(minprice);
+            let mvb_min = Number($('#mvb_mvbp'+pos).val());
+            $('#mvb_min').val(mvb_min);
+            $('#sub_mvbp').val(mvb_min);
+            update_vpcd();
+        });
+
+        $("#mvb_refresh").on('click', function () {
+            // let minprice = Number($('#mvb_mvbp1').val());
+            // for(let i=1; i<=nr; i++) {
+            //     let val = Number($('#mvb_mvbp'+i+'').val());
+            //     if(minprice>val) {
+            //         minprice = val;
+            //     }
+            // }
+            let pos = $("#smallest_gross").val().slice(-1);
+            let mvb_min = Number($('#mvb_mvbp'+pos).val());
+            $('#mvb_min').val(mvb_min);
+            $('#sub_mvbp').val(mvb_min);
+        });
+        
+        $('#sub_rent_sqm').keyup(function() {
+            let sub_area = Number($('#vbp_area').val());
+            let rent = Number(this.value);
+            let sub_monthly_rent = sub_area * rent;
+            $('#sub_monthly_rent').val(sub_monthly_rent.toFixed(0));
+            let sub_vbp = sub_monthly_rent * 12;
+            $('#sub_vbp').val(sub_vbp.toFixed(0));
+            update_vpcd();
+        })
+
+        function update_vpcd() {
+            let sub_area = Number($('#vbp_area').val());
+            let rent = Number($('#sub_rent_sqm').val());
+            let sub_monthly_rent = sub_area * rent;
+            let sub_vbp = sub_monthly_rent * 12;
+
+            let pos = $("#smallest_gross").val().slice(-1);
+            let rent_sqm = Number($('#rent_sqm'+pos).val());
+            let mvb_area = Number($('#mvb_area'+pos).val());
+            let monthly_rent = rent_sqm * mvb_area;
+            let mvb_vbp = monthly_rent * 12;
+            let mvb_pc = Number($('#mvb_pc'+pos).val());
+            let min_mvbp = mvb_pc/mvb_vbp;
+            let vpcd = sub_vbp.toFixed(2) * min_mvbp.toFixed(5);
+            $('#vpcd').val(vpcd.toFixed(0));
+            let pow = Math.pow(10,-3);
+            let round_val = Math.round(vpcd*pow)/pow;
+            let vpcd_rotund = (min_mvbp.toFixed(0)/vpcd.toFixed(0)) + round_val;
+            $('#vpcd_rotund').val(vpcd_rotund.toFixed(0));
+        }
+
+        $('#submitBtn').click(function () {
+            var pass = false;
+            $('#all_tables input:not(.optional input)').each(function() {
+                if(this.value.length > 0) {
+                    pass = true;
+                    $(this).removeClass('required')
+                    $('.error').css('display', 'none');
+                } else {
+                    pass = false;
+                    $(this).addClass('required')
+                    $('.error').css('display', 'block');
+                }
+            })
+            $('#all_tables textarea:not(.optional textarea)').each(function() {
+                if(this.value.length > 0) {
+                    pass = true;
+                    $(this).removeClass('required')
+                    $('.error').css('display', 'none');
+                } else {
+                    pass = false;
+                    $(this).addClass('required')
+                    $('.error').css('display', 'block');
+                }
+            })
+
+            if (pass == true) {
+                $('#all_tables').submit();
+            } 
+        })
+    </script>
+{% endblock javascripts %}  

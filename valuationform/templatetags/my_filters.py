@@ -452,3 +452,80 @@ def list_convert(var):
 def get_corresponding_letter(comp_table):
     pos = int(comp_table.smallest_gross[-1]) - 1
     return comp_table.name[pos]
+
+# get_points of interest
+@register.filter(name="get_poi")
+def get_poi(pois):
+    return pois.split(',')
+
+# get_transport
+@register.filter(name="get_transport")
+def get_transport(pt):
+    transport = models.Transport.objects.filter(id__in=ast.literal_eval(pt))
+    return transport
+
+# get_identification
+@register.filter(name="get_identification")
+def get_identification(iden):
+    iden = ast.literal_eval(iden)
+    if len(iden) > 1:
+        identi = 'adresei postale inscrise pe imobil si cadastral introdus pe platforma ANCPI'
+    else:
+        if 'apii' in iden:
+            identi = 'adresei postale inscrise pe imobil'
+        else:
+            identi = 'cadastral introdus pe platforma ANCPI'
+    return identi
+
+
+# get_market_value
+@register.filter(name="get_market_value")
+def get_market_value(obj):
+    try:
+        summary = models.ValuationSummary.objects.filter(ref_no=obj).latest('id')
+        summary_value = models.SummaryValue.objects.filter(summary=summary)
+        market_value = summary.amav if summary.amav else summary.aiav
+        for sv in summary_value:
+            if sv.approache == 'market':
+                market_value += sv.field_value
+            else:
+                market_value += sv.field_value
+    except:
+        market_value = 0.00
+    return market_value
+
+
+# get_utila_totala
+@register.filter(name="get_utila_totala")
+def get_utila_totala(obj):
+    try:
+        const = models.Construction.objects.filter(ref_no=obj).latest('id')
+        utila = const.utila
+        totala = const.totala
+    except:
+        utila = 0.00
+        totala = 0.00
+    return str(utila) + "/" + str(totala)
+
+# get_price_sqm
+@register.filter(name="get_price_sqm")
+def get_price_sqm(obj):
+    try:
+        summary = models.ValuationSummary.objects.filter(ref_no=obj).latest('id')
+        summary_value = models.SummaryValue.objects.filter(summary=summary)
+        const = models.Construction.objects.filter(ref_no=obj).latest('id')
+        market_value = summary.amav if summary.amav else summary.aiav
+        price1 = summary.amav if summary.amav else summary.aiav
+        for sv in summary_value:
+            if sv.approache == 'market':
+                market_value += sv.field_value
+            else:
+                market_value += sv.field_value   
+        price1 = round((price1/const.utila),0)
+        price2 = round((market_value/const.utila),0)
+        price_sqm = str(price1) + '/' + str(price2)
+    except:
+        price_sqm = '0.00/0.00'
+    return price_sqm
+
+

@@ -77,11 +77,11 @@
 									<thead>
                                         <tr>
                                             <th>#</th>
-                                            <th>Adresa</th>
+                                            <th>Address</th>
+                                            <th>Client</th>
                                             <th>Destinatar</th>
-                                            <th>Created</th>
+                                            <th>Inspection Date</th>
                                             <th>Status</th>
-                                            <th>Inspector</th>
                                             <th>Action</th>
                                         </tr>
 									</thead>
@@ -92,7 +92,10 @@
                                                 <a href="{% url 'dashboard:details' id=obj.id %}"><span class="text-light">EPI-{{obj.reference_no}}-{{obj.inspection_date|date:"dmy"}}</span></a>
                                             </td>
                                             <td>
-                                                <a href="{% url 'dashboard:details' id=obj.id %}"><span class="text-light">{{obj.street|truncatechars:30}}</span></a>
+                                                <a href="{% url 'dashboard:details' id=obj.id %}"><span class="text-light">{{obj.address|truncatechars:30}}</span></a>
+                                            </td>
+                                            <td>
+                                                <a href="{% url 'dashboard:details' id=obj.id %}"><span class="text-light">{{obj.nume_client}}</span></a>
                                             </td>
                                             <td>
                                                 <a href="{% url 'dashboard:details' id=obj.id %}"><span class="text-light">{{obj.report_recipient}}</span></a>
@@ -102,23 +105,21 @@
                                             </td>
                                             <td>
                                                 <div class="btn-group status">
-                                                    <button class="btn {% if obj.status == 'progress' %}btn-outline-info{% elif obj.status == 'suspended' %}btn-outline-warning{% else %}btn-outline-danger{% endif %} btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                                        {{obj.get_status_display }}
+                                                    <button class="btn {% if obj.status.id == 1 %}btn-outline-info{% elif obj.status.id == 3  %}btn-outline-warning{% elif obj.status.id == 4 %}btn-outline-danger{% endif %} btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                        {{obj.status.status }}
                                                     </button>
                                                     <div class="dropdown-menu">
-                                                        {% for key, value in status.items %}
-                                                            {% if obj.status != key %}
-                                                                <a class="dropdown-item" href="{% url 'dashboard:change_status' status=key id=obj.id %}">{{value}}</a>
+                                                        {% for s in status %}
+                                                            {% if obj.status.id != s.id %}
+                                                                <a class="dropdown-item" href="{% url 'dashboard:change_status' status=s.id id=obj.id %}">{{s.status}}</a>
                                                             {% endif %}
                                                         {% endfor %}
                                                     </div>
                                                 </div>
                                             </td>
-                                            <td>
-                                                <a href="{% url 'dashboard:details' id=obj.id %}"><span class="text-light">{{obj.valuatate_by.get_full_name }}</span></a>
-                                            </td>
                                             <td style="text-align: center;">
                                                 <span class="mr-3" href="" id="delete" onclick="delete_modal('{{obj.id}}')"><i class="fas fa-trash text-light"></i></span>
+                                                <a href="{% url 'dashboard:details' id=obj.id %}"><i class="fas fa-file-alt text-white"></i></a>
                                             </td>
                                         </tr>
                                         {% endfor %}

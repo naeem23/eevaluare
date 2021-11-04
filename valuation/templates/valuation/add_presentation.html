@@ -72,24 +72,47 @@
                     <div class="card-body">
                         <p class="text-danger mb-3 msg">Something went wrong.</p>
                         <div class="row documents">
+                            {% if sources %}
+                                {% for source in sources %}
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>Nume documente <span class="required-label">*</span></label>
+                                            <input type="text" name="src[]" id="src_{{source.id}}" class="form-control" value="{{source.source}}" required>
+                                            <small class="form-text text-danger" style="cursor:pointer;" onclick="remove_src(this, '{{source.id}}')">Remove</small>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            {% else %}
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label>Nume documente <span class="required-label">*</span></label>
                                     <input type="text" name="src" class="form-control" required>
                                 </div>
                             </div>
+                            {% endif %}
                         </div>
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <button type="button" class="btn btn-primary btn-round mr-2" id="save_src">
-                                        <span class="loading text-light" style="display: none;"><i class="fas fa-redo mr-2"></i>Save ...</span>
-                                        <span class="save">Save</span>
-                                    </button>
-                                    <button type="button" class="btn btn-primary btn-round" id="add_src">
-                                        <span class="loading text-light" style="display: none;"><i class="fas fa-redo mr-2"></i>Save ...</span>
-                                        <span class="save">Save & Add New</span>
-                                    </button>
+                                    {% if sources %}
+                                        <button type="button" class="btn btn-primary btn-round mr-2" id="update_src">
+                                            <span class="loading text-light" style="display: none;"><i class="fas fa-redo mr-2"></i>Update ...</span>
+                                            <span class="save">Update</span>
+                                        </button>
+                                        <button type="button" class="btn btn-primary btn-round" id="update_add_src">
+                                            <span class="loading text-light" style="display: none;"><i class="fas fa-redo mr-2"></i>Update ...</span>
+                                            <span class="save">Update & Add New</span>
+                                        </button>
+                                    {% else %}
+                                        <button type="button" class="btn btn-primary btn-round mr-2" id="save_src">
+                                            <span class="loading text-light" style="display: none;"><i class="fas fa-redo mr-2"></i>Save ...</span>
+                                            <span class="save">Save</span>
+                                        </button>
+                                        <button type="button" class="btn btn-primary btn-round" id="add_src">
+                                            <span class="loading text-light" style="display: none;"><i class="fas fa-redo mr-2"></i>Save ...</span>
+                                            <span class="save">Save & Add New</span>
+                                        </button>
+                                    {% endif %}
                                 </div>
                             </div>
                         </div>
@@ -106,10 +129,14 @@
                             <div class="col-md-12">
                                 <div class="form-group">
                                     <label for="id_sub_identi">Identificarea proprietatii imobiliare subiect al evaluarii <span class="required-label">*</span></label>
-                                    {% if valued_property.valued_property != None %}
-                                        <textarea name="sub_identi" rows="5" class="form-control" id="id_sub_identi">{{valued_property.valued_property}}</textarea>
+                                    {% if pdata.sub_identi %}
+                                        <textarea name="sub_identi" rows="5" class="form-control" id="id_sub_identi">{{pdata.sub_identi}}</textarea>
                                     {% else %}
-                                        <textarea name="sub_identi" rows="5" class="form-control" id="id_sub_identi">Dreptul deplin de proprietate asupra apartamentului cu nr. {{valuation.apartment_no}}, compus din {{camara|floatformat:"0"}} camere si dependinte cu o suprafata utila de {% if const.utila %}{{ const.utila }}{% else %}0.00{% endif %} mp si trei balcoane cu suprafata lor totala de {% if const.utila and const.totala %}{{ const.totala|sub:const.utila }}{% else %}0.00{% endif %}, rezultand suprafata utila totala de {% if const.totala %}{{ const.totala }}{% else %}0.00{% endif %} mp, impreuna cu dreptul de proprietate asupra cotei indivize de 56.72 mp din partile si dependintele comune ale imobilului si dreptul de proprietate asupra terenului in suprafata de indiviza de 53.59 mp.</textarea>
+                                        {% if valued_property.valued_property != None %}
+                                            <textarea name="sub_identi" rows="5" class="form-control" id="id_sub_identi">{{valued_property.valued_property}}</textarea>
+                                        {% else %}
+                                            <textarea name="sub_identi" rows="5" class="form-control" id="id_sub_identi">Dreptul deplin de proprietate asupra apartamentului cu nr. {{valuation.apartment_no}}, compus din {{camara|floatformat:"0"}} camere si dependinte cu o suprafata utila de {% if const.utila %}{{ const.utila }}{% else %}0.00{% endif %} mp si trei balcoane cu suprafata lor totala de {% if const.utila and const.totala %}{{ const.totala|sub:const.utila }}{% else %}0.00{% endif %}, rezultand suprafata utila totala de {% if const.totala %}{{ const.totala }}{% else %}0.00{% endif %} mp, impreuna cu dreptul de proprietate asupra cotei indivize de 56.72 mp din partile si dependintele comune ale imobilului si dreptul de proprietate asupra terenului in suprafata de indiviza de 53.59 mp.</textarea>
+                                        {% endif %}
                                     {% endif %}
                                     <small class="form-text text-danger sub_identi"></small>
                                 </div>
@@ -119,7 +146,11 @@
                             <div class="col-md-12">
                                 <div class="form-group">
                                     <label for="id_sp_hypo">Ipoteze speciale <span class="required-label">*</span></label>
-                                    <textarea name="sp_hypo" rows="5" class="form-control" id="id_sp_hypo">Deoarece nu a fost pus la dispozitia evaluatorului un Extras de Carte Funciara actualizat, evaluatorul a considerat proprietatea imobiliara subiect libera de sarcini, fiind evaluata in aceasta ipoteza.</textarea>
+                                    {% if pdata.sp_hypo %}
+                                        <textarea name="sp_hypo" rows="5" class="form-control" id="id_sp_hypo">{{pdata.sp_hypo}}</textarea>
+                                    {% else %}
+                                        <textarea name="sp_hypo" rows="5" class="form-control" id="id_sp_hypo">Deoarece nu a fost pus la dispozitia evaluatorului un Extras de Carte Funciara actualizat, evaluatorul a considerat proprietatea imobiliara subiect libera de sarcini, fiind evaluata in aceasta ipoteza.</textarea>
+                                    {% endif %}
                                     <small class="form-text text-danger sp_hypo"></small>
                                 </div>
                             </div>
@@ -128,7 +159,11 @@
                             <div class="col-md-12">
                                 <div class="form-group">
                                     <label for="id_zona">Zona <span class="required-label">*</span></label>
-                                    <textarea name="zona" rows="5" class="form-control" id="id_zona">Microzona din care face parte proprietatea are caracter mixt preponderent rezidențial-comercial. Regimul specific de înălțime al clădirilor este P+4E-P+10E. Drumurile sunt asfaltate. Drumurile din zonă au configurația și capacitatea necesară pentru deservirea în bune condiții a imobilelor adiacente.</textarea>
+                                    {% if pdata.zona %}
+                                        <textarea name="zona" rows="5" class="form-control" id="id_zona">{{pdata.zona}}</textarea>
+                                    {% else %}
+                                        <textarea name="zona" rows="5" class="form-control" id="id_zona">Microzona din care face parte proprietatea are caracter mixt preponderent rezidențial-comercial. Regimul specific de înălțime al clădirilor este P+4E-P+10E. Drumurile sunt asfaltate. Drumurile din zonă au configurația și capacitatea necesară pentru deservirea în bune condiții a imobilelor adiacente.</textarea>
+                                    {% endif %}
                                     <small class="form-text text-danger zona"></small>
                                 </div>
                             </div>
@@ -148,8 +183,15 @@
                                 <div class="form-group">
                                     <label for="id_poi">Puncte de interes <span class="required-label">*</span></label>
                                     <div class="poi-inputs">
-                                        <div class="pois"></div>
-                                        {{ form.poi }}
+                                        <div class="pois">
+                                            {% if pdata.poi %}
+                                                {% for p in pdata.poi|get_poi %}
+                                                    <div class="poi"><label class="tag-name">{{p}}</label><span class="remove">X</span></div>
+                                                {% endfor %}
+                                            {% endif %}
+                                        </div>
+                                        <input type="text" name="poi" autofocus="autofocus" required id="id_poi">
+                                        <!-- {{ form.poi }} -->
                                     </div>
                                     <small class="form-text text-muted">Comma separated value</small>
                                     <small class="form-text text-danger poi-error"></small>
@@ -162,9 +204,15 @@
                                 <div class="form-group transport">
                                     <label for="id_pt">Transport public <span class="required-label">*</span></label>
                                     <select multiple="multiple" id="id_pt" class="form-control" name="pt[]">
-                                        {% for t in transport %}
-                                        <option value="{{t.id}}">{{t.name}}</option>
-                                        {% endfor %}
+                                        {% if pdata %}
+                                            {% for t in transport %}
+                                            <option value="{{t.id}}" {% if t.id|stringformat:"i" in pdata.pt %}selected{% endif %}>{{t.name}}</option>
+                                            {% endfor %}
+                                        {% else %}
+                                            {% for t in transport %}
+                                            <option value="{{t.id}}">{{t.name}}</option>
+                                            {% endfor %}
+                                        {% endif %}
                                     </select>
                                     <small class="form-text text-danger pt"></small>
                                 </div>
@@ -172,8 +220,16 @@
                             <div class="col-md-4">
                                 <div class="form-group legal_doc">
                                     <label for="id_legal_doc">Proprietar si situatia juridica <span class="required-label">*</span></label>
-                                    <select multiple="multiple" id="id_legal_doc" class="form-control" name="legal_doc[]">
+                                    {% if pdata %}
+                                        <select multiple="multiple" id="id_legal_doc" class="form-control" name="legal_doc[]">
+                                            {% for src in sources %}
+                                                <option data-toggle='tooltip' data-placement='top' title='{{src.source}}' value="{{src.id}}" {% if src.id|stringformat:"i" in pdata.legal_doc %}selected{% endif %}>{{src.source|truncatechars:30 }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    {% else %}
+                                        <select multiple="multiple" id="id_legal_doc" class="form-control" name="legal_doc[]">
                                     </select>
+                                    {% endif %}
                                     <small class="form-text text-muted">Add source of documents first</small>
                                     <small class="form-text text-danger legal_doc_error"></small>
                                 </div>
@@ -224,15 +280,19 @@
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="id_sarcini">Sarcini Nume</label>
-                                    <input type="text" name="sarcini" class="form-control" placeholder="Sarcini Nume" id="id_sarcini" disabled>
+                                    {% if pdata.sarcini %}
+                                        <input type="text" name="sarcini" class="form-control" placeholder="Sarcini Nume" id="id_sarcini" value="{{pdata.sarcini}}">
+                                    {% else %}
+                                        <input type="text" name="sarcini" class="form-control" placeholder="Sarcini Nume" id="id_sarcini" disabled>
+                                    {% endif %}
                                 </div>
                             </div>
                             <div class="col-md-4">
                                 <div class="form-group identification">
                                     <label for="id_identification">Identificare <span class="required-label">*</span></label>
                                     <select multiple="multiple" id="id_identification" class="form-control" name="identification[]">
-                                        <option value="apii">Adresei postale inscrise pe imobil</option>
-                                        <option value="cipa">Cadastral introdus pe platforma ANCPI</option>
+                                        <option value="apii" {% if 'apii' in pdata.identification %}selected{% endif %}>Adresei postale inscrise pe imobil</option>
+                                        <option value="cipa" {% if 'cipa' in pdata.identification %}selected{% endif %}>Cadastral introdus pe platforma ANCPI</option>
                                     </select>
                                     <small class="form-text text-danger identification_error"></small>
                                 </div>
@@ -259,7 +319,11 @@
                     </div>
 
                     <div class="card-action">
-                        <button class="btn btn-success" id="next">{% if 'details' in pre_url %}SAVE{% else %}NEXT{% endif %}</button>
+                        {% if pdata %}
+                            <button class="btn btn-success" id="next">Update</button>
+                        {% else %}
+                            <button class="btn btn-success" id="next">{% if 'details' in pre_url %}SAVE{% else %}NEXT{% endif %}</button>
+                        {% endif %}
                     </div>
                 </div>
             </form>
@@ -490,6 +554,110 @@
                 },
                 error: function (err) {
                     $(".msg").css('display', 'block')
+                }
+            })
+        }
+
+        // =========================== update and save source ============================
+        $('#update_src').on('click', function() {
+            let sources = $(".documents").find('input[name="src[]"]');
+            let source_valid = true;
+            let ids = [];
+            let values = [];
+            sources.each(function () {
+                if(this.value.length > 0) {
+                    ids.push(this.id.slice(4));
+                    values.push(this.value);
+                    $(this).removeClass('required');
+                } else {
+                    source_valid = false;
+                    $(this).addClass('required')
+                }
+            });
+            if (source_valid == true) {
+                update_source(sources, ids, values, 'update_src');
+            }
+        })
+        
+        $("#update_add_src").on('click', function() {
+            let sources = $(".documents").find('input[name="src[]"]');
+            let source_valid = true;
+            let ids = [];
+            let values = [];
+            sources.each(function () {
+                if(this.value.length > 0) {
+                    ids.push(this.id.slice(4));
+                    values.push(this.value);
+                    $(this).removeClass('required');
+                } else {
+                    source_valid = false;
+                    $(this).addClass('required')
+                }
+            });
+
+            if (source_valid == true) {
+                update_source(sources, ids, values, "update_add_src");
+                var div = "<div class='col-md-6'>\
+                            <div class='form-group'> \
+                                <label>Nume documente <span class='required-label'>*</span></label> \
+                                <input type='text' name='src[]' id='src_0' class='form-control' required>\
+                            </div>\
+                        </div>"
+                $('.documents').append(div)
+            }
+        })
+
+        // save source 
+        function update_source(source, ids, values, udpate_or_save) {
+            $.ajax({
+                url: "{% url 'valuation:update_sources' %}",
+                type: "POST",
+                cache: false,
+                data: {'ids': ids, 'sources': values, 'ref_no': '{{valuation.id}}', "csrfmiddlewaretoken": '{{ csrf_token }}'},
+                beforeSend: function() {
+                    $('#'+udpate_or_save+' .loading').css('display', 'block');
+                    $('#'+udpate_or_save+' .save').css('display', 'none');
+                },
+                success: function (e) {
+                    if(e.success=='true') {
+                        $('#id_legal_doc').find('option').remove();
+                        $('#id_legal_doc').multipleSelect('refresh');
+                        var res_id = JSON.parse(e.res_id);
+                        var i = 0;
+                        source.each(function () {
+                            $(this).attr('id', 'src_'+res_id[i]);
+                            $('#id_legal_doc').append("<option data-toggle='tooltip' data-placement='top' title='"+values[i]+"' value=\"" + res_id[i] + "\">" + values[i].substring(0,30) + "...</option>");
+                            i++;
+                        });
+                        $('#id_legal_doc').multipleSelect('refresh');
+                    } else {  
+                        $(".msg").css('display', 'block');  
+                        if (e.msg=='exists') {
+                            $(".msg").text('Source already added.');
+                        }
+                    }
+                },
+                complete: function(e) {
+                    $('#'+udpate_or_save+' .save').css('display', 'block');
+                    $('#'+udpate_or_save+' .loading').css('display', 'none');
+                },
+                error: function (err) {
+                    $(".msg").css('display', 'block')
+                }
+            })
+        }
+
+        function remove_src(event, id) {
+            $.ajax({
+                url: '{% url "valuation:delete_source" %}',
+                type: 'GET',
+                data: {id: id},
+                success: function(e) {
+                    if (e.success == 'true') {
+                        $("#id_legal_doc").find('option[value="'+id+'"]').remove();
+                        $('#id_legal_doc').multipleSelect('refresh');
+                        $(event).parents('.col-md-6').remove();
+                    }
                 }
             })
         }

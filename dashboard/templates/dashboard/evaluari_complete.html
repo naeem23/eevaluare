@@ -34,6 +34,7 @@
                 </ul>
             </div>
 
+            {% load my_filters %}
             <div class="row">
                 <div class="col-md-12">
                     <div class="card">
@@ -51,12 +52,14 @@
                                 <table id="incomplete_table" class="display table table-striped table-hover" >
                                     <thead>
                                         <tr>
-                                            <th>ID</th>
-                                            <th>Adress</th>
-                                            <th>Created At</th>
-                                            <th>Completed At</th>
-                                            <th>Inspector</th>
-                                            <th style="width: 10%">Action</th>
+                                            <th>#</th>
+                                            <th>Resulting value</th>
+                                            <th>Suprafata utila/totala</th>
+                                            <th>Pret/mp</th>
+                                            <th>Client</th>
+                                            <th>Utilizator</th>
+                                            <th>Data raport</th>
+                                            <th>Agent Name</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -66,21 +69,26 @@
                                                 <a href="{% url 'dashboard:details' id=obj.id %}"><span class="text-light">EPI-{{obj.reference_no}}-{{obj.inspection_date|date:"dmy"}}</span></a>
                                             </td>
                                             <td>
-                                                <a href="{% url 'dashboard:details' id=obj.id %}"><span class="text-light">{{obj.street|truncatechars:30}}</span></a>
+                                                <a href="{% url 'dashboard:details' id=obj.id %}"><span class="text-light">{{obj|get_market_value|floatformat:'0'}} EUR</span></a>
                                             </td>
                                             <td>
-                                                <a href="{% url 'dashboard:details' id=obj.id %}"><span class="text-light">{{obj.inspection_date|date:'d-m-Y'}}</span></a>
+                                                <a href="{% url 'dashboard:details' id=obj.id %}"><span class="text-light">{{obj|get_utila_totala}}</span></a>
+                                            </td>
+                                            <td>
+                                                <a href="{% url 'dashboard:details' id=obj.id %}"><span class="text-light">{{obj|get_price_sqm}}</span></a>
+                                            </td>
+                                            <td>
+                                                <a href="{% url 'dashboard:details' id=obj.id %}"><span class="text-light">{{obj.nume_client}}</span></a>
+                                            </td>
+                                            <td>
+                                                <a href="{% url 'dashboard:details' id=obj.id %}"><span class="text-light">
+                                                {{obj.report_recipient}}</span></a>
                                             </td>
                                             <td>
                                                 <a href="{% url 'dashboard:details' id=obj.id %}"><span class="text-light">{{obj.report_date|date:'d-m-Y'}}</span></a>
                                             </td>
                                             <td>
-                                                <a href="{% url 'dashboard:details' id=obj.id %}"><span class="text-light">{% if obj.valuatate_by.get_full_name %}
-                                                {{obj.valuatate_by.get_full_name}} {% else %} {{obj.valuatate_by.username }}{% endif %}</span></a>
-                                            </td>
-                                            <td>
-                                                <span class="mr-3" href="" id="delete" onclick="delete_modal('{{obj.id}}')"><i class="fas fa-trash text-white" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Delete"></i></span>
-                                                <a href=""><i class="fas fa-file-pdf text-white"  data-toggle="tooltip" data-placement="top" title="PDF"></i></a>
+                                                <a href="{% url 'dashboard:details' id=obj.id %}"><span class="text-light">{{obj.assigned_to}}</span></a>
                                             </td>
                                         </tr>
                                         {% endfor %}

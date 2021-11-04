@@ -1,6 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.db.models import base
 from django.db.models.deletion import SET_NULL
+from django.db.models.fields.related import OneToOneField
 from django.forms.widgets import Select
 from requests.api import request
 
@@ -174,6 +175,7 @@ class ValuatedProperty(models.Model):
 	inspection_date = models.DateField(blank=True, null=True) #inspection date
 	valuation_date =  models.DateField(blank=True, null=True) #valuation date
 	report_date = models.DateField(blank=True, null=True) #report date
+	assigned_to = models.CharField(max_length=55, blank=True, null=True)
 
 	def __str__(self):
 		return str(self.reference_no)

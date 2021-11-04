@@ -90,10 +90,17 @@
                             <div class="col-md-12">
                                 <div class="form-group">
                                     <label id="conform_label">Conform <span class="required-label mr-2">*</span><i class="fas fa-pencil-alt text-info" id="edit-conform"></i></label>
-                                    <p class="text-light conform">Conform {{ form.conform }}, constructia are un regim de intaltime {{valuation.height}} si a fost edificata in anul {{valuation.construction_year}}</p>
-
-                                    <input type="hidden" name="show_conform" id="show_conform" value="0">
-                                    <textarea name="conform_text" id="id_conform_text" rows="3" style="display: none;" class="form-control">Conform inspectiei, constructia are un regim de intaltime 8/S+P+11E si a fost edificata in anul 2008</textarea>
+                                    {% if const.conform_text %}
+                                        <p class="text-light conform" style="display: none;">Conform {{ form.conform }}, constructia are un regim de intaltime {{valuation.height}} si a fost edificata in anul {{valuation.construction_year}}</p>
+                                            
+                                        <input type="hidden" name="show_conform" id="show_conform" value="1">
+                                        <textarea name="conform_text" id="id_conform_text" rows="3" class="form-control">{{const.conform_text}}</textarea>
+                                    {% else %}
+                                        <p class="text-light conform">Conform {{ form.conform }}, constructia are un regim de intaltime {{valuation.height}} si a fost edificata in anul {{valuation.construction_year}}</p>
+                                        
+                                        <input type="hidden" name="show_conform" id="show_conform" value="0">
+                                        <textarea name="conform_text" id="id_conform_text" rows="3" style="display: none;" class="form-control">Conform inspectiei, constructia are un regim de intaltime 8/S+P+11E si a fost edificata in anul 2008</textarea>
+                                    {% endif %}
                                     <small class="form-text text-danger conform_error"></small>
                                 </div>
                             </div>
@@ -260,7 +267,7 @@
                             <div class="col-md-12">
                                 <div class="form-group">
                                     <label for="id_suprafete">Suprafete <span class="required-label mr-2">*</span></label>
-                                    <textarea name="suprafete" id="id_suprafete" rows="3" class="form-control">Următoarele suprafețe au fost determinate utilizând documentația pusă la dispoziție – Extras de carte funciară si releveul avizat. Determinarea suprafețelor luate în calcul în evaluare s-a făcut pe baza suprafețelor măsurate, conform paragrafului 23 din GEV 630 :</textarea>
+                                    <textarea name="suprafete" id="id_suprafete" rows="3" class="form-control">{% if const.suprafete %}{{ const.suprafete }}{% else %}Urmatoarele suprafete au fost determinate utilizand documentatia pusa la dispozitie – Extras de carte funciara si releveul avizat. Determinarea suprafetelor luate in calcul in evaluare s-a făcut pe baza suprafetelor masurate, conform paragrafului 23 din GEV 630 :{% endif %}</textarea>
                                     <small class="form-text text-danger suprafete_error"></small>
                                 </div>
                             </div>
@@ -276,6 +283,65 @@
                                             <th scope="col" width="10%"></th>
                                         </tr>
                                     </thead>
+                                    {% if s_utila %}
+                                        <tbody>
+                                            {% load my_filters %}
+                                            {% for su in s_utila %}
+                                                <tr class="tr">
+                                                    <td>
+                                                        <input type="text" name="nr_crt[]" class="form-control nr">
+                                                        <input type="hidden" name="su_id[]" value="{{su.id}}">
+                                                    </td>
+                                                    <td>
+                                                        <input type="text" name="room_name[]" value="{{su.room_name}}" class="form-control">
+                                                    </td>
+                                                    <td>
+                                                        <input type="number" name="area[]" value="{{su.area}}" class="form-control usuable_area" step="0.01" required>
+                                                        <input type="hidden" name="is_utila[]" value="1">
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                            <tr>
+                                                <td colspan="2" class="text-center font-weight-bold text-light">Suprafata Utila</td>
+                                                {{const.utila}}
+                                                <td>
+                                                    <input type="number" name="utila" id="id_utila" value="{{const.utila}}" class="form-control">
+                                                </td>
+                                            </tr>
+
+                                            {% for sn in s_nuutila %}
+                                                <tr class="tr">
+                                                    <td>
+                                                        <input type="text" name="nr_crt[]" class="form-control nr">
+                                                        <input type="hidden" name="su_id[]" value="{{sn.id}}">
+                                                    </td>
+                                                    <td>
+                                                        <input type="text" name="room_name[]" value="{{sn.room_name}}" class="form-control">
+                                                    </td>
+                                                    <td>
+                                                        <input type="number" name="area[]" value="{{sn.area}}" class="form-control area" step="0.01" required>
+                                                        <input type="hidden" name="is_utila[]" value="0">
+                                                    </td>
+                                                    <td>
+                                                        <button type="button" class="btn btn-icon btn-round btn-danger btn-sm" data-toggle="tooltip" data-placement="top" title="Remove" onclick="remove_suprafete(this, '{{sn.id}}')"><i class="fa fa-minus"></i></button>
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                            <tr>
+                                                <td>
+                                                    <button type="button" class="btn btn-icon btn-round btn-secondary btn-sm" data-toggle="tooltip" data-placement="top" title="Add More" id="add_more_su">
+                                                        <i class="fa fa-plus"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td colspan="2" class="text-center font-weight-bold text-light">Suprafata Totala</td>
+                                                <td>
+                                                    <input type="number" name="totala" id="id_totala" value="{{const.totala}}" class="form-control">
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    {% else %}
                                     <tbody>
                                         {% load my_filters %}
                                         {% for r in rooms %}
@@ -290,7 +356,7 @@
                                                     </td>
                                                     <td>
                                                         <input type="number" name="area[]" placeholder="0.00" class="form-control usuable_area" step="0.01" required>
-                                                        <input type="hidden" name="is_utila[]" vlaue="1">
+                                                        <input type="hidden" name="is_utila[]" value="1">
                                                     </td>
                                                 </tr>
                                                 {% endfor %}
@@ -304,7 +370,7 @@
                                                     </td>
                                                     <td>
                                                         <input type="number" name="area[]" placeholder="0.00" class="form-control usuable_area" step="0.01" required>
-                                                        <input type="hidden" name="is_utila[]" vlaue="1">
+                                                        <input type="hidden" name="is_utila[]" value="1">
                                                     </td>
                                                 </tr>
                                             {% endif %}
@@ -322,7 +388,7 @@
                                                     </td>
                                                     <td>
                                                         <input type="number" name="area[]" placeholder="0.00" class="form-control usuable_area" step="0.01" required>
-                                                        <input type="hidden" name="is_utila[]" vlaue="1">
+                                                        <input type="hidden" name="is_utila[]" value="1">
                                                     </td>
                                                 </tr>
                                                 {% endfor %}
@@ -336,7 +402,7 @@
                                                     </td>
                                                     <td>
                                                         <input type="number" name="area[]" placeholder="0.00" class="form-control usuable_area" step="0.01" required>
-                                                        <input type="hidden" name="is_utila[]" vlaue="1">
+                                                        <input type="hidden" name="is_utila[]" value="1">
                                                     </td>
                                                 </tr>
                                             {% endif %}
@@ -361,7 +427,7 @@
                                                         </td>
                                                         <td>
                                                             <input type="number" name="area[]" placeholder="0.00" class="form-control area" step="0.01" required>
-                                                            <input type="hidden" name="is_utila[]" vlaue="0">
+                                                            <input type="hidden" name="is_utila[]" value="0">
                                                         </td>
                                                         
                                                         {% if forloop.last %}
@@ -383,7 +449,7 @@
                                                         </td>
                                                         <td>
                                                             <input type="number" name="area[]" placeholder="0.00" class="form-control area" step="0.01" required>
-                                                            <input type="hidden" name="is_utila[]" vlaue="0">
+                                                            <input type="hidden" name="is_utila[]" value="0">
                                                         </td>
                                                         
                                                         {% if forloop.last %}
@@ -412,6 +478,7 @@
                                             </td>
                                         </tr>
                                     </tbody>
+                                    {% endif %}
                                 </table>
                             </div>
                         </div>
@@ -419,7 +486,11 @@
                 </form>
             
                 <div class="card-action">
-                    <button class="btn btn-success" id="submitBtn">{% if 'details' in pre_url %}SAVE{% else %}NEXT{% endif %}</button>
+                    {% if const %}
+                        <button class="btn btn-success" id="submitBtn">Update</button>
+                    {% else %}
+                        <button class="btn btn-success" id="submitBtn">{% if 'details' in pre_url %}SAVE{% else %}NEXT{% endif %}</button>
+                    {% endif %}
                 </div>
             </div>
         </div>
@@ -445,10 +516,31 @@
 
         // add more field 
         $('#add_more').on('click', function() {
-            let tr = '<tr class="tr"><td><input type="text" name="nr_crt[]" class="form-control nr"></td><td><input type="text" name="room_name[]" class="form-control"></td><td><input type="number" name="area[]" placeholder="0.00" class="form-control area" step="0.01" required><input type="hidden" name="is_utila[]" vlaue="0"></td><td><button type="button" class="btn btn-icon btn-round btn-danger btn-sm" data-toggle="tooltip" data-placement="top" title="Remove" onclick="remove(this)"><i class="fa fa-minus"></i></button></td></tr>';
+            let tr = '<tr class="tr"><td><input type="text" name="nr_crt[]" class="form-control nr"></td><td><input type="text" name="room_name[]" class="form-control"></td><td><input type="number" name="area[]" placeholder="0.00" class="form-control area" step="0.01" required><input type="hidden" name="is_utila[]" value="0"></td><td><button type="button" class="btn btn-icon btn-round btn-danger btn-sm" data-toggle="tooltip" data-placement="top" title="Remove" onclick="remove(this)"><i class="fa fa-minus"></i></button></td></tr>';
+            $(this).closest('table').find('tr:last').prev().after(tr);
+        })
+        $('#add_more_su').on('click', function() {
+            let tr = '<tr class="tr"><td><input type="text" name="nr_crt[]" class="form-control nr"><input type="hidden" name="su_id[]" value="0"></td><td><input type="text" name="room_name[]" class="form-control"></td><td><input type="number" name="area[]" placeholder="0.00" class="form-control area" step="0.01" required><input type="hidden" name="is_utila[]" value="0"></td><td><button type="button" class="btn btn-icon btn-round btn-danger btn-sm" data-toggle="tooltip" data-placement="top" title="Remove" onclick="remove(this)"><i class="fa fa-minus"></i></button></td></tr>';
             $(this).closest('table').find('tr:last').prev().after(tr);
         })
         // remove field 
+        function remove_suprafete(event, sid) {
+            let val = Number($(event).parents('tr').find('input[name="area[]"]').val());
+            let totala = Number($('#id_totala').val());
+            totala -= val;
+            $.ajax({
+                url: '{% url "valuation:delete_suprafete" %}',
+                type: 'GET',
+                data: {id: sid},
+                success: function (e) {
+                    if(e.success=='true') {
+                        $('#id_totala').val(totala.toFixed(2))
+                        $(event).parents('tr').remove();
+                    }
+                }
+            });
+        }
+
         function remove (e) {
             let val = Number($(e).parents('tr').find('input[name="area[]"]').val());
             let totala = Number($('#id_totala').val());

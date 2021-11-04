@@ -74,10 +74,16 @@
                             <div class="col-md-12">
                                 <div class="form-group">
                                     <label id="dps_label">Delimitarea pietei specifice <span class="required-label mr-2">*</span><i class="fas fa-pencil-alt text-info" id="edit-dps"></i></label>
-                                    <p class="text-light dps">Piața specifică a proprietății analizate este reprezentată de apartamentele cu {{camara|floatformat:"0"}} camere și suprafețe cuprinse între {{form.area_between}}, situate in zona {{valuation.area.name}}.</p>
-                                    <input type="hidden" name="show_dps" id="show_dps" value="0">
-                                    <textarea name="dps" id="id_dps" rows="3" style="display: none;" class="form-control">Piața specifică a proprietății analizate este reprezentată de apartamentele cu {{camara|floatformat:"0"}} camere și suprafețe cuprinse între (manual number entry) mp si (manual number entry) mp, situate în zona {{valuation.area.name}}
-                                    </textarea>
+                                    {% if analiza.dps %}
+                                        <p class="text-light dps" style="display: none;">Piata specifica a proprietatii analizate este reprezentata de apartamentele cu {{camara|floatformat:"0"}} camere si suprafete cuprinse intre {{form.area_between}}, situate in zona {{valuation.area.name}}.</p>
+                                        <input type="hidden" name="show_dps" id="show_dps" value="1">
+                                        <textarea name="dps" id="id_dps" rows="3" class="form-control">{{analiza.dps}}</textarea>
+                                    {% else %}
+                                        <p class="text-light dps">Piata specifica a proprietatii analizate este reprezentata de apartamentele cu {{camara|floatformat:"0"}} camere si suprafete cuprinse intre {{form.area_between}}, situate in zona {{valuation.area.name}}.</p>
+                                        <input type="hidden" name="show_dps" id="show_dps" value="0">
+                                        <textarea name="dps" id="id_dps" rows="3" style="display: none;" class="form-control">Piata specifica a proprietatii analizate este reprezentata de apartamentele cu {{camara|floatformat:"0"}} camere si suprafete cuprinse intre (manual number entry) mp si (manual number entry) mp, situate in zona {{valuation.area.name}}
+                                        </textarea>
+                                    {% endif %}
                                     <small class="form-text text-danger dps_error"></small>
                                 </div>
                             </div>
@@ -87,28 +93,43 @@
                             <div class="col-md-12">
                                 <div class="form-group">
                                     <label id="ac_label">Analiza cererii <span class="required-label mr-2">*</span><i class="fas fa-pencil-alt text-info" id="edit-ac"></i></label>
-                                    <div class="ac">
-                                        <p class="text-light mb-0">
-                                            Cererea pentru proprietăți de tipul celei analizate s-a observat a fi formată din familii cu un nivel de venituri {{form.zona_type}} 
-                                        </p>
-                                        <p class="text-justify text-light mb-0">
-                                            Populația zonei este formată din persoane cu un nivel mediu și ridicat de educație, ceea ce contribuie la menținerea unui mediu de siguranță și confort al rezidenților. <br>
-                                            Zona în care este situată proprietatea beneficiază de suprafețe acoperite de parcuri și alte amenajări urbanistice destinate petrecerii în condiții optime a timpului liber, ceea ce contribuie la confortul locuitorilor, crescând atractivitatea zonei. De asemenea, apropierea de centre administrative, comerciale, educaționale și de sănătate publică, precum și existența unei rețele eficiente de transport în comun determină o atractivitate ridicată a proprietăților rezidențiale din zonă.
-                                        </p>
-                                    </div>
+                                    {% if analiza.ac %}
+                                        <div class="ac" style="display:none;">
+                                            <p class="text-light mb-0">
+                                                Cererea pentru proprietati de tipul celei analizate s-a observat a fi formata din familii cu un nivel de venituri {{form.zona_type}} 
+                                            </p>
+                                            <p class="text-justify text-light mb-0">
+                                                Populatia zonei este formata din persoane cu un nivel mediu si ridicat de educatie, ceea ce contribuie la mentinerea unui mediu de siguranta si confort al rezidentilor. <br>
+                                                Zona in care este situata proprietatea beneficiaza de suprafete acoperite de parcuri si alte amenajari urbanistice destinate petrecerii in conditii optime a timpului liber, ceea ce contribuie la confortul locuitorilor, crescand atractivitatea zonei. De asemenea, apropierea de centre administrative, comerciale, educationale si de sanatate publica, precum si existenta unei retele eficiente de transport in comun determina o atractivitate ridicata a proprietatilor rezidentiale din zona.
+                                            </p>
+                                        </div>
 
-                                    <input type="hidden" name="show_ac" id="show_ac" value="0">
-                                    <textarea name="ac" rows="9" class="form-control" id="id_ac" style="display: none;">Cererea pentru proprietăți de tipul celei analizate s-a observat a fi formată din familii cu un nivel de venituri [medii, sau sub medie, de vârstă medie/ medii sau peste medie, de varsta medie]&#13;&#10;Populația zonei este formată din persoane cu un nivel mediu și ridicat de educație, ceea ce contribuie la menținerea unui mediu de siguranță și confort al rezidenților.&#13;&#10;Zona în care este situată proprietatea beneficiază de suprafețe acoperite de parcuri și alte amenajări urbanistice destinate petrecerii în condiții optime a timpului liber, ceea ce contribuie la confortul locuitorilor, crescând atractivitatea zonei. De asemenea, apropierea de centre administrative, comerciale, educaționale și de sănătate publică, precum și existența unei rețele eficiente de transport în comun determină o atractivitate ridicată a proprietăților rezidențiale din zonă.
-                                    </textarea>
+                                        <input type="hidden" name="show_ac" id="show_ac" value="1">
+                                        <textarea name="ac" rows="9" class="form-control" id="id_ac">{{analiza.ac}}</textarea>
+                                    {% else %}
+                                        <div class="ac">
+                                            <p class="text-light mb-0">
+                                                Cererea pentru proprietati de tipul celei analizate s-a observat a fi formata din familii cu un nivel de venituri {{form.zona_type}} 
+                                            </p>
+                                            <p class="text-justify text-light mb-0">
+                                                Populatia zonei este formata din persoane cu un nivel mediu si ridicat de educatie, ceea ce contribuie la mentinerea unui mediu de siguranta si confort al rezidentilor. <br>
+                                                Zona in care este situata proprietatea beneficiaza de suprafete acoperite de parcuri si alte amenajari urbanistice destinate petrecerii in conditii optime a timpului liber, ceea ce contribuie la confortul locuitorilor, crescand atractivitatea zonei. De asemenea, apropierea de centre administrative, comerciale, educationale si de sanatate publica, precum si existenta unei retele eficiente de transport in comun determina o atractivitate ridicata a proprietatilor rezidentiale din zona.
+                                            </p>
+                                        </div>
+
+                                        <input type="hidden" name="show_ac" id="show_ac" value="0">
+                                        <textarea name="ac" rows="9" class="form-control" id="id_ac" style="display: none;">Cererea pentru proprietati de tipul celei analizate s-a observat a fi formata din familii cu un nivel de venituri [medii, sau sub medie, de varsta medie/ medii sau peste medie, de varsta medie]&#13;&#10;Populatia zonei este formata din persoane cu un nivel mediu si ridicat de educatie, ceea ce contribuie la mentinerea unui mediu de siguranta si confort al rezidentilor.&#13;&#10;Zona in care este situata proprietatea beneficiaza de suprafete acoperite de parcuri si alte amenajari urbanistice destinate petrecerii in conditii optime a timpului liber, ceea ce contribuie la confortul locuitorilor, crescand atractivitatea zonei. De asemenea, apropierea de centre administrative, comerciale, educationale si de sanatate publica, precum si existenta unei retele eficiente de transport In comun determina o atractivitate ridicata a proprietatilor rezidentiale din zona.
+                                        </textarea>
+                                    {% endif %}
                                     <small class="form-text text-danger ac_error"></small>
                                     
                                     <div class="form-check">
                                         <label class="form-check-label">
-                                            <input class="form-check-input" type="checkbox" name="ac_opt_check">
+                                            <input class="form-check-input" type="checkbox" name="ac_opt_check" {% if analiza.ac_optional %}checked{% endif %}>
                                             <span class="form-check-sign text-light">Add following to the report</span>
                                         </label>
                                     </div>
-                                    <textarea name="ac_opt" rows="3" class="form-control" id="id_ac_opt">Nivelul mai ridicat al veniturilor medii ale populației față de alte zone urbane ale țării, precum și gradul înalt de ocupare a forței de muncă creează premisele menținerii lichidității pieței imobiliare din zonă.</textarea>
+                                    <textarea name="ac_opt" rows="3" class="form-control" id="id_ac_opt">{% if analiza.ac_optional %}{{ analiza.ac_optional }}{% else %}Nivelul mai ridicat al veniturilor medii ale populatiei fata de alte zone urbane ale tarii, precum si gradul inalt de ocupare a fortei de munca creeaza premisele mentinerii lichiditatii pietei imobiliare din zona.{% endif %}</textarea>
                                 </div>
                             </div>
                         </div>
@@ -117,12 +138,21 @@
                             <div class="col-md-12">
                                 <div class="form-group">
                                     <label id="af_label">Analiza furnizarii <span class="required-label mr-2">*</span><i class="fas fa-pencil-alt text-info" id="edit-af"></i></label>
-                                    <p class="text-justify text-light af">
-                                        În zona considerată și pentru segmentul de proprietăți de tipul celei analizate se remarcă o densitate a constructiilor {{form.const_density}}, motiv pentru care activitatea de investiții imobiliare este moderată în zonă. <br>
-                                        În acest context, pe piață sunt listate un număr mediu de proprietăți similare la vânzare, majoritatea imobilelor existente în zonă fiind construite {{form.ebby}} și respectă standardele și normativele în construcții specifice perioadei respective, motiv pentru care concurența pentru proprietatea considerată poate fi apreciată ca fiind una {{form.prop_size}}. Acest context face ca perioada de expunere pe piața a unei proprietăți similare să fie medie de {{form.exposure}}.
-                                    </p>
-                                    <input type="hidden" name="show_af" id="show_af" value="0">
-                                    <textarea name="af" id="id_af" rows="6" class="form-control" style="display: none;">În zona considerată și pentru segmentul de proprietăți de tipul celei analizate se remarcă o densitate a constructiilor [mare/medie], motiv pentru care activitatea de investiții imobiliare este moderată în zonă.&#13;&#10;În acest context, pe piață sunt listate un număr mediu de proprietăți similare la vânzare, majoritatea imobilelor existente în zonă fiind construite [manual text field] și respectă standardele și normativele în construcții specifice perioadei respective, motiv pentru care concurența pentru proprietatea considerată poate fi apreciată ca fiind una [medie/mare/mica]. Acest context face ca perioada de expunere pe piața a unei proprietăți similare să fie medie de [6-12 luni/3-9 luni/peste 12 luni].</textarea>
+                                    {% if analiza.af %}    
+                                        <p class="text-justify text-light af" style="display: none;">
+                                            In zona considerata si pentru segmentul de proprietati de tipul celei analizate se remarca o densitate a constructiilor {{form.const_density}}, motiv pentru care activitatea de investitii imobiliare este moderata in zona. <br>
+                                            In acest context, pe piata sunt listate un numar mediu de proprietati similare la vanzare, majoritatea imobilelor existente In zona fiind construite {{form.ebby}} si respecta standardele si normativele In constructii specifice perioadei respective, motiv pentru care concurenta pentru proprietatea considerata poate fi apreciata ca fiind una {{form.prop_size}}. Acest context face ca perioada de expunere pe piata a unei proprietati similare sa fie medie de {{form.exposure}}.
+                                        </p>
+                                        <input type="hidden" name="show_af" id="show_af" value="1">
+                                        <textarea name="af" id="id_af" rows="6" class="form-control">{{analiza.af}}</textarea>
+                                    {% else %}
+                                        <p class="text-justify text-light af">
+                                            In zona considerata si pentru segmentul de proprietati de tipul celei analizate se remarca o densitate a constructiilor {{form.const_density}}, motiv pentru care activitatea de investitii imobiliare este moderata In zona. <br>
+                                            In acest context, pe piata sunt listate un numar mediu de proprietati similare la vanzare, majoritatea imobilelor existente In zona fiind construite {{form.ebby}} si respecta standardele si normativele In constructii specifice perioadei respective, motiv pentru care concurenta pentru proprietatea considerata poate fi apreciata ca fiind una {{form.prop_size}}. Acest context face ca perioada de expunere pe piata a unei proprietati similare sa fie medie de {{form.exposure}}.
+                                        </p>
+                                        <input type="hidden" name="show_af" id="show_af" value="0">
+                                        <textarea name="af" id="id_af" rows="6" class="form-control" style="display: none;">In zona considerata si pentru segmentul de proprietati de tipul celei analizate se remarca o densitate a constructiilor [mare/medie], motiv pentru care activitatea de investitii imobiliare este moderata In zona.&#13;&#10;In acest context, pe piata sunt listate un numar mediu de proprietati similare la vanzare, majoritatea imobilelor existente In zona fiind construite [manual text field] si respecta standardele si normativele In constructii specifice perioadei respective, motiv pentru care concurenta pentru proprietatea considerata poate fi apreciata ca fiind una [medie/mare/mica]. Acest context face ca perioada de expunere pe piata a unei proprietati similare sa fie medie de [6-12 luni/3-9 luni/peste 12 luni].</textarea>
+                                    {% endif %}
                                     <small class="form-text text-danger af_error"></small>
                                 </div>
                             </div>
@@ -132,13 +162,23 @@
                             <div class="col-md-12">
                                 <div class="form-group">
                                     <label id="spi_label">Analiza interactiunii dintre cerere si oferta <span class="required-label mr-2">*</span><i class="fas fa-pencil-alt text-info" id="edit-spi"></i></label>
-                                    <p class="text-justify text-light spi">
-                                        Având în vedere cele prezentate mai sus, apreciem că piața locală pentru segmentul de proprietăți similare celei analizate este caracterizată de o lichiditate {{form.liquidity}}, cu un număr {{form.transactions_nr}} de tranzacții și perioade relativ {{form.exposure_period}} de expunere a proprietăților pe piață. <br>
-                                        Analiza cererii și ofertei efectuată mai sus arată că pentru imobile de tipul celui analizat, piața este una activă, atractivitatea pentru cumpăratori fiind peste medie, în condițiile unei oferte în echilibru ceea ce conduce la un relativ echilibru între cerere și ofertă și creează premisele vânzării într-o perioadă relativ scurtă a proprietăților similare. Menționăm că situația macroeconomică de ansamblu conduce spre previziuni moderat pesimiste pentru perioada următoare, motiv pentru care este de așteptat ca activitatea de tranzacții imobiliare să se mențină la niveluri sub cele ale anului 2019 și pe acest segment specific de piață.
-                                    </p>
+                                    {% if analiza.spi %}
+                                        <p class="text-justify text-light spi" style="display: none;">
+                                            Avand In vedere cele prezentate mai sus, apreciem ca piata locala pentru segmentul de proprietati similare celei analizate este caracterizata de o lichiditate {{form.liquidity}}, cu un numar {{form.transactions_nr}} de tranzactii si perioade relativ {{form.exposure_period}} de expunere a proprietatilor pe piata. <br>
+                                            Analiza cererii si ofertei efectuata mai sus arata ca pentru imobile de tipul celui analizat, piata este una activa, atractivitatea pentru cumparatori fiind peste medie, In conditiile unei oferte In echilibru ceea ce conduce la un relativ echilibru Intre cerere si oferta si creeaza premisele vanzarii Intr-o perioada relativ scurta a proprietatilor similare. Mentionam ca situatia macroeconomica de ansamblu conduce spre previziuni moderat pesimiste pentru perioada urmatoare, motiv pentru care este de asteptat ca activitatea de tranzactii imobiliare sa se mentina la niveluri sub cele ale anului 2019 si pe acest segment specific de piata.
+                                        </p>
 
-                                    <input type="hidden" name="show_spi" id="show_spi" value="0">
-                                    <textarea name="spi" id="id_spi" rows="8" class="form-control" style="display: none;">Având în vedere cele prezentate mai sus, apreciem că piața locală pentru segmentul de proprietăți similare celei analizate este caracterizată de o lichiditate [bună/medie/slaba], cu un număr [mediu/mare/redus] de tranzacții și perioade relativ [scurte/lungi] de expunere a proprietăților pe piață.&#13;&#10;Analiza cererii și ofertei efectuată mai sus arată că pentru imobile de tipul celui analizat, piața este una activă, atractivitatea pentru cumpăratori fiind peste medie, în condițiile unei oferte în echilibru ceea ce conduce la un relativ echilibru între cerere și ofertă și creează premisele vânzării într-o perioadă relativ scurtă a proprietăților similare. Menționăm că situația macroeconomică de ansamblu conduce spre previziuni moderat pesimiste pentru perioada următoare, motiv pentru care este de așteptat ca activitatea de tranzacții imobiliare să se mențină la niveluri sub cele ale anului 2019 și pe acest segment specific de piață.</textarea>
+                                        <input type="hidden" name="show_spi" id="show_spi" value="1">
+                                        <textarea name="spi" id="id_spi" rows="8" class="form-control">{{analiza.spi}}</textarea>
+                                    {% else %}
+                                        <p class="text-justify text-light spi">
+                                            Avand In vedere cele prezentate mai sus, apreciem ca piata locala pentru segmentul de proprietati similare celei analizate este caracterizata de o lichiditate {{form.liquidity}}, cu un numar {{form.transactions_nr}} de tranzactii si perioade relativ {{form.exposure_period}} de expunere a proprietatilor pe piata. <br>
+                                            Analiza cererii si ofertei efectuata mai sus arata ca pentru imobile de tipul celui analizat, piata este una activa, atractivitatea pentru cumparatori fiind peste medie, In conditiile unei oferte In echilibru ceea ce conduce la un relativ echilibru Intre cerere si oferta si creeaza premisele vanzarii Intr-o perioada relativ scurta a proprietatilor similare. Mentionam ca situatia macroeconomica de ansamblu conduce spre previziuni moderat pesimiste pentru perioada urmatoare, motiv pentru care este de asteptat ca activitatea de tranzactii imobiliare sa se mentina la niveluri sub cele ale anului 2019 si pe acest segment specific de piata.
+                                        </p>
+
+                                        <input type="hidden" name="show_spi" id="show_spi" value="0">
+                                        <textarea name="spi" id="id_spi" rows="8" class="form-control" style="display: none;">Avand In vedere cele prezentate mai sus, apreciem ca piata locala pentru segmentul de proprietati similare celei analizate este caracterizata de o lichiditate [buna/medie/slaba], cu un numar [mediu/mare/redus] de tranzactii si perioade relativ [scurte/lungi] de expunere a proprietatilor pe piata.&#13;&#10;Analiza cererii si ofertei efectuata mai sus arata ca pentru imobile de tipul celui analizat, piata este una activa, atractivitatea pentru cumparatori fiind peste medie, In conditiile unei oferte In echilibru ceea ce conduce la un relativ echilibru Intre cerere si oferta si creeaza premisele vanzarii Intr-o perioada relativ scurta a proprietatilor similare. Mentionam ca situatia macroeconomica de ansamblu conduce spre previziuni moderat pesimiste pentru perioada urmatoare, motiv pentru care este de asteptat ca activitatea de tranzactii imobiliare sa se mentina la niveluri sub cele ale anului 2019 si pe acest segment specific de piata.</textarea>
+                                    {% endif %}
                                     <small class="form-text text-danger spi_error"></small>
                                 </div>
                             </div>
@@ -148,12 +188,21 @@
                             <div class="col-md-12">
                                 <div class="form-group">
                                     <label id="forecast_label">Previziunea absorbtiei proprietatii subiect in piata <span class="required-label mr-2">*</span><i class="fas fa-pencil-alt text-info" id="edit-forecast"></i></label>
-                                    <p class="text-justify text-light forecast">
-                                        Din punctul de vedere al gradului de absorbție a proprietăților de tipul celor analizate, având în vedere elementele expuse mai sus apreciem că proprietatea, având în vedere caracteristicile sale constructive și de localizare prezintă un grad ridicat de absorbție, cu o perioada de expunere pe piață de <span id="forcast_expo">3-9 luni</span>
-                                    </p>
+                                    {% if analiza.forecast %}
+                                        <p class="text-justify text-light forecast" style="display: none;">
+                                            Din punctul de vedere al gradului de absorbtie a proprietatilor de tipul celor analizate, avand In vedere elementele expuse mai sus apreciem ca proprietatea, avand In vedere caracteristicile sale constructive si de localizare prezinta un grad ridicat de absorbtie, cu o perioada de expunere pe piata de <span id="forcast_expo">3-9 luni</span>
+                                        </p>
 
-                                    <input type="hidden" name="show_forecast" id="show_forecast" value="0">
-                                    <textarea name="forecast" id="id_forecast" rows="3" class="form-control" style="display: none;">Din punctul de vedere al gradului de absorbție a proprietăților de tipul celor analizate, având în vedere elementele expuse mai sus apreciem că proprietatea, având în vedere caracteristicile sale constructive și de localizare prezintă un grad ridicat de absorbție, cu o perioada de expunere pe piață de [6-12 luni/3-9 luni/peste 12 luni]</textarea>
+                                        <input type="hidden" name="show_forecast" id="show_forecast" value="1">
+                                        <textarea name="forecast" id="id_forecast" rows="3" class="form-control">{{ analiza.forecast }}</textarea>
+                                    {% else %}
+                                        <p class="text-justify text-light forecast">
+                                            Din punctul de vedere al gradului de absorbtie a proprietatilor de tipul celor analizate, avand In vedere elementele expuse mai sus apreciem ca proprietatea, avand In vedere caracteristicile sale constructive si de localizare prezinta un grad ridicat de absorbtie, cu o perioada de expunere pe piata de <span id="forcast_expo">3-9 luni</span>
+                                        </p>
+
+                                        <input type="hidden" name="show_forecast" id="show_forecast" value="0">
+                                        <textarea name="forecast" id="id_forecast" rows="3" class="form-control" style="display: none;">Din punctul de vedere al gradului de absorbtie a proprietatilor de tipul celor analizate, avand In vedere elementele expuse mai sus apreciem ca proprietatea, avand In vedere caracteristicile sale constructive si de localizare prezinta un grad ridicat de absorbtie, cu o perioada de expunere pe piata de [6-12 luni/3-9 luni/peste 12 luni]</textarea>
+                                    {% endif %}
                                     <small class="form-text text-danger forecast_error"></small>
                                 </div>
                             </div>
@@ -175,7 +224,7 @@
                             <div class="col-md-12">
                                 <div class="form-group">
                                     <label id="risk_label">Riscul de garantie <span class="required-label">*</span></label>
-                                    <textarea name="guarantee_risk" id="id_guarantee_risk" rows="10" class="form-control">Riscul de garanție este un risc asociat riscului de credit, fiind reprezentat de posibilitatea apariției unor dificultăți legate de valorificarea bunurilor aduse ca garanție în momentul acordării creditului, în situația în care cel care împrumuta nu rambursează creditul și nu platește dobânzile aferente. Evaluarea riscului de garanție se face în functie de valoarea garanțiilor și de rapiditatea posibilității de valorificare a acestora.&#13;&#10;În acest moment, pe piața imobiliară din zonă, sunt valabile la vânzare mai multe oferte cu proprietăți similare. În condițiile actuale de piață (fluctuații economice importante, criza economică și sanitară la nivel mondial), numărul tranzacțiilor în acest sector este de asteptat sa scadă, iar perioadele de marketabilitate a activelor imobiliare să crească.&#13;&#10;Astfel, luând în considerare localizarea și caracteristicile imobilului analizat, apreciem că riscul de garantie este redus, în comparație cu cel al altor clase de active.</textarea>
+                                    <textarea name="guarantee_risk" id="id_guarantee_risk" rows="10" class="form-control">{% if analiza.guarantee_risk %}{{ analiza.guarantee_risk }}{% else %}Riscul de garantie este un risc asociat riscului de credit, fiind reprezentat de posibilitatea aparitiei unor dificultati legate de valorificarea bunurilor aduse ca garantie In momentul acordarii creditului, In situatia In care cel care Imprumuta nu ramburseaza creditul si nu plateste dobanzile aferente. Evaluarea riscului de garantie se face In functie de valoarea garantiilor si de rapiditatea posibilitatii de valorificare a acestora.&#13;&#10;In acest moment, pe piata imobiliara din zona, sunt valabile la vanzare mai multe oferte cu proprietati similare. In conditiile actuale de piata (fluctuatii economice importante, criza economica si sanitara la nivel mondial), numarul tranzactiilor In acest sector este de asteptat sa scada, iar perioadele de marketabilitate a activelor imobiliare sa creasca.&#13;&#10;Astfel, luand In considerare localizarea si caracteristicile imobilului analizat, apreciem ca riscul de garantie este redus, In comparatie cu cel al altor clase de active.{% endif %}</textarea>
                                     <small class="form-text text-danger risk_error"></small>
                                 </div>
                             </div>
@@ -185,7 +234,11 @@
                 </form>
 
                 <div class="card-action">
-                    <button class="btn btn-success" id="next">{% if 'details' in pre_url %}SAVE{% else %}NEXT{% endif %}</button>
+                    {% if analiza %}
+                        <button class="btn btn-success" id="next">Update</button>
+                    {% else %}
+                        <button class="btn btn-success" id="next">{% if 'details' in pre_url %}SAVE{% else %}NEXT{% endif %}</button>
+                    {% endif %}
                 </div>
             </div>
         </div>

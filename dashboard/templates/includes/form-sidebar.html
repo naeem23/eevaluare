@@ -36,9 +36,15 @@
 						</li>
 						
 						<li class="nav-item {% if 'comparable' in segment %} active {% endif %}">
+							{% if comp_table %}
+							<a href="{% if valuation %}{% url 'valuation:add_comparable' id=valuation.id %}{% endif %}">
+								<p>Comparable</p>
+							</a>
+							{% else %}
 							<a href="{% if valuation %}{% url 'valuation:select_comparable' id=valuation.id %}{% endif %}">
 								<p>Comparable</p>
 							</a>
+							{% endif %}
 						</li>
 
 						<li class="nav-item {% if 'anexa' in segment %} active {% endif %}">

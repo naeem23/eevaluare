@@ -21,4 +21,7 @@ urlpatterns = [
     path('api/add-source/', views.add_source, name='add_source'),
     path('api/reorder-photos/', views.reorder_photos, name='reorder_photos'),
     path('api/delete-photos/', views.delete_photos, name='delete_photos'),
+    path('api/delete-suprafete/', views.delete_suprafete, name='delete_suprafete'),
+    path('api/update-sources/', views.update_sources, name='update_sources'),
+    path('api/delete-sources/', views.delete_source, name='delete_source'),
 ]

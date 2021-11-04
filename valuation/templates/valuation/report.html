@@ -92,7 +92,7 @@
             <p class="ref_no">EPI-{{valuation.reference_no}}-{{valuation.inspection_date|date:"dmy"}}</p>
 
             <h3 style="margin-top: 40px; font-size: 16px;">REPORT DATE</h3>
-            <p>{{valuation.valuation_date|date:"F d, Y"}}</p> 
+            <p>{{valuation.report_date|date:"F d, Y"}}</p> 
 
             <h3 style="margin-top: 20px; font-size: 16px;">CARTE</h3>
             <p>{{valuation.nume_client}}</p>
@@ -102,17 +102,17 @@
                 {% if valuation.title %}
                     {{ valuation.title }}
                 {% else %}
-                    {{ valuation.property_type.type }} cu {{camere.camere|floatformat:0}} si dependinte
+                    {{ valuation.property_type.type }} cu {{camara.camara|floatformat:0}} si dependinte
                 {% endif %}
             </p>    
             <p>Adresa: {{valuation.address}}, {{valuation.city.name}}, {{valuation.area.name}}</p>  
 
             <h3 style="margin-top: 20px; font-size: 16px;">PROPERTY VALUE</h3>
-            <p>
+            <p style="font-size: 14px; font-weight: bold;">
                 {% if summary.amav %}
-                {{summary.amav}} EUR
+                {{summary.amav|floatformat:'0'}} EUR
                 {% elif summary.aiav %}
-                {{summary.aiav}} EUR
+                {{summary.aiav|floatformat:'0'}} EUR
                 {% endif %}
             </p>  
 
@@ -198,7 +198,7 @@
                 {% if pdata.sub_identi %}
                     {{ pdata.sub_identi }}
                 {% else %}
-                    Dreptul deplin de proprietate asupra apartamentului cu nr. {{valuation.apartment_no}}, compus din {{camere.camere|floatformat:"0"}} camere si dependinte cu o suprafata utila de {{ const.utila }} mp si trei balcoane cu suprafata lor totala de {{ const.totala|sub:const.utila }}, rezultand suprafata utila totala de {{ const.totala }} mp. Apartamentul are numarul cadastral {{pdata.cadastral_no}} si este intabulat in Cartea Funciara numarul {{pdata.land_book_no}}.
+                    Dreptul deplin de proprietate asupra apartamentului cu nr. {{valuation.apartment_no}}, compus din {{camara.camara|floatformat:"0"}} camere si dependinte cu o suprafata utila de {{ const.utila }} mp si trei balcoane cu suprafata lor totala de {{ const.totala|sub:const.utila }}, rezultand suprafata utila totala de {{ const.totala }} mp. Apartamentul are numarul cadastral {{pdata.cadastral_no}} si este intabulat in Cartea Funciara numarul {{pdata.land_book_no}}.
                 {% endif %}
             </p>
             <br>
@@ -206,7 +206,7 @@
                 {% if valuation.title %}
                     {{ valuation.title }}
                 {% else %}
-                    {{ valuation.property_type.type }} cu {{camere.camere|floatformat:0}} si dependinte
+                    {{ valuation.property_type.type }} cu {{camara.camara|floatformat:0}} si dependinte
                 {% endif %}
             </p>
             <p style="margin-bottom: 10px;"><b>Adresa:</b> {{valuation.address}}, {{valuation.city.name}}, {{valuation.area.name}}</p>
@@ -215,7 +215,7 @@
             <p style="margin-bottom: 10px;"><b>Proprietar:</b> {{valuation.owner}}</p>
             <p><b>Scopul Evaluarii:</b> {{ summary.purpose.purpose }}</p>
             <br>
-            <h2 style="font-size: 18px; text-align: center;">Valoarea de {% if summary.amav %}piata a proprietatii: {{summary.amav}} Euro{% else %}venit a proprietatii: {{summary.aiav}} Euro{% endif %}</h2>
+            <h2 style="font-size: 18px; text-align: center;">Valoarea de {% if summary.amav %}piata a proprietatii: {{summary.amav|floatformat:'0'}} Euro{% else %}venit a proprietatii: {{summary.aiav|floatformat:'0'}} Euro{% endif %}</h2>
             <br> 
             <table>
                 <tr>
@@ -349,7 +349,7 @@
             <p style="margin-bottom: 10px;text-align: justify;">Rezultatul evaluarii se va raporta in moneda europeana (Euro) si in moneda nationala (Leu), cursul de schimb intre cele doua monede fiind cel raportat de Banca Nationala a Romaniei pentru data evaluarii.</p>
 
             <p style="margin-bottom: 10px; text-indent: 3rem; font-weight: bold;">6. Identificarea proprietatii imobiliare subiect al evaluarii</p>
-            <p style="margin-bottom: 10px;text-align: justify;">{% if pdata.sub_identi %}{{ pdata.sub_identi }}{% else %}Dreptul deplin de proprietate asupra apartamentului cu nr. {{valuation.apartment_no}}, compus din {{camere.camere|floatformat:"0"}} camere si dependinte cu o suprafata utila de {{ const.utila }} mp si trei balcoane cu suprafata lor totala de {{ const.totala|sub:const.utila }}, rezultand suprafata utila totala de {{ const.totala }} mp. Apartamentul are numarul cadastral {{pdata.cadastral_no}} si este intabulat in Cartea Funciara numarul {{pdata.land_book_no}}.{% endif %}</p>
+            <p style="margin-bottom: 10px;text-align: justify;">{% if pdata.sub_identi %}{{ pdata.sub_identi }}{% else %}Dreptul deplin de proprietate asupra apartamentului cu nr. {{valuation.apartment_no}}, compus din {{camara.camara|floatformat:"0"}} camere si dependinte cu o suprafata utila de {{ const.utila }} mp si trei balcoane cu suprafata lor totala de {{ const.totala|sub:const.utila }}, rezultand suprafata utila totala de {{ const.totala }} mp. Apartamentul are numarul cadastral {{pdata.cadastral_no}} si este intabulat in Cartea Funciara numarul {{pdata.land_book_no}}.{% endif %}</p>
 
             <p style="margin-bottom: 10px; text-indent: 3rem; font-weight: bold;">7. Tipul valorii utilizate</p>
             <p style="margin-bottom: 10px;text-align: justify;">
@@ -538,21 +538,21 @@
             <p style="margin-bottom: 10px;text-align: justify;">Proprietatea este amplasta pe {{valuation.address}} din orasul {{valuation.city.name}}, in zona {{valuation.area.name}}, zona {{ valuation.urbana }} {{ valuation.locatie }} a localitatii.</p>
             
             <p style="margin-bottom: 10px; text-indent: 3rem; font-weight: bold;">2. Zona</p>
-            <p style="margin-bottom: 10px;"></p>
+            <p style="margin-bottom: 10px;">{{pdata.zona|linebreaks}}</p>
 
             <p style="margin-bottom: 10px; text-indent: 3rem; font-weight: bold;">3. Informatii specifice</p>
             <div>
                 <img src="http://127.0.0.1:8000/static/dashboard/location.png" alt="Location" width="100%" height="auto">
             </div><br>  
-            <p style="margin: 10px 0;text-align: justify;">Proprietatea are caracter rezidential este amplasata in zona {{ valuation.urbana }} {{ valuation.locatie }} din orasul {{valuation.city.name}}, pe {{valuation.address}}, strada asfaltata cu {{ pdata.strada.type }} pe sens. Strada de acces are caracter public.</p>
+            <p style="margin: 10px 0;text-align: justify;">Proprietatea are caracter rezidential este amplasata in zona {{ valuation.locatie }} din orasul {{valuation.city.name}}, pe {{valuation.address}}, strada asfaltata cu {{ pdata.strada.type }} pe sens. Strada de acces are caracter public.</p>
 
             <p style="margin-bottom: 10px; text-indent: 3rem; font-weight: bold;">Transportul public</p>
             <p style="margin-bottom: 10px;">Proprietatea este conectata la mijloacele de transport in comun: 
-                {% for p in pdata.pt|speciallist %}
+                {% for p in pdata.pt|get_transport %}
                     {% if forloop.last %}
-                        {{p}}.
+                        {{p.name}}.
                     {% else%}
-                        {{p}},
+                        {{p.name}},
                     {% endif %}
                 {% endfor %}
             </p>
@@ -562,7 +562,7 @@
             <p style="margin-bottom: 10px; text-indent: 3rem; font-weight: bold;">4. Puncte de interes</p>
             <p>Locatia beneficiaza de invecinarea cu urmatoarele puncte de interes:</p>
             <table>
-                {% for p in pdata.poi|covertlist %}
+                {% for p in pdata.poi|get_poi %}
                 <tr>
                     <td width="5%" style="text-align: center;">-</td>
                     <td>{{p}}</td>
@@ -571,13 +571,13 @@
             </table>
 
             <p style="margin: 10px 0; text-indent: 3rem; font-weight: bold;">5. Descrierea si adresa</p>
-            <p style="text-align: justify;">{% if pdata.sub_identi %}{{ pdata.sub_identi }}{% else %}Dreptul deplin de proprietate asupra apartamentului cu nr. {{valuation.apartment_no}}, compus din {{camere.camere|floatformat:"0"}} camere si dependinte cu o suprafata utila de {{ const.utila }} mp si trei balcoane cu suprafata lor totala de {{ const.totala|sub:const.utila }}, rezultand suprafata utila totala de {{ const.totala }} mp. Apartamentul are numarul cadastral {{pdata.cadastral_no}} si este intabulat in Cartea Funciara numarul {{pdata.land_book_no}}{% endif %}.</p>
+            <p style="text-align: justify;">{% if pdata.sub_identi %}{{ pdata.sub_identi }}{% else %}Dreptul deplin de proprietate asupra apartamentului cu nr. {{valuation.apartment_no}}, compus din {{camara.camara|floatformat:"0"}} camere si dependinte cu o suprafata utila de {{ const.utila }} mp si trei balcoane cu suprafata lor totala de {{ const.totala|sub:const.utila }}, rezultand suprafata utila totala de {{ const.totala }} mp. Apartamentul are numarul cadastral {{pdata.cadastral_no}} si este intabulat in Cartea Funciara numarul {{pdata.land_book_no}}{% endif %}.</p>
             <p style="margin-top: 5px;">Adresa proprietatii este</p>
             <p style="margin-bottom: 10px;">{{valuation.address}}, {{valuation.city.name}}, {{valuation.area.name}}</p>
- 
+
             <p style="margin-bottom: 10px; text-indent: 3rem; font-weight: bold;">6. Proprietar si situatia juridica</p>
             <p style="margin-bottom: 5px;text-align: justify;">
-                Se evalueaza dreptul absolut de proprietate asupra imobilului descris mai sus. Proprietatea este detinuta de <i>Pauna Valentin si Pauna Gabriela-Monica</i> in baza:
+                Se evalueaza dreptul absolut de proprietate asupra imobilului descris mai sus. Proprietatea este detinuta de Pauna Valentin si Pauna Gabriela-Monica in baza:
             </p>
             <div style="margin-bottom: 10px;">
                 {% for src in source %}
@@ -587,23 +587,23 @@
                 {% endfor %}
             </div>
 
-            <p style="margin-bottom: 10px; text-indent: 3rem; font-weight: bold;">7. Date privind documentatia cadastrala</p>
+            <p style="margin: 10px 0; text-indent: 3rem; font-weight: bold;">7. Date privind documentatia cadastrala</p>
             <p style="margin-bottom: 10px;text-align: justify;">Apartamentul are numarul cadastral {{ pdata.cadastral_no }} si este intabulat in Cartea Funciara numarul {{ pdata.land_book_no }} {{ pdata.uat }}.</p>
 
             <p style="margin-bottom: 10px; text-indent: 3rem; font-weight: bold;">8. Sarcini</p>
             <p style="margin-bottom: 10px;text-align: justify;">Conform Extrasului de Carte Funciara pus la dispozitie, proprietatea {{ pdata.get_charges_display }} {% if pdata.charges == 'yes' %}de sarcini in favoarea {{ pdata.sarcini }}{% else %}de sarcini{% endif %}. La data evaluarii proprietatea este considerata libera de sarcini. </p>
 
             <p style="margin-bottom: 10px; text-indent: 3rem; font-weight: bold;">9. Utilizarea actuala</p>
-            <p style="margin-bottom: 10px;text-align: justify;">La data inspectiei proprietatea avea utilizare rezidentiala si era {{ pdata.get_current_use_display }} de proprietar.</p>
+            <p style="margin-bottom: 10px;text-align: justify;">La data inspectiei proprietatea avea utilizare rezidentiala si era {{ pdata.get_current_use_display|lower }} de proprietar.</p>
             
             <p style="margin-bottom: 10px; text-indent: 3rem; font-weight: bold;">10. Identificare</p>
-            <p style="margin-bottom: 10px;text-align: justify;"></p>
+            <p style="margin-bottom: 10px;text-align: justify;">Indentificarea imobilului s-a realizat pe baza documentelor puse la dispozitie, cu ajutorul {{pdata.identification|get_identification}}</p>
             
             <p style="margin-bottom: 10px; text-indent: 3rem; font-weight: bold;">11. Acces</p>
-            <p style="margin-bottom: 10px;text-align: justify;"></p> 
+            <p style="margin-bottom: 10px;text-align: justify;">Din punct de vedere juridic accesul la proprietate pietonal si auto se face {{pdata.access}}. Imobilul se afla in zona {{valuation.locatie}} a intravilanului munincipiului Bucuresti, fiind reprezentat de un bloc cu regim de inaltime {{valuation.height}}. Apartamentului ii revin cote din partile comune si dependintele imobilului conform extrasului de carte funciara prezentat evaluatorului.</p> 
 
             <p style="margin-bottom: 10px; text-indent: 3rem; font-weight: bold;">12. Constructia</p>
-            <p style="margin-bottom: 5px;">Conform inspectiei / certificatului de performanta energetica, constructia are un regim de inaltime {{ valuation.height }} si a fost edificata in anul {{ valuation.construction_year }}</p>
+            <p style="margin-bottom: 5px;">{% if const.conform_text %}{{const.conform_text}}{% else %}Conform {{const.conform}}, constructia are un regim de inaltime {{ valuation.height }} si a fost edificata in anul {{ valuation.construction_year }}{% endif %}</p>
             <p style="margin-bottom: 5px;"><b>Structura</b> – {{ const.structure.type }}</p>
             <p style="margin-bottom: 5px;"><b>Fundatii</b> – {{ const.foundation.type }}</p>
             <p style="margin-bottom: 5px;"><b>Inchideri</b> – {{ const.closure.type }}</p>
@@ -611,12 +611,12 @@
             <p style="margin-bottom: 15px;"><b>Acoperis</b> – {{ const.roof.type }}</p>
 
             <p style="margin-bottom: 5px; font-weight: bold;">Finisajele interioare sunt medii si constau in:</p>
-            <p style="margin-bottom: 5px;"><b>Pardoseli</b> – {{const.pardoseli}}</p>
-            <p style="margin-bottom: 5px;"><b>Pereti</b> – {{ const.walls }}</p>
+            <p style="margin-bottom: 5px;"><b>Pardoseli</b> – {{const.pardoseli|linebreaks}}</p>
+            <p style="margin-bottom: 5px;"><b>Pereti</b> – {{ const.walls|linebreaks }}</p>
             <p style="margin-bottom: 5px;"><b>Tamplaria interioara</b> – {{ const.interior_carpentry }}</p>
             <p style="margin-bottom: 5px;"><b>Plafonul</b> – {{ const.ceiling }}</p>
-            <p style="margin-bottom: 5px;"><b>Finisaje exterioare</b> – {{ const.exterior_finishes }}</p>
-            <p style="margin-bottom: 15px;"><b>Tamplarie exterioara</b> – {{ const.exterior_carpentry }}</p>
+            <p style="margin-bottom: 5px;"><b>Finisaje exterioare</b> – {{ const.exterior_finishes|linebreaks }}</p>
+            <p style="margin-bottom: 15px;"><b>Tamplarie exterioara</b> – {{ const.exterior_carpentry|linebreaks }}</p>
             <p><b>Bransamente</b> – Constructia este bransata la urmatoarele utilitati:</p>
             <table width="30%">
             {% for u in const.utilities.all %}
@@ -630,7 +630,7 @@
             <p style="margin-top: 10px;"><b>Incalzirea</b> - Incalzirea se realizeaza cu ajutorul caloriferelor conectate la <i>centrala termica a blocului</i>.</p>
             <p><b>Dotari suplimentare:</b> <i>update this part</i></p>
 
-            <p style="margin: 10px 0;text-align: justify;"><b>Suprafete</b> - Urmatoarele suprafete au fost determinate utilizand documentatia pusa la dispozitie, respectiv extras de carte funciara si releveul avizat. Determinarea suprafetelor luate in calcul in evaluare s-a facut pe baza suprafetelor masurate, conform paragrafului 23 din GEV 630:</p>
+            <p style="margin: 10px 0;text-align: justify;"><b>Suprafete</b> - {{const.suprafete|linebreaks}}</p>
             <table border="1" width="60%">
                 <tr valign="middel">
                     <th style="padding-top: 5px;">Nr.crt.</th>
@@ -651,7 +651,7 @@
                     <td style="text-align: center;padding-top: 5px;font-weight: bold;">{{ const.utila }}</td>
                 </tr>
                 {% for s in suprafete %}
-                    {% if s.is_utila %}
+                    {% if not s.is_utila %}
                     <tr valign="middel">
                         <td style="text-align: center;padding-top: 5px;">{{ forloop.counter }}</td>
                         <td style="text-align: center;padding-top: 5px;">{{ s.room_name }}</td>
@@ -665,10 +665,10 @@
                 </tr>
             </table>
             <br>
-            <p style="margin: 10px 0;text-align: justify;"><b>Mentiuni:</b>{{ const.comments }}</p>
+            <p style="margin: 10px 0;text-align: justify;"><b>Mentiuni:</b>{{ const.comments|linebreaks }}</p>
 
             <p style="margin-bottom: 10px; text-indent: 3rem; font-weight: bold;">13. Istoricul proprietatii subiect</p>
-            <p style="margin-bottom: 10px;text-align: justify;">{{ pdata.history }}</p>
+            <p style="margin-bottom: 10px;text-align: justify;">{{ pdata.history|linebreaks }}</p>
         </div>
 
         <div>
@@ -697,34 +697,45 @@
             <p style="text-align: justify;margin-bottom: 10px">Avand in vedere elementele precizate mai sus, care contureaza peisajul unei piete imobiliare cu un nivel de incertitudine neobisnuit de ridicat, evaluatorul avertizeaza asupra posibilitatii ca pe termen scurt si mediu sa se inregistreze o scadere semnificativa a lichiditatii si o crestere corespunzatoare a perioadelor de marketabilitate pe piata imobiliara, cu efect in afectarea valorii de executare a garantiilor, in special pe termen scurt.</p>
 
             <p style="margin-bottom: 10px;font-weight: bold;">Delimitarea pietei specifice</p>
-            <p style="margin-bottom: 10px;text-align: justify;">{% if dps %}{{ dps }}{% else %}Piata specifica a proprietatii analizate este reprezentata de apartamentele cu {{camere.camere|floatformat:0}} camere si suprafete cuprinse intre {{market.area_between}}, situate in zona {{valuation.area.name}}{% endif %}.</p>
+            <p style="margin-bottom: 10px;text-align: justify;">{% if market.dps %}{{ market.dps }}{% else %}Piata specifica a proprietatii analizate este reprezentata de apartamentele cu {{camara.camara|floatformat:0}} camere si suprafete cuprinse intre {{market.area_between}}, situate in zona {{valuation.area.name}}{% endif %}.</p>
 
             <p style="margin-bottom: 10px;font-weight: bold;">Analiza cererii</p>
-            <p style="text-align: justify;">Pe pietele imobiliare, cererea reprezinta numarul dintr-un anumit tip de proprietate pentru care se manifesta dorinta pentru cumparare sau inchiriere la diferite preturi, pe o anumita piata, intr-un anumit interval de timp.</p>
-            <p style="text-align: justify;">Pentru ca pe o piata imobiliara oferta se ajusteaza incet la nivelul cererii, valoarea proprietatilor tinde sa varieze direct cu schimbarile de cerere, fiind astfel influentata de cererea curenta. Cererea poate fi analizata sub cele doua dimensiuni ale sale: cantitativ si calitativ.</p>
-            <p style="text-align: justify;">Cererea este influentata si de accesul in acest moment limitat al unui numar tot mai mare de persoane la credite. Imbunatatirea si dezvoltarea rapida a sistemului de credite ipotecare, concurenta bancara acerba care a dus la scaderea dobanzilor si imbunatatirea conditiilor de creditare au impulsionat in mod cert cererea de imobile.</p>
-            <p style="text-align: justify;">Cererea pentru proprietati de tipul celei analizate s-a observat a fi formata din familii cu un nivel de venituri peste medie sau mari, de toate varstele.</p>
-            <p style="text-align: justify;">Populatia zonei este formata din persoane cu un nivel <i>mediu si ridicat</i> de educatie, ceea ce contribuie la mentinerea unui mediu de siguranta si confort al rezidentilor.</p>
-            <p style="text-align: justify;margin-bottom: 10px;">Zona in care este situata proprietatea beneficiaza de suprafete acoperite de parcuri si alte amenajari urbanistice destinate petrecerii in conditii optime a timpului liber, ceea ce contribuie la confortul locuitorilor, crescand atractivitatea zonei. De asemenea, apropierea de centre administrative, comerciale, educationale si de sanatate publica, precum si existenta unei retele eficiente de transport in comun determina o atractivitate ridicata a proprietatilor rezidentiale din zona.</p>
+            {% if market.ac %}
+                <p style="text-align: justify;">{{market.ac|linebreaks}}</p>
+            {% else %}
+                <p style="text-align: justify;">Cererea pentru proprietati de tipul celei analizate s-a observat a fi formata din familii cu un nivel de venituri {{market.zona_type}}</p>
+                <p style="text-align: justify;">Populatia zonei este formata din persoane cu un nivel mediu si ridicat de educatie, ceea ce contribuie la mentinerea unui mediu de siguranta si confort al rezidentilor.</p>
+                <p style="text-align: justify;margin-bottom: 10px;">Zona in care este situata proprietatea beneficiaza de suprafete acoperite de parcuri si alte amenajari urbanistice destinate petrecerii in conditii optime a timpului liber, ceea ce contribuie la confortul locuitorilor, crescand atractivitatea zonei. De asemenea, apropierea de centre administrative, comerciale, educationale si de sanatate publica, precum si existenta unei retele eficiente de transport in comun determina o atractivitate ridicata a proprietatilor rezidentiale din zona.</p>
+            {% endif %}
+            
+            {% if market.ac_optional %}
+                <p style="text-align: justify;">{{market.ac_optional|linebreaks}}</p>
+            {% endif %}
 
-            <p style="margin-bottom: 10px;font-weight: bold;">Analiza ofertei</p>
-            <p style="text-align: justify;">Oferta se refera la disponibilitatea produsului imobiliar in diferitele lui faze de dezvoltare. Un cumparator are alternativa de a achizitiona/inchiria de pe piata un numar mai mare de proprietati cu caracteristici asemanatoare. In competitie cu acestea intra si proprietatea subiect, care este doar una dintre variantele alternative din totalul celor disponibile pe piata.</p>
-            <p style="text-align: justify;">Oferta aferenta proprietatilor disponibile spre vanzare/inchiriere (doar acestea prezinta interes, nu cele care sunt similare dar nu sunt expuse spre vanzare/inchiriere), care sunt asimilabile (caracteristicilor si utilitatii) proprietatii subiect se numeste oferta competitiva.</p>
-            <p style="text-align: justify;margin-bottom: 5px;">Existenta ofertei pentru o anumita proprietate la un anumit moment, anumit pret si un anumit loc indica gradul de raritate a acestui tip de proprietate.</p>
+            <p style="margin: 10px 0;font-weight: bold;">Analiza furnizarii</p>
+            {% if market.af %}
+                <p style="text-align: justify;">{{market.af|linebreaks}}</p>
+            {% else %}
+                <p style="text-align: justify;">In zona considerata si pentru segmentul de proprietati de tipul celei analizate se remarca o densitate a constructiilor {{market.const_density}}, motiv pentru care activitatea de investitii imobiliare este moderata In zona.</p>
+                <p style="text-align: justify;">In acest context, pe piata sunt listate un numar mediu de proprietati similare la vanzare, majoritatea imobilelor existente In zona fiind construite {{ market.ebby }} si respecta standardele si normativele In constructii specifice perioadei respective, motiv pentru care concurenta pentru proprietatea considerata poate fi apreciata ca fiind una {{market.prop_size}}. Acest context face ca perioada de expunere pe piata a unei proprietati similare sa fie medie de {{market.get_exposure_display}}.</p>
+            {% endif %}
 
-            <p style="margin-bottom: 5px;">In tabelul urmator este prezentata oferta de apartamente situate in zona analizata si vecinatati:</p>
+            <p style="margin: 10px 0;font-weight: bold;">Analiza interactiunii dintre cerere si oferta</p>
+            {% if market.spi %}
+                <p style="text-align: justify;">{{market.spi|linebreaks}}</p>
+            {% else %}
+                <p style="text-align: justify;">Avand In vedere cele prezentate mai sus, apreciem ca piata locala pentru segmentul de proprietati similare celei analizate este caracterizata de o lichiditate {{market.liquidity}}, cu un numar {{market.transactions_nr}} de tranzactii si perioade relativ {{market.exposure_period}} de expunere a proprietatilor pe piata.</p>
+                <p style="text-align: justify;">Analiza cererii si ofertei efectuata mai sus arata ca pentru imobile de tipul celui analizat, piata este una activa, atractivitatea pentru cumparatori fiind peste medie, In conditiile unei oferte In echilibru ceea ce conduce la un relativ echilibru Intre cerere si oferta si creeaza premisele vanzarii Intr-o perioada relativ scurta a proprietatilor similare. Mentionam ca situatia macroeconomica de ansamblu conduce spre previziuni moderat pesimiste pentru perioada urmatoare, motiv pentru care este de asteptat ca activitatea de tranzactii imobiliare sa se mentina la niveluri sub cele ale anului 2019 si pe acest segment specific de piata.</p>
+            {% endif %}
 
-            <p style="margin-top: 10px;text-align: justify;">In zona considerata si pentru segmentul de proprietati de tipul celei analizate se remarca o densitate a constructiilor mare, motiv pentru care activitatea de investitii imobiliare este moderata in zona.</p>
-            <p style="margin-bottom: 10px;text-align: justify;">n acest context, pe piata sunt listate un numar mare de proprietati similare la vanzare, imobilele existente in zona fiind construite atat <i>inainte cat si dupa anii 2000</i> si respecta standardele normativele in constructive specifice perioadelor respective, motiv pentru care concurenta pentru proprietatea considerata poate fi apreciata ca fiind una medie. Acest context face ca perioada de expunere pe piata a unei proprietati similare sa fie medie de aproximativ <i>3-6</i> luni.</p>
+            <p style="margin: 10px 0;text-align: justify;font-weight: bold;">Previziunea absorbtiei proprietatii subiect in piata</p>
+            {% if market.forecast %}
+                <p style="margin-bottom: 10px;text-align: justify;">{{market.forecast|linebreaks}}</p>
+            {% else %}
+                <p style="margin-bottom: 10px;text-align: justify;">Din punctul de vedere al gradului de absorbtie a proprietatilor de tipul celor analizate, avand In vedere elementele expuse mai sus apreciem ca proprietatea, avand In vedere caracteristicile sale constructive si de localizare prezinta un grad ridicat de absorbtie, cu o perioada de expunere pe piata de {{market.exposure}}</p>
+            {% endif %}
 
-            <p style="margin-bottom: 10px;font-weight: bold;">Analiza interactiunii dintre cerere si oferta</p>
-            <p style="text-align: justify;">Avand in vedere cele prezentate mai sus, se apreciaza ca piata locala pentru segmentul de proprietati similare celei analizate este caracterizata de o lichiditate <i>buna</i>, cu un numar <i>mare</i> de tranzactii si perioade relativ scurte de expunere a proprietatilor pe piata.</p>
-            <p style="margin-bottom: 10px;text-align: justify;">Analiza cererii si ofertei efectuata mai sus arata ca pentru imobile de tipul celui analizat, piata este una activa, atractivitatea pentru cumparatori fiind peste medie in conditiile unei oferte in echilibru ceea ce conduce la un relativ <i>echilibru</i> intre cerere si oferta si creeaza premisele vanzarii intr-o perioada relativ scurta a proprietatilor similare. </p>
-
-            <p style="margin-bottom: 10px;text-align: justify;font-weight: bold;">Previziunea absorbtiei proprietatii subiect in piata</p>
-            <p style="margin-bottom: 10px;text-align: justify;">Din punctul de vedere al gradului de absorbtie a proprietatilor de tipul celor analizate, avand in vedere elementele expuse mai sus se apreciaza ca proprietatea, avand in vedere caracteristicile sale constructive si de localizare prezinta un grad ridicat de absorbtie, cu o perioada de expunere pe piata de aproximativ 3-6 luni.</p>
-
-            <p style="margin-bottom: 10px;font-weight: bold;">Concluzii</p>
+            <p style="margin: 10px 0;font-weight: bold;">Concluzii</p>
             <p style="margin-bottom: 10px;text-align: justify;">Echilibrul pietei imobiliare poate fi determinat prin raportul cerere-oferta. La momentul evaluarii, avand in vedere numarul mare de tranzactii si perioade relativ scurte de expunere a proprietatilor pe piata imobiliara analizata, dar si marimea si respectiv preturile apartamentelor din segmentul de piata analizat, concluzionam faptul ca piata apartine vanzatorilor.</p>
 
             <p style="margin-bottom: 10px;font-weight:bold;">
@@ -735,8 +746,8 @@
 
             <p style="margin-bottom: 10px;">
                 <b>Plaja de valori ofertate spre vanzare pentru proprietati similare Apartamente:</b> <br>
-                Minim: <span style="color: blueviolet;">2600 euro/mp</span> <br>
-                Maxim: <span style="color: blueviolet;">3200 euro/mp</span>
+                Minim: <span style="color: blueviolet;">{{market.minsale_price|floatformat:'0'}} euro/mp</span> <br>
+                Maxim: <span style="color: blueviolet;">{{market.maxsale_price|floatformat:'0'}} euro/mp</span>
             </p>
 
             <p style="text-align: justify;">Oferte de proprietati similare cu proprietatea subiect ofertite spre vanzare, identificate pe piata imobiliara analizata sunt prezentate in anexa 4 a raportului.</p>
@@ -781,7 +792,7 @@
                 </tr>
             </table>
 
-            <p style="margin-top: 15px;text-align: justify;">Avand in vedere compartimentarea fiecarui nivel, cat si specificul zonei din care face parte proprietatea evaluata, opinia mea este ca CMBU este <i>rezidentiala.</i></p>
+            <p style="margin-top: 15px;text-align: justify;">Avand in vedere compartimentarea fiecarui nivel, cat si specificul zonei din care face parte proprietatea evaluata, opinia mea este ca CMBU este {% if 'Apartamente' in valuation.property_type.type %}rezidentiala{% endif %}.</p>
         </div>
 
         <div>
@@ -817,7 +828,7 @@
 
                 In acest raport de evaluare tehnicile cantitative folosite pentru estimarea ajustarilor sunt analiza pe perechi de date, analiza datelor secundare. 
             </p>
-            
+
             <table border="1" id="grid-table">
                 <tr valign="middel"><td colspan="5" style="font-weight:bold;">Date de piata</td></tr>
                 <tr valign="middel">
@@ -911,7 +922,7 @@
                 </tr>
                 <tr valign="middel">
                     <td>Finisaje</td>
-                    <td>{{sub.finish}}</td>
+                    <td>{{sub_prop.finish}}</td>
                     {% for p in comp_prop %}
                     <td>{{p.finish}}</td>
                     {% endfor %}
@@ -968,11 +979,9 @@
             <br>
 
             <p style="margin: 10px 0; text-align: justify;">
-                Deoarece acestea sunt componente non-imobiliare, valoarea lor a fost scazuta anterior grilei de calcul pentru a nu influenta procentajul ajustarilor brute, respectiv a fost scazuta suma de 12.000 euro pentru un loc de parcare subteran, 20.000 euro pentru un loc de parcare subteran dublu, 3.000 euro pentru comparabilele mobilate si 1.500 euro pentru cele partial mobilate. Aceste informatii, precum si marja de negociere medie au fost obtinute din conversatiile cu agentii imobiliari si proprietarii apartamentelor din complexul Central Park. 
-            </p>
-            <p style="margin: 15px 0;text-align:justify;">
-                Din analiza efectuata a rezultat ca cea mai apropiata comparabila de subiect este comparabila A (are cele mai mici ajustari totale brute). <br> <br>
-                Ajustarile luate in considerare au fost prezentate in grila comparatiilor de piata:
+                In acest raport de evaluare tehnicile cantitative folosite pentru estimarea ajustarilor sunt analiza pe perechi de date,  analiza datelor secundare. <br>
+                Din analiza efectuata a rezultat ca cea mai apropiata comparabila de subiect este comparabila {{comp_table|get_corresponding_letter}} (are cele mai mici ajustari totale brute). <br>
+                Ajustarile luate in considerare au fost urmatoarele:
             </p>
 
             <table border="1" id="comparable_tbl">
@@ -1031,7 +1040,7 @@
                 </tr>
                 <tr valign="middel">
                     <td style="text-align: left;padding-left:3px">Date disponibile</td>
-                    <td></td>
+                    <td>{{sub_prop.ad}}</td>
                     {% for p in comp_prop %}
                     <td>{{p.ad}}</td>
                     {% endfor %}
@@ -1199,7 +1208,7 @@
                     <td style="text-align: left;padding-left:3px">Conditii de piata</td>
                     <td>{{sub_prop.me}}</td>
                     {% for p in comp_prop %}
-                    <td style="font-weight: normal;">{{p.comparable.me}}</td>
+                    <td style="font-weight: normal;">{{p.me}}</td>
                     {% endfor %}
                 </tr>
                 <tr>
@@ -1232,7 +1241,7 @@
                 <tr>
                     <td style="text-align: left;padding-left:3px">Localizare</td>
                     <td>{{sub_prop.lc}}</td>
-                    {% for p in comp_table %}
+                    {% for p in comp_prop %}
                     <td>{{p.lc}}</td>
                     {% endfor %}
                 </tr>
@@ -1258,7 +1267,7 @@
                 <tr>
                     <td style="text-align: left;padding-left:3px">Compartimentare</td>
                     <td>{{sub_prop.cp}}</td>
-                    {% for p in ct %}
+                    {% for p in comp_prop %}
                     <td>{{p.cp}}</td>
                     {% endfor %}
                 </tr>
@@ -1603,9 +1612,9 @@
 
             <p style="margin-bottom: 10px;font-weight: bold;text-align: center;font-size: 18px;">Abordarea prin venit</p>
             <p style="text-align: justify; margin-bottom: 10px;">
-                S-a utilizat metoda bazată pe capitalizarea veniturilor. Aceasta presupune că un imobil, în funcție de caracteristicile sale constructive și de localizare, constituie un potențial venit pe termen îndelungat prin închiriere etc. Cu alte cuvinte, proprietatea are o valoare de randament.<br>
+                S-a utilizat metoda bazata pe capitalizarea veniturilor. Aceasta presupune ca un imobil, in functie de caracteristicile sale constructive si de localizare, constituie un potential venit pe termen indelungat prin inchiriere etc. Cu alte cuvinte, proprietatea are o valoare de randament.<br>
 
-                Esența acestei metode derivă din teoria utilitații, care conferă o anumită valoare unui bun (sau proprietăți) cumpărat(e) numai în măsura în care cumpăratorul realizează o satisfacție din achiziția respectivă. În cazul proprietății, această satisfacție se reflectă prin câștigurile viitoare realizabile din exploatarea proprietății.<br>
+                Esenta acestei metode deriva din teoria utilitatii, care confera o anumita valoare unui bun (sau proprietati) cumparat(e) numai in masura in care cumparatorul realizeaza o satisfactie din achizitia respectiva. in cazul proprietatii, aceasta satisfactie se reflecta prin castigurile viitoare realizabile din exploatarea proprietatii.<br>
 
                 Capitalizarea directa este o metoda utilizata pentru a converti venitul dintr-un singur an intr-o indicatie a valorii proprietatii, intr-un singur pas, utilizand una dintre cele doua proceduri: <br>
                 1) prin impartirea venitului estimat cu o rata de capitalizare adecvata acestui tip de venit; <br>
@@ -1615,7 +1624,7 @@
 
                 Capitalizarea directa utilizeaza rate de capitalizare si multiplicatori obtinuti din date de piata. Este esential ca proprietatile imobiliare comparabile utilizate in acest scop sa reflecte riscul, venitul, cheltuielile si caracteristicile fizice si de localizare aferente proprietatii imobiliare ce trebuie evaluate. In consecinta, multiplicatorii si ratele de capitalizare trebuie sa fie extrase din informatii privind proprietatile imobiliare care prezinta aceleasi rapoarte intre cheltuieli si venituri, valoare teren si valoare constructii, caracteristici ale riscului asociat si previziuni de fluctuatie a veniturilor si valorii proprietatii, de-a lungul perioadei tipice de investitie.<br>
 
-                Valoarea proprietății imobiliare a fost determinată prin metoda capitalizării directe utilizand a doua procedura mentionata anterior.<br>
+                Valoarea proprietatii imobiliare a fost determinata prin metoda capitalizarii directe utilizand a doua procedura mentionata anterior.<br>
                 
                 Conform teoriei in domeniu, pentru calcularea multiplicatorilor de venit trebuie sa fie disponibile vanzari de proprietati similare cu cea subiect care au fost inchiriate la momentul vanzarii sau ar fi fost inchiriate intr-un timp scurt. Nu am avut acces la o baza de date cu tranzactii cu proprietati comparabile din zona de interes. Astfel, pentru aplicarea metodei capitalizarii directe am considerat oportuna utilizarea proprietatilor comparabile utilizate la abordarea prin piata. <br>
 
@@ -1623,11 +1632,12 @@
                 
                 In continuare, am estimat mutiplicatorul chiriei brute pentru proprietatile comparabile utilizate in abordarea prin piata impartind chiria bruta anuala la pretul solicitat de catre vanzator (pretul solicitat a fost ajustat cu marja de negociere). <br>
 
-                Din analiza pieței, am identificat o chirie lunara cuprinsă între [enter number range here] euro/mp/luna pentru proprietati comparabile. Pentru determinarea multiplicatorului chirie brute am estimat o chirie de [enter number range here] euro/luna/mp pentru toate comparabilele luate in considerare. Totodata, pentru proprietatea subiect am estimat o chirie lunara de [	extract from chirie/luna cell next to the MVB table] euro/mp/luna. <br>
+                Din analiza pietei, am identificat o chirie lunara cuprinsa intre [enter number range here] euro/mp/luna pentru proprietati comparabile. Pentru determinarea multiplicatorului chirie brute am estimat o chirie de [enter number range here] euro/luna/mp pentru toate comparabilele luate in considerare. Totodata, pentru proprietatea subiect am estimat o chirie lunara de [extract from chirie/luna cell next to the MVB table] euro/mp/luna. <br>
 
                 In tabelul urmator sunt prezentate calculele privind multiplicatorul chiriei brute: 
-            </p>
-                
+            </p>   
+            
+            {% if mvb_table %}
             <table border="1" id="mvb-table">
                 <tr valign="middel"><td colspan="4" style="font-weight:bold;text-align: left;padding-left: 3px;">Multiplicatorul venitului brut potential</td></tr>
                 <tr valign="middel">
@@ -1639,7 +1649,7 @@
                 <tr valign="middel">
                     <td style="text-align: left;padding-left: 3px;width: 45%">Chirie lunara solicitata</td>
                     {% for c in mvb_table.monthly_rent|list_convert %}
-                    <td style="font-weight: bold;">{{ c }}</td>
+                        <td style="font-weight: bold;">{{ c }}</td>
                     {% endfor %}
                 </tr>
                 <tr valign="middel">
@@ -1657,7 +1667,7 @@
                 <tr valign="middel">
                     <td style="text-align: left;padding-left: 3px;width: 45%">Chirie lunara solicitata /mp</td>
                     {% for c in mvb_table.rent_sqm|list_convert %}
-                    <td style="font-weight: bold;">{{ c.rent_sqm }}</td>
+                        <td style="font-weight: bold;">{{ c.rent_sqm }}</td>
                     {% endfor %}
                 </tr>
                 <tr valign="middel">
@@ -1682,15 +1692,16 @@
             <table>
                 <tr valign="middel">
                     <td style="font-weight: bold;font-size: 12px;padding-top: 5px;width: 45%;padding-left: 3px;">Multiplicatorul venitului brut potential</td>
-                    <td style="font-size: 12px;padding-top: 5px;text-align: center;">{{ mvb_table.min_mvbp }}</td>
+                    <td style="font-size: 12px;padding-top: 5px;text-align: center; font-weight: bold;">{{ mvb_table.min_mvbp }}</td>
                     <td></td>
                     <td></td>
                 </tr>
             </table>
-            <br>
+            {% endif %}
+            <br>   
 
             <p style="text-align: justify; margin-bottom: 10px;">
-                In continuare, pentru determinarea valorii de piata a proprietatii subiect am selectat multiplicatorul chirie brute din tabelul de mai sus. In cazul de fata, am ales multiplicatorul comparabilei {B} [– this field will be filled automatically based on cell G104 from the main table- please see screenshot attached to email for help] deoarece prezinta caracteristicile cele mai apropiate de cele ale proprietatii subiect. <br>
+                In continuare, pentru determinarea valorii de piata a proprietatii subiect am selectat multiplicatorul chirie brute din tabelul de mai sus. In cazul de fata, am ales multiplicatorul comparabilei {{comp_table|get_corresponding_letter}} deoarece prezinta caracteristicile cele mai apropiate de cele ale proprietatii subiect. <br>
 
                 Pornind de la o chirie lunara [	extract from chirie/luna cell next to the MVB table] euro/mp/luna, aplicarea metodei capitalizarii directe pe baza multiplului venitului brut potenital conduce la o valoare a proprietatii evaluate calculata astfel: V = VBP * MVBP.
             </p>
@@ -1718,7 +1729,7 @@
                 </tr>
             </table>
             <br>
-
+ 
             <p style="text-align: center;margin-bottom: 10px;font-weight: bold;">Valoare de venit {{ mvb_table.vpcd_rotund }} EUR</p>
             <br>
 
@@ -1736,7 +1747,7 @@
                 </tr>
             </table>
             <br>
-
+     
             <div style="margin: 10px 0; text-align:justify;">
                 <p>Conform standardelor de evaluare a bunurilor, obiectivul selectarii abordarilor si metodelor aplicate la evaluarea unui imobil este acela de a gasi metoda cea mai adecvata pentru circumstantele date. Nu exista nicio metoda care sa fie adecvata tuturor situatiilor posibile. Procesul de selectie ar trebui sa ia in considerare ca cerinte minime:</p>
                 <table>
@@ -1789,22 +1800,26 @@
                 </tr>
             </table>
             
-            <p style="margin-top: 20px;text-align: justify;">Valoarea de piață a fost stabilită utilizând abordarea prin piață datorită următoarelor considerente:</p>
-            <p style="margin-bottom: 10px;">- valoarea obţinută prin abordarea prin piață este cea mai adecvată şi precisă întrucât la baza aplicării abordarii au existat numai informaţii de pe piaţă.</p>
+            <p style="margin-top: 20px;text-align: justify;">Valoarea de piata a fost stabilita utilizand abordarea prin piata datorita urmatoarelor considerente:</p>
+            <p style="margin-bottom: 10px;">- valoarea obtinuta prin abordarea prin piata este cea mai adecvata si precisa intrucat la baza aplicarii abordarii au existat numai informatii de pe piata.</p>
 
             <p style="margin-bottom: 10px;text-align: justify;">Pentru determinarea valorii de piata a proprietatii analizate am ales abordarea prin piata ca fiind cea mai relevanta in acest caz. Avand in vedere cantitatea, calitatea informatiilor detinute ca urmare a analizelor, adecvarea abordarilor prezentate si conditiile limitative expuse in prezentul raport de evaluare, evaluatorul opineaza ca valoarea de piata a proprietatii imobiliare supuse evaluarii asa cum se prezenta la data inspectiei, este estimata prin aborarea prin piata la:</p>
             <p style="text-align: center;font-weight: bold;font-size: 16px;">{{comp_table.estimated_value|floatformat:"0"}} EUR</p>
             <br>
 
             <p style="margin-bottom: 10px;font-weight: bold;text-align: center;font-size: 16px;">Riscul de garantie (Guarantee risk)</p>
+            {% if market.guarantee_risk %}
+                <p style="margin-bottom: 10px;text-align: justify;">{{market.guarantee_risk|linebreaks}}</p>
+            {% else %}
             <p style="margin-bottom: 10px;text-align: justify;">
-                Riscul de garanție este un risc asociat riscului de credit, fiind reprezentat de posibilitatea apariției unor dificultăți legate de valorificarea bunurilor aduse ca garanție în momentul acordării creditului, în situația în care cel care împrumuta nu rambursează creditul și nu platește dobânzile aferente. Evaluarea riscului de garanție se face în functie de valoarea garanțiilor și de rapiditatea posibilității de valorificare a acestora. <br>
+                Riscul de garantie este un risc asociat riscului de credit, fiind reprezentat de posibilitatea aparitiei unor dificultati legate de valorificarea bunurilor aduse ca garantie in momentul acordarii creditului, in situatia in care cel care imprumuta nu ramburseaza creditul si nu plateste dobanzile aferente. Evaluarea riscului de garantie se face in functie de valoarea garantiilor si de rapiditatea posibilitatii de valorificare a acestora. <br>
 
-                În acest moment, pe piața imobiliară din zonă, sunt valabile la vânzare mai multe oferte cu proprietăți similare. În condițiile actuale de piață (fluctuații economice importante, criza economică și sanitară la nivel mondial), numărul tranzacțiilor în acest sector este de asteptat sa scadă, iar perioadele de marketabilitate a activelor imobiliare să crească. <br>
+                In acest moment, pe piata imobiliara din zona, sunt valabile la vanzare mai multe oferte cu proprietati similare. in conditiile actuale de piata (fluctuatii economice importante, criza economica si sanitara la nivel mondial), numarul tranzactiilor in acest sector este de asteptat sa scada, iar perioadele de marketabilitate a activelor imobiliare sa creasca. <br>
 
-                Astfel, luând în considerare localizarea și caracteristicile imobilului analizat, apreciem că riscul de garantie este redus, în comparație cu cel al altor clase de active. <br>
+                Astfel, luand in considerare localizarea si caracteristicile imobilului analizat, apreciem ca riscul de garantie este redus, in comparatie cu cel al altor clase de active. <br>
             </p>
-            
+            {% endif %}
+
             <br> <br>
             <table>
                 <tr valign="middle" style="height: 150px;">

@@ -639,7 +639,7 @@
                                             {% for n in comparable %}
                                             <td>
                                                 <select id="id_fc" class="form-control" name="fc[]">
-                                                    <option value="normale">Normale</option>
+                                                    <option value="Normale">Normale</option>
                                                 </select>
                                             </td>
                                             {% endfor %}
@@ -647,14 +647,14 @@
                                             {% for n in comparable %}
                                             <td>
                                                 <select id="id_fc" class="form-control" name="fc[]">
-                                                    <option value="normale">Normale</option>
+                                                    <option value="Normale">Normale</option>
                                                 </select>
                                             </td>
                                             {% endfor %}
                                             {% for n in comparable|get_extra_length:nr_comp %}
                                             <td>
                                                 <select id="id_fc" class="form-control" name="fc[]">
-                                                    <option value="normale">Normale</option>
+                                                    <option value="Normale">Normale</option>
                                                 </select>
                                             </td>
                                             {% endfor %}
@@ -663,7 +663,7 @@
                                         {% for n in nr_comp|list_range %}
                                         <td>
                                             <select id="id_fc" class="form-control" name="fc[]">
-                                                <option value="normale">Normale</option>
+                                                <option value="Normale">Normale</option>
                                             </select>
                                         </td>
                                         {% endfor %}
@@ -788,7 +788,7 @@
                                     <td>Conditii de vanzare</td>
                                     <td>
                                         <select id="id_sub_sc" class="form-control" name="sub_sc">
-                                            <option value="independente">Independente</option>
+                                            <option value="Independente">Independente</option>
                                         </select>
                                     </td>
                                     {% if comparable %}
@@ -796,7 +796,7 @@
                                             {% for n in comparable %}
                                             <td>
                                                 <select id="id_sc" class="form-control" name="sc[]">
-                                                    <option value="independente">Independente</option>
+                                                    <option value="Independente">Independente</option>
                                                 </select>
                                             </td>
                                             {% endfor %}
@@ -804,14 +804,14 @@
                                             {% for n in comparable %}
                                             <td>
                                                 <select id="id_sc" class="form-control" name="sc[]">
-                                                    <option value="independente">Independente</option>
+                                                    <option value="Independente">Independente</option>
                                                 </select>
                                             </td>
                                             {% endfor %}
                                             {% for n in comparable|get_extra_length:nr_comp %}
                                             <td>
                                                 <select id="id_sc" class="form-control" name="sc[]">
-                                                    <option value="independente">Independente</option>
+                                                    <option value="Independente">Independente</option>
                                                 </select>
                                             </td>
                                             {% endfor %}
@@ -820,7 +820,7 @@
                                         {% for n in nr_comp|list_range %}
                                         <td>
                                             <select id="id_sc" class="form-control" name="sc[]">
-                                                <option value="independente">Independente</option>
+                                                <option value="Independente">Independente</option>
                                             </select>
                                         </td>
                                         {% endfor %}
@@ -945,8 +945,8 @@
                                     <td>Cheltuieli necesare imediat dupa cumparare</td>
                                     <td>
                                         <select id="id_sub_ape" class="form-control" name="sub_ape">
-                                            <option value="nu">Nu</option>
-                                            <option value="da">Da</option>
+                                            <option value="Nu">Nu</option>
+                                            <option value="Da">Da</option>
                                         </select>
                                     </td>
                                     {% if comparable %}
@@ -954,8 +954,8 @@
                                             {% for n in comparable %}
                                             <td>
                                                 <select id="id_ape" class="form-control" name="ape[]">
-                                                    <option value="nu" {% if n.ape == 'nu' %}selected{% endif%}>Nu</option>
-                                                    <option value="da" {% if n.ape == 'da' %}selected{% endif%}>Da</option>
+                                                    <option value="Nu" {% if n.ape == 'Nu' %}selected{% endif%}>Nu</option>
+                                                    <option value="Da" {% if n.ape == 'Da' %}selected{% endif%}>Da</option>
                                                 </select>
                                             </td>
                                             {% endfor %}
@@ -963,16 +963,16 @@
                                             {% for n in comparable %}
                                             <td>
                                                 <select id="id_ape" class="form-control" name="ape[]">
-                                                    <option value="nu" {% if n.ape == 'nu' %}selected{% endif%}>Nu</option>
-                                                    <option value="da" {% if n.ape == 'da' %}selected{% endif%}>Da</option>
+                                                    <option value="Nu" {% if n.ape == 'Nu' %}selected{% endif%}>Nu</option>
+                                                    <option value="Da" {% if n.ape == 'Da' %}selected{% endif%}>Da</option>
                                                 </select>
                                             </td>
                                             {% endfor %}
                                             {% for n in comparable|get_extra_length:nr_comp %}
                                             <td>
                                                 <select id="id_ape" class="form-control" name="ape[]">
-                                                    <option value="nu">Nu</option>
-                                                    <option value="da">Da</option>
+                                                    <option value="Nu">Nu</option>
+                                                    <option value="Da">Da</option>
                                                 </select>
                                             </td>
                                             {% endfor %}
@@ -981,8 +981,8 @@
                                         {% for n in nr_comp|list_range %}
                                         <td>
                                             <select id="id_ape" class="form-control" name="ape[]">
-                                                <option value="nu">Nu</option>
-                                                <option value="da">Da</option>
+                                                <option value="Nu">Nu</option>
+                                                <option value="Da">Da</option>
                                             </select>
                                         </td>
                                         {% endfor %}
@@ -1516,13 +1516,13 @@
                                         {% if comparable|length == nr_comp %}
                                             {% for n in comparable %}
                                             <td>
-                                                <input type="text" class="form-control" name="cy[]" value="{{n.year_build}}"/>
+                                                <input type="text" class="form-control" name="cy[]" value="{{n.cy}}"/>
                                             </td>
                                             {% endfor %}
                                         {% else %}
                                             {% for n in comparable %}
                                             <td>
-                                                <input type="text" class="form-control" name="cy[]" value="{{n.year_build}}"/>
+                                                <input type="text" class="form-control" name="cy[]" value="{{n.cy}}"/>
                                             </td>
                                             {% endfor %}
                                             {% for n in comparable|get_extra_length:nr_comp %}

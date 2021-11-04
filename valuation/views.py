@@ -36,6 +36,7 @@ def initial_form(request):
             data = form.save(commit=False)
             data.status = models.Status.objects.get(status__icontains='progress')
             data.inspection_date = timezone.now()
+            data.assigned_to = request.user.get_full_name()
             data.save()
 
             # save compartimentare 
@@ -110,9 +111,16 @@ def add_summary(request, id):
         summary = None 
         summary_value = None 
         summary_photo = None
+    try:
+        comp_table = models.ComparableTable.objects.filter(ref_no=valuation).latest('id')
+    except:
+        comp_table = None
 
     if request.method == 'POST':
-        form = forms.AddValuationSummary(request.POST)
+        if summary:
+            form = forms.AddValuationSummary(request.POST, instance=summary)
+        else:
+            form = forms.AddValuationSummary(request.POST)
         if form.is_valid():
             data = form.save(commit=False)
             data.ref_no = valuation
@@ -120,25 +128,49 @@ def add_summary(request, id):
             # data.approach.set() to-do
 
             # save summary value 
-            mv_name = request.POST.getlist('field_name_mv[]')
-            mv_value = request.POST.getlist('field_value_mv[]')
-            for n, v in zip(mv_name, mv_value):
-                if v != None:
-                    models.SummaryValue.objects.create(summary=data, field_name=n, field_value=v, approache="market")
+            if summary_value:
+                mv_name = request.POST.getlist('field_name_mv[]')
+                mv_value = request.POST.getlist('field_value_mv[]')
+                mi = 0
+                for mv in summary_value:
+                    if mv.approache == 'market':
+                        mv.field_name = mv_name[mi]
+                        mv.field_value = mv_value[mi]
+                        mv.save()
+                        mi += 1
 
-            iv_name = request.POST.getlist('field_name_iv[]')
-            iv_value = request.POST.getlist('field_value_iv[]')
-            for name, val in zip(iv_name, iv_value):
-                if val != None:
-                    models.SummaryValue.objects.create(summary=data, field_name=name, field_value=val, approache="income")
+                iv_name = request.POST.getlist('field_name_iv[]')
+                iv_value = request.POST.getlist('field_value_iv[]')
+                ii = 0
+                for iv in summary_value:
+                    if iv.approache == 'income':
+                        iv.field_name = iv_name[ii]
+                        iv.field_value = iv_value[ii]
+                        iv.save()
+                        ii += 1
+            else:
+                mv_name = request.POST.getlist('field_name_mv[]')
+                mv_value = request.POST.getlist('field_value_mv[]')
+                for n, v in zip(mv_name, mv_value):
+                    if v != None:
+                        models.SummaryValue.objects.create(summary=data, field_name=n, field_value=v, approache="market")
 
+                iv_name = request.POST.getlist('field_name_iv[]')
+                iv_value = request.POST.getlist('field_value_iv[]')
+                for name, val in zip(iv_name, iv_value):
+                    if val != None:
+                        models.SummaryValue.objects.create(summary=data, field_name=name, field_value=val, approache="income")
+                        
             if request.POST.get("pre_url") == 'details':
                 return redirect('dashboard:details', id=valuation.id)
             else:
                 return redirect('valuation:add_construction', id=id)
     else:
-        form = forms.AddValuationSummary()
-
+        if summary:
+            form = forms.AddValuationSummary(instance=summary)
+        else:
+            form = forms.AddValuationSummary()
+    
     context = {
         'valuation': valuation,
         'above_parking': above_parking['above'],
@@ -154,6 +186,7 @@ def add_summary(request, id):
         'summary': summary,
         'summary_value': summary_value,
         'summary_photo': summary_photo,
+        'comp_table': comp_table,
     }
     return render(request, template, context)
 
@@ -189,8 +222,24 @@ def add_construction(request, id):
     floor_type = models.FloorType.objects.all()
     pre_url = request.META.get("HTTP_REFERER")
 
+    # check if valuation has construction, suprafete
+    try:
+        const = models.Construction.objects.filter(ref_no=valuation).latest('id')
+    except:
+        const = None 
+    suprafete = models.Suprafete.objects.filter(ref_no=valuation)
+    s_utila = models.Suprafete.objects.filter(ref_no=valuation, is_utila=True)
+    s_nuutila = models.Suprafete.objects.filter(ref_no=valuation, is_utila=False)
+    try:
+        comp_table = models.ComparableTable.objects.filter(ref_no=valuation).latest('id')
+    except:
+        comp_table = None
+
     if request.method == 'POST':
-        form = forms.ConstructionForm(request.POST)
+        if const:
+            form = forms.ConstructionForm(request.POST, instance=const)
+        else:
+            form = forms.ConstructionForm(request.POST)
         if form.is_valid():
             data = form.save(commit=False)
             data.ref_no = valuation
@@ -204,16 +253,26 @@ def add_construction(request, id):
             room_name = request.POST.getlist('room_name[]')
             areas = request.POST.getlist('area[]')
             is_utila = request.POST.getlist('is_utila[]')
-
-            for n, r, a, iu in zip(nr_crt, room_name, areas, is_utila):
-                models.Suprafete.objects.create(ref_no=valuation, nr_crt=n, room_name=r, area=a, is_utila=iu)
+            if suprafete:
+                su_id = request.POST.getlist('su_id[]')
+                for n, r, a, iu, su in zip(nr_crt, room_name, areas, is_utila, su_id):
+                    if su != '0':
+                        models.Suprafete.objects.filter(id=su).update(nr_crt=n, room_name=r, area=a, is_utila=iu)
+                    else:
+                        models.Suprafete.objects.create(ref_no=valuation, nr_crt=n, room_name=r, area=a, is_utila=iu)
+            else:
+                for n, r, a, iu in zip(nr_crt, room_name, areas, is_utila):
+                    models.Suprafete.objects.create(ref_no=valuation, nr_crt=n, room_name=r, area=a, is_utila=iu)
             
             if request.POST.get('pre_url') == 'details':
                 return redirect('dashboard:details', id=id)
             else:
                 return redirect('valuation:add_presentation', id=id)
     else:
-        form = forms.ConstructionForm()
+        if const:
+            form = forms.ConstructionForm(instance=const)
+        else:
+            form = forms.ConstructionForm()
 
     context = {
         'valuation': valuation,
@@ -222,8 +281,12 @@ def add_construction(request, id):
         'customs': customs,
         'balcons': balcons,
         'floor_type': floor_type,
+        'const': const,
+        's_utila': s_utila,
+        's_nuutila': s_nuutila,
         'pre_url': pre_url,
         'segment': 'construction',
+        'comp_table': comp_table,
     }
     return render(request, template, context)
 
@@ -245,12 +308,23 @@ def add_presentation(request, id):
         const = models.Construction.objects.filter(ref_no=valuation).latest('id')
     except:
         const = None
-    
-    print('const ====== '+ str(const))
     pre_url = request.META.get("HTTP_REFERER")
+    try:
+        comp_table = models.ComparableTable.objects.filter(ref_no=valuation).latest('id')
+    except:
+        comp_table = None
+
+    sources = models.SourceofInformation.objects.filter(ref_no=valuation)
+    try:
+        pdata = models.PresentationData.objects.filter(ref_no=valuation).latest('id')
+    except:
+        pdata = None
 
     if request.method == 'POST':
-        form = forms.PresentationForm(request.POST)
+        if pdata:
+            form = forms.PresentationForm(request.POST, instance=pdata)
+        else:
+            form = forms.PresentationForm(request.POST)
         if form.is_valid():
             data = form.save(commit=False)
             data.ref_no = valuation
@@ -263,10 +337,15 @@ def add_presentation(request, id):
             else:
                 return redirect('valuation:add_market_analysis', id=id)
     else:
-        form = forms.PresentationForm()
+        if pdata:
+            form = forms.PresentationForm(instance=pdata)
+        else:
+            form = forms.PresentationForm()
 
     context = {
         'valuation': valuation,
+        'pdata': pdata,
+        'sources': sources,
         'camara': camara['camara'],
         'const': const,
         'transport': transport,
@@ -274,6 +353,7 @@ def add_presentation(request, id):
         'form': form,
         'segment': 'presentation',
         'pre_url': pre_url,
+        'comp_table': comp_table,
     }
     return render(request, template, context)
 
@@ -307,9 +387,20 @@ def add_market_analysis(request, id):
     valuation = get_object_or_404(models.ValuatedProperty, id=id)
     camara = models.CompartimentareValue.objects.filter(ref_no=valuation,attr_id__pk__in=[1,3,4]).aggregate(camara=Sum('attr_value'))
     pre_url = request.META.get("HTTP_REFERER")
+    try:
+        comp_table = models.ComparableTable.objects.filter(ref_no=valuation).latest('id')
+    except:
+        comp_table = None
+    try:
+        analiza = models.MarketAnalysis.objects.filter(ref_no=valuation).latest('id')
+    except:
+        analiza = None 
 
     if request.method == "POST":
-        form = forms.MarketAnalysisForm(request.POST)
+        if analiza:
+            form = forms.MarketAnalysisForm(request.POST, instance=analiza)
+        else:
+            form = forms.MarketAnalysisForm(request.POST)
         if form.is_valid():
             data = form.save(commit=False)
             data.ref_no = valuation
@@ -324,9 +415,15 @@ def add_market_analysis(request, id):
             if request.POST.get('pre_url') == 'details':
                 return redirect('dashboard:details', id=id)
             else:
-                return redirect('valuation:select_comparable', id=id)
+                if comp_table:
+                    return redirect('valuation:add_comparable', id=id)
+                else:
+                    return redirect('valuation:select_comparable', id=id)
     else:
-        form = forms.MarketAnalysisForm()
+        if analiza:
+            form = forms.MarketAnalysisForm(instance=analiza)
+        else:
+            form = forms.MarketAnalysisForm()
 
     context = {
         'valuation': valuation,
@@ -334,6 +431,8 @@ def add_market_analysis(request, id):
         'form': form,
         'segment': 'market',
         'pre_url': pre_url,
+        'comp_table': comp_table,
+        'analiza': analiza,
     }
     return render(request, template, context)
 
@@ -376,9 +475,29 @@ def search_comparable(request):
 # ========================================================
 @login_required(login_url='/signin/')
 def add_comparable(request, id):
-    template = 'valuation/add_comparable.html'
     valuation = get_object_or_404(models.ValuatedProperty, id=id)
-    comp = ast.literal_eval(request.GET.get('comp'))
+    try:
+        comp_table = models.ComparableTable.objects.filter(ref_no=valuation).latest('id')
+    except:
+        comp_table = None
+    try:
+        mvb_table = models.MvbTable.objects.filter(ref_no=valuation).latest('id')
+    except:
+        mvb_table = None
+    try:
+        subject_prop = models.ComparableProperty.objects.filter(ref_no=valuation).latest('id')
+    except:
+        subject_prop = None
+    if comp_table:
+        comp = ast.literal_eval(comp_table.comparable)
+        comparable = models.ComparableProperty.objects.filter(id__in=comp)
+        nr_comp = len(ast.literal_eval(comp_table.comparable))
+        template = 'valuation/edit_comparable.html'
+    else:
+        comp = ast.literal_eval(request.GET.get('comp'))
+        nr_comp = request.GET.get('nr_comp')
+        comparable = models.ComparableProperty.objects.filter(id__in=comp)
+        template = 'valuation/add_comparable.html'
     pre_url = 'details' if request.GET.get('page') else None
     mobila = models.MobilaType.objects.all()
     prop_rights = models.PropertyRightType.objects.all()
@@ -389,11 +508,6 @@ def add_comparable(request, id):
         const = models.Construction.objects.filter(ref_no__id=id).latest('id')
     except:
         const = None
-    if comp:
-        comparable = models.ComparableProperty.objects.filter(id__in=comp)
-    else:
-        comparable = None
-    nr_comp = request.GET.get('nr_comp')
     letters = string.ascii_uppercase
     msg = None
 
@@ -511,12 +625,15 @@ def add_comparable(request, id):
         gross_euro = request.POST.getlist('gross_euro[]')
         estimated_value = request.POST.get('estimated_value')
         smallest_gross = request.POST.get('smallest_gross')
-
-        sub_prop = models.ComparableProperty.objects.create(ref_no=valuation, is_comparable=0, ad=sub_avdata, pr=sub_pr, fc=sub_fc, sc=sub_sc, ape=sub_ape, me=sub_me,lc=sub_location, cp=sub_cp, cy=sub_cy, area=subarea, finish=sub_finish, etaj=sub_etaj, balcon=subbalcon, hs=sub_hs, opt1_name=opt1_name, opt1_val=sub_opt1_val, opt2_name=opt2_name, opt2_val=sub_opt2_val, opt3_name=opt3_name, opt3_val=sub_opt3_val)
+        
+        if subject_prop:
+            sub_prop = models.ComparableProperty.objects.filter(id=subject_prop.id).update(ref_no=valuation, is_comparable=0, ad=sub_avdata, pr=sub_pr, fc=sub_fc, sc=sub_sc, ape=sub_ape, me=sub_me,lc=sub_location, cp=sub_cp, cy=sub_cy, area=subarea, finish=sub_finish, etaj=sub_etaj, balcon=subbalcon, hs=sub_hs, opt1_name=opt1_name, opt1_val=sub_opt1_val, opt2_name=opt2_name, opt2_val=sub_opt2_val, opt3_name=opt3_name, opt3_val=sub_opt3_val)
+        else:
+            sub_prop = models.ComparableProperty.objects.create(ref_no=valuation, is_comparable=0, ad=sub_avdata, pr=sub_pr, fc=sub_fc, sc=sub_sc, ape=sub_ape, me=sub_me,lc=sub_location, cp=sub_cp, cy=sub_cy, area=subarea, finish=sub_finish, etaj=sub_etaj, balcon=subbalcon, hs=sub_hs, opt1_name=opt1_name, opt1_val=sub_opt1_val, opt2_name=opt2_name, opt2_val=sub_opt2_val, opt3_name=opt3_name, opt3_val=sub_opt3_val)
 
         comp_list = []
         if comparable:
-            comp_list = comp
+            comp_list = comp #todo udpate comp  
             if len(comparable) != int(nr_comp):
                 for i in range(len(comparable), int(nr_comp)):
                     prop = models.ComparableProperty.objects.create(sale_price=sale_price[i], mobila=mobila[i], ma=ma[i], parking_boxa=parking_boxa[i], pba=pba[i], ad=ad[i], pr=pr[i], fc=fc[i], sc=sc[i], ape=ape[i], me=me[i],lc=lc[i], cp=cp[i], cy=cy[i], area=area[i], finish=finish[i], etaj=etaj[i], balcon=balcon[i], hs=hs[i], opt1_name=opt1_name, opt1_val=opt1_val[i], opt2_name=opt2_name, opt2_val=opt2_val[i], opt3_name=opt3_name, opt3_val=opt3_val[i])
@@ -525,8 +642,11 @@ def add_comparable(request, id):
             for i in range(int(nr_comp)):
                 prop = models.ComparableProperty.objects.create(sale_price=sale_price[i], mobila=mobila[i], ma=ma[i], parking_boxa=parking_boxa[i], pba=pba[i], ad=ad[i], pr=pr[i], fc=fc[i], sc=sc[i], ape=ape[i], me=me[i],lc=lc[i], cp=cp[i], cy=cy[i], area=area[i], finish=finish[i], etaj=etaj[i], balcon=balcon[i], hs=hs[i], opt1_name=opt1_name, opt1_val=opt1_val[i], opt2_name=opt2_name, opt2_val=opt2_val[i], opt3_name=opt3_name, opt3_val=opt3_val[i])
                 comp_list.append(prop.id)
-                
-        table = models.ComparableTable.objects.create(ref_no=valuation, comparable=comp_list, name=letters[:int(nr_comp)], op=op, margin=margin, cv=cv, mp=mp, motivation=motivation, pr_percent=pr_percent, pr_euro=pr_euro, pr_price=pr_price, pr_motivation=pr_motivation, fc_percent=fc_percent, fc_euro=fc_euro, fc_price=fc_price, fc_motivation=fc_motivation, sc_percent=sc_percent, sc_euro=sc_euro, sc_price=sc_price, sc_motivation=sc_motivation, ape_percent=ape_percent, ape_euro=ape_euro, ape_price=ape_price, ape_motivation=ape_motivation, me_percent=me_percent, me_euro=me_euro, me_price=me_price, me_motivation=me_motivation, lc_percent=lc_percent, lc_euro=lc_euro, lc_motivation=lc_motivation, cp_percent=cp_percent, cp_euro=cp_euro, cp_motivation=cp_motivation, cy_percent=cy_percent, cy_euro=cy_euro, cy_motivation=cy_motivation, su_diff=su_diff, su_percent=su_percent, su_euro=su_euro, su_motivation=su_motivation, finish_percent=finish_percent, finish_euro=finish_euro, finish_motivation=finish_motivation, etaj_percent=etaj_percent, etaj_euro=etaj_euro, etaj_motivation=etaj_motivation, price_persqm=price_persqm, balcon_percent=balcon_percent, balcon_euro=balcon_euro, balcon_motivation=balcon_motivation, hs_percent=hs_percent, hs_euro=hs_euro, hs_motivation=hs_motivation, opt1_percent=opt1_percent, opt1_euro=opt1_euro, opt1_motivation=opt1_motivation, opt2_percent=opt2_percent, opt2_euro=opt2_euro, opt2_motivation=opt2_motivation, opt3_percent=opt3_percent, opt3_euro=opt3_euro, opt3_motivation=opt3_motivation, net_adjustment=net_adjustment,adjustment_price=adjustment_price, adjustment_no=adjustment_no,total_percent=total_percent,total_euro=total_euro,gross_percent=gross_percent,gross_euro=gross_euro,estimated_value=estimated_value,smallest_gross=smallest_gross)
+        
+        if comp_table:
+            table = models.ComparableTable.objects.filter(id=comp_table.id).update(ref_no=valuation, comparable=comp_list, name=letters[:int(nr_comp)], op=op, margin=margin, cv=cv, mp=mp, motivation=motivation, pr_percent=pr_percent, pr_euro=pr_euro, pr_price=pr_price, pr_motivation=pr_motivation, fc_percent=fc_percent, fc_euro=fc_euro, fc_price=fc_price, fc_motivation=fc_motivation, sc_percent=sc_percent, sc_euro=sc_euro, sc_price=sc_price, sc_motivation=sc_motivation, ape_percent=ape_percent, ape_euro=ape_euro, ape_price=ape_price, ape_motivation=ape_motivation, me_percent=me_percent, me_euro=me_euro, me_price=me_price, me_motivation=me_motivation, lc_percent=lc_percent, lc_euro=lc_euro, lc_motivation=lc_motivation, cp_percent=cp_percent, cp_euro=cp_euro, cp_motivation=cp_motivation, cy_percent=cy_percent, cy_euro=cy_euro, cy_motivation=cy_motivation, su_diff=su_diff, su_percent=su_percent, su_euro=su_euro, su_motivation=su_motivation, finish_percent=finish_percent, finish_euro=finish_euro, finish_motivation=finish_motivation, etaj_percent=etaj_percent, etaj_euro=etaj_euro, etaj_motivation=etaj_motivation, price_persqm=price_persqm, balcon_percent=balcon_percent, balcon_euro=balcon_euro, balcon_motivation=balcon_motivation, hs_percent=hs_percent, hs_euro=hs_euro, hs_motivation=hs_motivation, opt1_percent=opt1_percent, opt1_euro=opt1_euro, opt1_motivation=opt1_motivation, opt2_percent=opt2_percent, opt2_euro=opt2_euro, opt2_motivation=opt2_motivation, opt3_percent=opt3_percent, opt3_euro=opt3_euro, opt3_motivation=opt3_motivation, net_adjustment=net_adjustment,adjustment_price=adjustment_price, adjustment_no=adjustment_no,total_percent=total_percent,total_euro=total_euro,gross_percent=gross_percent,gross_euro=gross_euro,estimated_value=estimated_value,smallest_gross=smallest_gross)
+        else:
+            table = models.ComparableTable.objects.create(ref_no=valuation, comparable=comp_list, name=letters[:int(nr_comp)], op=op, margin=margin, cv=cv, mp=mp, motivation=motivation, pr_percent=pr_percent, pr_euro=pr_euro, pr_price=pr_price, pr_motivation=pr_motivation, fc_percent=fc_percent, fc_euro=fc_euro, fc_price=fc_price, fc_motivation=fc_motivation, sc_percent=sc_percent, sc_euro=sc_euro, sc_price=sc_price, sc_motivation=sc_motivation, ape_percent=ape_percent, ape_euro=ape_euro, ape_price=ape_price, ape_motivation=ape_motivation, me_percent=me_percent, me_euro=me_euro, me_price=me_price, me_motivation=me_motivation, lc_percent=lc_percent, lc_euro=lc_euro, lc_motivation=lc_motivation, cp_percent=cp_percent, cp_euro=cp_euro, cp_motivation=cp_motivation, cy_percent=cy_percent, cy_euro=cy_euro, cy_motivation=cy_motivation, su_diff=su_diff, su_percent=su_percent, su_euro=su_euro, su_motivation=su_motivation, finish_percent=finish_percent, finish_euro=finish_euro, finish_motivation=finish_motivation, etaj_percent=etaj_percent, etaj_euro=etaj_euro, etaj_motivation=etaj_motivation, price_persqm=price_persqm, balcon_percent=balcon_percent, balcon_euro=balcon_euro, balcon_motivation=balcon_motivation, hs_percent=hs_percent, hs_euro=hs_euro, hs_motivation=hs_motivation, opt1_percent=opt1_percent, opt1_euro=opt1_euro, opt1_motivation=opt1_motivation, opt2_percent=opt2_percent, opt2_euro=opt2_euro, opt2_motivation=opt2_motivation, opt3_percent=opt3_percent, opt3_euro=opt3_euro, opt3_motivation=opt3_motivation, net_adjustment=net_adjustment,adjustment_price=adjustment_price, adjustment_no=adjustment_no,total_percent=total_percent,total_euro=total_euro,gross_percent=gross_percent,gross_euro=gross_euro,estimated_value=estimated_value,smallest_gross=smallest_gross)
 
         # mvb table creation 
         sub_rent_sqm = request.POST.get('sub_rent_sqm')
@@ -539,9 +659,12 @@ def add_comparable(request, id):
         vbp = request.POST.getlist('mvb_vbp[]')
         mvbp = request.POST.getlist('mvb_mvbp[]')
         min_mvbp = request.POST.get('mvb_min')
-        mvb_table = models.MvbTable.objects.create(ref_no=valuation, sub_rent_sqm=sub_rent_sqm, sub_monthly_rent=sub_monthly_rent, sub_vbp=sub_vbp,vpcd=vpcd, vpcd_rotund=vpcd_rotund,monthly_rent=monthly_rent,rent_sqm=rent_sqm,vbp=vbp,mvbp=mvbp,min_mvbp=min_mvbp)
+        if mvb_table:
+            mvb_tbl = models.MvbTable.objects.filter(id=mvb_table.id).update(ref_no=valuation, sub_rent_sqm=sub_rent_sqm, sub_monthly_rent=sub_monthly_rent, sub_vbp=sub_vbp,vpcd=vpcd, vpcd_rotund=vpcd_rotund,monthly_rent=monthly_rent,rent_sqm=rent_sqm,vbp=vbp,mvbp=mvbp,min_mvbp=min_mvbp)
+        else:
+            mvb_tbl = models.MvbTable.objects.create(ref_no=valuation, sub_rent_sqm=sub_rent_sqm, sub_monthly_rent=sub_monthly_rent, sub_vbp=sub_vbp,vpcd=vpcd, vpcd_rotund=vpcd_rotund,monthly_rent=monthly_rent,rent_sqm=rent_sqm,vbp=vbp,mvbp=mvbp,min_mvbp=min_mvbp)
     
-        if table and mvb_table:
+        if table and mvb_tbl:
             if request.POST.get('pre_url') == 'details':
                 return redirect('dashboard:details', id=id)
             else:
@@ -562,6 +685,9 @@ def add_comparable(request, id):
         'msg': msg,
         'pre_url': pre_url,
         'segment': 'comparable',
+        'comp_table': comp_table,
+        'sub_prop': subject_prop,
+        'mvb_table': mvb_table,
     }
     return render(request, template, context)
 
@@ -740,6 +866,59 @@ def delete_photos(request):
     photo = get_object_or_404(models.Photo, id=id)
     try:
         response = 1 #photo.delete()
+        if response:
+            return JsonResponse({'success': 'true'})
+    except:
+        return JsonResponse({'success': 'false'})
+
+
+# ==========================================================================
+# =========================== delete suprafete =============================
+# ==========================================================================
+@login_required(login_url='/signin/')
+def delete_suprafete(request):
+    id = request.GET.get('id')
+    print(id)
+    suprafete = get_object_or_404(models.Suprafete, id=id)
+    try:
+        response = suprafete.delete()
+        if response:
+            return JsonResponse({'success': 'true'})
+    except:
+        return JsonResponse({'success': 'false'})
+
+
+# ==========================================================================
+# ============================= manage sources =============================
+# ==========================================================================
+@login_required(login_url='/signin/')
+def update_sources(request):
+    if request.method == 'POST':
+        ids = request.POST.getlist('ids[]')
+        sources = request.POST.getlist('sources[]')
+        valuation = get_object_or_404(models.ValuatedProperty, id=request.POST.get('ref_no'))
+        res_id = []
+        for id, source in zip(ids, sources):
+            if id == '0':
+                res = models.SourceofInformation.objects.create(ref_no=valuation,source=source)
+                if res:
+                    res_id.append(res.id)
+            else: 
+                res_id.append(id)
+                res = models.SourceofInformation.objects.filter(id=id).update(source=source)
+        if res_id:
+            return JsonResponse({'success': 'true', 'res_id': json.dumps(res_id)})
+        else:
+            return JsonResponse({'success': 'false'})
+    return JsonResponse({'success': 'false'})
+
+@login_required(login_url='/signin/')
+def delete_source(request):
+    id = request.GET.get('id')
+    print(id)
+    source = get_object_or_404(models.SourceofInformation, id=id)
+    try:
+        response = source.delete()
         if response:
             return JsonResponse({'success': 'true'})
     except:

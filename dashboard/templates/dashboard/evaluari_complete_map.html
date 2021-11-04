@@ -41,7 +41,7 @@
                         <i class="flaticon-right-arrow"></i>
                     </li>
                     <li class="nav-item">
-                        <a href="{% url 'dashboard:complete' %}">Evaluari Complete</a>
+                        <a href="{% url 'dashboard:dashboard' %}">Evaluari Complete</a>
                     </li>
                     <li class="separator">
                         <i class="flaticon-right-arrow"></i>
@@ -103,7 +103,7 @@
             var title = mydata[i].pk
             var marker = L.marker(new L.LatLng(lat, lng), { title: title });
             var url = '{% url "dashboard:details" id=1234 %}'.replace('1234', title)
-            marker.bindPopup('<a href="'+url+'" target="_blank"><i class="far fa-eye mr-1"></i>View</a>');
+            marker.bindPopup('<a href="'+url+'" target="_blank"><i class="far fa-eye mr-1"></i>Details</a>');
             markers.addLayer(marker);
         }
         map.addLayer(markers);

@@ -166,7 +166,7 @@
                             <div class="col-md-12">
                                 <div class="form-group">
                                     <label for="id_valued_property">Proprietate Evaluata <span class="required-label">*</span></label>
-                                    <textarea name="valued_property" id="id_valued_property" rows="5" class="form-control">Dreptul deplin de proprietate asupra apartamentului cu nr. {{valuation.apartment_no}}, compus din {{camara|floatformat:"0"}} camere si dependinte cu o suprafata utila de 0.00 mp si trei balcoane cu suprafata lor totala de 0.00, rezultand suprafata utila totala de 0.00 mp, impreuna cu dreptul de proprietate asupra cotei indivize de 0.00 mp din partile si dependintele comune ale imobilului si dreptul de proprietate asupra terenului in suprafata de indiviza de 0.00 mp.</textarea>
+                                    <textarea name="valued_property" id="id_valued_property" rows="5" class="form-control">{% if summary.valued_property %}{{summary.valued_property}}{% else %}Dreptul deplin de proprietate asupra apartamentului cu nr. {{valuation.apartment_no}}, compus din {{camara|floatformat:"0"}} camere si dependinte cu o suprafata utila de 0.00 mp si trei balcoane cu suprafata lor totala de 0.00, rezultand suprafata utila totala de 0.00 mp, impreuna cu dreptul de proprietate asupra cotei indivize de 0.00 mp din partile si dependintele comune ale imobilului si dreptul de proprietate asupra terenului in suprafata de indiviza de 0.00 mp.{% endif %}</textarea>
                                     <small class="form-text text-danger valued_property_error"></small>
                                 </div>
                             </div>
@@ -183,18 +183,31 @@
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="id_fer">Curs valutar <span class="required-label">*</span></label>
+                                    {% if summary.fer %}
+                                    <div class="input-group">
+                                        <input type="number" class="form-control" name="fer" id="id_fer" value="{{summary.fer}}" step="0.01">
+                                        <div class="input-group-append">
+                                            <span class="input-group-text">RON</span>
+                                        </div>
+                                    </div>
+                                    {% else %}
                                     <div class="input-group">
                                         <input type="number" class="form-control" name="fer" id="id_fer" value="{{ fer }}" step="0.01" readonly>
                                         <div class="input-group-append">
                                             <span class="input-group-text">RON</span>
                                         </div>
                                     </div>
+                                    {% endif %}
                                 </div>
                             </div>
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="id_fer_date">Data <span class="required-label">*</span></label>
+                                    {% if summary.fer_date %}
+                                    <input type="date" id="id_fer_date" class="form-control" name="fer_date" value="{{summary.fer_date|date:'Y-m-d'}}">
+                                    {% else %}
                                     <input type="date" id="id_fer_date" class="form-control" name="fer_date" value="{{yesterday}}" readonly>
+                                    {% endif %}
                                 </div>
                             </div>
                         </div>
@@ -223,55 +236,74 @@
                                 </div>
                             </div>
 
-                            {% if above_parking %}
-                                {% for i in above_parking|myrange %}
-                                <div class="col-md-3">
-                                    <div class="form-group">
-                                        <input type="text" name="field_name_mv[]" value="Loc de parcare" class="form-control">
-                                        <div class="input-group">
-                                            <input type="number" name="field_value_mv[]" class="form-control mv_ap" step="0.01">
-                                            <div class="input-group-append">
-                                                <span class="input-group-text">EUR</span>
+                            {% if summary_value %}
+                                {% for sv in summary_value %}
+                                    {% if sv.approache == 'market' %}
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <input type="text" name="field_name_mv[]" value="{{sv.field_name}}" class="form-control">
+                                                <div class="input-group">
+                                                    <input type="number" name="field_value_mv[]" class="form-control mv_ap" step="0.01" value="{{sv.field_value}}">
+                                                    <div class="input-group-append">
+                                                        <span class="input-group-text">EUR</span>
+                                                    </div>
+                                                </div>
+                                                <small class="text-danger form-text mv_ap_error"></small>
                                             </div>
                                         </div>
-                                        <small class="text-danger form-text mv_ap_error"></small>
-                                    </div>
-                                </div>
+                                    {% endif %}
                                 {% endfor %}
-                            {% endif %}
+                            {% else %}
+                                {% if above_parking %}
+                                    {% for i in above_parking|myrange %}
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <input type="text" name="field_name_mv[]" value="Parcare suprateran" class="form-control">
+                                            <div class="input-group">
+                                                <input type="number" name="field_value_mv[]" class="form-control mv_ap" step="0.01">
+                                                <div class="input-group-append">
+                                                    <span class="input-group-text">EUR</span>
+                                                </div>
+                                            </div>
+                                            <small class="text-danger form-text mv_ap_error"></small>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                {% endif %}
 
-                            {% if below_parking %}
-                                {% for i in below_parking|myrange %}
-                                <div class="col-md-3">
-                                    <div class="form-group">
-                                        <input type="text" name="field_name_mv[]" value="Loc de parcare" class="form-control" >
-                                        <div class="input-group">
-                                            <input type="number" name="field_value_mv[]" class="form-control mv_bp" step="0.01">
-                                            <div class="input-group-append">
-                                                <span class="input-group-text">EUR</span>
+                                {% if below_parking %}
+                                    {% for i in below_parking|myrange %}
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <input type="text" name="field_name_mv[]" value="Parcare subteran" class="form-control" >
+                                            <div class="input-group">
+                                                <input type="number" name="field_value_mv[]" class="form-control mv_bp" step="0.01">
+                                                <div class="input-group-append">
+                                                    <span class="input-group-text">EUR</span>
+                                                </div>
                                             </div>
+                                            <small class="text-danger form-text mv_bp_error"></small>
                                         </div>
-                                        <small class="text-danger form-text mv_bp_error"></small>
                                     </div>
-                                </div>
-                                {% endfor %}
-                            {% endif %}
+                                    {% endfor %}
+                                {% endif %}
 
-                            {% if boxa %}
-                                {% for i in boxa|myrange %}
-                                <div class="col-md-3">
-                                    <div class="form-group">
-                                        <input type="text" name="field_name_mv[]" value="Boxa" class="form-control" >
-                                        <div class="input-group">
-                                            <input type="number" name="field_value_mv[]" class="form-control mv_boxa" step="0.01">
-                                            <div class="input-group-append">
-                                                <span class="input-group-text">EUR</span>
+                                {% if boxa %}
+                                    {% for i in boxa|myrange %}
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <input type="text" name="field_name_mv[]" value="Boxa" class="form-control" >
+                                            <div class="input-group">
+                                                <input type="number" name="field_value_mv[]" class="form-control mv_boxa" step="0.01">
+                                                <div class="input-group-append">
+                                                    <span class="input-group-text">EUR</span>
+                                                </div>
                                             </div>
+                                            <small class="text-danger form-text mv_boxa_error"></small>
                                         </div>
-                                        <small class="text-danger form-text mv_boxa_error"></small>
                                     </div>
-                                </div>
-                                {% endfor %}
+                                    {% endfor %}
+                                {% endif %}
                             {% endif %}
                         </div>
 
@@ -299,55 +331,74 @@
                                 </div>
                             </div>
 
-                            {% if above_parking %}
-                                {% for i in above_parking|myrange %}
-                                <div class="col-md-3">
-                                    <div class="form-group">
-                                        <input type="text" name="field_name_iv[]" value="Loc de parcare" class="form-control" >
-                                        <div class="input-group">
-                                            <input type="number" name="field_value_iv[]" class="form-control iv_ap" step="0.01">
-                                            <div class="input-group-append">
-                                                <span class="input-group-text">EUR</span>
+                            {% if summary_value %}
+                                {% for sv in summary_value %}
+                                    {% if sv.approache == 'income' %}
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <input type="text" name="field_name_mv[]" value="{{sv.field_name}}" class="form-control">
+                                                <div class="input-group">
+                                                    <input type="number" name="field_value_mv[]" class="form-control mv_ap" step="0.01" value="{{sv.field_value}}">
+                                                    <div class="input-group-append">
+                                                        <span class="input-group-text">EUR</span>
+                                                    </div>
+                                                </div>
+                                                <small class="text-danger form-text mv_ap_error"></small>
                                             </div>
                                         </div>
-                                        <small class="form-text text-danger iv_ap_error"></small>
-                                    </div>
-                                </div>
+                                    {% endif %}
                                 {% endfor %}
-                            {% endif %}
+                            {% else %}
+                                {% if above_parking %}
+                                    {% for i in above_parking|myrange %}
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <input type="text" name="field_name_iv[]" value="Parcare suprateran" class="form-control" >
+                                            <div class="input-group">
+                                                <input type="number" name="field_value_iv[]" class="form-control iv_ap" step="0.01">
+                                                <div class="input-group-append">
+                                                    <span class="input-group-text">EUR</span>
+                                                </div>
+                                            </div>
+                                            <small class="form-text text-danger iv_ap_error"></small>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                {% endif %}
 
-                            {% if below_parking %}
-                                {% for i in below_parking|myrange %}
-                                <div class="col-md-3">
-                                    <div class="form-group">
-                                        <input type="text" name="field_name_iv[]" value="Loc de parcare" class="form-control" >
-                                        <div class="input-group">
-                                            <input type="number" name="field_value_iv[]" class="form-control iv_bp" step="0.01">
-                                            <div class="input-group-append">
-                                                <span class="input-group-text">EUR</span>
+                                {% if below_parking %}
+                                    {% for i in below_parking|myrange %}
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <input type="text" name="field_name_iv[]" value="Parcare subteran" class="form-control" >
+                                            <div class="input-group">
+                                                <input type="number" name="field_value_iv[]" class="form-control iv_bp" step="0.01">
+                                                <div class="input-group-append">
+                                                    <span class="input-group-text">EUR</span>
+                                                </div>
                                             </div>
+                                            <small class="form-text text-danger iv_bp_error"></small>
                                         </div>
-                                        <small class="form-text text-danger iv_bp_error"></small>
                                     </div>
-                                </div>
-                                {% endfor %}
-                            {% endif %}
+                                    {% endfor %}
+                                {% endif %}
 
-                            {% if boxa %}
-                                {% for i in boxa|myrange %}
-                                <div class="col-md-3">
-                                    <div class="form-group">
-                                        <input type="text" name="field_name_iv[]" value="Boxa" class="form-control" >
-                                        <div class="input-group">
-                                            <input type="number" name="field_value_iv[]" class="form-control iv_boxa" step="0.01">
-                                            <div class="input-group-append">
-                                                <span class="input-group-text">EUR</span>
+                                {% if boxa %}
+                                    {% for i in boxa|myrange %}
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <input type="text" name="field_name_iv[]" value="Boxa" class="form-control" >
+                                            <div class="input-group">
+                                                <input type="number" name="field_value_iv[]" class="form-control iv_boxa" step="0.01">
+                                                <div class="input-group-append">
+                                                    <span class="input-group-text">EUR</span>
+                                                </div>
                                             </div>
+                                            <small class="text-danger form-text iv_boxa_error"></small>
                                         </div>
-                                        <small class="text-danger form-text iv_boxa_error"></small>
                                     </div>
-                                </div>
-                                {% endfor %}
+                                    {% endfor %}
+                                {% endif %}
                             {% endif %}
                         </div>
                     </form>
@@ -394,9 +445,9 @@
 
                 <div class="card-action">
                     {% if summary %}
-                    <button class="btn btn-success step-two-next" id="finish">UPDATE</button>
+                        <button class="btn btn-success step-two-next" id="finish">UPDATE</button>
                     {% else %}
-                    <button class="btn btn-success step-two-next" id="finish">{% if 'details' in pre_url %}SAVE{% else %}Next{% endif %}</button>
+                        <button class="btn btn-success step-two-next" id="finish">{% if 'details' in pre_url %}SAVE{% else %}Next{% endif %}</button>
                     {% endif %}
                 </div>
             </div>
@@ -502,7 +553,7 @@
             $("#summary-list").sortable('destroy');
             var sh = [];
             $("#summary-list li").each(function() {
-                sh.push($(this).attr('id').substr(14));
+                sh.push($(this).attr('id').substr(8));
             });
             $.ajax({
                 url: "{% url 'valuation:reorder_photos' %}",
@@ -550,13 +601,13 @@
                 data: {id: pid},
                 success: function (e) {
                     if(e.success=='true') {
-                        if(pid==last_cover_id) {
+                        if(pid==last_summary_id) {
                             $('.summary_photos').find('#summary-container').remove();
                         } else {
                             $('#summary-list').find('#summary_'+pid).remove();
                         }
-                        cover_size -= 1;
-                        check_cover_upload();
+                        summary_size -= 1;
+                        check_summary_upload();
                     } else {
                         $("#summary-txtresponse").text('Problem deleting the photo');
                     }
