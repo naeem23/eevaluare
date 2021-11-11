@@ -69,7 +69,7 @@
                                                 <a href="{% url 'dashboard:details' id=obj.id %}"><span class="text-light">EPI-{{obj.reference_no}}-{{obj.inspection_date|date:"dmy"}}</span></a>
                                             </td>
                                             <td>
-                                                <a href="{% url 'dashboard:details' id=obj.id %}"><span class="text-light">{{obj|get_market_value|floatformat:'0'}} EUR</span></a>
+                                                <a href="{% url 'dashboard:details' id=obj.id %}"><span class="text-light">{{obj|get_resulting_value|floatformat:'0'}} EUR</span></a>
                                             </td>
                                             <td>
                                                 <a href="{% url 'dashboard:details' id=obj.id %}"><span class="text-light">{{obj|get_utila_totala}}</span></a>

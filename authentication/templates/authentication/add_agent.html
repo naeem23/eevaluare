@@ -49,44 +49,58 @@
                             {% csrf_token %}
 
                             <div class="card-body">
-                                <div class="row">
-                                    <div class="col-md-6 col-lg-4">
-                                        {% if msg %}
-                                            <div class="msg mb-2">
-                                                <span class="text-danger">{{ msg | safe }}</span>
-                                            </div>
-                                        {% endif %}
+                                {% if msg %}
+                                    <div class="msg mb-2">
+                                        <span class="text-danger">{{ msg | safe }}</span>
+                                    </div>
+                                {% endif %}
 
+                                <div class="row">
+                                    <div class="col-md-6">
                                         <div class="form-group">
                                             <label for="id_username">Username</label>
                                             {{form.username}}
                                         </div>
                                         <span class="text-danger">{{form.username.errors}}</span>
+                                    </div>
 
-                                        <div class="form-group">
-                                            <label for="id_first_name">First Name</label>
-                                            {{form.first_name}}
-                                        </div>
-                                        <span class="text-danger">{{form.first_name.errors}}</span>
-
-                                        <div class="form-group">
-                                            <label for="id_last_name">Last Name</label>
-                                            {{form.last_name}}
-                                        </div>
-                                        <span class="text-danger">{{form.last_name.errors}}</span>
-
+                                    <div class="col-md-6">
                                         <div class="form-group">
                                             <label for="id_email">Email</label>
                                             {{form.email}}
                                         </div>
                                         <span class="text-danger">{{form.email.errors}}</span>
+                                    </div>
+                                </div>
+                                 
+                                <div class="row">   
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="id_first_name">First Name</label>
+                                            {{form.first_name}}
+                                        </div>
+                                        <span class="text-danger">{{form.first_name.errors}}</span>
+                                    </div>
+                                    
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="id_last_name">Last Name</label>
+                                            {{form.last_name}}
+                                        </div>
+                                        <span class="text-danger">{{form.last_name.errors}}</span>
+                                    </div>
+                                </div>
 
+                                <div class="row">   
+                                    <div class="col-md-6">
                                         <div class="form-group">
                                             <label for="id_password1">Password</label>
                                             {{ form.password1 }}
                                         </div>
                                         <span class="text-danger">{{form.password1.errors}}</span>
+                                    </div>
 
+                                    <div class="col-md-6">
                                         <div class="form-group">
                                             <label for="id_password2">Password check</label>
                                             {{ form.password2 }}

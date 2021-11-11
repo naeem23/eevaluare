@@ -12,7 +12,18 @@ urlpatterns = [
     path('add-market-analysis/<int:id>/', views.add_market_analysis, name="add_market_analysis"),
     path('select-comparable/<int:id>/', views.select_comparable, name="select_comparable"),
     path('add-comparable/<int:id>/', views.add_comparable, name="add_comparable"),
-    path('add-anexa/<int:id>/', views.add_anexa, name="add_anexa"),
+    path('edit-comparable/<int:id>/', views.edit_comparable, name="edit_comparable"),
+    path('edit-valuation/<int:id>/', views.edit_initial_data, name="edit_initial"),
+
+    path('test/', views.test, name="test"),
+
+    # milton
+    path('add-anexa1/<int:id>/', views.add_anexa1, name="add_anexa1"),
+    path('add-anexa2/<int:id>/', views.add_anexa2, name="add_anexa2"),
+    path('add-anexa3/<int:id>/', views.add_anexa3, name="add_anexa3"),
+    path('add-anexa4/<int:id>/', views.add_anexa4, name="add_anexa4"),
+    path('delete/file/', views.delete_file, name="delete_file"), # ajax to delete file
+    path('screenshot/file/', views.screenshot_html, name="screenshot_html"), # ajax to screen shot
 
     # api call
     path('api/get-city/', views.get_city, name="get_city"),
@@ -24,4 +35,9 @@ urlpatterns = [
     path('api/delete-suprafete/', views.delete_suprafete, name='delete_suprafete'),
     path('api/update-sources/', views.update_sources, name='update_sources'),
     path('api/delete-sources/', views.delete_source, name='delete_source'),
+    path('api/delete-custom/', views.delete_custom_field, name='delete_custom'),
+
+    # comparable property url 
+    path('add-comparabile/', views.add_comp_prop, name="add_comp_prop"),
+    path('detalii-comparabile/<int:id>/', views.comp_prop_details, name="comp_prop_details"),
 ]

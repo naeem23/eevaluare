@@ -39,6 +39,34 @@ class InitialForm(forms.ModelForm):
 		exclude = ('reference_no', 'title', 'status', 'inspection_date', 'valuation_date', 'report_date', 'assigned_to')
 		
 
+class EditInitialForm(forms.ModelForm):
+	evaluator = UserModelChoiceField(required=False, queryset=User.objects.filter(is_inspector=True), widget=forms.Select(attrs={'class': 'form-control'}))
+	property_type = forms.ModelChoiceField(queryset=PropertyType.objects.all(), widget=forms.Select(attrs={'class': 'form-control',}))
+	compartment_type = forms.ModelChoiceField(required=False, queryset=CompartmentType.objects.all(), widget=forms.Select(attrs={'class': 'form-control'}))
+	apartment_no = forms.CharField(required=False, max_length=55, widget=forms.TextInput(attrs={'class': 'form-control'}))
+	address = forms.CharField(max_length=255, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Address'}))
+	area = forms.ModelChoiceField(queryset=Area.objects.all(), widget=forms.Select(attrs={'class': 'form-control'}),empty_label="Alege")
+	urbana = forms.ChoiceField(required=False, choices=URBANA_CHOICE, widget=forms.Select(attrs={'class': 'form-control'}))
+	locatie = forms.ChoiceField(required=False, choices=LOCATIE_CHOICE, widget=forms.Select(attrs={'class': 'form-control'}))
+	latitude = forms.CharField(max_length=255, widget=forms.TextInput(attrs={'class': 'form-control', 'type': 'hidden'}))
+	longitude = forms.CharField(max_length=255, widget=forms.TextInput(attrs={'class': 'form-control', 'type': 'hidden'}))
+	height = forms.CharField(max_length=55, widget=forms.TextInput(attrs={'class': 'form-control'}))
+	construction_year = forms.CharField(max_length=5, widget=forms.TextInput(attrs={'class': 'form-control'}))
+	owner = forms.CharField(max_length=150, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Proprietar'}))
+	nume_client = forms.CharField(max_length=150, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nume Client'}))
+	ct_address = forms.CharField(required=False, max_length=150, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Client Address'}))
+	cui = forms.CharField(required=False, max_length=150, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Company Reg No.'}))
+	report_recipient = forms.CharField(max_length=150, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Destinatar Raport'}))
+	status = forms.ModelChoiceField(queryset=Status.objects.all(), widget=forms.Select(attrs={'class': 'form-control',}))
+	inspection_date = forms.DateField(required=False, widget=forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}))
+	valuation_date = forms.DateField(required=False, widget=forms.DateInput(attrs={'class': 'form-control','type': 'date'}))
+	report_date = forms.DateField(required=False, widget=forms.DateInput(attrs={'class': 'form-control','type': 'date'}))
+
+	class Meta:
+		model = ValuatedProperty
+		exclude = ('reference_no',)
+
+
 class AddValuationSummary(forms.ModelForm):
 	purpose = forms.ModelChoiceField(queryset=ValuationPurpose.objects.all(), widget=forms.Select(attrs={'class': 'form-control',}))
 	amav = forms.DecimalField(max_digits=10, decimal_places=2, widget=forms.NumberInput(attrs={'class': 'form-control', 'placeholder': '0.00', 'step': '0.01'}))
@@ -105,8 +133,12 @@ class MarketAnalysisForm(forms.ModelForm):
 	liquidity = forms.ChoiceField(required=False, choices=LIQUIDITY_CHOICE, widget=forms.Select(attrs={'class': 'form-control'}))
 	transactions_nr = forms.ChoiceField(required=False, choices=TRANSACTIONS_CHOICE, widget=forms.Select(attrs={'class': 'form-control'})) 
 	exposure_period = forms.ChoiceField(required=False, choices=EXPOSURE_PERIOD_CHOICE, widget=forms.Select(attrs={'class': 'form-control'}))
+	offer_similar = forms.ChoiceField(choices=CONCLUSION_CHOICE, widget=forms.Select(attrs={'class': 'form-control'}))
+	application_similar = forms.ChoiceField(choices=CONCLUSION_CHOICE, widget=forms.Select(attrs={'class': 'form-control'}))
+	market_balance = forms.ChoiceField(choices=CONCLUSION_CHOICE, widget=forms.Select(attrs={'class': 'form-control'}))
 	minsale_price = forms.DecimalField(required=False, max_digits=10, decimal_places=2, widget=forms.NumberInput(attrs={'class': 'form-control'})) 
 	maxsale_price = forms.DecimalField(required=False, max_digits=10, decimal_places=2, widget=forms.NumberInput(attrs={'class': 'form-control'})) 
+	range = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}))
 
 	class Meta:
 		model = MarketAnalysis
@@ -116,19 +148,14 @@ class MarketAnalysisForm(forms.ModelForm):
 class ComparableForm(forms.ModelForm):
 	sale_price = forms.DecimalField(max_digits=10, decimal_places=2, widget=forms.NumberInput(attrs={'class': 'form-control'}))
 	ma = forms.DecimalField(max_digits=10, decimal_places=2, widget=forms.NumberInput(attrs={'class': 'form-control'}))
-	parking_boxa = forms.CharField(max_length=55, widget=forms.TextInput(attrs={'class': 'form-control'})) 
+	parking_boxa = forms.CharField(max_length=55, widget=forms.TextInput(attrs={'class': 'form-control', 'value': 'Nu'})) 
 	pba = forms.DecimalField(max_digits=10, decimal_places=2, widget=forms.NumberInput(attrs={'class': 'form-control'}))
 	lc = forms.CharField(max_length=255, widget=forms.TextInput(attrs={'class': 'form-control'}))
 	cy = forms.CharField(max_length=10, widget=forms.TextInput(attrs={'class': 'form-control'}))
 	area = forms.DecimalField(max_digits=10, decimal_places=2, widget=forms.NumberInput(attrs={'class': 'form-control'}))
 	etaj = forms.CharField(max_length=55, widget=forms.TextInput(attrs={'class': 'form-control'}))
 	balcon = forms.DecimalField(max_digits=10, decimal_places=2, widget=forms.NumberInput(attrs={'class': 'form-control'}))
-	opt1_name = forms.CharField(required=False, max_length=55, widget=forms.TextInput(attrs={'class': 'form-control'})) 
-	opt1_val = forms.CharField(required=False, max_length=55, widget=forms.TextInput(attrs={'class': 'form-control'})) 
-	opt2_name = forms.CharField(required=False, max_length=55, widget=forms.TextInput(attrs={'class': 'form-control'})) 
-	opt2_val = forms.CharField(required=False, max_length=55, widget=forms.TextInput(attrs={'class': 'form-control'})) 
-	opt3_name = forms.CharField(required=False, max_length=55, widget=forms.TextInput(attrs={'class': 'form-control'})) 
-	opt3_val = forms.CharField(required=False, max_length=55, widget=forms.TextInput(attrs={'class': 'form-control'})) 
+	camara = forms.CharField(max_length=10, widget=forms.NumberInput(attrs={'class': 'form-control', 'min': '2', 'value': '2'})) 
 	
 	class Meta: 
 		model = ComparableProperty

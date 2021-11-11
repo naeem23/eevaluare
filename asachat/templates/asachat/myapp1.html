@@ -1,0 +1,225 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">        
+        <style>
+        </style>
+        {% load static %}
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+        <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+        <script src='https://meet.jit.si/external_api.js'></script>
+
+        <script src="{% static 'asachat/myapp1.js'%}"></script>
+        
+        <script>
+            var apiObj = null;
+            
+            $(function(){
+                $('#btnStart').on('click',function(){
+                    apiObj = StartMeeting();
+                });
+            });
+             $(function(){
+                $('#btnScrShot').on('click',function(){
+                    ScreenShot();
+                });
+            });
+              $(function(){
+                $('#btnHangup').on('click',function(){
+                    console.log("hangup");
+                    // abstruct ====
+                    // apiObj == Null then close the tab
+                    apiObj.executeCommand('hangup');
+                    // location.reload();
+                    window.close();
+                });
+            });
+              $(function(){
+                $('#btnTest').on('click',function(){
+                   apiObj.executeCommand('toggleCamera');
+                });
+            });
+
+         </script>
+    </head>
+    <body>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12 col-md-12 col-sm-12 text-center">
+                    <button id='btnStart' class="btn-sm btn-primary">Join</button>
+                    <button id='btnHangup' class="btn-sm btn-danger">Hangup</button>
+                    <button id='btnScrShot' class="btn-sm btn-info">Take Photo</button>
+                    <input type="button" class="btn-sm btn-dark" id="start" value="Start Capture" />&nbsp;
+                    <input type="button" class="btn-sm btn-danger" id="stop" value="Stop Capture" />
+                    <button id='btnTest' class="btn-sm btn-success">Toggle Camera</button>
+                    
+                </div>
+            </div>
+        </div>
+        <div class="container" style="width:100%;border:1px red  solid;">
+            <div id='jitsi-meet-conf-container'></div>
+
+        </div>
+        <video style="visibility: hidden;" id="video" autoplay="autoplay"></video>
+
+    </body>
+    <script type="text/javascript">
+        
+            
+function StartMeeting(){
+    const domain = 'meet.jit.si';
+    const options = {
+        roomName: 'JitsiMeetAPIExample123',
+        width: '100%',
+        height: '100%',
+        parentNode: document.querySelector('#jitsi-meet-conf-container'),
+        configOverwrite: {
+            disableDeepLinking: true,
+        },
+        interfaceConfigOverwrite: {
+            SHOW_CHROME_EXTENSION_BANNER: false,
+        },
+    };
+    api = new JitsiMeetExternalAPI(domain, options);
+
+    return api;
+}
+
+function ScreenShot(){
+    apiObj.captureLargeVideoScreenshot().then(data => {
+        console.log(data.dataURL);   
+        // var a = document.createElement("a"); //Create <a>
+        // a.href = data.dataURL; //Image Base64 Goes here
+        // a.download = "Image.png"; //File name Here
+        // a.click(); //Downloaded file
+
+        // ajax to send blob
+        
+        $.ajax({
+            type:"POST",
+            url:"{% url 'asachat:chat_room' valuation.id %}",
+            dataType: 'json',
+            data:{
+                "blob": JSON.stringify(data.dataURL),
+                "csrfmiddlewaretoken": '{{ csrf_token }}',
+            },
+            success:function(response){
+                console.log(response.status);
+            }
+
+        });
+
+    });
+}
+
+
+            // screen recorder
+            const videoElem = document.getElementById("video");
+            const startElem = document.getElementById("start");
+            const stopElem = document.getElementById("stop");
+            // Options for getDisplayMedia()
+
+            var displayMediaOptions = {
+                video: {
+                    cursor: "always"
+                },
+                audio: false
+            };
+
+            // Set event listeners for the start and stop buttons
+            startElem.addEventListener("click", function (evt) {
+
+                console.log("cap");
+                startCapture();
+            }, false);
+
+            stopElem.addEventListener("click", function (evt) {
+                stopCapture();
+            }, false);
+
+            var stream = null;
+
+            async function startCapture() {
+                try {
+                    stream = await navigator.mediaDevices.getDisplayMedia(displayMediaOptions);
+                    videoElem.srcObject = stream;
+
+                    let recorder = new MediaRecorder(stream);
+                    let chunks = [];
+                    recorder.start();
+                    recorder.ondataavailable = event => {
+                        if (event.data.size > 0) {
+                            chunks.push(event.data)
+                        }
+                        console.log(chunks);
+                    }
+
+                    recorder.onstop = () => {
+                        const blob = new Blob(chunks, {
+                            type: 'video/mp4'
+                        })
+                        var blobUrl = URL.createObjectURL(blob);
+
+                        // download the video file
+                        saveData(blob,"samce");
+                        var fs = require('fs');
+                        console.log(fs);
+
+
+                        chunks = [];
+                        reader = new FileReader();
+                        reader.readAsDataURL(blob);
+
+                        reader.onload = function (event) {
+                            var arrayBuffer = event.target.result;
+                            //console.log(arrayBuffer);
+                            $.ajax({
+                                type: "POST",
+                                url: "RecordAndSave.aspx/Save",
+                                data: '{ "blobData": "' + arrayBuffer + '"}',
+                                contentType: "application/json; charset=utf-8",
+                                dataType: "json",
+                                success: function (msg) {
+                                    // Do something here
+                                    console.log("upload vedio file" + msg.d);
+                                }
+                            });
+                        };
+                    }
+                    //console.log(stream);
+                    dumpOptionsInfo();
+                } catch (err) {
+                    console.error("Error: " + err);
+                }
+            }
+
+            function stopCapture(evt) {
+                let tracks = videoElem.srcObject.getTracks();
+                tracks.forEach(track => track.stop());
+                videoElem.srcObject = null;
+            }
+
+            function dumpOptionsInfo() {
+                const videoTrack = videoElem.srcObject.getVideoTracks()[0];
+            }
+            // @func saveData(blob, filename) 
+            var saveData = (function () {
+            var a = document.createElement("a");
+            document.body.appendChild(a);
+            a.style = "display: none";
+                return function (blob, fileName) {
+
+                    url = window.URL.createObjectURL(blob);
+                    a.href = url;
+                    a.download = fileName;
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                };
+            }());
+            // screen recorder
+
+    </script>
+</html>

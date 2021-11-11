@@ -202,8 +202,6 @@ FILE_CHOICE = [
 	('document', 'Documente'),
 ]
 
-
-
 # COMPARABLE PROPERTY CHOICES 
 MOBILA_CHOICE = [
 	('nemobilat','Nemobilat'),
@@ -233,4 +231,10 @@ SALE_CONDITION_CHOICE = [
 APE_CHOICE = [
 	('da', 'Da'),
 	('nu', 'Nu'),
+]
+
+CONCLUSION_CHOICE = [
+	('scadere', 'In scadere'), 
+	('echilibru', 'In echilibru'), 
+	('crestere', 'In crestere'),
 ]

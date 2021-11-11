@@ -40,7 +40,7 @@
                         <div class="card-header">
                             <div class="d-flex align-items-center">
                                 <h4 class="card-title">Proprietati Comparabile</h4>
-                                <a class="btn btn-primary btn-round ml-auto" href="{% url 'dashboard:add_comparable' %}">
+                                <a class="btn btn-primary btn-round ml-auto" href="{% url 'valuation:add_comp_prop' %}">
                                     <i class="fas fa-plus mr-2"></i>
                                     Add New
                                 </a>
@@ -54,6 +54,7 @@
                                             <th>ID</th>
                                             <th>Preţ de oferta/vanzare</th>
                                             <th>Localizare</th>
+                                            <th>Camere</th>
                                             <th>Suprafata utila (mp)</th>
                                             <th style="width: 12%">Action</th>
                                         </tr>
@@ -62,20 +63,23 @@
                                         {% for obj in properties %}
                                         <tr id="rowid_{{ obj.id }}">
                                             <td>
-                                                <a href="{% url 'dashboard:comparable_details' id=obj.id %}"><span class="text-light">ID-{{obj.id}}</span></a>
+                                                <a href="{% url 'valuation:comp_prop_details' id=obj.id %}"><span class="text-light">ID-{{obj.id}}</span></a>
                                             </td>
                                             <td>
-                                                <a href="{% url 'dashboard:comparable_details' id=obj.id %}"><span class="text-light">{{obj.sale_price|floatformat:"0"}}</span></a>
+                                                <a href="{% url 'valuation:comp_prop_details' id=obj.id %}"><span class="text-light">{{obj.sale_price|floatformat:"0"}}</span></a>
                                             </td>
                                             <td>
-                                                <a href="{% url 'dashboard:comparable_details' id=obj.id %}"><span class="text-light">{{obj.location|truncatechars:30}}</span></a>
+                                                <a href="{% url 'valuation:comp_prop_details' id=obj.id %}"><span class="text-light">{{obj.lc|truncatechars:30}}</span></a>
                                             </td>
                                             <td>
-                                                <a href="{% url 'dashboard:comparable_details' id=obj.id %}"><span class="text-light">{{obj.area}}</span></a>
+                                                <a href="{% url 'valuation:comp_prop_details' id=obj.id %}"><span class="text-light">{{obj.camara}}</span></a>
+                                            </td>
+                                            <td>
+                                                <a href="{% url 'valuation:comp_prop_details' id=obj.id %}"><span class="text-light">{{obj.area}}</span></a>
                                             </td>
                                             <td>
                                                 <span class="mr-3" href="" id="delete" onclick="delete_modal('{{obj.id}}')"><i class="fas fa-trash text-white" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Delete"></i></span>
-                                                <a href="{% url 'dashboard:edit_comparable' id=obj.id %}"><i class="fas fa-pencil-alt text-light" data-toggle="tooltip" data-placement="top" title="Edit"></i></a>
+                                                <a href="{% url 'valuation:comp_prop_details' id=obj.id %}"><i class="fas fa-pencil-alt text-light" data-toggle="tooltip" data-placement="top" title="Edit"></i></a>
                                             </td>
                                         </tr>
                                         {% endfor %}
@@ -119,7 +123,7 @@
             }).then((Delete) => {
                 if (Delete) {
                     $.ajax({
-                        url: "{% url 'dashboard:delete_comparable' %}",
+                        url: "{% url 'dashboard:delete_comp_prop' %}",
                         type: "GET",
                         data: {id: id},
                         success: function(e) {

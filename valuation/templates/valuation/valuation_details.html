@@ -41,6 +41,32 @@
         .ms-drop span {
             color: #1a2035!important;
         }
+        
+        #cover-container, #summary-container{
+            margin-bottom: 14px;
+        }
+        #cover-list, #summary-list { 
+            list-style-type: none; 
+            margin: 0; 
+            padding: 0; 
+        }
+        #cover-list li, #summary-list li { 
+            margin: 10px 20px 10px 0px; 
+            display: inline-block;
+        }
+        #cover-list li img, #summary-list li img {
+            width: 150px;
+            height: 100px;
+        }
+        #txtresponse, #summary-txtresponse{
+            padding: 10px 20px;
+            border-radius: 3px;
+            margin-bottom: 10px;
+            display: none;
+            width: 100%;
+            border :#E0E0E0 1px solid;
+            color: white;  
+        }
     </style>
 {% endblock stylesheets %}
 
@@ -48,7 +74,7 @@
     <div class="content">
         <div class="page-inner">
             <div class="page-header">
-                <h4 class="page-title">{% if valuation.status.status == 'Completed' %} Evaluare Completă{% else %}Evaluare Incompletă{% endif %}</h4>
+                <h4 class="page-title">{% if valuation.status.id == 2 %} Evaluare Completă{% else %}Evaluare Incompletă{% endif %}</h4>
                 <ul class="breadcrumbs">
                     <li class="nav-home">
                         <a href="#">
@@ -59,8 +85,8 @@
                         <i class="flaticon-right-arrow"></i>
                     </li>
                     <li class="nav-item">
-                        {% if valuation.status.status == 'Completed' %}
-                            <a href="{% url 'dashboard:complete' %}">Evaluare completă</a>
+                        {% if valuation.status.id == 2 %}
+                            <a href="{% url 'dashboard:dashboard' %}">Evaluare completă</a>
                         {% else %}
                             <a href="{% url 'dashboard:incomplete' %}">Evaluare incompletă</a>
                         {% endif %}
@@ -84,10 +110,13 @@
                             {% if valuation.title %}
                                 {{ valuation.title }}
                             {% else %}
-                                {{ valuation.property_type.type }} cu {{camere.camere|floatformat:0}} si dependinte
+                                {{ valuation.property_type.type }} cu {{camara.camara|floatformat:0}} si dependinte
                             {% endif %}
                         </div>
-                        <a class="btn btn-primary btn-round ml-auto text-white"><i class="fas fa-file-pdf mr-2"></i>PDF</a>
+                        <a class="btn btn-primary btn-round ml-auto" href="{% url 'dashboard:pdf' id=valuation.id %}">
+                            <i class="fas fa-file-alt mr-2"></i>
+                            PDF
+                        </a>
                     </div>
                 </div>
 
@@ -101,7 +130,7 @@
                                 <div class="col-md-6">
                                     <b class="text-light mr-2">Valuation Status:</b>
                                     <div class="btn-group status">
-                                        <button class="btn status {% if 'progress' in valuation.status.status %}btn-outline-info {% elif 'completed' in valuation.status.status %} btn-outline-success {% elif 'suspended' in valuation.status.status %} btn-outline-warning{% else %} btn-outline-danger {% endif %} btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        <button class="btn status {% if valuation.status.id == 1 %}btn-outline-info {% elif valuation.status.id == 2 %} btn-outline-success {% elif valuation.status.id == 3 %} btn-outline-warning{% else %} btn-outline-danger {% endif %} btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                             {{valuation.status.status }}
                                         </button>
                                         <div class="dropdown-menu">
@@ -155,14 +184,14 @@
                                 </div>
                                 <div class="col-md-6">
                                     {% if summary.amav %}
-                                    <b class="text-light mr-2">Property Value: </b> {{summary|get_market_price }} EUR
+                                    <b class="text-light mr-2">Property Value: </b> {{ valuation|get_market_value|floatformat:'0' }} EUR
                                     {% elif summary.aiav %}
-                                    <b class="text-light mr-2">Property Value: </b> {{summary|get_income_price }} EUR
+                                    <b class="text-light mr-2">Property Value: </b> {{ valuation|get_market_value|floatformat:'0' }} EUR
                                     {% endif %}
                                 </div>
                             </div>
                             <div class="row mb-2">
-                                <div class="col-md-12"><b class="text-light mr-2">Address:</b> {{valuation.address}}, {{valuation.city.name}}, {{valuation.area.name}}</div>
+                                <div class="col-md-6"><b class="text-light mr-2">Address:</b> {{valuation.address}}, {{valuation.city.name}}, {{valuation.area.name}}</div>
                                 <div class="col-md-6"><b class="text-light mr-2">Proprietar:</b> {{valuation.owner}}</div>
                             </div>
 
@@ -208,14 +237,14 @@
                                     <b class="text-light mr-2">Valuation Date:</b>{% if valuation.valuation_date %} {{valuation.valuation_date}}{% else %} <span class="text-danger">Not set</span> {% endif %}
                                 </div>
                                 <div class="col-md-4">
-                                    <b class="text-light mr-2">Report Date:</b>{% if valuation.report_data %} {{valuation.report_date}}{% else %} <span class="text-danger">Not set</span> {% endif %}
+                                    <b class="text-light mr-2">Report Date:</b>{% if valuation.report_date %} {{valuation.report_date}}{% else %} <span class="text-danger">Not set</span> {% endif %}
                                 </div>
                             </div>
                             <!-- date  -->
 
                             <div class="row mt-4">
                                 <div class="col-md-12">
-                                    <a class="btn btn-secondary" href="{% url 'dashboard:edit_valuation' id=valuation.id %}">
+                                    <a class="btn btn-secondary" href="{% url 'valuation:edit_initial' id=valuation.id %}">
                                         <i class="fas fa-pencil-alt mr-2"></i>EDIT
                                     </a>
                                 </div>
@@ -231,49 +260,26 @@
                 <div class="card-header">
                     <div class="d-flex align-items-center">
                         <h4 class="card-title">Cover Fotografii</h4>
-                        {% if not photos %}
-                        <button type="button" class="ml-auto btn btn-icon btn-round btn-primary" id="addCoverPhotos" data-toggle="collapse" data-target="#cover-photo" aria-expanded="false" aria-controls="cover-photo">
-                            <i class="fa fa-plus"></i>
-                        </button>
-                        {% endif %}
                     </div>
                 </div>
 
                 <div class="card-body">
                     <div class="row">
-                        {% if photos %}
-                        <div class="col-md-12">
-                            <div id="gallery">
-                                <div id="image-container">
+                        {% if cover_photo %}
+                            <div class="col-md-12">
+                                <div id="cover-container">
                                     <div id="txtresponse" >Images order is updated</div>
-                                    <ul id="image-list" class="mb-4">
-                                        {% for c in photos %}
-                                            {% if c.refer_to == 'cover' %}
-                                            <li id="image_{{ c.id }}" >
-                                                <img src="{{ c.image.url }}" alt="Cover photo">
+                                    <ul id="cover-list" class="mb-2">
+                                        {% for c in cover_photo %}
+                                            <li id="cover_{{ c.id }}" class="text-center">
+                                                <img src="{{ c.image.url }}" alt="Cover photo" class="photos">
                                             </li>
-                                            {% endif %}
                                         {% endfor %}
                                     </ul>
-                                    <button class="btn btn-secondary re-order">REORDER</button>
+                                    <button class="btn btn-secondary re-order btn-sm">REORDER</button>
                                 </div>
                             </div>
-                        </div>
                         {% endif %}
-                        <div class="col-md-12 collapse" id="cover-photo" aria-labelledby="addCoverPhotos">
-                            <form action="{% url 'valuation:save_photos' %}" class="dropzone dz-clickable" id="coverPhotoDropzone">
-                                {% csrf_token %}
-                                <input type="hidden" name="vid" value="{{valuation.id}}">
-                                <input type="hidden" name="order" id="cover-order" value="">
-                                <input type="hidden" name="refer_to" value="cover">
-                                <div class="dz-message" data-dz-message="">
-                                    <div class="icon">
-                                        <i class="flaticon-file"></i>
-                                    </div>
-                                    <h4 class="message">Drag and Drop files here</h4>
-                                </div>
-                            </form>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -284,7 +290,7 @@
                 <div class="card-header">
                     <div class="d-flex align-items-center">
                         <h4 class="card-title">Rezumatul Evaluarii</h4>
-                        {% if summary is not None %}
+                        {% if summary %}
                             <button type="button" class="ml-auto btn btn-icon btn-round btn-primary" id="edit_summary" data-toggle="tooltip" data-placement="top" title="Edit summary">
                                 <i class="fas fa-pencil-alt"></i>
                             </button>
@@ -296,33 +302,29 @@
                     </div>
                 </div>
                 
-                {% if summary is not None %}
+                {% if summary %}
                 <div class="card-body">
-                    {% if photos %}
-                    <div class="row">
-                        <div class="col-md-12">
-                            <h4 class="text-light">Rezumantul Fotografii</h4>
+                    {% if summary_photo %}
+                        <div class="row">
+                            <div class="col-md-12">
+                                <h4 class="text-light">Rezumantul Fotografii</h4>
+                            </div>
                         </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div id="summary-gallery">
-                                <div id="summary-image-container">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div id="summary-container">
                                     <div id="summary-txtresponse" >Images order is updated</div>
-                                    <ul id="summary-image-list" class="mb-4">
-                                        {% for c in photos %}
-                                            {% if c.refer_to == 'summary' %}
-                                            <li id="summary_image_{{ c.id }}" >
+                                    <ul id="summary-list" class="mb-2">
+                                        {% for c in summary_photo %}
+                                            <li id="summary_{{ c.id }}" class="text-center">
                                                 <img src="{{ c.image.url }}" alt="Summary photo">
                                             </li>
-                                            {% endif %}
                                         {% endfor %}
                                     </ul>
-                                    <button class="btn btn-secondary summary-reorder">REORDER</button>
+                                    <button class="btn btn-secondary summary-reorder btn-sm">REORDER</button>
                                 </div>
                             </div>
                         </div>
-                    </div>
                     {% endif %}
 
                     <div class="row mt-4">
@@ -346,40 +348,27 @@
                                     <tr>
                                         <td><b>Valoarea de piata proprietate</b></td>
                                         <td>
-                                            <b>
-                                                {{ summary|get_market_price }} EUR<br>
-                                            </b>
-                                            <b>
-                                                {{ summary|get_market_ron }} RON
-                                            </b>
+                                            <b>{{valuation|get_market_value|floatformat:'0'}} EUR</b><br>
+                                            <b>{{valuation|get_market_value_ron:summary|floatformat:'0'}} RON</b>
                                         </td>
                                     </tr>
                                     <tr>
                                         <td>Apartament</td>
                                         <td><b>{{ summary.amav|floatformat:'0' }} EUR</b></td>
                                     </tr>
-                                    {% if summary.suprateran_mv %}
-                                    <tr>
-                                        <td>Loc de parcare nr. {{ compartments|get_suprateran_nr|floatformat:'0' }}</td>
-                                        <td><b>{{ summary.suprateran_mv|floatformat:'0' }} EUR</b></td>
-                                    </tr>
-                                    {% endif %}
-                                    {% if summary.subteran_mv %}
-                                    <tr>
-                                        <td>Loc de parcare nr. {{ compartments|get_subteran_nr|floatformat:'0' }}</td>
-                                        <td><b>{{ summary.subteran_mv|floatformat:'0' }} EUR</b></td>
-                                    </tr>
-                                    {% endif %}
-                                    {% if summary.boxa_mv %}
-                                    <tr>
-                                        <td>Boxa nr. {{ compartments|get_boxa_nr|floatformat:'0' }}</td>
-                                        <td><b>{{ summary.boxa_mv|floatformat:'0' }} EUR</b></td>
-                                    </tr>
-                                    {% endif %}
+                                    {% for sv in summary_value %}
+                                        {% if sv.approache == 'market' %}
+                                        <tr>
+                                            <td>{{sv.field_name}}</td>
+                                            <td><b>{{ sv.field_value }} EUR</b></td>
+                                        </tr>
+                                        {% endif %}
+                                    {% endfor %}
                                 </tbody>
                             </table>
                         </div>
                         {% endif %} 
+
                         {% if summary.aiav %}
                         <div class="col-md-6">
                             <table class="table table-bordered">
@@ -387,36 +376,22 @@
                                     <tr>
                                         <td><b>Valoarea de venit proprietate</b></td>
                                         <td>
-                                            <b>
-                                                {{ summary|get_income_price }} EUR<br>
-                                            </b>
-                                            <b>
-                                                {{ summary|get_income_ron }} RON
-                                            </b>
+                                            <b>{{valuation|get_income_value|floatformat:'0'}} EUR</b><br>
+                                            <b>{{valuation|get_income_value_ron:summary|floatformat:'0'}} RON</b>
                                         </td>
                                     </tr>
                                     <tr>
                                         <td>Apartament</td>
                                         <td><b>{{ summary.aiav|floatformat:'0' }} EUR</b></td>
                                     </tr>
-                                    {% if summary.suprateran_iv %}
-                                    <tr>
-                                        <td>Loc de parcare nr. {{ compartments|get_suprateran_nr|floatformat:'0' }}</td>
-                                        <td><b>{{ summary.suprateran_iv|floatformat:'0' }} EUR</b></td>
-                                    </tr>
-                                    {% endif %}
-                                    {% if summary.subteran_iv %}
-                                    <tr>
-                                        <td>Loc de parcare nr. {{ compartments|get_subteran_nr|floatformat:'0' }}</td>
-                                        <td><b>{{ summary.subteran_iv|floatformat:'0' }} EUR</b></td>
-                                    </tr>
-                                    {% endif %}
-                                    {% if summary.boxa_iv %}
-                                    <tr>
-                                        <td>Boxa nr. {{ compartments|get_boxa_nr|floatformat:'0' }}</td>
-                                        <td><b>{{ summary.boxa_iv|floatformat:'0' }} EUR</b></td>
-                                    </tr>
-                                    {% endif %}
+                                    {% for sv in summary_value %}
+                                        {% if sv.approache == 'income' %}
+                                        <tr>
+                                            <td>{{sv.field_name}}</td>
+                                            <td><b>{{ sv.field_value }} EUR</b></td>
+                                        </tr>
+                                        {% endif %}
+                                    {% endfor %}
                                 </tbody>
                             </table>
                         </div>
@@ -425,137 +400,6 @@
                 </div>
                 {% endif %}
             </div>
-            
-            <!-- =========================================================================== -->
-            <!-- ============================= Presentation data =========================== -->
-            <div class="card">
-                <div class="card-header">
-                    <div class="d-flex align-items-center">
-                        <h4 class="card-title">Prezentarea Datelor</h4>
-                        {% if presentation is not None %}
-                            <button type="button" class="ml-auto btn btn-icon btn-round btn-primary" id="edit_pdata" data-toggle="tooltip" data-placement="top" title="Edit prezentarea datelor">
-                                <i class="fas fa-pencil-alt"></i>
-                            </button>
-                        {% else %}
-                            <button type="button" class="ml-auto btn btn-icon btn-round btn-primary" id="add_pdata" data-toggle="tooltip" data-placement="top" title="Add Prezentarea Datelor">
-                                <i class="fa fa-plus"></i>
-                            </button>
-                        {% endif %}
-                    </div>
-                </div>
-                
-                {% if presentation is not None %}
-                <div class="card-body presentation-data">
-                    {% if source %}
-                    <div class="row mb-4">
-                        <div class="col-md-12 text-light">
-                            <p class="text-light mb-1"><b>Sursă de informații</b></p>
-                            {% for src in source %}
-                                <p class="mb-0">- &emsp; {{ src.source }}</p>
-                            {% endfor %}
-                        </div>
-                    </div>
-                    {% endif %}
-                    <div class="row mb-3">
-                        <div class="col-md-12 text-light">
-                            <p class="text-light mb-1"><b>Identificarea proprietății subiect</b></p>
-                            <p class="text-justify text-muted">{{ presentation.sub_identi|linebreaks }}</p> 
-                        </div>
-                    </div>
-                    <div class="row mb-3">
-                        <div class="col-md-12 text-light">
-                            <p class="text-light"><b>Ipoteze speciale</b></p>
-                            <p class="text-justify">{{ presentation.sp_hypo|linebreaks }}</p>
-                        </div>
-                    </div>
-                    <div class="row mb-3">
-                        <div class="col-md-12 text-light">
-                            <p class="text-light"><b>Zona</b></p>
-                            <p class="text-justify">{{ presentation.zona|linebreaks }}</p>
-                        </div>
-                    </div>
-                    <div class="row mb-3">
-                        <div class="col-md-12 text-light">
-                            <p class="text-light"><b>Informatii specifice</b></p>
-                            <p class="text-justify">Proprietatea are caracter rezidential este amplasata in zona centrala din orasul Ciofrângeni, pe Millmead Business Center, strada asfaltata cu {{ presentation.strada.type }} pe sens. Strada de acces are caracter public.</p>
-                            <p class="text-light"><b>Legaturi transport public</b></p>
-                            {% for p in presentation.pt|get_public_transport %}
-                            <button class="btn btn-secondary btn-round mr-1 tag-btn">{{ p.name }}</button>
-                            {% endfor %}
-                        </div>
-                    </div>
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <p class="text-light"><b>Puncte de interes</b></p>
-                            {% for place in presentation.poi|covertlist %}
-                                <button class="btn btn-secondary btn-round mr-1 tag-btn mb-2">{{ place }}</button>
-                            {% endfor %}
-                        </div>
-                    </div>
-
-                    {% if presentation.legal_doc %}
-                    <div class="row mb-4">
-                        <div class="col-md-12 text-light">
-                            <p class="text-light mb-1"><b>Proprietar si situatia juridica</b></p>
-                            {% for src in source %}
-                                {% if src.id|stringformat:"i" in presentation.legal_doc %}
-                                <p class="mb-0">- &emsp; {{ src.source }}</p>
-                                {% endif %}
-                            {% endfor %}
-                        </div>
-                    </div>
-                    {% endif %}
-
-                    <div class="row mb-3">
-                        <div class="col-md-4">
-                            <span><b class="text-light">Cadastral nr.: </b>{{ presentation.cadastral_no }}</span>
-                        </div>
-                        <div class="col-md-4">
-                            <span><b class="text-light">Land book nr.: </b>{{ presentation.land_book_no }}</span>
-                        </div>
-                        <div class="col-md-4">
-                            <span><b class="text-light">UAT: </b>{{ presentation.uat }}</span>
-                        </div>
-                    </div>
-
-                    <div class="row mb-3">
-                        <div class="col-md-12">
-                            <p class="text-light"><b>Sarcini</b></p>
-                            {% if presentation.charges != 'yes' %}
-                            <p class="text-justify">Conform Extrasului de Carte Funciara pus la dispozitie, proprietatea nu este grevata de sarcini. La data evaluarii proprietatea este considerata libera de sarcini.</p>
-                            {% else %}
-                            <p class="text-justify">Conform Extrasului de Carte Funciara pus la dispozitie, proprietatea este grevata de sarcini in favoarea {{ presentation.sarcini }}. La data evaluarii proprietatea este considerata libera de sarcini</p>
-                            {% endif %}
-                        </div>
-                    </div>
-
-                    <div class="row mb-3">
-                        <div class="col-md-12">
-                            <p class="text-light"><b>Utilizarea actuala</b></p>
-                            <p class="text-justify">La data inspectiei proprietatea avea utilizarea {% if 'Apartamente' in valuation.property_type.type %}rezidentiala{% endif %} si era {{presentation.get_current_use_display|lower }}.</p>
-                        </div>
-                    </div>
-
-                    <div class="row mb-3">
-                        <div class="col-md-12">
-                            <p class="text-light"><b>Identificare</b></p>
-                            <p class="text-justify">Indentificarea imobilului s-a realizat pe baza documentelor puse la dispozitie, cu ajutorul {{presentation.identification|get_identification}}</p>
-                        </div>
-                    </div>
-
-                    {% if presentation.history %}
-                    <div class="row">
-                        <div class="col-md-12">
-                            <p class="text-light"><b>History</b></p>
-                            {{ presentation.history }}
-                        </div>
-                    </div>
-                    {% endif %}
-                </div>
-                {% endif %}
-            </div>
-            
-
         </div>
     </div>
 
@@ -588,26 +432,9 @@
             map.fitBounds(markerbounds);
         })
 
-        // ====================================================================
-        // ======================== add cover photos ==========================
-        var order = 1;
-        $("#coverPhotoDropzone").click(function () {
-            $('#image-order').val(order);
-            order++;
-        })
-        Dropzone.options.coverPhotoDropzone = {
-            maxFiles: 4,
-            init: function() {
-                this.on("maxfilesexceeded", function(file){
-                    alert("No more files please!");
-                });
-            }
-        };
-
-        // ====================================================================
         // ========================= re-order photos ==========================
         var cdropIndex;
-        $("#image-list").sortable({
+        $("#cover-list").sortable({
             update: function(event, ui) { 
                 dropIndex = ui.item.index();
             }
@@ -615,7 +442,7 @@
 
         // summary photo
         var sdropIndex;
-        $("#summary-image-list").sortable({
+        $("#summary-list").sortable({
             update: function(event, ui) { 
                 sdropIndex = ui.item.index();
             }
@@ -623,13 +450,13 @@
 
         // cover photo
         $('.re-order').click(function (e) {
-            $("#image-list").sortable('destroy');
+            $("#cover-list").sortable('destroy');
             var h = [];
-            $("#image-list li").each(function() {
+            $("#cover-list li").each(function() {
                 h.push($(this).attr('id').substr(6));
             });
             $.ajax({
-                url: "{% url 'dashboard:reorder_image' %}",
+                url: "{% url 'valuation:reorder_photos' %}",
                 type: 'POST',
                 data: {ids: " " + h + "", csrfmiddlewaretoken:'{{csrf_token}}'},
                 success: function (e) {
@@ -646,13 +473,13 @@
 
         // summary photo
         $('.summary-reorder').click(function (e) {
-            $("#summary-image-list").sortable('destroy');
+            $("#summary-list").sortable('destroy');
             var sh = [];
-            $("#summary-image-list li").each(function() {
-                sh.push($(this).attr('id').substr(14));
+            $("#summary-list li").each(function() {
+                sh.push($(this).attr('id').substr(8));
             });
             $.ajax({
-                url: "{% url 'dashboard:reorder_image' %}",
+                url: "{% url 'valuation:reorder_photos' %}",
                 type: 'POST',
                 data: {ids: " " + sh + "", csrfmiddlewaretoken:'{{csrf_token}}'},
                 success: function (e) {
@@ -666,10 +493,6 @@
             });
             e.preventDefault();
         });
-
-
-
-
-
+        
     </script>
 {% endblock javascripts %}  

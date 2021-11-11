@@ -30,6 +30,10 @@
             height: 40px!important;
             padding-top: 8px!important;
         }
+        .required {
+            border-color: #F25961 !important;
+            color: #F25961 !important;
+        }
     </style>
 {% endblock stylesheets %}
 
@@ -66,10 +70,10 @@
                     <div class="card-title"> {% if instance %} Edit Comparabile {% else %} Add Comparabile {% endif %} </div>
                 </div>
                 
-                <form method="POST">
+                <form method="POST" id="comp_prop_form">
                     {% csrf_token %}
-
                     <div class="card-body">
+                        <p class="text-danger error" style="display: none;">Red box fields are required.</p>
                         {% if msg %}
                             <p class="text-danger">{{msg}}</p>
                         {% endif %}
@@ -187,6 +191,10 @@
                                     <td>{{form.cy}}</td>
                                 </tr>
                                 <tr>
+                                    <td>Numar de camere <span class="required-label">*</span></td>
+                                    <td>{{form.camara}}</td>
+                                </tr>
+                                <tr>
                                     <td>Suprafata utila (mp) <span class="required-label">*</span></td>
                                     <td>{{form.area}}</td>
                                 </tr>
@@ -218,38 +226,15 @@
                                         </select>
                                     </td>
                                 </tr>
-                                <tr>
-                                    <td>
-                                        <input type="text" class="form-control" name="opt1_name" placeholder="Optional Name">
-                                    </td>
-                                    <td>
-                                        <input type="text" class="form-control" name="opt1_val" placeholder="Optional Value">
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <input type="text" class="form-control" name="opt2_name" placeholder="Optional Name">
-                                    </td>
-                                    <td>
-                                        <input type="text" class="form-control" name="opt2_val" placeholder="Optional Value">
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <input type="text" class="form-control" name="opt3_name" placeholder="Optional Name">
-                                    </td>
-                                    <td>
-                                        <input type="text" class="form-control" name="opt3_val" placeholder="Optional Value">
-                                    </td>
-                                </tr>
                             </tbody>
                         </table>
                     </div>
-                    
-                    <div class="card-action">
-                        <button class="btn btn-success" type="submit">{% if instance %}Update{% else %}Save{% endif %}</button>
-                    </div>
                 </form>
+                    
+                <div class="card-action">
+                    <p class="text-danger error" style="display: none;">Red box fields are required.</p>
+                    <button class="btn btn-success" id="submitbtn">{% if instance %}Update{% else %}Save{% endif %}</button>
+                </div>
             </div>
         </div>
     </div>
@@ -262,10 +247,27 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.2.0/js/bootstrap-datepicker.min.js"></script>
     
     <script>
-        $("#me").datepicker( {
+        $("#id_me").datepicker( {
             format: "MM yyyy",
             startView: "months", 
             minViewMode: "months"
+        });
+
+        $('#submitbtn').on('click', function () {
+            var pass = true;
+            var inputs = $('#comp_prop_form input:not(.optional input)').each(function() {
+                if(this.value.length > 0) {
+                    $(this).removeClass('required')
+                } else {
+                    pass = false;
+                    $(this).addClass('required');
+                }
+            });
+            if(pass == true) {
+                $('#comp_prop_form').submit();
+            } else {
+                $('.error').css('display', 'block');
+            }
         });
     </script>
 {% endblock javascripts %}  

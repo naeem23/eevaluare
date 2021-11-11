@@ -62,7 +62,7 @@
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <label for="id_username">Username</label>
+                                            <label for="id_username">Username <span class="required-label mr-2">*</span></label>
                                             {{form.username}}
                                         </div>
                                         <span class="text-danger">{{form.username.errors}}</span>
@@ -70,7 +70,7 @@
 
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <label for="id_email">Email</label>
+                                            <label for="id_email">Email <span class="required-label mr-2">*</span></label>
                                             {{form.email}}
                                         </div>
                                         <span class="text-danger">{{form.email.errors}}</span>
@@ -98,17 +98,34 @@
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <label for="id_password1">Password</label>
+                                            <label for="id_password1">Password <span class="required-label mr-2">*</span></label>
                                             {{ form.password1 }}
                                         </div>
                                         <span class="text-danger">{{form.password1.errors}}</span>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <label for="id_password2">Password check</label>
+                                            <label for="id_password2">Password check <span class="required-label mr-2">*</span></label>
                                             {{ form.password2 }}
                                         </div>
                                         <span class="text-danger">{{form.password2.errors}}</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="id_telephone">Telefon</label>
+                                            {{ form.telephone }}
+                                        </div>
+                                        <span class="text-danger">{{form.telephone.errors}}</span>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="id_certification_number">Certification Number</label>
+                                            {{ form.certification_number }}
+                                        </div>
+                                        <span class="text-danger">{{form.certification_number.errors}}</span>
                                     </div>
                                 </div>
 
@@ -130,14 +147,7 @@
                                 </div>
 
                                 <div class="row">
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <label for="id_certification_number">Certification Number</label>
-                                            {{ form.certification_number }}
-                                        </div>
-                                        <span class="text-danger">{{form.certification_number.errors}}</span>
-                                    </div>
-                                    <div class="col-md-6">
+                                    <div class="col-md-12">
                                         <div class="form-group">
                                             <label for="id_certification_text">Certification Text</label>
                                             {{ form.certification_text }}

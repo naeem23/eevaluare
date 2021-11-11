@@ -6,7 +6,7 @@
 				{% if request.user.is_authenticated %}	
 					<ul class="nav nav-primary">
 						<li class="nav-item {% if 'initial' in segment %} active {% endif %}">
-							<a href="{% url 'valuation:initial_form' %}">
+							<a href="{% if valuation %}{% url 'valuation:edit_initial' id=valuation.id %}{% else %}{% url 'valuation:initial_form' %}{% endif %}">
 								<p>Date Initiale</p>
 							</a>
 						</li>
@@ -36,21 +36,41 @@
 						</li>
 						
 						<li class="nav-item {% if 'comparable' in segment %} active {% endif %}">
-							{% if comp_table %}
-							<a href="{% if valuation %}{% url 'valuation:add_comparable' id=valuation.id %}{% endif %}">
-								<p>Comparable</p>
-							</a>
-							{% else %}
 							<a href="{% if valuation %}{% url 'valuation:select_comparable' id=valuation.id %}{% endif %}">
 								<p>Comparable</p>
 							</a>
-							{% endif %}
 						</li>
 
 						<li class="nav-item {% if 'anexa' in segment %} active {% endif %}">
-							<a href="{% if valuation.id %}{% url 'valuation:add_anexa' id=valuation.id %}{% endif %}">
+							<!-- milton -->
+							<a data-toggle="collapse" href="#submenu">
 								<p>Anexa</p>
+								<span class="caret"></span>
 							</a>
+							<div class="collapse" id="submenu">
+								<ul class="nav nav-collapse">
+									<li class="{% if segment == 'anexa1' %} active {% endif %}">
+										<a href="{% if valuation %}{% url 'valuation:add_anexa1' id=valuation.id %}{% endif %}">
+											<span class="sub-item">Anexa1</span>
+										</a>
+									</li>
+									<li class="{% if segment == 'anexa2' %} active {% endif %}">
+										<a href="{% if valuation %}{% url 'valuation:add_anexa2' id=valuation.id %}{% endif %}">
+											<span class="sub-item">Anexa2</span>
+										</a>
+									</li>
+									<li class="{% if segment == 'anexa3' %} active {% endif %}">
+										<a href="{% if valuation %}{% url 'valuation:add_anexa3' id=valuation.id %}{% endif %}">
+											<span class="sub-item">Anexa3</span>
+										</a>
+									</li>									
+									<li class="{% if segment == 'anexa4' %} active {% endif %}">
+										<a href="{% if valuation %}{% url 'valuation:add_anexa4' id=valuation.id %}{% endif %}">
+											<span class="sub-item">Anexa4</span>
+										</a>
+									</li>
+								</ul>
+							</div>
 						</li>
 					</ul>
 				{% endif %}	

@@ -75,6 +75,13 @@ class AdditionalEquipmentAdmin(admin.ModelAdmin):
 class CompartimentareAdmin(admin.ModelAdmin):
     list_display = ('name', 'property_type')
 
+# milton
+admin.site.register(ScreenShot)
+admin.site.register(Anexa1)
+admin.site.register(Anexa2)
+admin.site.register(Anexa3)
+admin.site.register(Anexa4)
+admin.site.register(Construction)
 
 admin.site.register(Area, AreaAdmin)
 admin.site.register(City, CityAdmin)

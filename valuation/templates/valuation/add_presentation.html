@@ -67,7 +67,13 @@
 
                 <div class="card">
                     <div class="card-header">
-                        <div class="card-title">Sursă de informații</div>
+                        <div class="d-flex align-items-center">
+                            <div class="card-title">Sursă de informații</div>
+                            <a class="btn btn-primary btn-round ml-auto" href="{% url 'asachat:chat_room' id=valuation.id %}" target="_blank">
+                                <i class="fas fa-video mr-2"></i>
+                                Video Call
+                            </a>
+                        </div>
                     </div>
                     <div class="card-body">
                         <p class="text-danger mb-3 msg">Something went wrong.</p>
@@ -162,7 +168,7 @@
                                     {% if pdata.zona %}
                                         <textarea name="zona" rows="5" class="form-control" id="id_zona">{{pdata.zona}}</textarea>
                                     {% else %}
-                                        <textarea name="zona" rows="5" class="form-control" id="id_zona">Microzona din care face parte proprietatea are caracter mixt preponderent rezidențial-comercial. Regimul specific de înălțime al clădirilor este P+4E-P+10E. Drumurile sunt asfaltate. Drumurile din zonă au configurația și capacitatea necesară pentru deservirea în bune condiții a imobilelor adiacente.</textarea>
+                                        <textarea name="zona" rows="5" class="form-control" id="id_zona">Microzona din care face parte proprietatea are caracter mixt preponderent rezidential-comercial. Regimul specific de inaltime al cladirilor este P+4E-P+10E. Drumurile sunt asfaltate. Drumurile din zona au configuratia si capacitatea necesara pentru deservirea in bune conditii a imobilelor adiacente.</textarea>
                                     {% endif %}
                                     <small class="form-text text-danger zona"></small>
                                 </div>
@@ -190,7 +196,7 @@
                                                 {% endfor %}
                                             {% endif %}
                                         </div>
-                                        <input type="text" name="poi" autofocus="autofocus" required id="id_poi">
+                                        <input type="text" name="poi" required id="id_poi">
                                         <!-- {{ form.poi }} -->
                                     </div>
                                     <small class="form-text text-muted">Comma separated value</small>

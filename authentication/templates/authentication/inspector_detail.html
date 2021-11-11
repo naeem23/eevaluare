@@ -117,15 +117,8 @@
 			                                {{form.certification_text}}
 			                            </div>
 			                        	<span class="text-danger">{{form.certification_text.errors}}</span>
-
-			                            <div class="form-group form-group-default">
-			                                <label>Certification Number</label>
-			                                {{form.certification_number}}
-			                            </div>
-			                        	<span class="text-danger">{{form.certification_number.errors}}</span>
-			                        </div>
-
-			                        <div class="col-md-6">
+									</div>
+									<div class="col-md-6">
 			                            <div class="form-group form-group-default">
 			                                <label>Stamp</label>
 			                                {% if inspector.stamp %}
@@ -136,6 +129,23 @@
 			                        	<span class="text-danger">{{form.stamp.errors}}</span>
 			                        </div>
 			                    </div>
+								
+								<div class="row mt-3">
+									<div class="col-md-6">
+										<div class="form-group form-group-default">
+											<label>Telefon</label>
+											{{form.telephone}}
+										</div>
+										<span class="text-danger">{{form.telephone.errors}}</span>
+									</div>
+									<div class="col-md-6">
+										<div class="form-group form-group-default">
+											<label>Certification Number</label>
+											{{form.certification_number}}
+										</div>
+										<span class="text-danger">{{form.certification_number.errors}}</span>
+									</div>
+								</div>
 
 			                    <input type="hidden" name="form_value" value="details_form">
 

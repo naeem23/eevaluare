@@ -31,6 +31,8 @@ INSTALLED_APPS = [
     'dashboard',
     'valuationform',
     'valuation',
+    'asachat',
+
 ]
 
 MIDDLEWARE = [

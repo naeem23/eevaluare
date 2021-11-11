@@ -1,0 +1,843 @@
+{% extends "base.html" %}
+
+{% block title %} Modules List-{{key}} {% endblock %} 
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}
+    <style type="text/css">
+        #delete {
+            cursor: pointer;
+        }
+        #delete-modal {
+            display: none;
+        }
+        #update-modal {
+            display: none;
+        }
+
+    </style>
+{% endblock stylesheets %}
+
+{% block content %}
+    <div class="content">
+        <div class="page-inner">
+            <div class="page-header">
+                <h4 class="page-title">Settings</h4>
+                <ul class="breadcrumbs">
+                    <li class="nav-home">
+                        <a href="#">
+                            <i class="flaticon-home"></i>
+                        </a>
+                    </li>
+                    <li class="separator">
+                        <i class="flaticon-right-arrow"></i>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'dashboard:modules' %}">Modules</a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="row">
+                <div class="col-md-2">
+                    <h3>Modules list</h3>
+                    <ul style="padding: 0;">
+                        {% for key, value in modules.items %}                        
+                            <li style="padding: 2px;">
+                                <a href="{% url 'dashboard:go_module_view' key %}" style="color: white;text-decoration: none;">{{value}}</a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <div class="col-md-10">
+					<div class="card">
+						<div class="card-header">
+							<div class="d-flex align-items-center">
+								<h4 class="card-title">{{value}}</h4>
+								<button type="button" class="btn btn-primary btn-round ml-auto" data-toggle="modal" data-target="#exampleModal">
+									<i class="fa fa-plus mr-2"></i>
+									Add {{value}}
+                                </button>
+                                <!-- Modal start -->
+                                <form method="post">
+                                    {% csrf_token %}
+                                    <div class="modal" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog" role="document">
+                                        <div class="card modal-content">
+                                            <div class="modal-header">
+                                            <h5 class="modal-title" id="exampleModalLabel">Adding new {{key}}</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true" style="color: white;">&times;</span>
+                                            </button>
+                                            </div>
+                                            <div class="modal-body">
+                                            <form>
+                                                
+                                                {% if key == "area" %}
+                                                    <div class="form-group">
+                                                        <label for="recipient-name" class="col-form-label">Auto:</label>
+                                                        <input type="text" class="form-control" id="recipient-name" name="auto">
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="recipient-name" class="col-form-label">Name:</label>
+                                                        <input type="text" class="form-control" id="recipient-name" name="name">
+                                                    </div>
+                                                {% endif %}
+                                                {% if key == "city" %}
+                                                    <div class="form-group">
+                                                        <label for="recipient-name" class="col-form-label">Area:</label>
+                                                        <input type="text" class="form-control" id="recipient-name" name="area">
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="recipient-name" class="col-form-label">Name:</label>
+                                                        <input type="text" class="form-control" id="recipient-name" name="name">
+                                                    </div>
+                                                {% endif %}
+                                                
+                                                {% if key == "status" %}
+                                                    <div class="form-group">
+                                                        <label for="recipient-name" class="col-form-label">Status:</label>
+                                                        <input type="text" class="form-control" id="recipient-name" name="status">
+                                                    </div>
+                                                {% endif %}
+                                                {% if key == "valuation-purpose" %}
+                                                    <div class="form-group">
+                                                        <label for="recipient-name" class="col-form-label">Purpose:</label>
+                                                        <input type="text" class="form-control" id="recipient-name" name="purpose">
+                                                    </div>
+                                                {% endif %}
+                                                {% if key == "valuation-approach" %}
+                                                    <div class="form-group">
+                                                        <label for="recipient-name" class="col-form-label">Purpose:</label>
+                                                        <input type="text" class="form-control" id="recipient-name" name="approach">
+                                                    </div>
+                                                {% endif %}
+                                                {% if key == "transport" %}
+                                                    <div class="form-group">
+                                                        <label for="recipient-name" class="col-form-label">Name:</label>
+                                                        <input type="text" class="form-control" id="recipient-name" name="name">
+                                                    </div>                                            
+                                                {% endif %}
+                                                {% if key == "heating-system" %}
+                                                    <div class="form-group">
+                                                        <label for="recipient-name" class="col-form-label">Name:</label>
+                                                        <input type="text" class="form-control" id="recipient-name" name="name">
+                                                    </div>                                            
+                                                {% endif %}
+                                                    
+                                                {% if key == "finish-type"%}  
+                                                    <div class="form-group">
+                                                        <label for="recipient-name" class="col-form-label">Type:</label>
+                                                        <input type="text" class="form-control" id="recipient-name" name="type">
+                                                    </div>                                            
+                                                {% endif %}
+                                                {% if key == "property-right-type" %} 
+                                                    <div class="form-group">
+                                                        <label for="recipient-name" class="col-form-label">Type:</label>
+                                                        <input type="text" class="form-control" id="recipient-name" name="type">
+                                                    </div>                                            
+                                                {% endif %}
+                                                {% if key == "property-type" %} 
+                                                    <div class="form-group">
+                                                        <label for="recipient-name" class="col-form-label">Type:</label>
+                                                        <input type="text" class="form-control" id="recipient-name" name="type">
+                                                    </div>                                            
+                                                {% endif %}
+                                                {% if key == "compartment-type" %} 
+                                                    <div class="form-group">
+                                                        <label for="recipient-name" class="col-form-label">Type:</label>
+                                                        <input type="text" class="form-control" id="recipient-name" name="type">
+                                                    </div>                                            
+                                                {% endif %}
+                                                {% if key == "strada-type" %} 
+                                                    <div class="form-group">
+                                                        <label for="recipient-name" class="col-form-label">Type:</label>
+                                                        <input type="text" class="form-control" id="recipient-name" name="type">
+                                                    </div>                                            
+                                                {% endif %}
+                                                {% if key == "conform-type" %} 
+                                                    <div class="form-group">
+                                                        <label for="recipient-name" class="col-form-label">Type:</label>
+                                                        <input type="text" class="form-control" id="recipient-name" name="type">
+                                                    </div>                                            
+                                                {% endif %}
+                                                {% if key == "structure-type" %} 
+                                                    <div class="form-group">
+                                                        <label for="recipient-name" class="col-form-label">Type:</label>
+                                                        <input type="text" class="form-control" id="recipient-name" name="type">
+                                                    </div>                                            
+                                                {% endif %}
+                                                {% if key == "mobila-type" %} 
+                                                    <div class="form-group">
+                                                        <label for="recipient-name" class="col-form-label">Type:</label>
+                                                        <input type="text" class="form-control" id="recipient-name" name="type">
+                                                    </div>                                            
+                                                {% endif %}
+                                                {% if key == "invelitoare-type" %} 
+                                                    <div class="form-group">
+                                                        <label for="recipient-name" class="col-form-label">Type:</label>
+                                                        <input type="text" class="form-control" id="recipient-name" name="type">
+                                                    </div>                                            
+                                                {% endif %}
+                                                {% if key == "roof-type" %} 
+                                                    <div class="form-group">
+                                                        <label for="recipient-name" class="col-form-label">Type:</label>
+                                                        <input type="text" class="form-control" id="recipient-name" name="type">
+                                                    </div>                                            
+                                                {% endif %}
+                                                {% if key == "subcompartment-type" %} 
+                                                    <div class="form-group">
+                                                        <label for="recipient-name" class="col-form-label">Type:</label>
+                                                        <input type="text" class="form-control" id="recipient-name" name="type">
+                                                    </div>                                            
+                                                {% endif %}
+                                                {% if key == "clouser-type" %} 
+                                                    <div class="form-group">
+                                                        <label for="recipient-name" class="col-form-label">Type:</label>
+                                                        <input type="text" class="form-control" id="recipient-name" name="type">
+                                                    </div>                                            
+                                                {% endif %}
+                                                {% if key == "floor-type" %} 
+                                                    <div class="form-group">
+                                                        <label for="recipient-name" class="col-form-label">Type:</label>
+                                                        <input type="text" class="form-control" id="recipient-name" name="type">
+                                                    </div>                                            
+                                                {% endif %}
+                                                {% if key == "foundation-type" %} 
+                                                    <div class="form-group">
+                                                        <label for="recipient-name" class="col-form-label">Type:</label>
+                                                        <input type="text" class="form-control" id="recipient-name" name="type">
+                                                    </div>                                            
+                                                {% endif %}
+
+                                            </form>
+                                            </div>
+                                            <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                            <button type="submit" class="btn btn-primary" value={{key}} name="add">Add {{value}}</button>
+                                            </div>
+                                        </div>
+                                        </div>
+                                    </div>
+                                </form>
+                                <!-- Modal end -->
+							</div>
+						</div>
+						<div class="card-body">
+							<div class="table-responsive">
+								<table id="inspector_table" class="display table table-striped table-hover" >
+									<thead>
+										<tr>
+											<th>#</th>                                          
+                                            {% if key == "area" %}
+                                                <th>Auto</th>
+                                                <th>Name</th>
+                                            {% endif %}
+                                            {% if key == "city" %}
+                                                <th>Area</th>
+                                                <th>Name</th>
+                                            {% endif %}
+                                            
+                                            {% if key == "status" %}
+                                                <th>Status</th>
+                                            {% endif %}
+                                            {% if key == "valuation-purpose" %}
+                                                <th>Purpose</th>
+                                            {% endif %}
+                                            {% if key == "valuation-approach" %}
+                                                <th>Approach</th>
+                                            {% endif %}
+                                            {% if key == "transport" %}
+                                                <th>Name</th> 
+                                            {% endif %}
+                                            {% if key == "heating-system" %}
+                                                <th>Name</th>
+                                            {% endif %}
+	
+                                            {% if key == "finish-type"%}  
+                                                <th>Type</th>
+                                            {% endif %}
+                                            {% if key == "property-right-type" %} 
+                                                <th>Type</th>
+                                            {% endif %}
+                                            {% if key == "property-type" %} 
+                                                <th>Type</th>
+                                            {% endif %}
+                                            {% if key == "compartment-type" %} 
+                                                <th>Type</th>
+                                            {% endif %}
+                                            {% if key == "strada-type" %} 
+                                                <th>Type</th>
+                                            {% endif %}
+                                            {% if key == "conform-type" %} 
+                                                <th>Type</th>
+                                            {% endif %}
+                                            {% if key == "structure-type" %} 
+                                                <th>Type</th>
+                                            {% endif %}
+                                            {% if key == "mobila-type" %} 
+                                                <th>Type</th>
+                                            {% endif %}
+                                            {% if key == "invelitoare-type" %} 
+                                                <th>Type</th>
+                                            {% endif %}
+                                            {% if key == "roof-type" %} 
+                                                <th>Type</th>
+                                            {% endif %}
+                                            {% if key == "subcompartment-type" %} 
+                                                <th>Type</th>
+                                            {% endif %}
+                                            {% if key == "clouser-type" %} 
+                                                <th>Type</th>
+                                            {% endif %}
+                                            {% if key == "floor-type" %} 
+                                                <th>Type</th>
+                                            {% endif %}
+                                            {% if key == "foundation-type" %} 
+                                                <th>Type</th>
+                                            {% endif %}
+                                            
+                                            <th style="width: 12%">Action</th>
+										</tr>
+									</thead>
+									<tbody>
+										{% for module_key in module_keys %}
+										<tr>
+											<td>
+                                                <a class="text-light">
+                                                    {{module_key.id }}
+                                                </a>
+											</td>
+                                            {% if key == "area" %}
+                                                <td>
+                                                    <a>
+                                                        <span class="text-light">{{module_key.auto}}</span>
+                                                    </a>
+                                                </td>
+                                                <td>
+                                                    <a>
+                                                        <span class="text-light">{{module_key.name}}</span>
+                                                    </a>
+                                                </td>
+                                            {% endif %}
+                                            
+                                            {% if key == "city" %}
+                                                <td>
+                                                    <a>
+                                                        <span class="text-light">{{module_key.area}}</span>
+                                                    </a>
+                                                </td>
+                                                <td>
+                                                    <a>
+                                                        <span class="text-light">{{module_key.name}}</span>
+                                                    </a>
+                                                </td>
+                                            {% endif %}
+                                            
+                                            {% if key == "status" %}
+                                                <td>
+                                                    <a>
+                                                        <span class="text-light">{{module_key.status}}</span>
+                                                    </a>
+                                                </td>
+                                            {% endif %}
+                                            {% if key == "valuation-purpose" %}
+                                                <td>
+                                                    <a>
+                                                        <span class="text-light">{{module_key.purpose}}</span>
+                                                    </a>
+                                                </td>
+                                            {% endif %}
+                                            {% if key == "valuation-approach" %}
+                                                <td>
+                                                    <a>
+                                                        <span class="text-light">{{module_key.approach}}</span>
+                                                    </a>
+                                                </td>
+                                            {% endif %}
+                                            {% if key == "transport" %}
+                                                <td>
+                                                    <a>
+                                                        <span class="text-light">{{module_key.name}}</span>
+                                                    </a>
+                                                </td>
+                                            {% endif %}
+                                            {% if key == "heating-system" %}
+                                                <td>
+                                                    <a>
+                                                        <span class="text-light">{{module_key.name}}</span>
+                                                    </a>
+                                                </td>
+                                            {% endif %}
+	
+                                            {% if key == "finish-type"%}  
+                                                <td>
+                                                    <a>
+                                                        <span class="text-light">{{module_key.type}}</span>
+                                                    </a>
+                                                </td>
+                                            {% endif %}
+                                            {% if key == "property-right-type" %} 
+                                                <td>
+                                                    <a>
+                                                        <span class="text-light">{{module_key.type}}</span>
+                                                    </a>
+                                                </td>
+                                            {% endif %}
+                                            {% if key == "property-type" %} 
+                                                <td>
+                                                    <a>
+                                                        <span class="text-light">{{module_key.type}}</span>
+                                                    </a>
+                                                </td>
+                                            {% endif %}
+                                            {% if key == "compartment-type" %} 
+                                                <td>
+                                                    <a>
+                                                        <span class="text-light">{{module_key.type}}</span>
+                                                    </a>
+                                                </td>
+                                            {% endif %}
+                                            {% if key == "strada-type" %} 
+                                                <td>
+                                                    <a>
+                                                        <span class="text-light">{{module_key.type}}</span>
+                                                    </a>
+                                                </td>
+                                            {% endif %}
+                                        
+                                            {% if key == "conform-type" %} 
+                                                <td>
+                                                    <a>
+                                                        <span class="text-light">{{module_key.type}}</span>
+                                                    </a>
+                                                </td>
+                                            {% endif %}
+                                            {% if key == "structure-type" %} 
+                                                <td>
+                                                    <a>
+                                                        <span class="text-light">{{module_key.type}}</span>
+                                                    </a>
+                                                </td>
+                                            {% endif %}
+                                            {% if key == "mobila-type" %} 
+                                                <td>
+                                                    <a>
+                                                        <span class="text-light">{{module_key.type}}</span>
+                                                    </a>
+                                                </td>
+                                            {% endif %}
+                                            {% if key == "invelitoare-type" %}
+                                                <td>
+                                                    <a>
+                                                        <span class="text-light">{{module_key.type}}</span>
+                                                    </a>
+                                                </td>
+                                            {% endif %}
+                                            {% if key == "roof-type" %} 
+                                                <td>
+                                                    <a>
+                                                        <span class="text-light">{{module_key.type}}</span>
+                                                    </a>
+                                                </td>
+                                            {% endif %}
+                                            {% if key == "subcompartment-type" %} 
+                                                <td>
+                                                    <a>
+                                                        <span class="text-light">{{module_key.type}}</span>
+                                                    </a>
+                                                </td>
+                                            {% endif %}
+                                            {% if key == "clouser-type" %} 
+                                                <td>
+                                                    <a>
+                                                        <span class="text-light">{{module_key.type}}</span>
+                                                    </a>
+                                                </td>
+                                            {% endif %}
+                                            {% if key == "floor-type" %} 
+                                                <td>
+                                                    <a>
+                                                        <span class="text-light">{{module_key.type}}</span>
+                                                    </a>
+                                                </td>
+                                            {% endif %}
+                                            {% if key == "foundation-type" %} 
+                                                <td>
+                                                    <a>
+                                                        <span class="text-light">{{module_key.type}}</span>
+                                                    </a>
+                                                </td>
+                                            {% endif %}
+                                            
+											<td>
+                                                <span class="text-light" href="" id="delete" onclick="delete_modal('{{key}}','{{module_key.id}}')" data-toggle="tooltip" data-placement="top" title="Delete"><i class="la flaticon-remove-user"></i></span>
+	                							<button style="border: none; background: none;" type="button" class="btn-round ml-auto" data-toggle="modal" data-target="#update-modal-{{module_key.id}}"><i class="la flaticon-user-5 text-light"></i></button>
+											</td>
+										</tr>
+										{% endfor %}
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- delete modal start -->
+    <div class="swal-overlay swal-overlay--show-modal" tabindex="-1" id="delete-modal">
+        <div class="swal-modal" role="dialog" aria-modal="true">
+            <div class="swal-title" style="">Are you sure?</div>
+            <div class="swal-text" style="">You won't be able to revert this!</div>
+            <div class="swal-footer">
+                <div class="swal-button-container">
+                    <a class="swal-button swal-button--confirm btn btn-success" href="">Yes, delete it!</a>
+                </div>
+
+                <div class="swal-button-container">
+                    <button class="swal-button swal-button--cancel btn btn-danger">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- delete modal end -->
+
+    <!-- update modal start -->
+    {% for module_key in module_keys %}
+        <div class="modal fade" id="update-modal-{{module_key.id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            
+            <form method="post">
+                {% csrf_token %}        
+                <div class="modal-dialog" role="document">
+                <div class="card modal-content">
+                    <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Updating {{value}}</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true" style="color: white;">&times;</span>
+                    </button>
+                    </div>
+                    <div class="modal-body">
+                        <form>                                            
+                            {% if key == "area" %}
+                                <div class="form-group" style="display: none;">
+                                    <label for="recipient-name" class="col-form-label">Id:</label>
+                                    <input type="text" class="form-control" id="recipient-name" name="id" value="{{module_key.id}}">
+                                </div>
+                                <div class="form-group">
+                                    <label for="recipient-name" class="col-form-label">Auto:</label>
+                                    <input type="text" class="form-control" id="recipient-name" name="auto" value="{{module_key.auto}}">
+                                </div>
+                                <div class="form-group">
+                                    <label for="recipient-name" class="col-form-label">Name:</label>
+                                    <input type="text" class="form-control" id="recipient-name" name="name" value="{{module_key.name}}">
+                                </div>
+                            {% endif %}
+                            {% if key == "city" %}
+                                <div class="form-group" style="display: none;">
+                                    <label for="recipient-name" class="col-form-label">Id:</label>
+                                    <input type="text" class="form-control" id="recipient-name" name="id" value="{{module_key.id}}">
+                                </div> 
+                                <div class="form-group">
+                                    <label for="recipient-name" class="col-form-label">Area:</label>
+                                    <input type="text" class="form-control" id="recipient-name" name="area" value="{{module_key.area}}">
+                                </div>
+                                <div class="form-group">
+                                    <label for="recipient-name" class="col-form-label">Name:</label>
+                                    <input type="text" class="form-control" id="recipient-name" name="name" value="{{module_key.name}}">
+                                </div>
+                            {% endif %}
+                            
+                            {% if key == "status" %}
+                                <div class="form-group" style="display: none;">
+                                    <label for="recipient-name" class="col-form-label">Id:</label>
+                                    <input type="text" class="form-control" id="recipient-name" name="id" value="{{module_key.id}}">
+                                </div>
+                                <div class="form-group">
+                                    <label for="recipient-name" class="col-form-label">Status:</label>
+                                    <input type="text" class="form-control" id="recipient-name" name="status" value="{{module_key.status}}">
+                                </div>
+                            {% endif %}
+                            {% if key == "valuation-purpose" %}
+                                <div class="form-group" style="display: none;">
+                                    <label for="recipient-name" class="col-form-label">Id:</label>
+                                    <input type="text" class="form-control" id="recipient-name" name="id" value="{{module_key.id}}">
+                                </div>
+                                <div class="form-group">
+                                    <label for="recipient-name" class="col-form-label">Purpose:</label>
+                                    <input type="text" class="form-control" id="recipient-name" name="purpose" value="{{module_key.purpose}}">
+                                </div>
+                            {% endif %}
+                            {% if key == "valuation-approach" %}
+                                <div class="form-group" style="display: none;">
+                                    <label for="recipient-name" class="col-form-label">Id:</label>
+                                    <input type="text" class="form-control" id="recipient-name" name="id" value="{{module_key.id}}">
+                                </div>
+                                <div class="form-group">
+                                    <label for="recipient-name" class="col-form-label">Purpose:</label>
+                                    <input type="text" class="form-control" id="recipient-name" name="approach" value="{{module_key.approach}}">
+                                </div>
+                            {% endif %}
+                            {% if key == "transport" %}
+                                <div class="form-group" style="display: none;">
+                                    <label for="recipient-name" class="col-form-label">Id:</label>
+                                    <input type="text" class="form-control" id="recipient-name" name="id" value="{{module_key.id}}">
+                                </div>
+                                <div class="form-group">
+                                    <label for="recipient-name" class="col-form-label">Name:</label>
+                                    <input type="text" class="form-control" id="recipient-name" name="name" value="{{module_key.name}}">
+                                </div>                                            
+                            {% endif %}
+                            {% if key == "heating-system" %}
+                                <div class="form-group" style="display: none;">
+                                    <label for="recipient-name" class="col-form-label">Id:</label>
+                                    <input type="text" class="form-control" id="recipient-name" name="id" value="{{module_key.id}}">
+                                </div>
+                                <div class="form-group">
+                                    <label for="recipient-name" class="col-form-label">Name:</label>
+                                    <input type="text" class="form-control" id="recipient-name" name="name" value="{{module_key.name}}">
+                                </div>                                            
+                            {% endif %}
+                                
+                            {% if key == "finish-type"%}  
+                                <div class="form-group" style="display: none;">
+                                    <label for="recipient-name" class="col-form-label">Id:</label>
+                                    <input type="text" class="form-control" id="recipient-name" name="id" value="{{module_key.id}}">
+                                </div>
+                                <div class="form-group">
+                                    <label for="recipient-name" class="col-form-label">Type:</label>
+                                    <input type="text" class="form-control" id="recipient-name" name="type" value="{{module_key.type}}">
+                                </div>                                            
+                            {% endif %}
+                            {% if key == "property-right-type" %} 
+                                <div class="form-group" style="display: none;">
+                                    <label for="recipient-name" class="col-form-label">Id:</label>
+                                    <input type="text" class="form-control" id="recipient-name" name="id" value="{{module_key.id}}">
+                                </div>
+                                <div class="form-group">
+                                    <label for="recipient-name" class="col-form-label">Type:</label>
+                                    <input type="text" class="form-control" id="recipient-name" name="type" value="{{module_key.type}}">
+                                </div>                                            
+                            {% endif %}
+                            {% if key == "property-type" %} 
+                                <div class="form-group" style="display: none;">
+                                    <label for="recipient-name" class="col-form-label">Id:</label>
+                                    <input type="text" class="form-control" id="recipient-name" name="id" value="{{module_key.id}}">
+                                </div>
+                                <div class="form-group">
+                                    <label for="recipient-name" class="col-form-label">Type:</label>
+                                    <input type="text" class="form-control" id="recipient-name" name="type" value="{{module_key.type}}">
+                                </div>                                            
+                            {% endif %}
+                            {% if key == "compartment-type" %} 
+                                <div class="form-group" style="display: none;">
+                                    <label for="recipient-name" class="col-form-label">Id:</label>
+                                    <input type="text" class="form-control" id="recipient-name" name="id" value="{{module_key.id}}">
+                                </div>
+                                <div class="form-group">
+                                    <label for="recipient-name" class="col-form-label">Type:</label>
+                                    <input type="text" class="form-control" id="recipient-name" name="type" value="{{module_key.type}}">
+                                </div>                                            
+                            {% endif %}
+                            {% if key == "strada-type" %} 
+                                <div class="form-group" style="display: none;">
+                                    <label for="recipient-name" class="col-form-label">Id:</label>
+                                    <input type="text" class="form-control" id="recipient-name" name="id" value="{{module_key.id}}">
+                                </div>
+                                <div class="form-group">
+                                    <label for="recipient-name" class="col-form-label">Type:</label>
+                                    <input type="text" class="form-control" id="recipient-name" name="type" value="{{module_key.type}}">
+                                </div>                                            
+                            {% endif %}
+                            {% if key == "conform-type" %} 
+                                <div class="form-group" style="display: none;">
+                                    <label for="recipient-name" class="col-form-label">Id:</label>
+                                    <input type="text" class="form-control" id="recipient-name" name="id" value="{{module_key.id}}">
+                                </div>
+                                <div class="form-group">
+                                    <label for="recipient-name" class="col-form-label">Type:</label>
+                                    <input type="text" class="form-control" id="recipient-name" name="type" value="{{module_key.type}}">
+                                </div>                                            
+                            {% endif %}
+                            {% if key == "structure-type" %} 
+                                <div class="form-group" style="display: none;">
+                                    <label for="recipient-name" class="col-form-label">Id:</label>
+                                    <input type="text" class="form-control" id="recipient-name" name="id" value="{{module_key.id}}">
+                                </div>
+                                <div class="form-group">
+                                    <label for="recipient-name" class="col-form-label">Type:</label>
+                                    <input type="text" class="form-control" id="recipient-name" name="type" value="{{module_key.type}}">
+                                </div>                                            
+                            {% endif %}
+                            {% if key == "mobila-type" %} 
+                                <div class="form-group" style="display: none;">
+                                    <label for="recipient-name" class="col-form-label">Id:</label>
+                                    <input type="text" class="form-control" id="recipient-name" name="id" value="{{module_key.id}}">
+                                </div>
+                                <div class="form-group">
+                                    <label for="recipient-name" class="col-form-label">Type:</label>
+                                    <input type="text" class="form-control" id="recipient-name" name="type" value="{{module_key.type}}">
+                                </div>                                            
+                            {% endif %}
+                            {% if key == "invelitoare-type" %} 
+                                <div class="form-group" style="display: none;">
+                                    <label for="recipient-name" class="col-form-label">Id:</label>
+                                    <input type="text" class="form-control" id="recipient-name" name="id" value="{{module_key.id}}">
+                                </div>
+                                <div class="form-group">
+                                    <label for="recipient-name" class="col-form-label">Type:</label>
+                                    <input type="text" class="form-control" id="recipient-name" name="type" value="{{module_key.type}}">
+                                </div>                                            
+                            {% endif %}
+                            {% if key == "roof-type" %} 
+                                <div class="form-group" style="display: none;">
+                                    <label for="recipient-name" class="col-form-label">Id:</label>
+                                    <input type="text" class="form-control" id="recipient-name" name="id" value="{{module_key.id}}">
+                                </div>
+                                <div class="form-group">
+                                    <label for="recipient-name" class="col-form-label">Type:</label>
+                                    <input type="text" class="form-control" id="recipient-name" name="type" value="{{module_key.type}}">
+                                </div>                                            
+                            {% endif %}
+                            {% if key == "subcompartment-type" %} 
+                                <div class="form-group" style="display: none;">
+                                    <label for="recipient-name" class="col-form-label">Id:</label>
+                                    <input type="text" class="form-control" id="recipient-name" name="id" value="{{module_key.id}}">
+                                </div>
+                                <div class="form-group">
+                                    <label for="recipient-name" class="col-form-label">Type:</label>
+                                    <input type="text" class="form-control" id="recipient-name" name="type" value="{{module_key.type}}">
+                                </div>                                            
+                            {% endif %}
+                            {% if key == "clouser-type" %} 
+                                <div class="form-group" style="display: none;">
+                                    <label for="recipient-name" class="col-form-label">Id:</label>
+                                    <input type="text" class="form-control" id="recipient-name" name="id" value="{{module_key.id}}">
+                                </div>
+                                <div class="form-group">
+                                    <label for="recipient-name" class="col-form-label">Type:</label>
+                                    <input type="text" class="form-control" id="recipient-name" name="type" value="{{module_key.type}}">
+                                </div>                                            
+                            {% endif %}
+                            {% if key == "floor-type" %} 
+                                <div class="form-group" style="display: none;">
+                                    <label for="recipient-name" class="col-form-label">Id:</label>
+                                    <input type="text" class="form-control" id="recipient-name" name="id" value="{{module_key.id}}">
+                                </div>
+                                <div class="form-group">
+                                    <label for="recipient-name" class="col-form-label">Type:</label>
+                                    <input type="text" class="form-control" id="recipient-name" name="type" value="{{module_key.type}}">
+                                </div>                                            
+                            {% endif %}
+                            {% if key == "foundation-type" %} 
+                                <div class="form-group" style="display: none;">
+                                    <label for="recipient-name" class="col-form-label">Id:</label>
+                                    <input type="text" class="form-control" id="recipient-name" name="id" value="{{module_key.id}}">
+                                </div>
+                                <div class="form-group">
+                                    <label for="recipient-name" class="col-form-label">Type:</label>
+                                    <input type="text" class="form-control" id="recipient-name" name="type" value="{{module_key.type}}">
+                                </div>                                            
+                            {% endif %}
+
+                          </form>
+                    </div>
+                    <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary" value={{key}} name="update">Update {{value}}</button>
+                    </div>
+                </div>
+                </div>
+            </form>
+        </div>
+
+    {% endfor %}
+    <!-- update modal end -->
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+    <script type="text/javascript">
+		$(document).ready(function() {
+			$('#inspector_table').DataTable({
+				"pageLength": 10,
+				"order": [[ 0, "desc" ]]
+			});
+		});
+
+        // update modal
+        function update_modal(key, id) {
+            $("#update-modal").css('display', 'block')
+            var url = "/modules/module/update/" + key+ "/"+ id
+            $(".swal-button--confirm").attr('href', url)
+        }
+        // delete modal
+        function delete_modal(key, id) {
+            $("#delete-modal").css('display', 'block')
+            var url = "/modules/module/delete/" + key+ "/"+ id
+            $(".swal-button--confirm").attr('href', url)
+        }
+
+        // for sweet alert
+        $(".swal-button--cancel").click(function(e) {
+            $("#update-modal").css('display', 'none')
+        });
+        // for sweet alert
+        $(".swal-button--cancel").click(function(e) {
+            $("#delete-modal").css('display', 'none')
+        });
+
+        // creating notification
+        var msg = "{% if msg %}{{msg}}{% endif %}"
+        if(msg !== "") {
+            var content = {};
+            if(msg=='deleted') {
+                var state = "success";
+                content.message = 'inspector deleted successfully';
+                content.title = 'Deleted!';
+            } else if (msg=='not_deleted') {
+                var state = "danger";
+                content.message = 'Problem deleting inspector';
+                content.title = 'Error!';
+            } else if (msg=='added') {
+                var state = "success";
+                content.message = 'inspector added successfully';
+                content.title = 'Success!';
+            } else if (msg=='not_added') {
+                var state = "danger";
+                content.message = 'Problem adding inspector';
+                content.title = 'Error!';
+            }
+
+            content.icon = 'fa fa-bell';
+
+            $.notify(content,{
+                type: state,
+                placement: {
+                    from: 'top',
+                    align: 'right'
+                },
+                time: 1000,
+                delay: 0,
+            });
+            // closing notification
+            setTimeout(function(){
+                $('.close').trigger('click');
+            }, 4000);
+        }
+
+        $('#exampleModal').on('show.bs.modal', function (event) {
+            var button = $(event.relatedTarget) // Button that triggered the modal
+            var recipient = button.data('whatever') // Extract info from data-* attributes
+            console.log("123123");
+            // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
+            // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.          
+            var modal = $(this)
+            modal.find('.modal-title').text('Adding new ' + "{{key}}")
+            modal.find('.modal-body input').val(recipient)
+        })
+
+    </script>
+{% endblock javascripts %}

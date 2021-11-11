@@ -1,0 +1,332 @@
+{% extends "base-form.html" %}
+
+{% block title %} Rezumatul Evaluarii {% endblock %} 
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}
+    {% load static %}
+    <!--  dropzone file upload -->
+    <script src="{% static 'dashboard/js/dropzone.js' %}"></script>
+    <link rel="stylesheet" href="{% static 'dashboard/css/dropzone.css' %}">
+    <script src="{% static 'dashboard/js/html2canvas.min.js' %}" defer></script>
+    
+<script src=
+"https://cdn.jsdelivr.net/npm/html2canvas@1.0.0-rc.5/dist/html2canvas.min.js">
+  </script>
+    <!-- Load Leaflet from CDN -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+    integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+    crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+    integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+    crossorigin=""></script>
+
+    <!-- Load Esri Leaflet from CDN -->
+    <script src="https://unpkg.com/esri-leaflet@3.0.2/dist/esri-leaflet.js"
+    integrity="sha512-myckXhaJsP7Q7MZva03Tfme/MSF5a6HC2xryjAM4FxPLHGqlh5VALCbywHnzs2uPoF/4G/QVXyYDDSkp5nPfig=="
+    crossorigin=""></script>
+
+    <!-- Load Esri Leaflet Geocoder from CDN -->
+    <link rel="stylesheet" href="https://unpkg.com/esri-leaflet-geocoder@3.1.1/dist/esri-leaflet-geocoder.css"
+    integrity="sha512-IM3Hs+feyi40yZhDH6kV8vQMg4Fh20s9OzInIIAc4nx7aMYMfo+IenRUekoYsHZqGkREUgx0VvlEsgm7nCDW9g=="
+    crossorigin="">
+    <script src="https://unpkg.com/esri-leaflet-geocoder@3.1.1/dist/esri-leaflet-geocoder.js"
+    integrity="sha512-enHceDibjfw6LYtgWU03hke20nVTm+X5CRi9ity06lGQNtC9GkBNl/6LoER6XzSudGiXy++avi1EbIg9Ip4L1w=="
+    crossorigin=""></script>
+
+    <!-- select2 js -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@ttskch/select2-bootstrap4-theme@x.x.x/dist/select2-bootstrap4.min.css">
+    <style>
+        #mapid { 
+            height: 400px;
+            width: 100%; 
+        }
+        .msg {
+            padding-left: 10px;
+        }
+        .btn-muted {
+            background: rgba(169,175,187,.82);
+            color: #fff;
+        }
+        .dropzone {
+            padding: 20px 60px 20px!important;
+        }
+        .dropzone h4 {
+            font-size: 26px!important;
+        }
+        .show-approach {
+            display: block!important;
+        }
+        .market, .income {
+            display: none;
+        }
+        .warning {
+            font-size: 16px;
+            border: 2px solid red;
+            padding: 5px 20px;
+            color: red;
+        }
+        .required {
+            border-color: #F25961 !important;
+            color: #F25961 !important;
+        }
+        .form-control[readonly] {
+            background: #1a2035!important;
+            border-color: #2f374b!important;
+            opacity: 1!important;
+        }
+    </style>
+{% endblock stylesheets %}
+
+{% block content %}
+    <div class="content">
+        <div class="page-inner">
+            <div class="page-header">
+                <h4 class="page-title">Anexa</h4>
+                <ul class="breadcrumbs">
+                    <li class="nav-home">
+                        <a href="#">
+                            <i class="flaticon-home"></i>
+                        </a>
+                    </li>
+                    <li class="separator">
+                        <i class="flaticon-right-arrow"></i>
+                    </li>
+                    <li class="nav-item">
+                        <a href="">Anexa2</a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">Select comparable property</div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <form id="tableForm">
+                                {% for property in comparable_propertys %}
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" value="{{property.id}}" name="tableRadio" id="radio-{{property.id}}">
+                                        <label class="form-check-label" for="radio-{{property.id}}">
+                                            ID-{{property.id}}
+                                         </label>
+                                    </div>
+                                {% endfor %}
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- form for each comparable table start -->
+                {% for property in comparable_propertys %}
+                    <section class="form-{{property.id}} form-box" style="display: none;">
+                        
+                        <div class="card-header">
+                            <div class="card-title">Please fill up ID-{{property.id}}</div>
+                        </div>
+                        <div class="card-body">
+                            <div class="form-group">
+                                <label for="link-{{property.id}}">Link</label>
+                                <input id="link-{{property.id}}"class="form-control link-box w-100" type="text" name="link" />
+                            </div>
+                        </div>
+                                                
+                        <div class="card-header">
+                            <div class="card-title">More uploads</div>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <form method="POST" action="#" class="dropzone dz-clickable" id="anexaPhotos" name="dropzoneForm" enctype="multipart/form-data">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="pid" value="{{ property.id }}">
+                                        <input type="hidden" name="order" id="anexa-order" value="">
+                                        <input type="hidden" name="refer_to" value="anexa">
+                                        <div class="dz-message" data-dz-message="">
+                                            <div class="icon">
+                                                <i class="flaticon-file"></i>
+                                            </div>
+                                            <h4 class="message">Drag and Drop files here</h4>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="form-group">
+                                <label for="optional-{{property.id}}">Optional Text</label>
+                                <textarea id="optional-{{property.id}}"class="w-100 form-control" id="optional_text" name="optional"></textarea>
+                            </div>
+                        </div>
+                    </section>
+                {% endfor %}
+                <!-- form for each comparable table end -->
+                <div class="card-header">
+                    <button id="btnTable" class="btn btn-primary">Next</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+    <script type="text/javascript">
+
+        var radio_button;
+
+        // radio form
+        $('input[name="tableRadio"]').click(function(){
+            var property_id = $(this).attr("value");
+            radio_button = property_id;
+            var form_id = "form-"+property_id;
+            var targetForm = $("." + form_id);
+            $(".form-box").not(targetForm).hide();
+            $(targetForm).show();
+
+        });
+
+
+        $('#btnTable').click(function(){
+
+            var no_empty_link = true;
+
+            $('.link-box').filter(function(){
+                var p_id = this.id
+                p_id = p_id.split('-');
+
+                if(this.value==''){
+                    no_empty_link = false;
+                    var content = {};
+                        var state = "danger";
+                        content.message = 'Please fill up of ID '+ this.id;
+                        content.title = 'Error!';
+
+                        content.icon = 'fa fa-bell';
+                        $.notify(content,{
+                            type: state,
+                            placement: {
+                                from: 'top',
+                                align: 'right'
+                            },
+                            time: 1000,
+                            delay: 0,
+                    });
+                    // closing notification
+                    setTimeout(function(){
+                        $('.close').trigger('click');
+                    }, 4000);
+                }
+                if(!file_order[p_id[1]]){
+                    no_empty_link = false;
+                    var content = {};
+                        var state = "danger";
+                        content.message = 'Please drop file of ID '+ this.id;
+                        content.title = 'Error!';
+
+                        content.icon = 'fa fa-bell';
+                        $.notify(content,{
+                            type: state,
+                            placement: {
+                                from: 'top',
+                                align: 'right'
+                            },
+                            time: 1000,
+                            delay: 0,
+                    });
+                    // closing notification
+                    setTimeout(function(){
+                        $('.close').trigger('click');
+                    }, 4000);
+                }
+            })
+
+
+            if(no_empty_link==true){
+                // all form data in json DS
+                var formData = {};
+                var pid = {"ok":-1};                
+                {% for property in comparable_propertys %}
+                    var property_id = {{property.id}};
+                    var link = $("#link-"+property_id).val();
+                    var optional = $("#optional-"+property_id).val();
+                    formData[property_id] = [link,optional];
+                {% endfor %}
+                
+                // send form data through ajax
+                $.ajax({
+                    type: "POST",
+                    url: "{% url 'valuation:add_anexa2' valuation.id %}",
+                    dataType: 'json',
+                    headers: {'X-CSRFToken': '{{ csrf_token }}'},
+                    data:{
+                        "formData": JSON.stringify(formData),
+                        "pid": -1,
+                    },
+                    success:function(data){
+                        if(data.status==1){
+                            window.location = "{% url 'valuation:add_anexa3' valuation.id %}"; 
+                        }
+                    },
+                });
+            }
+
+        })
+        // radio form
+
+        // dropzone file pass
+        let file_order = {};
+        // dropzone file pass
+
+        // upload photos
+        Dropzone.options.anexaPhotos = {
+            maxFiles: 10,
+            addRemoveLinks: true,
+            parallelUploads:10,
+            uploadMultiple: true,
+            removedfile: function(file) {
+                $.ajax({
+                    type: "POST",
+                    url: "{% url 'valuation:delete_file' %}",
+                    data: {
+                        "csrfmiddlewaretoken": '{{ csrf_token }}',
+                        "class_name": "anexa2",
+                        "file_name": file.name,
+                        "valuated_id": 4,
+                    },
+                    success: function(){
+                        file_order[radio_button]--;
+                        console.log(file_order[radio_button] + " remove");
+                        alert("removed file");
+                    }
+                })
+
+                file.previewElement.remove();
+            },
+
+            init: function() {
+                this.on("maxfilesexceeded", function(file){
+                    alert("No more files please!");
+                });
+                this.on("addedfile", function(file) { 
+ 
+                    if(!file_order[radio_button]){
+                        file_order[radio_button]=1;
+                    }                   
+                    else{
+                        file_order[radio_button]++;
+                    }
+                    console.log(typeof(radio_button));
+                    console.log(file_order[radio_button] + " add");
+                });
+            }
+        };
+        // upload photos
+
+    </script>
+{% endblock javascripts %}  

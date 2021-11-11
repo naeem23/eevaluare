@@ -86,6 +86,7 @@
         page <pdf:pagenumber> of <pdf:pagecount>
     </div>
 
+    {% load my_filters %}
     <div id="content">
         <div style="text-align: center; margin-top: 20px;">
             <h1 style="font-size: 26px;">Report de evaluare</h1>
@@ -110,9 +111,9 @@
             <h3 style="margin-top: 20px; font-size: 16px;">PROPERTY VALUE</h3>
             <p style="font-size: 14px; font-weight: bold;">
                 {% if summary.amav %}
-                {{summary.amav|floatformat:'0'}} EUR
+                    {{summary|get_market_value|floatformat:'0'}} EUR
                 {% elif summary.aiav %}
-                {{summary.aiav|floatformat:'0'}} EUR
+                    {{summary|get_income_value|floatformat:'0'}} EUR
                 {% endif %}
             </p>  
 
@@ -191,7 +192,6 @@
             <pdf:nextpage />
         </div>
         
-        {% load my_filters %}
         <div class="summary">
             <h2 style="margin-bottom: 10px; padding: 0; text-align: center; font-size: 24px;">Rezumatul Evaluarii</h2>
             <p style="text-align: justify;"><b>Proprietatea evaluata:</b> 
@@ -325,7 +325,7 @@
             <p style="margin-bottom: 10px; text-indent: 3rem; font-weight: bold;">1. Identificarea evaluatorului</p>
             <p style="margin-bottom: 10px;">
                 <span>{{ valuation.evaluator.get_full_name }} - Legitimatie numar {{valuation.evaluator.certification_number}}</span> <br>
-                <span>Telefon: </span> <br>
+                <span>Telefon: {{valuation.evaluator.telephone}}</span> <br>
                 <span>E-mail: {{ valuation.evaluator.email }}</span>
             </p>
             <p style="text-align: justify;">Evaluatorul declara ca nu are niciun interes cu privire la imobilul care face obiectul prezentului raport de evaluare si niciun interes sau influenta legate de partile implicate.</p>
@@ -365,7 +365,7 @@
             </p>
 
             <p style="margin-bottom: 10px; text-indent: 3rem; font-weight: bold;">9. Inspectia proprietatii</p>
-            <p style="margin-bottom: 10px;text-align: justify;">nspectia proprietatii s-a efectuat de catre evaluator {{ valuation.evaluator.get_full_name }} la data de {{valuation.inspection_date|date:"d.m.Y"}} in prezenta proprietarei <i>Pauna Gabriela</i>. Cu ocazia inspectiei proprietatii nu au fost identificate diferente intre situatia scriptica si cea faptica.</p>
+            <p style="margin-bottom: 10px;text-align: justify;">nspectia proprietatii s-a efectuat de catre evaluator {{ valuation.evaluator.get_full_name }} la data de {{valuation.inspection_date|date:"d.m.Y"}} in prezenta proprietarei {{valuation.assigned_to}}. Cu ocazia inspectiei proprietatii nu au fost identificate diferente intre situatia scriptica si cea faptica.</p>
 
             <p style="margin-bottom: 10px; text-indent: 3rem; font-weight: bold;">10. Prezentul raport de evaluare a fost intocmit folosind urmatoarele documente furnizate de client</p>
             <p style="margin-bottom: 10px;">
@@ -538,7 +538,7 @@
             <p style="margin-bottom: 10px;text-align: justify;">Proprietatea este amplasta pe {{valuation.address}} din orasul {{valuation.city.name}}, in zona {{valuation.area.name}}, zona {{ valuation.urbana }} {{ valuation.locatie }} a localitatii.</p>
             
             <p style="margin-bottom: 10px; text-indent: 3rem; font-weight: bold;">2. Zona</p>
-            <p style="margin-bottom: 10px;">{{pdata.zona|linebreaks}}</p>
+            <p style="margin-bottom: 10px; text-align: justify;">{{pdata.zona|safe}}</p>
 
             <p style="margin-bottom: 10px; text-indent: 3rem; font-weight: bold;">3. Informatii specifice</p>
             <div>
@@ -556,8 +556,6 @@
                     {% endif %}
                 {% endfor %}
             </p>
-
-            <pdf:nextpage />
 
             <p style="margin-bottom: 10px; text-indent: 3rem; font-weight: bold;">4. Puncte de interes</p>
             <p>Locatia beneficiaza de invecinarea cu urmatoarele puncte de interes:</p>
@@ -611,12 +609,12 @@
             <p style="margin-bottom: 15px;"><b>Acoperis</b> – {{ const.roof.type }}</p>
 
             <p style="margin-bottom: 5px; font-weight: bold;">Finisajele interioare sunt medii si constau in:</p>
-            <p style="margin-bottom: 5px;"><b>Pardoseli</b> – {{const.pardoseli|linebreaks}}</p>
-            <p style="margin-bottom: 5px;"><b>Pereti</b> – {{ const.walls|linebreaks }}</p>
+            <p style="margin-bottom: 5px;"><b>Pardoseli</b> – {{const.pardoseli|safe}}</p>
+            <p style="margin-bottom: 5px;"><b>Pereti</b> – {{ const.walls|safe }}</p>
             <p style="margin-bottom: 5px;"><b>Tamplaria interioara</b> – {{ const.interior_carpentry }}</p>
             <p style="margin-bottom: 5px;"><b>Plafonul</b> – {{ const.ceiling }}</p>
-            <p style="margin-bottom: 5px;"><b>Finisaje exterioare</b> – {{ const.exterior_finishes|linebreaks }}</p>
-            <p style="margin-bottom: 15px;"><b>Tamplarie exterioara</b> – {{ const.exterior_carpentry|linebreaks }}</p>
+            <p style="margin-bottom: 5px;"><b>Finisaje exterioare</b> – {{ const.exterior_finishes|safe }}</p>
+            <p style="margin-bottom: 15px;"><b>Tamplarie exterioara</b> – {{ const.exterior_carpentry|safe }}</p>
             <p><b>Bransamente</b> – Constructia este bransata la urmatoarele utilitati:</p>
             <table width="30%">
             {% for u in const.utilities.all %}
@@ -627,10 +625,11 @@
             {% endfor %}
             </table>
 
-            <p style="margin-top: 10px;"><b>Incalzirea</b> - Incalzirea se realizeaza cu ajutorul caloriferelor conectate la <i>centrala termica a blocului</i>.</p>
-            <p><b>Dotari suplimentare:</b> <i>update this part</i></p>
+            <p style="margin: 10px 0; text-align: justify;">
+                {{const.dotari|safe}}
+            </p>
 
-            <p style="margin: 10px 0;text-align: justify;"><b>Suprafete</b> - {{const.suprafete|linebreaks}}</p>
+            <p style="margin: 10px 0;text-align: justify;"><b>Suprafete</b> - {{const.suprafete|safe}}</p>
             <table border="1" width="60%">
                 <tr valign="middel">
                     <th style="padding-top: 5px;">Nr.crt.</th>
@@ -665,10 +664,10 @@
                 </tr>
             </table>
             <br>
-            <p style="margin: 10px 0;text-align: justify;"><b>Mentiuni:</b>{{ const.comments|linebreaks }}</p>
+            <p style="margin: 10px 0;text-align: justify;"><b>Mentiuni:</b>{{ const.comments|safe }}</p>
 
             <p style="margin-bottom: 10px; text-indent: 3rem; font-weight: bold;">13. Istoricul proprietatii subiect</p>
-            <p style="margin-bottom: 10px;text-align: justify;">{{ pdata.history|linebreaks }}</p>
+            <p style="margin-bottom: 10px;text-align: justify;">{{ pdata.history|safe }}</p>
         </div>
 
         <div>
@@ -701,7 +700,7 @@
 
             <p style="margin-bottom: 10px;font-weight: bold;">Analiza cererii</p>
             {% if market.ac %}
-                <p style="text-align: justify;">{{market.ac|linebreaks}}</p>
+                <p style="text-align: justify;">{{market.ac|safe}}</p>
             {% else %}
                 <p style="text-align: justify;">Cererea pentru proprietati de tipul celei analizate s-a observat a fi formata din familii cu un nivel de venituri {{market.zona_type}}</p>
                 <p style="text-align: justify;">Populatia zonei este formata din persoane cu un nivel mediu si ridicat de educatie, ceea ce contribuie la mentinerea unui mediu de siguranta si confort al rezidentilor.</p>
@@ -709,12 +708,12 @@
             {% endif %}
             
             {% if market.ac_optional %}
-                <p style="text-align: justify;">{{market.ac_optional|linebreaks}}</p>
+                <p style="text-align: justify;">{{market.ac_optional|safe}}</p>
             {% endif %}
 
             <p style="margin: 10px 0;font-weight: bold;">Analiza furnizarii</p>
             {% if market.af %}
-                <p style="text-align: justify;">{{market.af|linebreaks}}</p>
+                <p style="text-align: justify;">{{market.af|safe}}</p>
             {% else %}
                 <p style="text-align: justify;">In zona considerata si pentru segmentul de proprietati de tipul celei analizate se remarca o densitate a constructiilor {{market.const_density}}, motiv pentru care activitatea de investitii imobiliare este moderata In zona.</p>
                 <p style="text-align: justify;">In acest context, pe piata sunt listate un numar mediu de proprietati similare la vanzare, majoritatea imobilelor existente In zona fiind construite {{ market.ebby }} si respecta standardele si normativele In constructii specifice perioadei respective, motiv pentru care concurenta pentru proprietatea considerata poate fi apreciata ca fiind una {{market.prop_size}}. Acest context face ca perioada de expunere pe piata a unei proprietati similare sa fie medie de {{market.get_exposure_display}}.</p>
@@ -722,7 +721,7 @@
 
             <p style="margin: 10px 0;font-weight: bold;">Analiza interactiunii dintre cerere si oferta</p>
             {% if market.spi %}
-                <p style="text-align: justify;">{{market.spi|linebreaks}}</p>
+                <p style="text-align: justify;">{{market.spi|safe}}</p>
             {% else %}
                 <p style="text-align: justify;">Avand In vedere cele prezentate mai sus, apreciem ca piata locala pentru segmentul de proprietati similare celei analizate este caracterizata de o lichiditate {{market.liquidity}}, cu un numar {{market.transactions_nr}} de tranzactii si perioade relativ {{market.exposure_period}} de expunere a proprietatilor pe piata.</p>
                 <p style="text-align: justify;">Analiza cererii si ofertei efectuata mai sus arata ca pentru imobile de tipul celui analizat, piata este una activa, atractivitatea pentru cumparatori fiind peste medie, In conditiile unei oferte In echilibru ceea ce conduce la un relativ echilibru Intre cerere si oferta si creeaza premisele vanzarii Intr-o perioada relativ scurta a proprietatilor similare. Mentionam ca situatia macroeconomica de ansamblu conduce spre previziuni moderat pesimiste pentru perioada urmatoare, motiv pentru care este de asteptat ca activitatea de tranzactii imobiliare sa se mentina la niveluri sub cele ale anului 2019 si pe acest segment specific de piata.</p>
@@ -730,7 +729,7 @@
 
             <p style="margin: 10px 0;text-align: justify;font-weight: bold;">Previziunea absorbtiei proprietatii subiect in piata</p>
             {% if market.forecast %}
-                <p style="margin-bottom: 10px;text-align: justify;">{{market.forecast|linebreaks}}</p>
+                <p style="margin-bottom: 10px;text-align: justify;">{{market.forecast|safe}}</p>
             {% else %}
                 <p style="margin-bottom: 10px;text-align: justify;">Din punctul de vedere al gradului de absorbtie a proprietatilor de tipul celor analizate, avand In vedere elementele expuse mai sus apreciem ca proprietatea, avand In vedere caracteristicile sale constructive si de localizare prezinta un grad ridicat de absorbtie, cu o perioada de expunere pe piata de {{market.exposure}}</p>
             {% endif %}
@@ -739,15 +738,15 @@
             <p style="margin-bottom: 10px;text-align: justify;">Echilibrul pietei imobiliare poate fi determinat prin raportul cerere-oferta. La momentul evaluarii, avand in vedere numarul mare de tranzactii si perioade relativ scurte de expunere a proprietatilor pe piata imobiliara analizata, dar si marimea si respectiv preturile apartamentelor din segmentul de piata analizat, concluzionam faptul ca piata apartine vanzatorilor.</p>
 
             <p style="margin-bottom: 10px;font-weight:bold;">
-                Oferta de proprietati similare – <span style="color: blueviolet;">In crestere</span> <br>
-                Cererea de proprietati similare – <span style="color: blueviolet;">In crestere</span> <br>
-                Echilibrul pietei – <span style="color: blueviolet;">Echilibru relativ</span>
+                Oferta de proprietati similare – <span style="color: #113CFC;">{{market.get_offer_similar_display}}</span> <br>
+                Cererea de proprietati similare – <span style="color: #113CFC;">{{market.get_application_similar_display}}</span> <br>
+                Echilibrul pietei – <span style="color: #113CFC;">{{market.get_market_balance_display}}</span>
             </p>
 
             <p style="margin-bottom: 10px;">
                 <b>Plaja de valori ofertate spre vanzare pentru proprietati similare Apartamente:</b> <br>
-                Minim: <span style="color: blueviolet;">{{market.minsale_price|floatformat:'0'}} euro/mp</span> <br>
-                Maxim: <span style="color: blueviolet;">{{market.maxsale_price|floatformat:'0'}} euro/mp</span>
+                Minim: <span style="color: #113CFC;">{{market.minsale_price|floatformat:'0'}} euro/mp</span> <br>
+                Maxim: <span style="color: #113CFC;">{{market.maxsale_price|floatformat:'0'}} euro/mp</span>
             </p>
 
             <p style="text-align: justify;">Oferte de proprietati similare cu proprietatea subiect ofertite spre vanzare, identificate pe piata imobiliara analizata sunt prezentate in anexa 4 a raportului.</p>
@@ -839,120 +838,120 @@
                 <tr valign="middel">
                     <td></td>
                     <td></td>
-                    {% for c in comp_table.name %}
-                    <td style="font-weight: bold;">{{c}}</td>
+                    {% for c in comp_table %}
+                    <td style="font-weight: bold;">{{c.name}}</td>
                     {% endfor %}
                 </tr>
                 <tr valign="middel">
                     <td>Pret (EURO)</td>
                     <td></td>
-                    {% for c in comp_prop %}
-                    <td>{{c.sale_price|floatformat:"0"}}</td>
+                    {% for c in comp_table %}
+                    <td>{{c.comparable.sale_price|floatformat:"0"}}</td>
                     {% endfor %}
                 </tr>
                 <tr valign="middel">
                     <td>Date disponibile</td>
                     <td></td>
-                    {% for p in comp_prop %}
-                    <td>{{p.ad}}</td>
+                    {% for p in comp_table %}
+                    <td>{{p.comparable.ad}}</td>
                     {% endfor %}
                 </tr>
                 <tr valign="middel">
                     <td>Drepturi de proprietate</td>
                     <td>{{sub_prop.pr}}</td>
-                    {% for p in comp_prop %}
-                    <td>{{p.pr}}</td>
+                    {% for p in comp_table %}
+                    <td>{{p.comparable.pr}}</td>
                     {% endfor %}
                 </tr>
                 <tr valign="middel">
                     <td>Conditii de finantare</td>
                     <td>{{sub_prop.fc}}</td>
-                    {% for p in comp_prop %}
-                    <td>{{p.fc}}</td>
+                    {% for p in comp_table %}
+                    <td>{{p.comparable.fc}}</td>
                     {% endfor %}
                 </tr>
                 <tr valign="middel">
                     <td>Conditii de vanzare</td>
                     <td>{{sub_prop.sc}}</td>
-                    {% for p in comp_prop %}
-                    <td>{{p.sc}}</td>
+                    {% for p in comp_table %}
+                    <td>{{p.comparable.sc}}</td>
                     {% endfor %}
                 </tr>
                 <tr valign="middel">
                     <td>Cheltuieli necesare imediat dupa cumparare</td>
                     <td>{{sub_prop.ape}}</td>
-                    {% for p in comp_prop %}
-                    <td>{{p.ape}}</td>
+                    {% for p in comp_table %}
+                    <td>{{p.comparable.ape}}</td>
                     {% endfor %}
                 </tr>
                 <tr valign="middel">
                     <td>Conditii de piata</td>
                     <td>{{sub_prop.me}}</td>
-                    {% for p in comp_prop %}
-                    <td>{{p.me}}</td>
+                    {% for p in comp_table %}
+                    <td>{{p.comparable.me}}</td>
                     {% endfor %}
                 </tr>
                 <tr valign="middel">
                     <td>Localizare</td>
                     <td>{{sub_prop.lc}}</td>
-                    {% for p in comp_prop %}
-                    <td>{{p.lc}}</td>
+                    {% for p in comp_table %}
+                    <td>{{p.comparable.lc}}</td>
                     {% endfor %}
                 </tr>
                 <tr valign="middel">
                     <td>Compartimentare</td>
                     <td>{{sub_prop.cp}}</td>
-                    {% for p in comp_prop %}
-                    <td>{{p.cp}}</td>
+                    {% for p in comp_table %}
+                    <td>{{p.comparable.cp}}</td>
                     {% endfor %}
                 </tr>
                 <tr valign="middel">
                     <td>AN PIF</td>
                     <td>{{sub_prop.cy}}</td>
-                    {% for p in comp_prop %}
-                    <td>{{p.cy}}</td>
+                    {% for p in comp_table %}
+                    <td>{{p.comparable.cy}}</td>
                     {% endfor %}
                 </tr>
                 <tr valign="middel">
                     <td>Suprafata utila (mp)</td>
                     <td>{{sub_prop.area}}</td>
-                    {% for p in comp_prop %}
-                    <td>{{p.area}}</td>
+                    {% for p in comp_table %}
+                    <td>{{p.comparable.area}}</td>
                     {% endfor %}
                 </tr>
                 <tr valign="middel">
                     <td>Finisaje</td>
                     <td>{{sub_prop.finish}}</td>
-                    {% for p in comp_prop %}
-                    <td>{{p.finish}}</td>
+                    {% for p in comp_table %}
+                    <td>{{p.comparable.finish}}</td>
                     {% endfor %}
                 </tr>
                 <tr valign="middel">
                     <td>Regim de inaltime</td>
                     <td>{{sub_prop.etaj}}</td>
-                    {% for p in comp_prop %}
-                    <td>{{p.etaj}}</td>
+                    {% for p in comp_table %}
+                    <td>{{p.comparable.etaj}}</td>
                     {% endfor %}
                 </tr>
                 <tr valign="middel">
                     <td>Balcon (mp)</td>
                     <td>{{sub_prop.balcon}}</td>
-                    {% for p in comp_prop %}
-                    <td>{{p.balcon}}</td>
+                    {% for p in comp_table %}
+                    <td>{{p.comparable.balcon}}</td>
                     {% endfor %}
                 </tr>
                 <tr valign="middel">
                     <td>Sistem de incalzire</td>
                     <td>{{sub_prop.hs}}</td>
-                    {% for p in comp_prop %}
-                    <td>{{p.hs}}</td>
+                    {% for p in comp_table %}
+                    <td>{{p.comparable.hs}}</td>
                     {% endfor %}
                 </tr>
                 {% if sub_prop.opt1_name %}
                 <tr valign="middel">
                     <td>{{sub_prop.opt1_name}}</td>
                     <td>{{sub_prop.opt1_val}}</td>
-                    {% for p in comp_prop %}
+                    {% for p in comp_table %}
                     <td>{{p.opt1_val}}</td>
                     {% endfor %}
                 </tr>
@@ -961,7 +960,7 @@
                 <tr valign="middel">
                     <td>{{sub_prop.opt2_name}}</td>
                     <td>{{sub_prop.opt2_val}}</td>
-                    {% for p in comp_prop %}
+                    {% for p in comp_table %}
                     <td>{{p.opt2_val}}</td>
                     {% endfor %}
                 </tr>
@@ -970,7 +969,7 @@
                 <tr valign="middel">
                     <td>{{sub_prop.opt3_name}}</td>
                     <td>{{sub_prop.opt3_val}}</td>
-                    {% for p in comp_prop %}
+                    {% for p in comp_table %}
                     <td>{{p.opt3_val}}</td>
                     {% endfor %}
                 </tr>
@@ -980,7 +979,7 @@
 
             <p style="margin: 10px 0; text-align: justify;">
                 In acest raport de evaluare tehnicile cantitative folosite pentru estimarea ajustarilor sunt analiza pe perechi de date,  analiza datelor secundare. <br>
-                Din analiza efectuata a rezultat ca cea mai apropiata comparabila de subiect este comparabila {{comp_table|get_corresponding_letter}} (are cele mai mici ajustari totale brute). <br>
+                Din analiza efectuata a rezultat ca cea mai apropiata comparabila de subiect este comparabila {{sub_prop|get_corresponding_letter}} (are cele mai mici ajustari totale brute). <br>
                 Ajustarile luate in considerare au fost urmatoarele:
             </p>
 
@@ -994,490 +993,490 @@
                 <tr valign="middel">
                     <td></td>
                     <td></td>
-                    {% for p in comp_table.name %}
-                    <td>{{p}}</td>
+                    {% for p in comp_table %}
+                    <td>{{p.name}}</td>
                     {% endfor %}
                 </tr>
                 <tr valign="middel">
                     <td style="text-align: left;padding-left:3px">Pret de oferta/vanzare (EURO)</td>
                     <td></td>
-                    {% for p in comp_prop %}
-                    <td>{{p.sale_price|floatformat:"0"}}</td>
+                    {% for p in comp_table %}
+                    <td>{{p.comparable.sale_price|floatformat:"0"}}</td>
                     {% endfor %}
                 </tr>
                 
                 <tr valign="middel">
                     <td rowspan="3">Componente non imobiliare (non real-estate component)</td>
                     <td rowspan="2">Mobila</td>
-                    {% for p in comp_prop %}
-                    <td>{{p.mobila}}</td>
+                    {% for p in comp_table %}
+                    <td>{{p.comparable.mobila}}</td>
                     {% endfor %}
                 </tr>
                 <tr valign="middel">
-                    {% for c in comp_prop %}
-                    <td>{{c.ma|floatformat:"0"}}</td>
+                    {% for c in comp_table %}
+                    <td>{{c.comparable.ma|floatformat:"0"}}</td>
                     {% endfor %}
                 </tr>
                 <tr valign="middel"> 
                     <td rowspan="2">Loc de parcare/boxa</td>
-                    {% for p in comp_prop %}
-                    <td>{{p.parking_boxa}}</td>
+                    {% for p in comp_table %}
+                    <td>{{p.comparable.parking_boxa}}</td>
                     {% endfor %}
                 </tr>
                 <tr valign="middel">
                     <td style="text-align:left;padding-left:3px;">Ajustare (EUR)</td>
-                    {% for c in comp_prop %}
-                    <td>{{c.pba|floatformat:"0"}}</td>
+                    {% for c in comp_table %}
+                    <td>{{c.comparable.pba|floatformat:"0"}}</td>
                     {% endfor %}
                 </tr>
 
                 <tr valign="middel">
                     <td style="text-align: left;padding-left:3px">Pret de oferta/vanzare imobil (EURO)</td>
                     <td></td>
-                    {% for p in comp_table.op|list_convert %}
-                    <td>{{p}}</td>
+                    {% for p in comp_table %}
+                    <td>{{p.op|floatformat:'0'}}</td>
                     {% endfor %}
                 </tr>
                 <tr valign="middel">
                     <td style="text-align: left;padding-left:3px">Date disponibile</td>
                     <td>{{sub_prop.ad}}</td>
-                    {% for p in comp_prop %}
-                    <td>{{p.ad}}</td>
+                    {% for p in comp_table %}
+                    <td>{{p.comparable.ad}}</td>
                     {% endfor %}
                 </tr>
                 <tr valign="middel">
                     <td style="text-align: left;padding-left:3px;font-weight: normal;">Marja negociere (%)</td>
                     <td></td>
-                    {% for c in comp_table.margin|list_convert %}
-                    <td style="text-align: right;padding-right: 3px;font-weight: normal;">{{c}}%</td>
+                    {% for c in comp_table %}
+                    <td style="text-align: right;padding-right: 3px;font-weight: normal;">{{c.margin|floatformat:'0'}}%</td>
                     {% endfor %}
                 </tr>
                 <tr valign="middel">
                     <td style="text-align: left;padding-left:3px;font-weight: normal;">Valoare corectie (EURO)</td>
                     <td></td>
-                    {% for p in comp_table.cv|list_convert %}
-                    <td style="text-align: right;padding-right: 3px;font-weight: normal;">{{p}}</td>
+                    {% for p in comp_table %}
+                    <td style="text-align: right;padding-right: 3px;font-weight: normal;">{{p.cv|floatformat:'0'}}</td>
                     {% endfor %}
                 </tr>
                 <tr valign="middel">
                     <td style="text-align: left;padding-left:3px">Pret corectat (EURO)</td>
                     <td></td>
-                    {% for p in comp_table.mp|list_convert %}
-                    <td style="text-align: right;padding-right: 3px;">{{p}}</td>
+                    {% for p in comp_table %}
+                    <td style="text-align: right;padding-right: 3px;">{{p.mp|floatformat:'0'}}</td>
                     {% endfor %}
                 </tr>
                 <tr valign="middel">
                     <td style="text-align: left;padding-left:3px" valign="top">Motivare corectie</td>
-                    <td colspan="4" style="font-weight: normal; text-align: left;padding-left:3px">{{comp_table.motivation}}</td>
+                    <td colspan="4" style="font-weight: normal; text-align: left;padding-left:3px">{{sub_prop.motivation}}</td>
                 </tr>
 
                 <tr valign="middel"><td colspan="5">Ajustari pentru conditiile tranzactiilor</td></tr>
                 <tr valign="middel">
                     <td style="text-align: left;padding-left:3px">Drepturi de proprietate</td>
                     <td style="font-weight: normal;">{{sub_prop.pr}}</td>
-                    {% for p in comp_prop %}
-                    <td style="font-weight: normal;">{{p.pr}}</td>
+                    {% for p in comp_table %}
+                    <td style="font-weight: normal;">{{p.comparable.pr}}</td>
                     {% endfor %}
                 </tr>
                 <tr valign="middel">
                     <td style="text-align: left;padding-left:3px;font-weight: normal;">Ajustare (%)</td>
                     <td></td>
-                    {% for c in comp_table.pr_percent|list_convert %}
-                    <td style="font-weight: normal;text-align: right;padding-right: 3px;">{{c}}%</td>
+                    {% for c in comp_table %}
+                    <td style="font-weight: normal;text-align: right;padding-right: 3px;">{{c.pr_percent|floatformat}}%</td>
                     {% endfor %}
                 </tr>
                 <tr valign="middel">
                     <td style="text-align: left;padding-left:3px;font-weight: normal;">Ajustare (EURO)</td>
                     <td></td>
-                    {% for c in comp_table.pr_euro|list_convert %}
-                    <td style="font-weight: normal;text-align: right;padding-right: 3px;">{{c}}</td>
+                    {% for c in comp_table %}
+                    <td style="font-weight: normal;text-align: right;padding-right: 3px;">{{c.pr_euro|floatformat}}</td>
                     {% endfor %}
                 </tr>
                 <tr valign="middel">
                     <td style="text-align: left;padding-left:3px">Pret ajustat (EURO)</td>
                     <td></td>
-                    {% for c in comp_table.pr_price|list_convert %}
-                    <td style="text-align: right;padding-right: 3px;">{{c}}</td>
+                    {% for c in comp_table %}
+                    <td style="text-align: right;padding-right: 3px;">{{c.pr_price|floatformat:'0'}}</td>
                     {% endfor %}
                 </tr>
                 <tr valign="middel">
                     <td style="text-align: left;padding-left:3px">Motivare corectie</td>
-                    <td colspan="4" style="text-align: left;padding-left:3px;font-weight: normal;">{{comp_table.pr_motivation}}</td>
+                    <td colspan="4" style="text-align: left;padding-left:3px;font-weight: normal;">{{sub_prop.pr_motivation}}</td>
                 </tr>
                 
                 <tr>
                     <td style="text-align: left;padding-left:3px">Conditii de finantare</td>
                     <td style="font-weight: normal;">{{sub_prop.fc}}</td>
-                    {% for p in comp_prop %}
-                    <td style="font-weight: normal;">{{p.fc}}</td>
+                    {% for p in comp_table %}
+                    <td style="font-weight: normal;">{{p.comparable.fc}}</td>
                     {% endfor %}
                 </tr>
                 <tr>
                     <td style="text-align: left;padding-left:3px;font-weight: normal;">Ajustare (%)</td>
                     <td></td>
-                    {% for c in comp_table.fc_percent|list_convert %}
-                    <td style="font-weight: normal;text-align: right;padding-right: 3px;">{{c}}%</td>
+                    {% for c in comp_table %}
+                    <td style="font-weight: normal;text-align: right;padding-right: 3px;">{{c.fc_percent|floatformat:'0'}}%</td>
                     {% endfor %}
                 </tr>
                 <tr>
                     <td style="text-align: left;padding-left:3px;font-weight: normal;">Ajustare (EURO)</td>
                     <td></td>
-                    {% for c in comp_table.fc_euro|list_convert %}
-                    <td style="font-weight: normal;text-align: right;padding-right: 3px;">{{c}}</td>
+                    {% for c in comp_table %}
+                    <td style="font-weight: normal;text-align: right;padding-right: 3px;">{{c.fc_euro|floatformat:'0'}}</td>
                     {% endfor %}
                 </tr>
                 <tr>
                     <td style="text-align: left;padding-left:3px">Pret ajustat (EURO)</td>
                     <td></td>
-                    {% for c in comp_table.fc_price|list_convert %}
-                    <td style="text-align: right;padding-right: 3px;">{{c}}</td>
+                    {% for c in comp_table %}
+                    <td style="text-align: right;padding-right: 3px;">{{c.fc_price|floatformat:'0'}}</td>
                     {% endfor %}
                 </tr>
                 <tr>
                     <td style="text-align: left;padding-left:3px">Motivare corectie</td>
-                    <td colspan="4" style="text-align: left;padding-left:3px;font-weight: normal;">{{comp_table.fc_motivation}}</td>
+                    <td colspan="4" style="text-align: left;padding-left:3px;font-weight: normal;">{{sub_prop.fc_motivation}}</td>
                 </tr>
                 
                 <tr>
                     <td style="text-align: left;padding-left:3px">Conditii de vanzare</td>
                     <td style="font-weight: normal;">{{sub_prop.sc}}</td>
-                    {% for p in comp_prop %}
-                    <td style="font-weight: normal;">{{p.sc}}</td>
+                    {% for p in comp_table %}
+                    <td style="font-weight: normal;">{{p.comparable.sc}}</td>
                     {% endfor %}
                 </tr>
                 <tr>
                     <td style="text-align: left;padding-left:3px;font-weight: normal;">Ajustare (%)</td>
                     <td></td>
-                    {% for c in comp_table.sc_percent|list_convert %}
-                    <td style="font-weight: normal;text-align: right;padding-right: 3px;">{{c}}%</td>
+                    {% for c in comp_table %}
+                    <td style="font-weight: normal;text-align: right;padding-right: 3px;">{{c.sc_percent|floatformat:'0'}}%</td>
                     {% endfor %}
                 </tr>
                 <tr>
                     <td style="text-align: left;padding-left:3px;font-weight: normal;">Ajustare (EURO)</td>
                     <td></td>
-                    {% for c in comp_table.sc_euro|list_convert %}
-                    <td style="font-weight: normal;text-align: right;padding-right: 3px;">{{c}}</td>
+                    {% for c in comp_table %}
+                    <td style="font-weight: normal;text-align: right;padding-right: 3px;">{{c.sc_euro|floatformat:'0'}}</td>
                     {% endfor %}
                 </tr>
                 <tr>
                     <td style="text-align: left;padding-left:3px">Pret ajustat (EURO)</td>
                     <td></td>
-                    {% for c in comp_table.sc_price|list_convert %}
-                    <td style="text-align: right;padding-right: 3px;">{{c}}</td>
+                    {% for c in comp_table %}
+                    <td style="text-align: right;padding-right: 3px;">{{c.sc_price|floatformat:'0'}}</td>
                     {% endfor %}
                 </tr>
                 <tr>
                     <td style="text-align: left;padding-left:3px">Motivare corectie</td>
-                    <td colspan="4" style="text-align: left;padding-left:3px;font-weight: normal;">{{comp_table.sc_motivation}}</td>
+                    <td colspan="4" style="text-align: left;padding-left:3px;font-weight: normal;">{{sub_prop.sc_motivation}}</td>
                 </tr>
                 
                 <tr>
                     <td style="text-align: left;padding-left:3px">Cheltuieli necesare imediat dupa cumparare</td>
                     <td style="font-weight: normal;">{{sub_prop.ape}}</td>
-                    {% for p in comp_prop %}
-                    <td style="font-weight: normal;">{{p.ape}}</td>
+                    {% for p in comp_table %}
+                    <td style="font-weight: normal;">{{p.comparable.ape}}</td>
                     {% endfor %}
                 </tr>
                 <tr>
                     <td style="text-align: left;padding-left:3px;font-weight: normal;">Ajustare (%)</td>
                     <td></td>
-                    {% for c in comp_table.ape_percent|list_convert %}
-                    <td style="font-weight: normal;text-align: right;padding-right: 3px;">{{c}}%</td>
+                    {% for c in comp_table %}
+                    <td style="font-weight: normal;text-align: right;padding-right: 3px;">{{c.ape_percent|floatformat:'0'}}%</td>
                     {% endfor %}
                 </tr>
                 <tr>
                     <td style="text-align: left;padding-left:3px;font-weight: normal;">Ajustare (EURO)</td>
                     <td></td>
-                    {% for c in comp_table.ape_euro|list_convert %}
-                    <td style="font-weight: normal;text-align: right;padding-right: 3px;">{{c}}</td>
+                    {% for c in comp_table %}
+                    <td style="font-weight: normal;text-align: right;padding-right: 3px;">{{c.ape_euro|floatformat:'0'}}</td>
                     {% endfor %}
                 </tr>
                 <tr>
                     <td style="text-align: left;padding-left:3px">Pret ajustat (EURO)</td>
                     <td></td>
-                    {% for c in comp_table.ape_price|list_convert %}
-                    <td style="text-align: right;padding-right: 3px;">{{c}}</td>
+                    {% for c in comp_table %}
+                    <td style="text-align: right;padding-right: 3px;">{{c.ape_price|floatformat:'0'}}</td>
                     {% endfor %}
                 </tr>
                 <tr>
                     <td style="text-align: left;padding-left:3px">Motivare corectie</td>
-                    <td colspan="4" style="text-align: left;padding-left:3px;font-weight: normal;">{{comp_table.ape_motivation}}</td>
+                    <td colspan="4" style="text-align: left;padding-left:3px;font-weight: normal;">{{sub_prop.ape_motivation}}</td>
                 </tr>
                 
                 <tr>
                     <td style="text-align: left;padding-left:3px">Conditii de piata</td>
                     <td>{{sub_prop.me}}</td>
-                    {% for p in comp_prop %}
-                    <td style="font-weight: normal;">{{p.me}}</td>
+                    {% for p in comp_table %}
+                    <td style="font-weight: normal;">{{p.comparable.me}}</td>
                     {% endfor %}
                 </tr>
                 <tr>
                     <td style="text-align: left;padding-left:3px;font-weight: normal;">Ajustare (%)</td>
                     <td></td>
-                    {% for c in comp_table.me_percent|list_convert %}
-                    <td style="font-weight: normal;text-align: right;padding-right: 3px;">{{c}}%</td>
+                    {% for c in comp_table %}
+                    <td style="font-weight: normal;text-align: right;padding-right: 3px;">{{c.me_percent|floatformat:'0'}}%</td>
                     {% endfor %}
                 </tr>
                 <tr>
                     <td style="text-align: left;padding-left:3px;font-weight: normal;">Ajustare (EURO)</td>
                     <td></td>
-                    {% for c in comp_table.me_euro|list_convert %}
-                    <td style="font-weight: normal;text-align: right;padding-right: 3px;">{{c}}</td>
+                    {% for c in comp_table %}
+                    <td style="font-weight: normal;text-align: right;padding-right: 3px;">{{c.me_euro|floatformat:'0'}}</td>
                     {% endfor %}
                 </tr>
                 <tr>
                     <td style="text-align: left;padding-left:3px">Pret ajustat (EURO)</td>
                     <td></td>
-                    {% for c in comp_table.me_price|list_convert %}
-                    <td style="text-align: right;padding-right: 3px;">{{c}}</td>
+                    {% for c in comp_table %}
+                    <td style="text-align: right;padding-right: 3px;">{{c.me_price|floatformat:'0'}}</td>
                     {% endfor %}
                 </tr>
                 <tr>
                     <td style="text-align: left;padding-left:3px">Motivare corectie</td>
-                    <td colspan="4" style="text-align: left;padding-left:3px;font-weight: normal;">{{comp_table.me_motivation}}</td>
+                    <td colspan="4" style="text-align: left;padding-left:3px;font-weight: normal;">{{sub_prop.me_motivation}}</td>
                 </tr>
 
                 <tr><td colspan="5">Ajustari specifice proprietatii</td></tr>
                 <tr>
                     <td style="text-align: left;padding-left:3px">Localizare</td>
                     <td>{{sub_prop.lc}}</td>
-                    {% for p in comp_prop %}
-                    <td>{{p.lc}}</td>
+                    {% for p in comp_table %}
+                    <td>{{p.comparable.lc}}</td>
                     {% endfor %}
                 </tr>
                 <tr>
                     <td style="text-align: left;padding-left:3px;font-weight: normal;">Ajustare (%)</td>
                     <td></td>
-                    {% for c in comp_table.lc_percent|list_convert %}
-                    <td style="font-weight: normal;text-align: right;padding-right: 3px;">{{c}}%</td>
+                    {% for c in comp_table %}
+                    <td style="font-weight: normal;text-align: right;padding-right: 3px;">{{c.lc_percent|floatformat:'0'}}%</td>
                     {% endfor %}
                 </tr>
                 <tr>
                     <td style="text-align: left;padding-left:3px;font-weight: normal;">Ajustare (EURO)</td>
                     <td></td>
-                    {% for c in comp_table.lc_euro|list_convert %}
-                    <td style="font-weight: normal;text-align: right;padding-right: 3px;">{{c}}</td>
+                    {% for c in comp_table %}
+                    <td style="font-weight: normal;text-align: right;padding-right: 3px;">{{c.lc_euro|floatformat:'0'}}</td>
                     {% endfor %}
                 </tr>
                 <tr>
                     <td style="text-align: left;padding-left:3px">Motivare corectie</td>
-                    <td colspan="4" style="text-align: left;padding-left:3px;font-weight: normal;">{{comp_table.lc_motivation}}</td>
+                    <td colspan="4" style="text-align: left;padding-left:3px;font-weight: normal;">{{sub_prop.lc_motivation}}</td>
                 </tr>
 
                 <tr>
                     <td style="text-align: left;padding-left:3px">Compartimentare</td>
                     <td>{{sub_prop.cp}}</td>
-                    {% for p in comp_prop %}
-                    <td>{{p.cp}}</td>
+                    {% for p in comp_table %}
+                    <td>{{p.comparable.cp}}</td>
                     {% endfor %}
                 </tr>
                 <tr>
                     <td style="text-align: left;padding-left:3px;font-weight: normal;">Ajustare (%)</td>
                     <td></td>
-                    {% for c in comp_table.cp_percent|list_convert %}
-                    <td style="font-weight: normal;text-align: right;padding-right: 3px;">{{c}}%</td>
+                    {% for c in comp_table %}
+                    <td style="font-weight: normal;text-align: right;padding-right: 3px;">{{c.cp_percent|floatformat:'0'}}%</td>
                     {% endfor %}
                 </tr>
                 <tr>
                     <td style="text-align: left;padding-left:3px;font-weight: normal;">Ajustare (EURO)</td>
                     <td></td>
-                    {% for c in comp_table.cp_euro|list_convert %}
-                    <td style="font-weight: normal;text-align: right;padding-right: 3px;">{{c}}</td>
+                    {% for c in comp_table %}
+                    <td style="font-weight: normal;text-align: right;padding-right: 3px;">{{c.cp_euro|floatformat:'0'}}</td>
                     {% endfor %}
                 </tr>
                 <tr>
                     <td style="text-align: left;padding-left:3px">Motivare corectie</td>
-                    <td colspan="4" style="text-align: left;padding-left:3px;font-weight: normal;">{{comp_table.cp_motivation}}</td>
+                    <td colspan="4" style="text-align: left;padding-left:3px;font-weight: normal;">{{sub_prop.cp_motivation}}</td>
                 </tr>
 
                 <tr>
                     <td style="text-align: left;padding-left:3px">AN PIF</td>
                     <td>{{sub_prop.cy}}</td>
-                    {% for p in comp_prop %}
-                    <td>{{p.cy}}</td>
+                    {% for p in comp_table %}
+                    <td>{{p.comparable.cy}}</td>
                     {% endfor %}
                 </tr>
                 <tr>
                     <td style="text-align: left;padding-left:3px;font-weight: normal;">Ajustare (%)</td>
                     <td></td>
-                    {% for c in comp_table.cy_percent|list_convert %}
-                    <td style="font-weight: normal;text-align: right;padding-right: 3px;">{{c}}%</td>
+                    {% for c in comp_table %}
+                    <td style="font-weight: normal;text-align: right;padding-right: 3px;">{{c.cy_percent|floatformat:'0'}}%</td>
                     {% endfor %}
                 </tr>
                 <tr>
                     <td style="text-align: left;padding-left:3px;font-weight: normal;">Ajustare (EURO)</td>
                     <td></td>
-                    {% for c in comp_table.cy_euro|list_convert %}
-                    <td style="font-weight: normal;text-align: right;padding-right: 3px;">{{c}}%</td>
+                    {% for c in comp_table %}
+                    <td style="font-weight: normal;text-align: right;padding-right: 3px;">{{c.cy_euro|floatformat:'0'}}%</td>
                     {% endfor %}
                 </tr>
                 <tr>
                     <td style="text-align: left;padding-left:3px">Motivare corectie</td>
-                    <td colspan="4" style="text-align: left;padding-left:3px;font-weight: normal;">{{ comp_table.cy_motivation}}</td>
+                    <td colspan="4" style="text-align: left;padding-left:3px;font-weight: normal;">{{ sub_prop.cy_motivation}}</td>
                 </tr>
 
                 <tr>
                     <td style="text-align: left;padding-left:3px">Suprafata utila (mp)</td>
                     <td>{{sub_prop.area}}</td>
-                    {% for p in comp_prop %}
-                    <td>{{p.area}}</td>
+                    {% for p in comp_table %}
+                    <td>{{p.comparable.area}}</td>
                     {% endfor %}
                 </tr>
                 <tr>
                     <td style="text-align: left;padding-left:3px;font-weight: normal;">Diferenta de suprafata (mp)</td>
                     <td></td>
-                    {% for p in comp_table.su_diff|list_convert %}
-                    <td style="font-weight: normal;text-align: right;padding-right: 3px;">{{p}}</td>
+                    {% for p in comp_table %}
+                    <td style="font-weight: normal;text-align: right;padding-right: 3px;">{{p.su_diff}}</td>
                     {% endfor %}
                 </tr>
                 <tr>
                     <td style="text-align: left;padding-left:3px;font-weight: normal;">Ajustare (%)</td>
                     <td></td>
-                    {% for p in comp_table.su_percent|list_convert %}
-                    <td style="font-weight: normal;text-align: right;padding-right: 3px;">{{p}}%</td>
+                    {% for p in comp_table %}
+                    <td style="font-weight: normal;text-align: right;padding-right: 3px;">{{p.su_percent|floatformat:'0'}}%</td>
                     {% endfor %}
                 </tr>
                 <tr>
                     <td style="text-align: left;padding-left:3px;font-weight: normal;">Ajustare (EURO)</td>
                     <td></td>
-                    {% for p in comp_table.su_euro|list_convert %}
-                    <td style="font-weight: normal;text-align: right;padding-right: 3px;">{{p}}</td>
+                    {% for p in comp_table %}
+                    <td style="font-weight: normal;text-align: right;padding-right: 3px;">{{p.su_euro|floatformat:'0'}}</td>
                     {% endfor %}
                 </tr>
                 <tr>
                     <td style="text-align: left;padding-left:3px">Motivare corectie</td>
-                    <td colspan="4" style="text-align: left;padding-left:3px;font-weight: normal;">{{comp_table.su_motivation}}</td>
+                    <td colspan="4" style="text-align: left;padding-left:3px;font-weight: normal;">{{sub_prop.su_motivation}}</td>
                 </tr>
 
                 <tr>
                     <td style="text-align: left;padding-left:3px">Finisaje</td>
                     <td>{{sub_prop.finish}}</td>
-                    {% for p in comp_prop %}
-                    <td>{{p.finish}}</td>
+                    {% for p in comp_table %}
+                    <td>{{p.comparable.finish}}</td>
                     {% endfor %}
                 </tr>
                 <tr>
                     <td style="text-align: left;padding-left:3px;font-weight: normal;">Ajustare (%)</td>
                     <td></td>
-                    {% for c in comp_table.finish_percent|list_convert %}
-                    <td style="font-weight: normal;text-align: right;padding-right: 3px;">{{c}}%</td>
+                    {% for c in comp_table %}
+                    <td style="font-weight: normal;text-align: right;padding-right: 3px;">{{c.finish_percent|floatformat:'0'}}%</td>
                     {% endfor %}
                 </tr>
                 <tr>
                     <td style="text-align: left;padding-left:3px;font-weight: normal;">Ajustare (EURO)</td>
                     <td></td>
-                    {% for c in comp_table.finish_euro|list_convert  %}
-                    <td style="font-weight: normal;text-align: right;padding-right: 3px;">{{c}}</td>
+                    {% for c in comp_table  %}
+                    <td style="font-weight: normal;text-align: right;padding-right: 3px;">{{c.finish_euro|floatformat:'0'}}</td>
                     {% endfor %}
                 </tr>
                 <tr>
                     <td style="text-align: left;padding-left:3px">Motivare corectie</td>
-                    <td colspan="4" style="text-align: left;padding-left:3px;font-weight: normal;">{{comp_table.finish_motivation}}</td>
+                    <td colspan="4" style="text-align: left;padding-left:3px;font-weight: normal;">{{sub_prop.finish_motivation}}</td>
                 </tr>
 
                 <tr>
                     <td style="text-align: left;padding-left:3px">Regim de inaltime</td>
                     <td>{{sub_prop.etaj}}</td>
-                    {% for p in comp_prop %}
-                    <td>{{p.etaj}}</td>
+                    {% for p in comp_table %}
+                    <td>{{p.comparable.etaj}}</td>
                     {% endfor %}
                 </tr>
                 <tr>
                     <td style="text-align: left;padding-left:3px;font-weight: normal;">Ajustare (%)</td>
                     <td></td>
-                    {% for c in comp_table.etaj_percent|list_convert %}
-                    <td style="font-weight: normal;text-align: right;padding-right: 3px;">{{c}}%</td>
+                    {% for c in comp_table %}
+                    <td style="font-weight: normal;text-align: right;padding-right: 3px;">{{c.etaj_percent|floatformat:'0'}}%</td>
                     {% endfor %}
                 </tr>
                 <tr>
                     <td style="text-align: left;padding-left:3px;font-weight: normal;">Ajustare (EURO)</td>
                     <td></td>
-                    {% for c in comp_table.etaj_euro|list_convert %}
-                    <td style="font-weight: normal;text-align: right;padding-right: 3px;">{{c}}</td>
+                    {% for c in comp_table %}
+                    <td style="font-weight: normal;text-align: right;padding-right: 3px;">{{c.etaj_euro|floatformat:'0'}}</td>
                     {% endfor %}
                 </tr>
                 <tr>
                     <td style="text-align: left;padding-left:3px">Motivare corectie</td>
-                    <td colspan="4" style="text-align: left;padding-left:3px;font-weight: normal;">{{comp_table.etaj_motivation}}</td>
+                    <td colspan="4" style="text-align: left;padding-left:3px;font-weight: normal;">{{sub_prop.etaj_motivation}}</td>
                 </tr>
 
                 <tr>
                     <td style="text-align: left;padding-left:3px">Balcon (mp)</td>
                     <td>{{sub_prop.balcon}}</td>
-                    {% for p in comp_prop %}
-                    <td>{{p.balcon}}</td>
+                    {% for p in comp_table %}
+                    <td>{{p.comparable.balcon}}</td>
                     {% endfor %}
                 </tr>
                 <tr>
                     <td style="text-align: left;padding-left:3px;font-weight: normal;">Ajustare (%)</td>
                     <td></td>
-                    {% for p in comp_table.balcon_percent|list_convert %}
-                    <td style="font-weight: normal;text-align: right;padding-right: 3px;">{{p}}%</td>
+                    {% for p in comp_table %}
+                    <td style="font-weight: normal;text-align: right;padding-right: 3px;">{{p.balcon_percent|floatformat:'0'}}%</td>
                     {% endfor %}
                 </tr>
                 <tr>
                     <td style="text-align: left;padding-left:3px;font-weight: normal;">Ajustare (EURO)</td>
                     <td></td>
-                    {% for p in comp_table.balcon_euro|list_convert %}
-                    <td style="font-weight: normal;text-align: right;padding-right: 3px;">{{p}}</td>
+                    {% for p in comp_table %}
+                    <td style="font-weight: normal;text-align: right;padding-right: 3px;">{{p.balcon_euro|floatformat:'0'}}</td>
                     {% endfor %}
                 </tr>
                 <tr>
                     <td style="text-align: left;padding-left:3px">Motivare corectie</td>
-                    <td colspan="4" style="text-align: left;padding-left:3px;font-weight: normal;">{{comp_table.balcon_motivation}}</td>
+                    <td colspan="4" style="text-align: left;padding-left:3px;font-weight: normal;">{{sub_prop.balcon_motivation}}</td>
                 </tr>
 
                 <tr>
                     <td style="text-align: left;padding-left:3px">Sistem de incalzire</td>
                     <td>{{sub_prop.hs}}</td>
-                    {% for p in comp_prop %}
-                    <td>{{p.hs}}</td>
+                    {% for p in comp_table %}
+                    <td>{{p.comparable.hs}}</td>
                     {% endfor %}
                 </tr>
                 <tr>
                     <td style="text-align: left;padding-left:3px;font-weight: normal;">Ajustare (%)</td>
                     <td></td>
-                    {% for c in comp_table.hs_percent|list_convert %}
-                    <td style="font-weight: normal;text-align: right;padding-right: 3px;">{{c}}%</td>
+                    {% for c in comp_table %}
+                    <td style="font-weight: normal;text-align: right;padding-right: 3px;">{{c.hs_percent|floatformat:'0'}}%</td>
                     {% endfor %}
                 </tr>
                 <tr>
                     <td style="text-align: left;padding-left:3px;font-weight: normal;">Ajustare (EURO)</td>
                     <td></td>
-                    {% for c in comp_table.hs_euro|list_convert %}
-                    <td style="font-weight: normal;text-align: right;padding-right: 3px;">{{c}}</td>
+                    {% for c in comp_table %}
+                    <td style="font-weight: normal;text-align: right;padding-right: 3px;">{{c.hs_euro|floatformat:'0'}}</td>
                     {% endfor %}
                 </tr>
                 <tr>
                     <td style="text-align: left;padding-left:3px">Motivare corectie</td>
-                    <td colspan="4" style="text-align: left;padding-left:3px;font-weight: normal;">{{comp_table.hs_motivation}}</td>
+                    <td colspan="4" style="text-align: left;padding-left:3px;font-weight: normal;">{{sub_prop.hs_motivation}}</td>
                 </tr>
 
                 {% if sub_prop.opt1_name %}
                 <tr>
                     <td style="text-align: left;padding-left:3px">{{sub_prop.opt1_name }}</td>
                     <td>{{sub_prop.opt1_val }}</td>
-                    {% for p in comp_prop %}
+                    {% for p in comp_table %}
                     <td>{{p.opt1_val}}</td>
                     {% endfor %}
                 </tr>
                 <tr>
                     <td style="text-align: left;padding-left:3px;font-weight: normal;">Ajustare (%)</td>
                     <td></td>
-                    {% for c in comp_table.opt1_percent|list_convert %}
-                    <td style="font-weight: normal;text-align: right;padding-right: 3px;">{{c}}%</td>
+                    {% for c in comp_table %}
+                    <td style="font-weight: normal;text-align: right;padding-right: 3px;">{{c.opt1_percent|floatformat:'0'}}%</td>
                     {% endfor %}
                 </tr>
                 <tr>
                     <td style="text-align: left;padding-left:3px;font-weight: normal;">Ajustare (EURO)</td>
                     <td></td>
-                    {% for c in comp_table.opt1_euro|list_convert %}
-                    <td style="font-weight: normal;text-align: right;padding-right: 3px;">{{c}}</td>
+                    {% for c in comp_table %}
+                    <td style="font-weight: normal;text-align: right;padding-right: 3px;">{{c.opt1_euro|floatformat}}</td>
                     {% endfor %}
                 </tr>
                 <tr>
                     <td style="text-align: left;padding-left:3px">Motivare corectie</td>
-                    <td colspan="4" style="text-align: left;padding-left:3px;font-weight: normal;">{{comp_table.opt1_motivation}}</td>
+                    <td colspan="4" style="text-align: left;padding-left:3px;font-weight: normal;">{{sub_prop.opt1_motivation}}</td>
                 </tr>
                 {% endif %}
 
@@ -1485,27 +1484,27 @@
                 <tr>
                     <td style="text-align: left;padding-left:3px">{{sub_prop.opt2_name }}</td>
                     <td>{{sub_prop.opt2_val }}</td>
-                    {% for p in comp_prop %}
+                    {% for p in comp_table %}
                     <td>{{p.opt2_val}}</td>
                     {% endfor %}
                 </tr>
                 <tr>
                     <td style="text-align: left;padding-left:3px;font-weight: normal;">Ajustare (%)</td>
                     <td></td>
-                    {% for c in comp_table.opt2_percent|list_convert %}
-                    <td style="font-weight: normal;text-align: right;padding-right: 3px;">{{c}}%</td>
+                    {% for c in comp_table %}
+                    <td style="font-weight: normal;text-align: right;padding-right: 3px;">{{c.opt2_percent|floatformat:'0'}}%</td>
                     {% endfor %}
                 </tr>
                 <tr>
                     <td style="text-align: left;padding-left:3px;font-weight: normal;">Ajustare (EURO)</td>
                     <td></td>
-                    {% for c in comp_table.opt2_euro|list_convert %}
-                    <td style="font-weight: normal;text-align: right;padding-right: 3px;">{{c}}</td>
+                    {% for c in comp_table %}
+                    <td style="font-weight: normal;text-align: right;padding-right: 3px;">{{c.opt2_euro|floatformat:'0'}}</td>
                     {% endfor %}
                 </tr>
                 <tr>
                     <td style="text-align: left;padding-left:3px">Motivare corectie</td>
-                    <td colspan="4" style="text-align: left;padding-left:3px;font-weight: normal;">{{comp_table.opt2_motivation}}</td>
+                    <td colspan="4" style="text-align: left;padding-left:3px;font-weight: normal;">{{sub_prop.opt2_motivation}}</td>
                 </tr>
                 {% endif %}
 
@@ -1513,101 +1512,101 @@
                 <tr>
                     <td style="text-align: left;padding-left:3px">{{sub_prop.opt3_name }}</td>
                     <td>{{sub_prop.opt3_val }}</td>
-                    {% for p in comp_prop %}
+                    {% for p in comp_table %}
                     <td>{{p.opt3_val}}</td>
                     {% endfor %}
                 </tr>
                 <tr>
                     <td style="text-align: left;padding-left:3px;font-weight: normal;">Ajustare (%)</td>
                     <td></td>
-                    {% for c in comp_table.opt3_percent|list_convert %}
-                    <td style="font-weight: normal;text-align: right;padding-right: 3px;">{{c}}%</td>
+                    {% for c in comp_table %}
+                    <td style="font-weight: normal;text-align: right;padding-right: 3px;">{{c.opt3_percent|floatformat:'0'}}%</td>
                     {% endfor %}
                 </tr>
                 <tr>
                     <td style="text-align: left;padding-left:3px;font-weight: normal;">Ajustare (EURO)</td>
                     <td></td>
-                    {% for c in comp_table.opt3_euro|list_convert %}
-                    <td style="font-weight: normal;text-align: right;padding-right: 3px;">{{c}}</td>
+                    {% for c in comp_table %}
+                    <td style="font-weight: normal;text-align: right;padding-right: 3px;">{{c.opt3_euro|floatformat:'0'}}</td>
                     {% endfor %}
                 </tr>
                 <tr>
                     <td style="text-align: left;padding-left:3px">Motivare corectie</td>
-                    <td colspan="4" style="text-align: left;padding-left:3px;font-weight: normal;">{{comp_table.opt3_motivation}}</td>
+                    <td colspan="4" style="text-align: left;padding-left:3px;font-weight: normal;">{{sub_prop.opt3_motivation}}</td>
                 </tr>
                 {% endif %}
 
                 <tr>
                     <td style="text-align: left;padding-left:3px">Ajustare neta pentru caracteristici specifice proprietatii</td>
                     <td></td>
-                    {% for c in comp_table.net_adjustment|list_convert %}
-                    <td>{{c}}</td>
+                    {% for c in comp_table %}
+                    <td>{{c.net_adjustment|floatformat:'0'}}</td>
                     {% endfor %}
                 </tr>
 
                 <tr>
                     <td style="text-align: left;padding-left:3px">Pret ajustat (EURO)</td>
                     <td></td>
-                    {% for c in comp_table.adjustment_price|list_convert %}
-                    <td>{{c}}</td>
+                    {% for c in comp_table %}
+                    <td>{{c.adjustment_price|floatformat:'0'}}</td>
                     {% endfor %}
                 </tr>
 
                 <tr>
                     <td style="text-align: left;padding-left:3px">Numar de ajustari</td>
                     <td></td>
-                    {% for c in comp_table.adjustment_no|list_convert %}
-                    <td>{{c}}</td>
+                    {% for c in comp_table %}
+                    <td>{{c.adjustment_no|floatformat:'0'}}</td>
                     {% endfor %}
                 </tr>
 
                 <tr>
                     <td style="text-align: left;padding-left:3px">Ajustare totala neta (%)</td>
                     <td></td>
-                    {% for c in comp_table.total_percent|list_convert %}
-                    <td>{{c}}%</td>
+                    {% for c in comp_table %}
+                    <td>{{c.total_percent|floatformat:'0'}}%</td>
                     {% endfor %}
                 </tr>
 
                 <tr>
                     <td style="text-align: left;padding-left:3px">Ajustare totala neta (EURO)</td>
                     <td></td>
-                    {% for c in comp_table.total_euro|list_convert %}
-                    <td>{{c}}</td>
+                    {% for c in comp_table %}
+                    <td>{{c.total_euro|floatformat:'0'}}</td>
                     {% endfor %}
                 </tr>
 
                 <tr>
                     <td style="text-align: left;padding-left:3px">Ajustare totala bruta (%)</td>
                     <td></td>
-                    {% for c in comp_table.gross_percent|list_convert %}
-                    <td>{{c}}%</td>
+                    {% for c in comp_table %}
+                    <td>{{c.gross_percent|floatformat:'1'}}%</td>
                     {% endfor %}
                 </tr>
 
                 <tr>
                     <td style="text-align: left;padding-left:3px">Ajustare totala bruta (EURO)</td>
                     <td></td>
-                    {% for c in comp_table.gross_euro|list_convert %}
-                    <td>{{c}}</td>
+                    {% for c in comp_table %}
+                    <td>{{c.gross_euro|floatformat:'0'}}</td>
                     {% endfor %}
                 </tr>
 
                 <tr>
                     <td style="text-align: left;padding-left:3px">VALOARE ESTIMATA (EURO)</td>
-                    <td>{{comp_table.estimated_value|floatformat:'0'}} €</td>
-                    {% for c in comp_prop %}
+                    <td>{{sub_prop.estimated_value|floatformat:'0'}} €</td>
+                    {% for c in comp_table %}
                     <td></td>
                     {% endfor %}
                 </tr>
 
                 <tr>
                     <td colspan="4" style="text-align: left;padding-left:3px">* cea mai mica corectie totala bruta s-a a efectuat pentru comparabila:</td>
-                    <td>{{comp_table|get_corresponding_letter}}</td>
+                    <td>{{sub_prop|get_corresponding_letter}}</td>
                 </tr>
             </table>
             <br>
-            <p style="margin: 15px 0;font-weight: bold;text-align: center;font-size: 16px;">Valoare de piata: {{comp_table.estimated_value|floatformat:'0'}} EUR</p>
+            <p style="margin: 15px 0;font-weight: bold;text-align: center;font-size: 16px;">Valoare de piata: {{sub_prop.estimated_value|floatformat:'0'}} EUR</p>
             <br>
 
             <p style="margin-bottom: 10px;font-weight: bold;text-align: center;font-size: 18px;">Abordarea prin venit</p>
@@ -1632,67 +1631,67 @@
                 
                 In continuare, am estimat mutiplicatorul chiriei brute pentru proprietatile comparabile utilizate in abordarea prin piata impartind chiria bruta anuala la pretul solicitat de catre vanzator (pretul solicitat a fost ajustat cu marja de negociere). <br>
 
-                Din analiza pietei, am identificat o chirie lunara cuprinsa intre [enter number range here] euro/mp/luna pentru proprietati comparabile. Pentru determinarea multiplicatorului chirie brute am estimat o chirie de [enter number range here] euro/luna/mp pentru toate comparabilele luate in considerare. Totodata, pentru proprietatea subiect am estimat o chirie lunara de [extract from chirie/luna cell next to the MVB table] euro/mp/luna. <br>
+                Din analiza pietei, am identificat o chirie lunara cuprinsa intre {{market.range}} euro/mp/luna pentru proprietati comparabile. Pentru determinarea multiplicatorului chirie brute am estimat o chirie de {{market.range}} euro/luna/mp pentru toate comparabilele luate in considerare. Totodata, pentru proprietatea subiect am estimat o chirie lunara de {% if sub_mvb %}{{sub_mvb.sub_rent_sqm}}{% endif %} euro/mp/luna. <br>
 
                 In tabelul urmator sunt prezentate calculele privind multiplicatorul chiriei brute: 
             </p>   
             
-            {% if mvb_table %}
+            {% if comp_mvb %}
             <table border="1" id="mvb-table">
                 <tr valign="middel"><td colspan="4" style="font-weight:bold;text-align: left;padding-left: 3px;">Multiplicatorul venitului brut potential</td></tr>
                 <tr valign="middel">
                     <td style="font-weight: bold;width: 45%;">COMPARABILE</td>
-                    {% for c in comp_table.name %}
-                    <td style="font-weight: bold;">{{ c }}</td>
+                    {% for c in comp_table %}
+                    <td style="font-weight: bold;">{{ c.name }}</td>
                     {% endfor %}
                 </tr>
                 <tr valign="middel">
                     <td style="text-align: left;padding-left: 3px;width: 45%">Chirie lunara solicitata</td>
-                    {% for c in mvb_table.monthly_rent|list_convert %}
-                        <td style="font-weight: bold;">{{ c }}</td>
+                    {% for c in comp_mvb %}
+                        <td style="font-weight: bold;">{{ c.monthly_rent|floatformat:'0' }}</td>
                     {% endfor %}
                 </tr>
                 <tr valign="middel">
                     <td style="text-align: left;padding-left: 3px;width: 45%">Regim inaltime</td>
-                    {% for c in comp_prop %}
-                    <td style="font-weight: bold;">{{ c.etaj }}</td>
+                    {% for c in comp_mvb %}
+                    <td style="font-weight: bold;">{{ c.cp.etaj }}</td>
                     {% endfor %}
                 </tr>
                 <tr valign="middel">
                     <td style="text-align: left;padding-left: 3px;width: 45%">Suprafata utila</td>
-                    {% for c in comp_prop %}
-                    <td style="font-weight: bold;">{{ c.area }}</td>
+                    {% for c in comp_mvb %}
+                    <td style="font-weight: bold;">{{ c.cp.area }}</td>
                     {% endfor %}
                 </tr>
                 <tr valign="middel">
                     <td style="text-align: left;padding-left: 3px;width: 45%">Chirie lunara solicitata /mp</td>
-                    {% for c in mvb_table.rent_sqm|list_convert %}
+                    {% for c in comp_mvb %}
                         <td style="font-weight: bold;">{{ c.rent_sqm }}</td>
                     {% endfor %}
                 </tr>
                 <tr valign="middel">
                     <td style="text-align: left; font-weight: bold;padding-left: 3px;width: 45%">Venit Brut Potential (EUR/an)</td>
-                    {% for c in mvb_table.vbp|list_convert %}
-                    <td style="font-weight: bold;">{{ c }}</td>
+                    {% for c in comp_mvb %}
+                    <td style="font-weight: bold;">{{ c.vbp|floatformat:'0' }}</td>
                     {% endfor %}
                 </tr>
                 <tr valign="middel">
                     <td style="text-align: left;font-weight: bold;padding-left: 3px;width: 45%">Pret solicitat  proprietate (EUR) - marja de negociere</td>
-                    {% for c in comp_table.mp|list_convert %}
-                    <td style="font-weight: bold;">{{ c }}</td>
+                    {% for c in comp_table %}
+                    <td style="font-weight: bold;">{{ c.mp|floatformat:'0' }}</td>
                     {% endfor %}
                 </tr>
                 <tr valign="middel">
                     <td style="text-align: left;padding-left: 3px;width: 45%">Multiplicatorul venitului brut potential (MVBP)</td>
-                    {% for c in mvb_table.mvbp|list_convert %}
-                    <td style="font-weight: bold;">{{ c }}</td>
+                    {% for c in comp_mvb %}
+                    <td style="font-weight: bold;">{{ c.mvbp|floatformat:'1' }}</td>
                     {% endfor %}
                 </tr>
             </table>
             <table>
                 <tr valign="middel">
                     <td style="font-weight: bold;font-size: 12px;padding-top: 5px;width: 45%;padding-left: 3px;">Multiplicatorul venitului brut potential</td>
-                    <td style="font-size: 12px;padding-top: 5px;text-align: center; font-weight: bold;">{{ mvb_table.min_mvbp }}</td>
+                    <td style="font-size: 12px;padding-top: 5px;text-align: center; font-weight: bold;">{{ sub_mvb.min_mvbp|floatformat:'1' }}</td>
                     <td></td>
                     <td></td>
                 </tr>
@@ -1701,36 +1700,36 @@
             <br>   
 
             <p style="text-align: justify; margin-bottom: 10px;">
-                In continuare, pentru determinarea valorii de piata a proprietatii subiect am selectat multiplicatorul chirie brute din tabelul de mai sus. In cazul de fata, am ales multiplicatorul comparabilei {{comp_table|get_corresponding_letter}} deoarece prezinta caracteristicile cele mai apropiate de cele ale proprietatii subiect. <br>
+                In continuare, pentru determinarea valorii de piata a proprietatii subiect am selectat multiplicatorul chirie brute din tabelul de mai sus. In cazul de fata, am ales multiplicatorul comparabilei {{sub_prop|get_corresponding_letter}} deoarece prezinta caracteristicile cele mai apropiate de cele ale proprietatii subiect. <br>
 
-                Pornind de la o chirie lunara [	extract from chirie/luna cell next to the MVB table] euro/mp/luna, aplicarea metodei capitalizarii directe pe baza multiplului venitului brut potenital conduce la o valoare a proprietatii evaluate calculata astfel: V = VBP * MVBP.
+                Pornind de la o chirie lunara {% if sub_mvb %}{{sub_mvb.sub_rent_sqm}}{% endif %} euro/mp/luna, aplicarea metodei capitalizarii directe pe baza multiplului venitului brut potenital conduce la o valoare a proprietatii evaluate calculata astfel: V = VBP * MVBP.
             </p>
             
             <table border="1" id="vbp-table">
                 <tr valign="middel">
                     <td style="font-weight:bold;text-align: left;padding-left: 3px;width: 70%;">Venit brut potential  VBP</td>
-                    <td style="font-weight:bold;">{{mvb_table.sub_vbp}}</td>
+                    <td style="font-weight:bold;">{{sub_mvb.sub_vbp|floatformat:'0'}}</td>
                 </tr>
                 <tr valign="middel">
                     <td style="text-align: right;padding-right: 3px;width: 70%">chirie/luna apartament</td>
-                    <td>{{mvb_table.sub_monthly_rent}}</td>
+                    <td>{{sub_mvb.sub_monthly_rent|floatformat:'0'}}</td>
                 </tr>
                 <tr valign="middel">
                     <td style="text-align: left;font-weight: bold;padding-left: 3px;width: 70%">Multiplicatorul venitului brut potential (MVBP)</td>
-                    <td style="font-weight: bold;">{{ mvb_table.min_mvbp }}</td>
+                    <td style="font-weight: bold;">{{ sub_mvb.min_mvbp|floatformat:'1' }}</td>
                 </tr>
                 <tr valign="middel">
                     <td style="text-align: left;font-weight: bold;padding-left: 3px;width: 70%">VALOARE PRIN CAPITALIZARE DIRECTA (EURO)</td>
-                    <td style="font-weight: bold;">{{ mvb_table.vpcd }}</td>
+                    <td style="font-weight: bold;">{{ sub_mvb.vpcd|floatformat:'0' }}</td>
                 </tr>
                 <tr valign="middel">
                     <td style="text-align: left;font-weight: bold;padding-left: 3px;width: 70%">VALOARE PRIN CAPITALIZARE DIRECTA (EURO) - ROTUND</td>
-                    <td style="font-weight: bold;">{{ mvb_table.vpcd_rotund }}</td>
+                    <td style="font-weight: bold;">{{ sub_mvb.vpcd_rotund|floatformat:'0' }}</td>
                 </tr>
             </table>
             <br>
  
-            <p style="text-align: center;margin-bottom: 10px;font-weight: bold;">Valoare de venit {{ mvb_table.vpcd_rotund }} EUR</p>
+            <p style="text-align: center;margin-bottom: 10px;font-weight: bold;">Valoare de venit {{ sub_mvb.vpcd_rotund|floatformat:'0' }} EUR</p>
             <br>
 
             <p style="margin-bottom: 15px;text-align: center;font-weight: bold;font-size: 16px;">1. Analiza rezultatelor si concluzia asupra valorii</p>
@@ -1739,11 +1738,11 @@
             <table>
                 <tr>
                     <td style="font-weight:bold;width:30%">Abordarea prin piata</td>
-                    <td style="font-weight: bold;">{{comp_table.estimated_value|floatformat:'0'}} EUR</td>
+                    <td style="font-weight: bold;">{{sub_prop.estimated_value|floatformat:'0'}} EUR</td>
                 </tr>
                 <tr>
                     <td style="font-weight:bold;width:30%">Abordarea prin venit</td>
-                    <td style="font-weight: bold;">{{mvb_table.vpcd_rotund}} EUR</td>
+                    <td style="font-weight: bold;">{{sub_mvb.vpcd_rotund|floatformat:'0'}} EUR</td>
                 </tr>
             </table>
             <br>
@@ -1804,12 +1803,12 @@
             <p style="margin-bottom: 10px;">- valoarea obtinuta prin abordarea prin piata este cea mai adecvata si precisa intrucat la baza aplicarii abordarii au existat numai informatii de pe piata.</p>
 
             <p style="margin-bottom: 10px;text-align: justify;">Pentru determinarea valorii de piata a proprietatii analizate am ales abordarea prin piata ca fiind cea mai relevanta in acest caz. Avand in vedere cantitatea, calitatea informatiilor detinute ca urmare a analizelor, adecvarea abordarilor prezentate si conditiile limitative expuse in prezentul raport de evaluare, evaluatorul opineaza ca valoarea de piata a proprietatii imobiliare supuse evaluarii asa cum se prezenta la data inspectiei, este estimata prin aborarea prin piata la:</p>
-            <p style="text-align: center;font-weight: bold;font-size: 16px;">{{comp_table.estimated_value|floatformat:"0"}} EUR</p>
+            <p style="text-align: center;font-weight: bold;font-size: 16px;">{{sub_prop.estimated_value|floatformat:"0"}} EUR</p>
             <br>
 
             <p style="margin-bottom: 10px;font-weight: bold;text-align: center;font-size: 16px;">Riscul de garantie (Guarantee risk)</p>
             {% if market.guarantee_risk %}
-                <p style="margin-bottom: 10px;text-align: justify;">{{market.guarantee_risk|linebreaks}}</p>
+                <p style="margin-bottom: 10px;text-align: justify;">{{market.guarantee_risk|safe}}</p>
             {% else %}
             <p style="margin-bottom: 10px;text-align: justify;">
                 Riscul de garantie este un risc asociat riscului de credit, fiind reprezentat de posibilitatea aparitiei unor dificultati legate de valorificarea bunurilor aduse ca garantie in momentul acordarii creditului, in situatia in care cel care imprumuta nu ramburseaza creditul si nu plateste dobanzile aferente. Evaluarea riscului de garantie se face in functie de valoarea garantiilor si de rapiditatea posibilitatii de valorificare a acestora. <br>

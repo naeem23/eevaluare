@@ -7,26 +7,22 @@
     font-size: 14px;
     font-weight: bold;
     padding: 4px 8px;
-}
-#gallery, #summary-gallery{
-    width: 100%;
-    margin: 0 auto;
-}
-#image-container, #summary-image-container{
+}       
+#cover-container, #summary-container{
     margin-bottom: 14px;
 }
-#image-list, #summary-image-list { 
+#cover-list, #summary-list { 
     list-style-type: none; 
     margin: 0; 
     padding: 0; 
 }
-#image-list li, #summary-image-list li { 
+#cover-list li, #summary-list li { 
     margin: 10px 20px 10px 0px; 
     display: inline-block;
 }
-#image-list li img, #summary-image-list li img {
-    width: 200px;
-    height: 150px;
+#cover-list li img, #summary-list li img {
+    width: 150px;
+    height: 100px;
 }
 #txtresponse, #summary-txtresponse{
     padding: 10px 20px;

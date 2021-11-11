@@ -9,6 +9,7 @@ class User(AbstractUser):
 	profile_picture = models.FileField(upload_to='agents/', blank=True)
 	stamp = models.FileField(upload_to='agents/stamp/', blank=True)
 	is_inspector = models.BooleanField(default=False)
+	telephone = models.CharField(max_length=20, blank=True, null=True)
 
 	def __str__(self):
 		return self.username

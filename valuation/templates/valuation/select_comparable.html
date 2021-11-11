@@ -81,15 +81,48 @@
 
                 <form method="POST" id="comp_form">
                     {% csrf_token %}
-                    {% if 'details' in pre_url %}
-                        <input type="hidden" name="pre_url" value="details">
+                    
+                    {% if comp_table %}
+                    <div class="card-body mb-3">
+                        <h3 class="text-light mb-0 pb-0">Selected Comparables</h3>
+                        <table class="table table-hover" id="selected-tbl">
+                            <thead>
+                                <tr>
+                                    <th scope="col">ID</th>
+                                    <th scope="col">Location</th>
+                                    <th scope="col">Surface area</th>
+                                    <th scope="col">Camara</th>
+                                    <th scope="col">Construction Year</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for c in comp_table %}
+                                <tr>
+                                    <td>
+                                        <div class="form-check">
+                                            <label class="form-check-label">
+                                                <input class="form-check-input" type="checkbox" name="remove[]" value="{{c.comparable.id}}" checked>
+                                                <span class="form-check-sign text-light">ID-{{c.comparable.id}}</span>
+                                            </label>
+                                        </div>
+                                    </td>
+                                    <td>{{c.comparable.lc}}</td>
+                                    <td>{{c.comparable.area}}</td>
+                                    <td>{{c.comparable.camara}}</td>
+                                    <td>{{c.comparable.cy}}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
                     {% endif %}
                     
                     <div class="card-body pt-0">
                         <div class="row search-result">
                             <div class="col-md-12">
-                                <h4 class="mb-3 text-light">Search results</h4>
+                                <h3 class="mb-3 text-light">Search results</h3>
                                 <p class="text-danger search-warning" style="display: none;">No match found</p>
+
                                 <table class="table table-hover" id="search-result-tbl">
                                     <thead>
                                         <tr>
@@ -104,12 +137,16 @@
                                 </table>
                             </div>
                         </div>
+                        
+                        <input type="hidden" name="comparable" value="" id="comparable">
+                        <input type="hidden" name="remove" value="" id="remove">
+
                         <div class="row">
                             <div class="col-md-12">
                                 <div class="form-group" style="width: 30%;">
                                     <label for="nr_comparatii">Nr comparatii</label>
-                                    <input type="number" class="form-control" id="nr_comparatii" name="nr_comapratii">
-                                    <small class="form-text text-danger nr_warning">This field is required</small>
+                                    <input type="number" class="form-control" id="nr_comparatii" name="nr_comapratii" value="{% if comp_table %}{{comp_table|length}}{% else %}0{% endif %}">
+                                    <small class="form-text text-danger nr_warning">This field must be grater than one</small>
                                 </div>
                             </div>
                         </div>
@@ -132,20 +169,26 @@
 <!-- Specific Page JS goes HERE  -->
 {% block javascripts %}
     <script type="text/javascript">
+        var comp = "{{comp_table.comparable}}";
+        (comp == '') ? comp = [] : comp = JSON.parse(comp); 
+        var remove = [];
+        // $("input[name='remove[]']").each(function(){selected_comp.push(Number(this.value))});
+
         $(".search-btn").on('click', function() {
             var location = $('#location').val()
             var radius = $('.radius').val()
             $.ajax({
                 url: "{% url 'valuation:search_comparable' %}",
                 type: "GET",
-                data: {'location': location, 'radius': radius},
+                data: {'location': location, 'radius': radius, 'vid': '{{valuation.id}}'},
                 success: function(e) {
                     var comp = e.comparable
                     if (comp.length > 0) {
-                        $('.search-result').css('display', 'block')
-                        $('#search-result-tbl').css('display', 'block')
+                        $('.search-warning').css('display', 'none');
+                        $('.search-result').css('display', 'block');
+                        $('#search-result-tbl').css('display', 'block');
                         for(let i=0; i<comp.length; i++) {
-                            var tr = '<tr><td><div class="form-check"><label class="form-check-label"><input class="form-check-input" type="checkbox" name="comp[]" value="'+comp[i][0]+'"><span class="form-check-sign text-light">ID '+comp[i][0]+'</span></label></div></td><td>'+comp[i][1]+'</td><td>'+comp[i][2]+'</td><td></td><td>'+comp[i][3]+'</td></tr>';
+                            var tr = '<tr><td><div class="form-check"><label class="form-check-label"><input class="form-check-input" type="checkbox" name="comp[]" value="'+comp[i][0]+'"><span class="form-check-sign text-light">ID '+comp[i][0]+'</span></label></div></td><td>'+comp[i][1]+'</td><td>'+comp[i][2]+'</td><td>'+comp[i][3]+'</td><td>'+comp[i][4]+'</td></tr>';
                             $('#search-result-tbl tbody').append(tr);
                         }
                     } else {
@@ -156,21 +199,49 @@
             }).done(function() {
                 var $checkboxes = $('#search-result-tbl td input[type="checkbox"]');
                 $checkboxes.change(function(){
-                    console.log('click')
-                    var countCheckedCheckboxes = $checkboxes.filter(':checked').length;
-                    $('#nr_comparatii').val(countCheckedCheckboxes);
+                    if (this.checked == true) {
+                        comp.push(Number(this.value));
+                        let nr = parseInt($('#nr_comparatii').val()) + 1;
+                        $('#nr_comparatii').val(nr);
+                    } else {
+                        let index = comp.indexOf(Number(this.value));
+                        if (index > -1) {
+                            comp.splice(index, 1);
+                        }    
+                        let nr = parseInt($('#nr_comparatii').val()) - 1;
+                        $('#nr_comparatii').val(nr);
+                    };
+                    // var countCheckedCheckboxes = $checkboxes.filter(':checked').length;
+                    // $('#nr_comparatii').val(nr + countCheckedCheckboxes);
                 });
             })
-        })
+        });
+
+        $('#selected-tbl td input[type="checkbox"]').change(function() {
+            if(this.checked == false) {
+                remove.push(Number(this.value));
+                let nr = parseInt($('#nr_comparatii').val()) - 1;
+                $('#nr_comparatii').val(nr);
+            } else {
+                let r_index = remove.indexOf(Number(this.value));
+                if (r_index > -1) {
+                    remove.splice(r_index, 1);
+                }
+                let nr = parseInt($('#nr_comparatii').val()) + 1;
+                $('#nr_comparatii').val(nr);
+            }
+        });
 
         $('#submitbtn').on('click', function() {
             var ids = $("input[name='comp[]']").map(function(){return $(this).val();}).get();
             var nr_comp = $('#nr_comparatii').val();
-            if(ids.length > 0 || nr_comp.length > 0) {
-                $('#comp_form').submit();
-            } else if (ids.length == 0 && nr_comp.length == 0) {
-                $('#nr_comparatii').addClass('required')
-                $('.nr_warning').css('display', 'block')
+            $('#comparable').val(JSON.stringify(comp));
+            $('#remove').val(JSON.stringify(remove));
+            if(ids.length > 0 || parseInt(nr_comp) > 0) {
+                $('#comp_form').submit(); 
+            } else if (ids.length < 1 || parseInt(nr_comp) < 1) {
+                $('#nr_comparatii').addClass('required');
+                $('.nr_warning').css('display', 'block');
             }
         })
     </script>

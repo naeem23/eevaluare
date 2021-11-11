@@ -1,0 +1,349 @@
+{% extends "base-form.html" %}
+
+{% block title %} Rezumatul Evaluarii {% endblock %} 
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}
+    {% load static %}
+    <!--  dropzone file upload -->
+    <script src="{% static 'dashboard/js/dropzone.js' %}"></script>
+    <link rel="stylesheet" href="{% static 'dashboard/css/dropzone.css' %}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.5.0-alpha1/html2canvas.js">
+</script>
+
+    <!-- Load Leaflet from CDN -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+    integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+    crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+    integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+    crossorigin=""></script>
+
+    <!-- Load Esri Leaflet from CDN -->
+    <script src="https://unpkg.com/esri-leaflet@3.0.2/dist/esri-leaflet.js"
+    integrity="sha512-myckXhaJsP7Q7MZva03Tfme/MSF5a6HC2xryjAM4FxPLHGqlh5VALCbywHnzs2uPoF/4G/QVXyYDDSkp5nPfig=="
+    crossorigin=""></script>
+
+    <!-- Load Esri Leaflet Geocoder from CDN -->
+    <link rel="stylesheet" href="https://unpkg.com/esri-leaflet-geocoder@3.1.1/dist/esri-leaflet-geocoder.css"
+    integrity="sha512-IM3Hs+feyi40yZhDH6kV8vQMg4Fh20s9OzInIIAc4nx7aMYMfo+IenRUekoYsHZqGkREUgx0VvlEsgm7nCDW9g=="
+    crossorigin="">
+    <script src="https://unpkg.com/esri-leaflet-geocoder@3.1.1/dist/esri-leaflet-geocoder.js"
+    integrity="sha512-enHceDibjfw6LYtgWU03hke20nVTm+X5CRi9ity06lGQNtC9GkBNl/6LoER6XzSudGiXy++avi1EbIg9Ip4L1w=="
+    crossorigin=""></script>
+
+    <!-- select2 js -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@ttskch/select2-bootstrap4-theme@x.x.x/dist/select2-bootstrap4.min.css">
+    <style>
+        #mapid { 
+            height: 400px;
+            width: 100%; 
+        }
+        .msg {
+            padding-left: 10px;
+        }
+        .btn-muted {
+            background: rgba(169,175,187,.82);
+            color: #fff;
+        }
+        .dropzone {
+            padding: 20px 60px 20px!important;
+        }
+        .dropzone h4 {
+            font-size: 26px!important;
+        }
+        .show-approach {
+            display: block!important;
+        }
+        .market, .income {
+            display: none;
+        }
+        .warning {
+            font-size: 16px;
+            border: 2px solid red;
+            padding: 5px 20px;
+            color: red;
+        }
+        .required {
+            border-color: #F25961 !important;
+            color: #F25961 !important;
+        }
+        .form-control[readonly] {
+            background: #1a2035!important;
+            border-color: #2f374b!important;
+            opacity: 1!important;
+        }
+    </style>
+{% endblock stylesheets %}
+
+{% block content %}
+    <div class="content">
+        <div class="page-inner">
+            <div class="page-header">
+                <h4 class="page-title">Anexa</h4>
+                <ul class="breadcrumbs">
+                    <li class="nav-home">
+                        <a href="#">
+                            <i class="flaticon-home"></i>
+                        </a>
+                    </li>
+                    <li class="separator">
+                        <i class="flaticon-right-arrow"></i>
+                    </li>
+                    <li class="nav-item">
+                        <a href="">Anexa1</a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <button id="btnScreenshot" class="btn-sm btn-primary">Take Screenshot</button>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div id="mapid"></div>
+                        </div>
+                    </div> 
+                </div>
+
+                <div class="card-header">
+                    <div class="card-title">Select one image among screenshots</div>
+                </div>
+                <div class="card-body">
+                    <div class="row" >
+                        <div class="col-12"id="gellary">
+                            
+                        </div>
+                    </div>
+                </div>
+
+                
+                <div class="card-header">
+                    <button id="btnTable" class="btn btn-primary">Next</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+    <script type="text/javascript">
+
+
+
+         // ========================= map management  =============================
+        var lat = '{{ valuation.latitude }}'
+        var lng = '{{ valuation.longitude }}'
+        var map = L.map('mapid').setView([lat, lng], 14);
+
+        L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibmFlZW0yMyIsImEiOiJja2lyNmpzdjUwMHVrMnRreXZyNHdubHptIn0.X3OwhHNVTJG_SzVzHEeLnQ', {
+            attribution: '&copy; <a href="https://osm.org/copyright">OpenStreetMap</a> contributors',
+            maxZoom: 18,
+            id: 'mapbox/streets-v11',
+            tileSize: 512,
+            zoomOffset: -1,
+            accessToken: 'pk.eyJ1IjoibmFlZW0yMyIsImEiOiJja2lyNmpzdjUwMHVrMnRreXZyNHdubHptIn0.X3OwhHNVTJG_SzVzHEeLnQ'
+        }).addTo(map);
+
+        var marker = L.marker([lat, lng]).addTo(map)
+        marker.on('click', function(e) {
+            var latlng = [e.target.getLatLng()];
+            var markerbounds = L.latLngBounds(latlng);
+            map.fitBounds(markerbounds);
+        })
+        // map management
+
+
+
+        // map screenshot
+
+        $("#btnScreenshot").click(function(){
+            var screenshot_blob = NaN;
+            html2canvas(document.getElementById('mapid'), {
+                useCORS: true,
+                optimized: false,
+                allowTaint: false,
+                onrendered: function (canvas) {
+                    var tempcanvas=document.createElement('canvas');
+                    tempcanvas.width=1300;
+                    tempcanvas.height=700;
+                    var context=tempcanvas.getContext('2d');
+                    context.drawImage(canvas,0,0,1300,700);
+                    var link=document.createElement("img");
+                    link.href=tempcanvas.toDataURL('image/png');   //function blocks CORS
+                    screenshot_blob = link.href;
+                    // console.log(screenshot_blob);
+                    $.ajax({
+                        type: "POST",
+                        url: "{% url 'valuation:screenshot_html' %}",
+                        dataType: 'json',
+                        data: {
+                            "csrfmiddlewaretoken": "{{csrf_token}}",
+                            "screenshot_blob":JSON.stringify(screenshot_blob),
+                            "class_name": "Anexa1",
+                            "valuated_id": 4,
+                        },
+                        success: function(response){
+                            var msg = response.msg;
+                            image_objects = response.objects;
+                            var img_url = image_objects;
+                            console.log(img_url);
+                            var gellary = document.getElementById('gellary');
+                            // creating img tag and add to gellary
+                            var img_id = img_url.split('/')
+                            img_id = img_id[img_id.length-1]
+                            let img = document.createElement('img');
+                            img.className = "shoot-img";
+                            img.src= img_url;
+                            img.id = img_id;
+                            img.style.width = '480px';
+                            img.style.height = '245px';
+                            img.style.margin = '8px'; 
+                            
+                            img.addEventListener('click', image_selection);
+                            document.getElementById("gellary").appendChild(img);
+
+                            if(msg.length>0) {
+                                var content = {};
+                                var state = "success";
+                                content.message = 'Screenshot has been take!';
+                                content.title = 'Success!';
+
+                                content.icon = 'fa fa-bell';
+                                $.notify(content,{
+                                    type: state,
+                                    placement: {
+                                        from: 'top',
+                                        align: 'right'
+                                    },
+                                    time: 1000,
+                                    delay: 0,
+                                });
+                                // closing notification
+                                setTimeout(function(){
+                                    $('.close').trigger('click');
+                                }, 4000);
+                            }
+                            // document.getElementById('imgScreenshot').src = response['Content-Disposition'];
+                        }
+                    })
+                    link.download = 'screenshot.jpg';
+                    link.click();
+                }
+            });            
+
+        })
+
+        // map screenshot
+        
+        var selected_image = [];
+        // gellary image selection
+        function image_selection(e){
+            var img = document.getElementById(this.id);
+            console.log(img);
+            if(img.style.border==''){
+                img.style.border = '2px solid red';
+            }
+            else{
+                img.style.border = '';                
+            }
+        }
+        // gellary image selection
+
+        // upload photos
+        var sorder = 1;
+        $("#anexaPhotos").click(function () {
+            $('#anexa-order').val(sorder);
+            sorder++;
+        })
+        Dropzone.options.anexaPhotos = {
+            maxFiles: 10,
+            addRemoveLinks: true,
+            parallelUploads:10,
+            uploadMultiple: true,
+            removedfile: function(file) {
+                console.log("zabi")
+                $.ajax({
+                    type: "POST",
+                    url: "{% url 'valuation:delete_file' %}",
+                    data: {
+                        "csrfmiddlewaretoken": '{{ csrf_token }}',
+                        "class_name": "anexa1",
+                        "file_name": file.name,
+                        "valuated_id": 4,
+                    },
+                    success: function(){
+                        alert("removed file");
+                    }
+                })
+
+                file.previewElement.remove();
+            },
+
+            init: function() {
+                this.on("maxfilesexceeded", function(file){
+                    alert("No more files please!");
+                });
+            }
+        };
+        // upload photos
+
+
+
+        $('#btnTable').click(function(){
+            var images = document.getElementsByClassName('shoot-img');
+            for(var i=0;i<images.length;i++){   
+                if(images[i].style.border!=''){
+                    selected_image.push(images[i].id);
+                }
+            }
+            console.log(selected_image);
+            if(selected_image.length>0){
+                $.ajax({
+                    type:"POST",
+                    url:"{% url 'valuation:add_anexa1' valuation.id %}",
+                    dataType:'json',
+                    data:{
+                        "csrfmiddlewaretoken": '{{ csrf_token }}',
+                        "image": JSON.stringify(selected_image), 
+                    },
+                    success:function(data){    
+
+                         if(data.status==1){
+                            window.location = "{% url 'valuation:add_anexa2' valuation.id %}";
+                        }
+                    },
+
+                })
+            }
+            else{
+                var content = {};
+                var state = "danger";
+                content.message = 'Please choose images from below!';
+                content.title = 'Error!';
+
+                content.icon = 'fa fa-bell';
+                $.notify(content,{
+                    type: state,
+                    placement: {
+                        from: 'top',
+                        align: 'right'
+                    },
+                    time: 1000,
+                    delay: 0,
+                });
+                // closing notification
+                setTimeout(function(){
+                    $('.close').trigger('click');
+                }, 4000);
+            }
+
+        })         
+    </script>
+{% endblock javascripts %}  

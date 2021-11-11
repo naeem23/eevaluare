@@ -351,33 +351,17 @@ class MarketAnalysis(models.Model):
 	transactions_nr = models.CharField(max_length=155, blank=True, null=True, choices=TRANSACTIONS_CHOICE) 
 	exposure_period = models.CharField(max_length=155, blank=True, null=True, choices=EXPOSURE_PERIOD_CHOICE)
 	forecast = models.TextField(blank=True, null=True)
+	offer_similar = models.CharField(max_length=25, blank=True, null=True, choices=CONCLUSION_CHOICE)
+	application_similar = models.CharField(max_length=25, blank=True, null=True, choices=CONCLUSION_CHOICE) 
+	market_balance = models.CharField(max_length=25, blank=True, null=True, choices=CONCLUSION_CHOICE)
 	minsale_price = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True) 
 	maxsale_price = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True) 
+	range = models.TextField(blank=True, null=True)
 	guarantee_risk = models.TextField(blank=True, null=True)
 
 	def __str__(self):
 		return str(self.id)
 
-
-# ========================== anexa table =============================
-# ==================================================================== 
-class Anexa(models.Model):
-	ref_no = models.ForeignKey(ValuatedProperty, on_delete=models.CASCADE)
-	refer_to = models.CharField(max_length=55, blank=True, null=True, choices=FILE_CHOICE)
-	name = models.CharField(max_length=55, blank=True, null=True)
-	file_name = models.FileField(upload_to='anexa/%Y/%m/%d', blank=True)
-
-	def __str__(self):
-		return str(self.id)
-
-class Anexa2(models.Model):
-	ref_no = models.ForeignKey(ValuatedProperty, on_delete=models.CASCADE)
-	link = models.URLField(max_length=255, blank=True, null=True)
-	file1 = models.FileField(upload_to='anexa/%Y/%m/%d', blank=True)
-	file2 = models.FileField(upload_to='comparabile_utilizate/%Y/%m/%d', blank=True)
-
-	def __str__(self):
-		return str(self.id)
 
 
 # ==================== comparable property table =====================
@@ -399,112 +383,37 @@ class ComparableProperty(models.Model):
 	lc = models.CharField(max_length=255, blank=True, null=True) #location
 	cp = models.CharField(max_length=55, blank=True, null=True) #compartment
 	cy = models.CharField(max_length=10, blank=True, null=True) #construction year
+	camara = models.CharField(max_length=10, blank=True, null=True)
 	area = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
 	finish = models.CharField(max_length=55, blank=True, null=True)
 	etaj = models.CharField(max_length=55, blank=True, null=True)
 	balcon = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True) 
 	hs = models.CharField(max_length=55, blank=True, null=True) #heating system 
-	opt1_name = models.CharField(max_length=55, blank=True, null=True)  
-	opt1_val = models.CharField(max_length=55, blank=True, null=True)
-	opt2_name = models.CharField(max_length=55, blank=True, null=True)  
-	opt2_val = models.CharField(max_length=55, blank=True, null=True)
-	opt3_name = models.CharField(max_length=55, blank=True, null=True)  
-	opt3_val = models.CharField(max_length=55, blank=True, null=True)
-
-	def __str__(self):
-		return str(self.id)
-
-
-# ======================== comparable table ==========================
-# ==================================================================== 
-class ComparableTable(models.Model):
-	ref_no = models.ForeignKey(ValuatedProperty, on_delete=models.CASCADE)
-	comparable = models.TextField(blank=True, null=True)
-	name = models.TextField(max_length=2, blank=True, null=True)
-	op = models.TextField(blank=True, null=True) #offer price
-	margin = models.TextField(blank=True, null=True)
-	cv = models.TextField(blank=True, null=True) #correction price
-	mp = models.TextField(blank=True, null=True) #margin value
-	motivation = models.TextField(blank=True, null=True)
-
-	pr_percent = models.TextField(blank=True, null=True)
-	pr_euro = models.TextField(blank=True, null=True)
-	pr_price = models.TextField(blank=True, null=True)
-	pr_motivation = models.TextField(blank=True, null=True)
-
-	fc_percent = models.TextField(blank=True, null=True)
-	fc_euro = models.TextField(blank=True, null=True)
-	fc_price = models.TextField(blank=True, null=True)
-	fc_motivation = models.TextField(blank=True, null=True)
-
-	sc_percent = models.TextField(blank=True, null=True)
-	sc_euro = models.TextField(blank=True, null=True)
-	sc_price = models.TextField(blank=True, null=True)
-	sc_motivation = models.TextField(blank=True, null=True)
-
-	ape_percent = models.TextField(blank=True, null=True)
-	ape_euro = models.TextField(blank=True, null=True)
-	ape_price = models.TextField(blank=True, null=True)
-	ape_motivation = models.TextField(blank=True, null=True)
-
-	me_percent = models.TextField(blank=True, null=True)
-	me_euro = models.TextField(blank=True, null=True)
-	me_price = models.TextField(blank=True, null=True)
-	me_motivation = models.TextField(blank=True, null=True)
-
-	lc_percent = models.TextField(blank=True, null=True)
-	lc_euro = models.TextField(blank=True, null=True)
-	lc_motivation = models.TextField(blank=True, null=True)
-
-	cp_percent = models.TextField(blank=True, null=True)
-	cp_euro = models.TextField(blank=True, null=True)
-	cp_motivation = models.TextField(blank=True, null=True)
-	
-	cy_percent = models.TextField(blank=True, null=True)
-	cy_euro = models.TextField(blank=True, null=True)
-	cy_motivation = models.TextField(blank=True, null=True)
-	
-	su_diff = models.TextField(blank=True, null=True)
-	su_percent = models.TextField(blank=True, null=True)
-	su_euro = models.TextField(blank=True, null=True)
-	su_motivation = models.TextField(blank=True, null=True)
-	
-	finish_percent = models.TextField(blank=True, null=True)
-	finish_euro = models.TextField(blank=True, null=True)
-	finish_motivation = models.TextField(blank=True, null=True)
-
-	etaj_percent = models.TextField(blank=True, null=True)
-	etaj_euro = models.TextField(blank=True, null=True)
-	etaj_motivation = models.TextField(blank=True, null=True)
-
+	#followings are only for subject property
 	price_persqm = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
-	balcon_percent = models.TextField(blank=True, null=True)
-	balcon_euro = models.TextField(blank=True, null=True)
+	opt1_name = models.CharField(max_length=155, blank=True, null=True) 
+	opt1_val = models.TextField(blank=True, null=True) 
+	opt2_name = models.CharField(max_length=155, blank=True, null=True)
+	opt2_val = models.TextField(blank=True, null=True) 
+	opt3_name = models.CharField(max_length=155, blank=True, null=True)
+	opt3_val = models.TextField(blank=True, null=True) 
+	motivation = models.TextField(blank=True, null=True)
+	pr_motivation = models.TextField(blank=True, null=True)
+	fc_motivation = models.TextField(blank=True, null=True)
+	sc_motivation = models.TextField(blank=True, null=True)
+	ape_motivation = models.TextField(blank=True, null=True)
+	me_motivation = models.TextField(blank=True, null=True)
+	lc_motivation = models.TextField(blank=True, null=True)
+	cp_motivation = models.TextField(blank=True, null=True)
+	cy_motivation = models.TextField(blank=True, null=True)
+	su_motivation = models.TextField(blank=True, null=True)
+	finish_motivation = models.TextField(blank=True, null=True)
+	etaj_motivation = models.TextField(blank=True, null=True)
 	balcon_motivation = models.TextField(blank=True, null=True)
-
-	hs_percent = models.TextField(blank=True, null=True)
-	hs_euro = models.TextField(blank=True, null=True)
 	hs_motivation = models.TextField(blank=True, null=True)
-
-	opt1_percent = models.TextField(blank=True, null=True)
-	opt1_euro = models.TextField(blank=True, null=True)
 	opt1_motivation = models.TextField(blank=True, null=True)
-
-	opt2_percent = models.TextField(blank=True, null=True)
-	opt2_euro = models.TextField(blank=True, null=True)
 	opt2_motivation = models.TextField(blank=True, null=True)
-
-	opt3_percent = models.TextField(blank=True, null=True)
-	opt3_euro = models.TextField(blank=True, null=True)
 	opt3_motivation = models.TextField(blank=True, null=True)
-
-	net_adjustment = models.TextField(blank=True, null=True)
-	adjustment_price = models.TextField(blank=True, null=True)
-	adjustment_no = models.TextField(blank=True, null=True)
-	total_percent = models.TextField(blank=True, null=True)
-	total_euro = models.TextField(blank=True, null=True)
-	gross_percent = models.TextField(blank=True, null=True)
-	gross_euro = models.TextField(blank=True, null=True)
 	estimated_value = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
 	smallest_gross = models.CharField(max_length=15, blank=True, null=True)
 
@@ -514,20 +423,144 @@ class ComparableTable(models.Model):
 
 # ======================== comparable table ==========================
 # ==================================================================== 
+class ComparableTable(models.Model):
+	ref_no = models.ForeignKey(ValuatedProperty, on_delete=models.CASCADE)
+	comparable = models.ForeignKey(ComparableProperty, models.SET_NULL, blank=True, null=True)
+	name = models.CharField(max_length=2, blank=True, null=True)
+	op = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True) #offer price
+	margin = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+	cv = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True) #correction price
+	mp = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True) #margin value
+
+	pr_percent = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+	pr_euro = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+	pr_price = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+
+	fc_percent = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+	fc_euro = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+	fc_price = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+
+	sc_percent = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+	sc_euro = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+	sc_price = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+
+	ape_percent = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+	ape_euro = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+	ape_price = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+
+	me_percent = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+	me_euro = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+	me_price = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+
+	lc_percent = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+	lc_euro = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+
+	cp_percent = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+	cp_euro = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+	
+	cy_percent = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+	cy_euro = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+	
+	su_diff = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+	su_percent = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+	su_euro = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+	
+	finish_percent = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+	finish_euro = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+
+	etaj_percent = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+	etaj_euro = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+
+	balcon_percent = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+	balcon_euro = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+
+	hs_percent = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+	hs_euro = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+
+	opt1_val = models.TextField(blank=True, null=True) 
+	opt1_percent = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+	opt1_euro = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+
+	opt2_val = models.TextField(blank=True, null=True) 
+	opt2_percent = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+	opt2_euro = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+
+	opt3_val = models.TextField(blank=True, null=True) 
+	opt3_percent = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+	opt3_euro = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+
+	net_adjustment = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+	adjustment_price = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+	adjustment_no = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+	total_percent = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+	total_euro = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+	gross_percent = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+	gross_euro = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+
+	def __str__(self):
+		return str(self.id)
+
+
+# ======================== comparable table ==========================
+# ==================================================================== 
 class MvbTable(models.Model):
 	ref_no = models.ForeignKey(ValuatedProperty, on_delete=models.CASCADE)
-	sub_rent_sqm = models.CharField(max_length=10, blank=True, null=True) #5.4
-	sub_monthly_rent = models.CharField(max_length=10, blank=True, null=True) #437
-	sub_vbp = models.CharField(max_length=10, blank=True, null=True) #5242
-	vpcd = models.CharField(max_length=10, blank=True, null=True) #66350
-	vpcd_rotund = models.CharField(max_length=10, blank=True, null=True) #66000
-	monthly_rent = models.CharField(max_length=50, blank=True, null=True) #[366, 409, 351]
-	rent_sqm = models.CharField(max_length=50, blank=True, null=True) #[5.3, 5.7, 5.4]
-	vbp = models.CharField(max_length=50, blank=True, null=True) #[4388,4905,4212]
-	mvbp = models.CharField(max_length=50, blank=True, null=True) #[14.1, 12.7, 13.7]
-	min_mvbp = models.CharField(max_length=10, blank=True, null=True) #12.7
+	cp = models.ForeignKey(ComparableProperty, models.SET_NULL, blank=True, null=True) #comparable property
+	sub_rent_sqm = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True) #5.4
+	sub_monthly_rent = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True) #437
+	sub_vbp = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True) #5242
+	vpcd = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True) #66350
+	vpcd_rotund = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True) #66000
+	monthly_rent = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+	rent_sqm = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+	vbp = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+	mvbp = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+	min_mvbp = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True) #12.7
 
 	def __str__(self):
 		return str(self.ref_no)
 
 
+
+# ========================== anexa table =============================
+# ==================================================================== 
+
+# milton 
+
+class ScreenShot(models.Model):
+	name = models.CharField(max_length=100, blank=True, null=True)
+	image = models.ImageField(upload_to='screenshot/%Y/%m/%d', blank=True)
+
+	def __str__(self):
+		return self.name
+
+class Anexa1(models.Model):
+	ref_no = models.ForeignKey(ValuatedProperty, on_delete=models.CASCADE)
+	file = models.FileField(upload_to='anexa1/%Y/%m/%d', blank=True)
+	image = models.ImageField(upload_to='anexa1/%Y/%m/%d', blank=True)
+
+	def __str__(self):
+		return str(self.ref_no.id)
+ 
+class Anexa2(models.Model):
+	ref_no = models.ForeignKey(ValuatedProperty, on_delete=models.CASCADE)
+	compare_no =  models.ForeignKey(ComparableProperty, blank=True, null=True, on_delete=models.CASCADE)
+	link = models.URLField(max_length=255, blank=True, null=True)
+	file = models.FileField(upload_to='anexa2/%Y/%m/%d', blank=True)
+	optional_text = models.TextField(max_length=400, blank=True, null=True)
+
+	def __str__(self):
+		return "valuated: " + str(self.ref_no.id) + " compare: " +str(self.compare_no)
+
+class Anexa3(models.Model):
+	ref_no = models.ForeignKey(ValuatedProperty, on_delete=models.CASCADE)
+	image = models.FileField(upload_to='anexa3/%Y/%m/%d', blank=True)
+
+	def __str__(self):
+		return str(self.ref_no.id)
+
+class Anexa4(models.Model):
+	ref_no = models.ForeignKey(ValuatedProperty, on_delete=models.CASCADE)
+	file = models.FileField(upload_to='anexa4/%Y/%m/%d', blank=True)
+	def __str__(self):
+		return str(self.ref_no.id)

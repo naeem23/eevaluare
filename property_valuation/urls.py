@@ -9,6 +9,7 @@ urlpatterns = [
     path('', include('authentication.urls')),
     path('', include('dashboard.urls')),
     path('valuation/', include('valuation.urls')),
+    path('asachat/', include('asachat.urls')),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

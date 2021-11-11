@@ -34,10 +34,14 @@
         }
         .form-control[readonly] {
             background: transparent!important;
-            border: none!important;
+            border: 1px solid #202940!important;
             border-color: transparent!important;
         }
+        #id_sub_avdata {
+            background: gray;
+        }
         .required {
+            border: 1px solid #F25961 !important;
             border-color: #F25961 !important;
             color: #F25961 !important;
         }
@@ -67,7 +71,7 @@
 
             <div class="card">
                 <div class="card-header">
-                    <div class="card-title">Comparable Selection</div>
+                    <div class="card-title">Tabel comparabil</div>
                 </div>
 
                 {% load my_filters %}
@@ -94,24 +98,9 @@
                                 <tr>
                                     <td>&nbsp;</td>
                                     <td>&nbsp;</td>
-                                    {% if comparable %}
-                                        {% if comparable|length == nr_comp %}
-                                            {% for n in comparable %}
-                                                <td class="text-center text-light font-weight-bold">ID-{{forloop.counter}}</td>
-                                            {% endfor %}
-                                        {% else %}
-                                            {% for n in comparable %}
-                                                <td class="text-center text-light font-weight-bold">ID-{{forloop.counter}}</td>
-                                            {% endfor %}
-                                            {% for n in comparable|get_extra_length:nr_comp %}
-                                                <td class="text-center text-light font-weight-bold">ID-{{n}}</td>
-                                            {% endfor %}
-                                        {% endif %}
-                                    {% else %}
-                                        {% for n in nr_comp|list_range %}
-                                            <td class="text-center text-light font-weight-bold">ID-{{n|add:"1"}}</td>
-                                        {% endfor %}
-                                    {% endif %}
+                                    {% for n in letters|slice:nr_comp %}
+                                        <td class="text-center text-light font-weight-bold">{{n}}</td>
+                                    {% endfor %}
                                 </tr>
                                 <tr>
                                     <td>Preţ de oferta/vanzare (EURO)</td>
@@ -127,7 +116,7 @@
                                             {% endfor %}
                                             {% for n in comparable|get_extra_length:nr_comp %}
                                                 <td>
-                                                    <input type="number" name="sale_price[]" class="form-control" step="0.01" id="sp_{{forloop.counter}}">
+                                                    <input type="number" name="sale_price[]" class="form-control" step="0.01" id="sp_{{n}}">
                                                 </td>
                                             {% endfor %}
                                         {% endif %}
@@ -201,7 +190,7 @@
                                             {% endfor %}
                                             {% for n in comparable|get_extra_length:nr_comp %}
                                             <td>
-                                                <input type="number" name="ma[]" id="ma_{{forloop.counter}}" class="form-control" step="0.01">
+                                                <input type="number" name="ma[]" id="ma_{{n}}" class="form-control" step="0.01">
                                             </td>
                                             {% endfor %}
                                         {% endif %}
@@ -230,14 +219,14 @@
                                             {% endfor %}
                                             {% for n in comparable|get_extra_length:nr_comp %}
                                             <td>
-                                                <input type="text" name="parking_boxa[]" class="form-control">
+                                                <input type="text" name="parking_boxa[]" class="form-control" value="Nu">
                                             </td>
                                             {% endfor %}
                                         {% endif %}
                                     {% else %}
                                         {% for n in nr_comp|list_range %}
                                             <td>
-                                                <input type="text" name="parking_boxa[]" class="form-control">
+                                                <input type="text" name="parking_boxa[]" class="form-control" value="Nu">
                                             </td>
                                         {% endfor %}
                                     {% endif %}
@@ -259,7 +248,7 @@
                                             {% endfor %}
                                             {% for n in comparable|get_extra_length:nr_comp %}
                                             <td>
-                                                <input type="number" name="pba[]" class="form-control" step="0.01" id="pba_{{forloop.counter}}">
+                                                <input type="number" name="pba[]" class="form-control" step="0.01" id="pba_{{n}}">
                                             </td>
                                             {% endfor %}
                                         {% endif %}
@@ -289,7 +278,7 @@
                                             {% endfor %}
                                             {% for n in comparable|get_extra_length:nr_comp %}
                                             <td>
-                                                <input type="number" name="op[]" class="form-control" step="0.01" id="op_{{forloop.counter}}">
+                                                <input type="number" name="op[]" class="form-control" step="0.01" id="op_{{n}}">
                                             </td>
                                             {% endfor %}
                                         {% endif %}
@@ -305,7 +294,7 @@
                                 <tr>
                                     <td>Date disponibile</td>
                                     <td>
-                                        <input type="text" id="id_sub_avdata" name="sub_avdata" value="Tranzactie" class="form-control" disabled>
+                                        <input type="text" id="id_sub_avdata" name="sub_avdata" value="Tranzactie" class="form-control">
                                     </td>
                                     {% if comparable %}
                                         {% if comparable|length == nr_comp %}
@@ -328,7 +317,7 @@
                                             {% endfor %}
                                             {% for n in comparable|get_extra_length:nr_comp %}
                                             <td>
-                                                <select id="id_ad{{forloop.counter}}" class="form-control ad" name="ad[]">
+                                                <select id="id_ad{{n}}" class="form-control ad" name="ad[]">
                                                     <option value="Oferta">Oferta</option>
                                                     <option value="Tranzactie">Tranzactie</option>
                                                 </select>
@@ -375,7 +364,7 @@
                                             {% for n in comparable|get_extra_length:nr_comp %}
                                                 <td>
                                                     <div class="input-group">
-                                                        <input type="text" name="margin[]" class="form-control" id="margin_{{forloop.counter}}">
+                                                        <input type="text" name="margin[]" class="form-control" id="margin_{{n}}">
                                                         <div class="input-group-append">
                                                             <span class="input-group-text">%</span>
                                                         </div>
@@ -410,7 +399,7 @@
                                             {% endfor %}
                                             {% for n in comparable|get_extra_length:nr_comp %}
                                                 <td>
-                                                    <input type="number" name="cv[]" class="form-control" step="0.01" id="cv_{{forloop.counter}}">
+                                                    <input type="number" name="cv[]" class="form-control" step="0.01" id="cv_{{n}}">
                                                 </td>
                                             {% endfor %}
                                         {% endif %}
@@ -440,7 +429,7 @@
                                             {% endfor %}
                                             {% for n in comparable|get_extra_length:nr_comp %}
                                             <td>
-                                                <input type="number" name="mp[]" class="form-control" step="0.01" id="mp_{{forloop.counter}}" value="">
+                                                <input type="number" name="mp[]" class="form-control" step="0.01" id="mp_{{n}}" value="">
                                             </td>
                                             {% endfor %}
                                         {% endif %}
@@ -454,7 +443,7 @@
                                 </tr>
                                 <tr>
                                     <td>Motivare corectie</td>
-                                    <td colspan="{{nr_comp|add:'1'}}" style="height: 60px!important;"><textarea name="motivation" rows="5" class="form-control"></textarea></td>
+                                    <td colspan="{{nr_comp|add:'1'}}" style="height: 105px!important;"><textarea name="motivation" rows="6" class="form-control" id="id_motivation">Ca urmare a discutiilor avute cu proprietarii/agentii, am aplicat o ajustare negativa de percentage pentru toate comparabilele, reprezentand marja de negociere. Aceasta a fost obtinuta prin aplicarea analizei datelor secundare rezultand in urma prelucrarii informatiilor obtinute de la ofertanti si agenti imobiliari.</textarea></td>
                                 </tr>
 
                                 <tr>
@@ -541,7 +530,7 @@
                                             {% for n in comparable|get_extra_length:nr_comp %}
                                                 <td>
                                                     <div class="input-group">
-                                                        <input type="number" name="pr_percent[]" class="form-control" step="0.01" id="pr_percent{{forloop.counter}}" value="0">
+                                                        <input type="number" name="pr_percent[]" class="form-control" step="0.01" id="pr_percent{{n}}" value="0">
                                                         <div class="input-group-append">
                                                             <span class="input-group-text">%</span>
                                                         </div>
@@ -580,7 +569,7 @@
                                             {% endfor %}
                                             {% for n in comparable|get_extra_length:nr_comp %}
                                                 <td>
-                                                    <input type="number" name="pr_euro[]" class="form-control" step="0.01" id="pr_euro{{forloop.counter}}" value="0">
+                                                    <input type="number" name="pr_euro[]" class="form-control" step="0.01" id="pr_euro{{n}}" value="0">
                                                 </td>
                                             {% endfor %}
                                         {% endif %}
@@ -610,7 +599,7 @@
                                             {% endfor %}
                                             {% for n in comparable|get_extra_length:nr_comp %}
                                             <td>
-                                                <input type="number" name="pr_price[]" class="form-control" step="0.01" id="pr_price{{forloop.counter}}">
+                                                <input type="number" name="pr_price[]" class="form-control" step="0.01" id="pr_price{{n}}">
                                             </td>
                                             {% endfor %}
                                         {% endif %}
@@ -624,14 +613,14 @@
                                 </tr>
                                 <tr>
                                     <td>Motivare corectie</td>
-                                    <td colspan="{{nr_comp|add:'1'}}" style="height: 60px!important;"><textarea name="pr_motivation" rows="5" class="form-control"></textarea></td>
+                                    <td colspan="{{nr_comp|add:'1'}}" style="height: 60px!important;"><textarea name="pr_motivation" rows="5" class="form-control">Nu au fost necesare ajustari.</textarea></td>
                                 </tr>
 
                                 <tr>
                                     <td>Condiţii de finanţare</td>
                                     <td>
                                         <select id="id_sub_fc" class="form-control" name="sub_fc">
-                                            <option value="normale">Normale</option>
+                                            <option value="Normale">Normale</option>
                                         </select>
                                     </td>
                                     {% if comparable %}
@@ -698,7 +687,7 @@
                                             {% for n in comparable|get_extra_length:nr_comp %}
                                                 <td>
                                                     <div class="input-group">
-                                                        <input type="number" name="fc_percent[]" class="form-control" step="0.01" id="fc_percent{{forloop.counter}}" value="0">
+                                                        <input type="number" name="fc_percent[]" class="form-control" step="0.01" id="fc_percent{{n}}" value="0">
                                                         <div class="input-group-append">
                                                             <span class="input-group-text">%</span>
                                                         </div>
@@ -737,7 +726,7 @@
                                             {% endfor %}
                                             {% for n in comparable|get_extra_length:nr_comp %}
                                                 <td>
-                                                    <input type="number" name="fc_euro[]" class="form-control" step="0.01" id="fc_euro{{forloop.counter}}" value="0">
+                                                    <input type="number" name="fc_euro[]" class="form-control" step="0.01" id="fc_euro{{n}}" value="0">
                                                 </td>
                                             {% endfor %}
                                         {% endif %}
@@ -767,7 +756,7 @@
                                             {% endfor %}
                                             {% for n in comparable|get_extra_length:nr_comp %}
                                             <td>
-                                                <input type="number" name="fc_price[]" class="form-control" step="0.01" id="fc_price{{forloop.counter}}">
+                                                <input type="number" name="fc_price[]" class="form-control" step="0.01" id="fc_price{{n}}">
                                             </td>
                                             {% endfor %}
                                         {% endif %}
@@ -781,7 +770,7 @@
                                 </tr>
                                 <tr>
                                     <td>Motivare corectie</td>
-                                    <td colspan="{{nr_comp|add:'1'}}" style="height: 60px!important;"><textarea name="fc_motivation" rows="5" class="form-control"></textarea></td>
+                                    <td colspan="{{nr_comp|add:'1'}}" style="height: 60px!important;"><textarea name="fc_motivation" rows="5" class="form-control">Nu au fost necesare ajustari.</textarea></td>
                                 </tr>
 
                                 <tr>
@@ -855,7 +844,7 @@
                                             {% for n in comparable|get_extra_length:nr_comp %}
                                                 <td>
                                                     <div class="input-group">
-                                                        <input type="number" name="sc_percent[]" class="form-control" step="0.01" id="sc_percent{{forloop.counter}}" value="0">
+                                                        <input type="number" name="sc_percent[]" class="form-control" step="0.01" id="sc_percent{{n}}" value="0">
                                                         <div class="input-group-append">
                                                             <span class="input-group-text">%</span>
                                                         </div>
@@ -894,7 +883,7 @@
                                             {% endfor %}
                                             {% for n in comparable|get_extra_length:nr_comp %}
                                                 <td>
-                                                    <input type="number" name="sc_euro[]" class="form-control" step="0.01" id="sc_euro{{forloop.counter}}" value="0">
+                                                    <input type="number" name="sc_euro[]" class="form-control" step="0.01" id="sc_euro{{n}}" value="0">
                                                 </td>
                                             {% endfor %}
                                         {% endif %}
@@ -924,7 +913,7 @@
                                             {% endfor %}
                                             {% for n in comparable|get_extra_length:nr_comp %}
                                             <td>
-                                                <input type="number" name="sc_price[]" class="form-control" step="0.01" id="sc_price{{forloop.counter}}">
+                                                <input type="number" name="sc_price[]" class="form-control" step="0.01" id="sc_price{{n}}">
                                             </td>
                                             {% endfor %}
                                         {% endif %}
@@ -938,7 +927,7 @@
                                 </tr>
                                 <tr>
                                     <td>Motivare corectie</td>
-                                    <td colspan="{{nr_comp|add:'1'}}" style="height: 60px!important;"><textarea name="sc_motivation" rows="5" class="form-control"></textarea></td>
+                                    <td colspan="{{nr_comp|add:'1'}}" style="height: 60px!important;"><textarea name="sc_motivation" rows="5" class="form-control">Nu au fost necesare ajustari.</textarea></td>
                                 </tr>
 
                                 <tr>
@@ -1017,7 +1006,7 @@
                                             {% for n in comparable|get_extra_length:nr_comp %}
                                                 <td>
                                                     <div class="input-group">
-                                                        <input type="number" name="ape_percent[]" class="form-control" step="0.01" id="ape_percent{{forloop.counter}}" value="0">
+                                                        <input type="number" name="ape_percent[]" class="form-control" step="0.01" id="ape_percent{{n}}" value="0">
                                                         <div class="input-group-append">
                                                             <span class="input-group-text">%</span>
                                                         </div>
@@ -1056,7 +1045,7 @@
                                             {% endfor %}
                                             {% for n in comparable|get_extra_length:nr_comp %}
                                                 <td>
-                                                    <input type="number" name="ape_euro[]" class="form-control" step="0.01" id="ape_euro{{forloop.counter}}" value="0">
+                                                    <input type="number" name="ape_euro[]" class="form-control" step="0.01" id="ape_euro{{n}}" value="0">
                                                 </td>
                                             {% endfor %}
                                         {% endif %}
@@ -1086,7 +1075,7 @@
                                             {% endfor %}
                                             {% for n in comparable|get_extra_length:nr_comp %}
                                             <td>
-                                                <input type="number" name="ape_price[]" class="form-control" step="0.01" id="ape_price{{forloop.counter}}">
+                                                <input type="number" name="ape_price[]" class="form-control" step="0.01" id="ape_price{{n}}">
                                             </td>
                                             {% endfor %}
                                         {% endif %}
@@ -1100,7 +1089,7 @@
                                 </tr>
                                 <tr>
                                     <td>Motivare corectie</td>
-                                    <td colspan="{{nr_comp|add:'1'}}" style="height: 60px!important;"><textarea name="ape_motivation" rows="5" class="form-control"></textarea></td>
+                                    <td colspan="{{nr_comp|add:'1'}}" style="height: 60px!important;"><textarea name="ape_motivation" rows="5" class="form-control">Nu au fost necesare ajustari.</textarea></td>
                                 </tr>
 
                                 <tr>
@@ -1112,13 +1101,13 @@
                                         {% if comparable|length == nr_comp %}
                                             {% for n in comparable %}
                                             <td>
-                                                <input type="text" class="form-control market_env" name="me[]"/>
+                                                <input type="text" class="form-control market_env" name="me[]" value="{{n.me}}"/>
                                             </td>
                                             {% endfor %}
                                         {% else %}
                                             {% for n in comparable %}
                                             <td>
-                                                <input type="text" class="form-control market_env" name="me[]"/>
+                                                <input type="text" class="form-control market_env" name="me[]" value="{{n.me}}"/>
                                             </td>
                                             {% endfor %}
                                             {% for n in comparable|get_extra_length:nr_comp %}
@@ -1164,7 +1153,7 @@
                                             {% for n in comparable|get_extra_length:nr_comp %}
                                                 <td>
                                                     <div class="input-group">
-                                                        <input type="number" name="me_percent[]" class="form-control" step="0.01" id="me_percent{{forloop.counter}}" value="0">
+                                                        <input type="number" name="me_percent[]" class="form-control" step="0.01" id="me_percent{{n}}" value="0">
                                                         <div class="input-group-append">
                                                             <span class="input-group-text">%</span>
                                                         </div>
@@ -1203,7 +1192,7 @@
                                             {% endfor %}
                                             {% for n in comparable|get_extra_length:nr_comp %}
                                                 <td>
-                                                    <input type="number" name="me_euro[]" class="form-control" step="0.01" id="me_euro{{forloop.counter}}" value="0">
+                                                    <input type="number" name="me_euro[]" class="form-control" step="0.01" id="me_euro{{n}}" value="0">
                                                 </td>
                                             {% endfor %}
                                         {% endif %}
@@ -1233,7 +1222,7 @@
                                             {% endfor %}
                                             {% for n in comparable|get_extra_length:nr_comp %}
                                             <td>
-                                                <input type="number" name="me_price[]" class="form-control" step="0.01" id="me_price{{forloop.counter}}">
+                                                <input type="number" name="me_price[]" class="form-control" step="0.01" id="me_price{{n}}">
                                             </td>
                                             {% endfor %}
                                         {% endif %}
@@ -1247,7 +1236,7 @@
                                 </tr>
                                 <tr>
                                     <td>Motivare corectie</td>
-                                    <td colspan="{{nr_comp|add:'1'}}" style="height: 60px!important;"><textarea name="me_motivation" rows="5" class="form-control"></textarea></td>
+                                    <td colspan="{{nr_comp|add:'1'}}" style="height: 60px!important;"><textarea name="me_motivation" rows="5" class="form-control">Nu au fost necesare ajustari.</textarea></td>
                                 </tr>
 
                                 <tr>
@@ -1314,7 +1303,7 @@
                                             {% for n in comparable|get_extra_length:nr_comp %}
                                                 <td>
                                                     <div class="input-group">
-                                                        <input type="number" name="lc_percent[]" class="form-control" step="0.01" id="lc_percent{{forloop.counter}}" value="0">
+                                                        <input type="number" name="lc_percent[]" class="form-control" step="0.01" id="lc_percent{{n}}" value="0">
                                                         <div class="input-group-append">
                                                             <span class="input-group-text">%</span>
                                                         </div>
@@ -1353,7 +1342,7 @@
                                             {% endfor %}
                                             {% for n in comparable|get_extra_length:nr_comp %}
                                                 <td>
-                                                    <input type="number" name="lc_euro[]" class="form-control" step="0.01" id="lc_euro{{forloop.counter}}" value="0">
+                                                    <input type="number" name="lc_euro[]" class="form-control" step="0.01" id="lc_euro{{n}}" value="0">
                                                 </td>
                                             {% endfor %}
                                         {% endif %}
@@ -1367,7 +1356,7 @@
                                 </tr>
                                 <tr>
                                     <td>Motivare corectie</td>
-                                    <td colspan="{{nr_comp|add:'1'}}" style="height: 60px!important;"><textarea name="lc_motivation" rows="5" class="form-control"></textarea></td>
+                                    <td colspan="{{nr_comp|add:'1'}}" style="height: 60px!important;"><textarea name="lc_motivation" rows="5" class="form-control">Nu au fost necesare ajustari.</textarea></td>
                                 </tr>
                                 
                                 <tr>
@@ -1451,7 +1440,7 @@
                                             {% for n in comparable|get_extra_length:nr_comp %}
                                                 <td>
                                                     <div class="input-group">
-                                                        <input type="number" name="cp_percent[]" class="form-control" step="0.01" id="cp_percent{{forloop.counter}}" value="0">
+                                                        <input type="number" name="cp_percent[]" class="form-control" step="0.01" id="cp_percent{{n}}" value="0">
                                                         <div class="input-group-append">
                                                             <span class="input-group-text">%</span>
                                                         </div>
@@ -1490,7 +1479,7 @@
                                             {% endfor %}
                                             {% for n in comparable|get_extra_length:nr_comp %}
                                                 <td>
-                                                    <input type="number" name="cp_euro[]" class="form-control" step="0.01" id="cp_euro{{forloop.counter}}" value="0">
+                                                    <input type="number" name="cp_euro[]" class="form-control" step="0.01" id="cp_euro{{n}}" value="0">
                                                 </td>
                                             {% endfor %}
                                         {% endif %}
@@ -1504,7 +1493,7 @@
                                 </tr>
                                 <tr>
                                     <td>Motivare corectie</td>
-                                    <td colspan="{{nr_comp|add:'1'}}" style="height: 60px!important;"><textarea name="cp_motivation" rows="5" class="form-control"></textarea></td>
+                                    <td colspan="{{nr_comp|add:'1'}}" style="height: 60px!important;"><textarea name="cp_motivation" rows="5" class="form-control">Ajustari negative comparabilelor A si C deoarece aceastea sunt decomandate, compartimentare apreciata mai mult de catre piata.</textarea></td>
                                 </tr>
                                 
                                 <tr>
@@ -1568,7 +1557,7 @@
                                             {% for n in comparable|get_extra_length:nr_comp %}
                                                 <td>
                                                     <div class="input-group">
-                                                        <input type="number" name="cy_percent[]" class="form-control" step="0.01" id="cy_percent{{forloop.counter}}" value="0">
+                                                        <input type="number" name="cy_percent[]" class="form-control" step="0.01" id="cy_percent{{n}}" value="0">
                                                         <div class="input-group-append">
                                                             <span class="input-group-text">%</span>
                                                         </div>
@@ -1607,7 +1596,7 @@
                                             {% endfor %}
                                             {% for n in comparable|get_extra_length:nr_comp %}
                                                 <td>
-                                                    <input type="number" name="cy_euro[]" class="form-control" step="0.01" id="cy_euro{{forloop.counter}}" value="0">
+                                                    <input type="number" name="cy_euro[]" class="form-control" step="0.01" id="cy_euro{{n}}" value="0">
                                                 </td>
                                             {% endfor %}
                                         {% endif %}
@@ -1621,9 +1610,41 @@
                                 </tr>
                                 <tr>
                                     <td>Motivare corectie</td>
-                                    <td colspan="{{nr_comp|add:'1'}}" style="height: 60px!important;"><textarea name="cy_motivation" rows="5" class="form-control"></textarea></td>
+                                    <td colspan="{{nr_comp|add:'1'}}" style="height: 60px!important;"><textarea name="cy_motivation" rows="5" class="form-control">Nu au fost necesare ajustari.</textarea></td>
                                 </tr>
-                                
+
+                                <tr>
+                                    <td>Numar de camere</td>
+                                    <td>
+                                        <input type="number" class="form-control" name="sub_camara" id="id_sub_camara" min="2" value="2"/>
+                                    </td>
+                                    {% if comparable %}
+                                        {% if comparable|length == nr_comp %}
+                                            {% for n in comparable %}
+                                            <td>
+                                                <input type="number" class="form-control" name="camara[]" id="id_camara{{forloop.counter}}" min="2" value="{{n.camara}}"/>
+                                            </td>
+                                            {% endfor %}
+                                        {% else %}
+                                            {% for n in comparable %}
+                                            <td>
+                                                <input type="number" class="form-control" name="camara[]" id="id_camara{{forloop.counter}}" min="2" value="{{n.camara}}"/>
+                                            </td>
+                                            {% endfor %}
+                                            {% for n in comparable|get_extra_length:nr_comp %}
+                                            <td>
+                                                <input type="number" class="form-control" name="camara[]" id="id_camara{{n}}" min="2" value="{{n.camara}}"/>
+                                            </td>
+                                            {% endfor %}
+                                        {% endif %}
+                                    {% else %}
+                                        {% for n in nr_comp|list_range %}
+                                        <td>
+                                            <input type="number" class="form-control" name="camara[]" id="id_camara{{forloop.counter}}" min="2" value="{{n.camara}}"/>
+                                        </td>
+                                        {% endfor %}
+                                    {% endif %}
+                                </tr>
                                 <tr>
                                     <td>Suprafata utila (mp)</td>
                                     <td>
@@ -1644,7 +1665,7 @@
                                             {% endfor %}
                                             {% for n in comparable|get_extra_length:nr_comp %}
                                             <td>
-                                                <input type="number" class="form-control" name="area[]" id="id_area{{forloop.counter}}" step="0.01"/>
+                                                <input type="number" class="form-control" name="area[]" id="id_area{{n}}" step="0.01"/>
                                             </td>
                                             {% endfor %}
                                         {% endif %}
@@ -1674,7 +1695,7 @@
                                             {% endfor %}
                                             {% for n in comparable|get_extra_length:nr_comp %}
                                                 <td>
-                                                    <input type="number" name="su_diff[]" class="form-control" step="0.01" id="su_diff{{forloop.counter}}">
+                                                    <input type="number" name="su_diff[]" class="form-control" step="0.01" id="su_diff{{n}}">
                                                 </td>
                                             {% endfor %}
                                         {% endif %}
@@ -1715,7 +1736,7 @@
                                             {% for n in comparable|get_extra_length:nr_comp %}
                                                 <td>
                                                     <div class="input-group">
-                                                        <input type="number" name="su_percent[]" class="form-control" step="0.01" id="su_percent{{forloop.counter}}" value="0">
+                                                        <input type="number" name="su_percent[]" class="form-control" step="0.01" id="su_percent{{n}}" value="0">
                                                         <div class="input-group-append">
                                                             <span class="input-group-text">%</span>
                                                         </div>
@@ -1754,7 +1775,7 @@
                                             {% endfor %}
                                             {% for n in comparable|get_extra_length:nr_comp %}
                                                 <td>
-                                                    <input type="number" name="su_euro[]" class="form-control" step="0.01" id="su_euro{{forloop.counter}}" value="0">
+                                                    <input type="number" name="su_euro[]" class="form-control" step="0.01" id="su_euro{{n}}" value="0">
                                                 </td>
                                             {% endfor %}
                                         {% endif %}
@@ -1768,7 +1789,7 @@
                                 </tr>
                                 <tr>
                                     <td>Motivare corectie</td>
-                                    <td colspan="{{nr_comp|add:'1'}}" style="height: 60px!important;"><textarea name="su_motivation" rows="5" class="form-control"></textarea></td>
+                                    <td colspan="{{nr_comp|add:'1'}}" style="height: 85px!important;"><textarea name="su_motivation" rows="6" class="form-control">Am determinat diferenta dintre suprafata utila a proprietatii subiect si suprafetele utile ale proprietatilor comparabile. Pentru a estima ajustarile in acest caz, diferentele de suprafete au fost inmultite cu pretul pe mp al fiecarei proprietati comparabile.</textarea></td>
                                 </tr>
                                 
                                 <tr>
@@ -1852,7 +1873,7 @@
                                             {% for n in comparable|get_extra_length:nr_comp %}
                                                 <td>
                                                     <div class="input-group">
-                                                        <input type="number" name="finish_percent[]" class="form-control" step="0.01" id="finish_percent{{forloop.counter}}" value="0">
+                                                        <input type="number" name="finish_percent[]" class="form-control" step="0.01" id="finish_percent{{n}}" value="0">
                                                         <div class="input-group-append">
                                                             <span class="input-group-text">%</span>
                                                         </div>
@@ -1891,7 +1912,7 @@
                                             {% endfor %}
                                             {% for n in comparable|get_extra_length:nr_comp %}
                                                 <td>
-                                                    <input type="number" name="finish_euro[]" class="form-control" step="0.01" id="finish_euro{{forloop.counter}}" value="0">
+                                                    <input type="number" name="finish_euro[]" class="form-control" step="0.01" id="finish_euro{{n}}" value="0">
                                                 </td>
                                             {% endfor %}
                                         {% endif %}
@@ -1905,7 +1926,7 @@
                                 </tr>
                                 <tr>
                                     <td>Motivare corectie</td>
-                                    <td colspan="{{nr_comp|add:'1'}}" style="height: 60px!important;"><textarea name="finish_motivation" rows="5" class="form-control"></textarea></td>
+                                    <td colspan="{{nr_comp|add:'1'}}" style="height: 60px!important;"><textarea name="finish_motivation" rows="5" class="form-control">Ajustari negative comparabilelor A si C deoarece acestea dispun de un nivel de finisare mai bun.</textarea></td>
                                 </tr>
                                 
                                 <tr>
@@ -1928,7 +1949,7 @@
                                             {% endfor %}
                                             {% for n in comparable|get_extra_length:nr_comp %}
                                             <td>
-                                                <input type="text" name="etaj[]" id="etaj_{{forloop.counter}}" class="form-control">
+                                                <input type="text" name="etaj[]" id="etaj_{{n}}" class="form-control">
                                             </td>
                                             {% endfor %}
                                         {% endif %}
@@ -1969,7 +1990,7 @@
                                             {% for n in comparable|get_extra_length:nr_comp %}
                                                 <td>
                                                     <div class="input-group">
-                                                        <input type="number" name="etaj_percent[]" class="form-control" step="0.01" id="etaj_percent{{forloop.counter}}" value="0">
+                                                        <input type="number" name="etaj_percent[]" class="form-control" step="0.01" id="etaj_percent{{n}}" value="0">
                                                         <div class="input-group-append">
                                                             <span class="input-group-text">%</span>
                                                         </div>
@@ -2008,7 +2029,7 @@
                                             {% endfor %}
                                             {% for n in comparable|get_extra_length:nr_comp %}
                                                 <td>
-                                                    <input type="number" name="etaj_euro[]" class="form-control" step="0.01" id="etaj_euro{{forloop.counter}}" value="0">
+                                                    <input type="number" name="etaj_euro[]" class="form-control" step="0.01" id="etaj_euro{{n}}" value="0">
                                                 </td>
                                             {% endfor %}
                                         {% endif %}
@@ -2022,7 +2043,7 @@
                                 </tr>
                                 <tr>
                                     <td>Motivare corectie</td>
-                                    <td colspan="{{nr_comp|add:'1'}}" style="height: 60px!important;"><textarea name="etaj_motivation" rows="5" class="form-control"></textarea></td>
+                                    <td colspan="{{nr_comp|add:'1'}}" style="height: 60px!important;"><textarea name="etaj_motivation" rows="5" class="form-control">Nu au fost necesare ajustari.</textarea></td>
                                 </tr>
                                 
                                 <tr>
@@ -2045,7 +2066,7 @@
                                             {% endfor %}
                                             {% for n in comparable|get_extra_length:nr_comp %}
                                             <td>
-                                                <input type="number" class="form-control" name="balcon[]" step="0.01" id="balcon_{{forloop.counter}}"/>
+                                                <input type="number" class="form-control" name="balcon[]" step="0.01" id="balcon_{{n}}"/>
                                             </td>
                                             {% endfor %}
                                         {% endif %}
@@ -2092,7 +2113,7 @@
                                             {% for n in comparable|get_extra_length:nr_comp %}
                                                 <td>
                                                     <div class="input-group">
-                                                        <input type="number" name="balcon_percent[]" class="form-control" step="0.01" id="balcon_percent{{forloop.counter}}" value="0">
+                                                        <input type="number" name="balcon_percent[]" class="form-control" step="0.01" id="balcon_percent{{n}}" value="0">
                                                         <div class="input-group-append">
                                                             <span class="input-group-text">%</span>
                                                         </div>
@@ -2131,7 +2152,7 @@
                                             {% endfor %}
                                             {% for n in comparable|get_extra_length:nr_comp %}
                                                 <td>
-                                                    <input type="number" name="balcon_euro[]" class="form-control" step="0.01" id="balcon_euro{{forloop.counter}}" value="0">
+                                                    <input type="number" name="balcon_euro[]" class="form-control" step="0.01" id="balcon_euro{{n}}" value="0">
                                                 </td>
                                             {% endfor %}
                                         {% endif %}
@@ -2145,7 +2166,7 @@
                                 </tr>
                                 <tr>
                                     <td>Motivare corectie</td>
-                                    <td colspan="{{nr_comp|add:'1'}}" style="height: 60px!important;"><textarea name="balcon_motivation" rows="5" class="form-control"></textarea></td>
+                                    <td colspan="{{nr_comp|add:'1'}}" style="height: 60px!important;"><textarea name="balcon_motivation" id="id_balcon_motivation" rows="5" class="form-control">Am aplicat ajustari tuturor comparabilelor considerand un pret de piata de 400 euro/mp balcon.</textarea></td>
                                 </tr>
                                 
                                 <tr>
@@ -2229,7 +2250,7 @@
                                             {% for n in comparable|get_extra_length:nr_comp %}
                                                 <td>
                                                     <div class="input-group">
-                                                        <input type="number" name="hs_percent[]" class="form-control" step="0.01" id="hs_percent{{forloop.counter}}" value="0">
+                                                        <input type="number" name="hs_percent[]" class="form-control" step="0.01" id="hs_percent{{n}}" value="0">
                                                         <div class="input-group-append">
                                                             <span class="input-group-text">%</span>
                                                         </div>
@@ -2268,7 +2289,7 @@
                                             {% endfor %}
                                             {% for n in comparable|get_extra_length:nr_comp %}
                                                 <td>
-                                                    <input type="number" name="hs_euro[]" class="form-control" step="0.01"  id="hs_euro{{forloop.counter}}" value="0">
+                                                    <input type="number" name="hs_euro[]" class="form-control" step="0.01"  id="hs_euro{{n}}" value="0">
                                                 </td>
                                             {% endfor %}
                                         {% endif %}
@@ -2283,7 +2304,7 @@
                                 </tr>
                                 <tr>
                                     <td>Motivare corectie</td>
-                                    <td colspan="{{nr_comp|add:'1'}}" style="height: 60px!important;"><textarea name="hs_motivation" rows="5" class="form-control"></textarea></td>
+                                    <td colspan="{{nr_comp|add:'1'}}" style="height: 60px!important;"><textarea name="hs_motivation" rows="5" class="form-control">Nu au fost necesare ajustari.</textarea></td>
                                 </tr>
                                 
                                 <tr class="optional">
@@ -2349,7 +2370,7 @@
                                             {% for n in comparable|get_extra_length:nr_comp %}
                                                 <td>
                                                     <div class="input-group">
-                                                        <input type="number" name="opt1_percent[]" class="form-control" step="0.01" id="opt1_percent{{forloop.counter}}" value="0">
+                                                        <input type="number" name="opt1_percent[]" class="form-control" step="0.01" id="opt1_percent{{n}}" value="0">
                                                         <div class="input-group-append">
                                                             <span class="input-group-text">%</span>
                                                         </div>
@@ -2388,7 +2409,7 @@
                                             {% endfor %}
                                             {% for n in comparable|get_extra_length:nr_comp %}
                                                 <td>
-                                                    <input type="number" name="opt1_euro[]" class="form-control" step="0.01" id="opt1_euro{{forloop.counter}}" value="0">
+                                                    <input type="number" name="opt1_euro[]" class="form-control" step="0.01" id="opt1_euro{{n}}" value="0">
                                                 </td>
                                             {% endfor %}
                                         {% endif %}
@@ -2468,7 +2489,7 @@
                                             {% for n in comparable|get_extra_length:nr_comp %}
                                                 <td>
                                                     <div class="input-group">
-                                                        <input type="number" name="opt2_percent[]" class="form-control" step="0.01" id="opt2_percent{{forloop.counter}}" value="0">
+                                                        <input type="number" name="opt2_percent[]" class="form-control" step="0.01" id="opt2_percent{{n}}" value="0">
                                                         <div class="input-group-append">
                                                             <span class="input-group-text">%</span>
                                                         </div>
@@ -2507,7 +2528,7 @@
                                             {% endfor %}
                                             {% for n in comparable|get_extra_length:nr_comp %}
                                                 <td>
-                                                    <input type="number" name="opt2_euro[]" class="form-control" step="0.01" id="opt2_euro{{forloop.counter}}" value="0">
+                                                    <input type="number" name="opt2_euro[]" class="form-control" step="0.01" id="opt2_euro{{n}}" value="0">
                                                 </td>
                                             {% endfor %}
                                         {% endif %}
@@ -2587,7 +2608,7 @@
                                             {% for n in comparable|get_extra_length:nr_comp %}
                                                 <td>
                                                     <div class="input-group">
-                                                        <input type="number" name="opt3_percent[]" class="form-control" step="0.01" id="opt3_percent{{forloop.counter}}" value="0">
+                                                        <input type="number" name="opt3_percent[]" class="form-control" step="0.01" id="opt3_percent{{n}}" value="0">
                                                         <div class="input-group-append">
                                                             <span class="input-group-text">%</span>
                                                         </div>
@@ -2626,7 +2647,7 @@
                                             {% endfor %}
                                             {% for n in comparable|get_extra_length:nr_comp %}
                                                 <td>
-                                                    <input type="number" name="opt3_euro[]" class="form-control" step="0.01" id="opt3_euro{{forloop.counter}}" value="0">
+                                                    <input type="number" name="opt3_euro[]" class="form-control" step="0.01" id="opt3_euro{{n}}" value="0">
                                                 </td>
                                             {% endfor %}
                                         {% endif %}
@@ -2710,7 +2731,7 @@
                                     <td>VALOARE ESTIMATA (EURO)</td>
                                     <td>
                                         <div class="input-group">
-                                            <input type="number" class="form-control" name="estimated_value" id="estimated_value" step="0.01" readonly>
+                                            <input type="number" class="form-control readonly" name="estimated_value" id="estimated_value" step="0.01" readonly>
                                             <div class="input-group-append">
                                                 <span class="input-group-text">&euro;</span>
                                             </div>
@@ -2722,8 +2743,8 @@
                                     <td colspan="{{nr_comp|add:'1'}}">* cea mai mica corectie totala bruta s-a a efectuat pentru comparabila:</td>
                                     <td>
                                         <select id="smallest_gross" class="form-control" name="smallest_gross">
-                                            {% for n in nr_comp|list_range %}
-                                            <option value="ID-{{forloop.counter}}">ID-{{forloop.counter}}</option>
+                                            {% for n in letters|slice:nr_comp %}
+                                            <option value="ID-{{forloop.counter}}">{{n}}</option>
                                             {% endfor %}
                                         </select>
                                         <!-- <input type="text" class="form-control" name="smallest_gross" id="smallest_gross"> -->
@@ -2771,7 +2792,7 @@
                                         <td><input type="number" name="monthly_rent[]" class="form-control" step="0.01" id="monthly_rent{{forloop.counter}}" readonly></td>
                                         {% endfor %}
                                         {% for n in comparable|get_extra_length:nr_comp %}
-                                        <td><input type="number" name="monthly_rent[]" class="form-control" step="0.01" id="monthly_rent{{forloop.counter}}" readonly></td>
+                                        <td><input type="number" name="monthly_rent[]" class="form-control" step="0.01" id="monthly_rent{{n}}" readonly></td>
                                         {% endfor %}
                                     {% endif %}
                                 {% else %}
@@ -2792,7 +2813,7 @@
                                         <td><input type="text" name="mvb_height[]" class="form-control mvb_height" id="mvb_height{{forloop.counter}}" value="{{n.etaj}}" readonly></td>
                                         {% endfor %}
                                         {% for n in comparable|get_extra_length:nr_comp %}
-                                        <td><input type="text" name="mvb_height[]" class="form-control mvb_height" id="mvb_height{{forloop.counter}}" readonly></td>
+                                        <td><input type="text" name="mvb_height[]" class="form-control mvb_height" id="mvb_height{{n}}" readonly></td>
                                         {% endfor %}
                                     {% endif %}
                                 {% else %}
@@ -2813,7 +2834,7 @@
                                         <td><input type="number" name="mvb_area[]" class="form-control" id="mvb_area{{forloop.counter}}" step="0.01" value="{{n.area}}" readonly></td>
                                         {% endfor %}
                                         {% for n in comparable|get_extra_length:nr_comp %}
-                                        <td><input type="number" name="mvb_area[]" class="form-control" id="mvb_area{{forloop.counter}}" step="0.01" readonly></td>
+                                        <td><input type="number" name="mvb_area[]" class="form-control" id="mvb_area{{n}}" step="0.01" readonly></td>
                                         {% endfor %}
                                     {% endif %}
                                 {% else %}
@@ -2839,7 +2860,7 @@
                                         {% endfor %}
                                         {% for n in comparable|get_extra_length:nr_comp %}
                                         <td>
-                                            <input type="number" class="form-control" id="rent_sqm{{forloop.counter}}" name="rent_sqm[]" step="0.01"/>
+                                            <input type="number" class="form-control" id="rent_sqm{{n}}" name="rent_sqm[]" step="0.01"/>
                                         </td>
                                         {% endfor %}
                                     {% endif %}
@@ -2868,7 +2889,7 @@
                                         {% endfor %}
                                         {% for n in comparable|get_extra_length:nr_comp %}
                                         <td>
-                                            <input type="number" class="form-control" name="mvb_vbp[]" id="mvb_vbp{{forloop.counter}}" step="0.01" readonly/>
+                                            <input type="number" class="form-control" name="mvb_vbp[]" id="mvb_vbp{{n}}" step="0.01" readonly/>
                                         </td>
                                         {% endfor %}
                                     {% endif %}
@@ -2897,7 +2918,7 @@
                                         {% endfor %}
                                         {% for n in comparable|get_extra_length:nr_comp %}
                                         <td>
-                                            <input type="number" class="form-control" id="mvb_pc{{forloop.counter}}" name="mvb_pc[]" step="0.01" readonly/>
+                                            <input type="number" class="form-control" id="mvb_pc{{n}}" name="mvb_pc[]" step="0.01" readonly/>
                                         </td>
                                         {% endfor %}
                                     {% endif %}
@@ -2926,7 +2947,7 @@
                                         {% endfor %}
                                         {% for n in comparable|get_extra_length:nr_comp %}
                                         <td>
-                                            <input type="number" class="form-control" name="mvb_mvbp[]" id="mvb_mvbp{{forloop.counter}}" step="0.01" readonly/>
+                                            <input type="number" class="form-control" name="mvb_mvbp[]" id="mvb_mvbp{{n}}" step="0.01" readonly/>
                                         </td>
                                         {% endfor %}
                                     {% endif %}
@@ -2980,6 +3001,7 @@
                 </form>
 
                 <div class="card-action">
+                    <p class="text-danger error" style="display: none;">Red box fields are required.</p>
                     <button class="btn btn-success" id="submitBtn">{% if instance %}Update{% else %}Save{% endif %}</button>
                 </div>
             </div>
@@ -3054,7 +3076,20 @@
                     get_gross_total(i);
                 }
             }
-        })
+        });
+
+        // update motivation 
+        $('input[name="margin[]"]').focusout(function() {
+            let margin = this.value;
+            margin = margin.replace('-', '');
+            let motiv = $('#id_motivation').val();
+            let regex1 = /de/;
+            let regex2 = /pentru/;
+            let start = motiv.match(regex1).index + 3;
+            let end = motiv.match(regex2).index - 1;
+            let motive = motiv.substring(0, start) + margin + '%' + motiv.substring(end);
+            $('#id_motivation').val(motive); 
+        });
 
         for(let i=1; i<=nr; i++) {
             let sp = ($('#sp_'+i+'').val() != '') ? Number($('#sp_'+i+'').val()) : 0.00;
@@ -3907,33 +3942,43 @@
         }
 
         $('#submitBtn').click(function () {
-            var pass = false;
+            var pass = true;
             $('#all_tables input:not(.optional input)').each(function() {
                 if(this.value.length > 0) {
-                    pass = true;
                     $(this).removeClass('required')
                     $('.error').css('display', 'none');
                 } else {
                     pass = false;
+                    console.log(this.id)
                     $(this).addClass('required')
-                    $('.error').css('display', 'block');
                 }
-            })
+            });
             $('#all_tables textarea:not(.optional textarea)').each(function() {
                 if(this.value.length > 0) {
-                    pass = true;
                     $(this).removeClass('required')
                     $('.error').css('display', 'none');
                 } else {
                     pass = false;
                     $(this).addClass('required')
-                    $('.error').css('display', 'block');
                 }
-            })
+            });
+
+            let ev = $('#estimated_value').val();
+            let min = $('#mvb_min').val();
+            if(ev.length < 1) {
+                pass = false;
+                $('#estimated_value').parents('tr').addClass('required');
+            }
+            if(min.length < 1) {
+                pass = false;
+                $('#mvb_min').parents('tr').addClass('required');
+            }
 
             if (pass == true) {
                 $('#all_tables').submit();
-            } 
+            } else {
+                $('.error').css('display', 'block');
+            }
         })
     </script>
 {% endblock javascripts %}  

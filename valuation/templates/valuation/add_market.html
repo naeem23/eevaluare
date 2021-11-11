@@ -64,6 +64,20 @@
                 
                 <form method="POST" id="market-form">
                     {% csrf_token %}
+                    <!-- {% if form.errors %}
+                        {% for field in form %}
+                            {% for error in field.errors %}
+                                <div class="alert alert-danger">
+                                    <strong>{{field}} - {{ error|escape }}</strong>
+                                </div>
+                            {% endfor %}
+                        {% endfor %}
+                        {% for error in form.non_field_errors %}
+                            <div class="alert alert-danger">
+                                <strong>{{ error|escape }}</strong>
+                            </div>
+                        {% endfor %}
+                    {% endif %} -->
                     
                     {% if 'details' in pre_url %}
                         <input type="hidden" name="pre_url" value="details">
@@ -208,6 +222,30 @@
                             </div>
                         </div>
 
+                        <div class="row mt-3">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="id_offer_similar">Oferta de proprietati similare <span class="required-label">*</span></label>
+                                    {{form.offer_similar}}
+                                    <small class="form-text text-danger offer_similar"></small>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="id_application_similar">Cererea de proprietati similare <span class="required-label">*</span></label>
+                                    {{form.application_similar}}
+                                    <small class="form-text text-danger application_similar"></small>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="id_market_balance">Echilibrul pietei <span class="required-label">*</span></label>
+                                    {{form.market_balance}}
+                                    <small class="form-text text-danger market_balance"></small>
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="row">
                             <div class="col-md-12">
                                 <div class="form-group">
@@ -221,6 +259,16 @@
                         </div>
 
                         <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="id_range">Chiria lunara <span class="required-label">*</span> (euro/mp/luna)</label>
+                                    {{form.range}}
+                                    <small class="form-text text-danger range"></small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
                             <div class="col-md-12">
                                 <div class="form-group">
                                     <label id="risk_label">Riscul de garantie <span class="required-label">*</span></label>
@@ -229,7 +277,6 @@
                                 </div>
                             </div>
                         </div>
-                        
                     </div>
                 </form>
 
@@ -304,24 +351,19 @@
 
             var show_af = $("#show_af").val();
             var af = $("#id_af").val();
-            var const_density = $("#id_const_density").val()
             var ebby = $('#id_ebby').val()
-            var prop_size = $('#id_prop_size').val()
-            var exposure = $('#id_exposure').val()
 
             var show_spi = $('#show_spi').val()
             var spi = $('#id_spi').val()
-            var liquidity = $('#id_liquidity').val()
-            var transactions_nr = $('#id_transactions_nr').val()
-            var exposure_period = $('#id_exposure_period').val()
 
             var show_forecast = $('#show_forecast').val()
             var forecast = $('#id_forecast').val()
             var minsale_price = $('#id_minsale_price').val()
             var maxsale_price = $('#id_maxsale_price').val()
+            var range = $('#id_range').val()
             var risk = $('#id_guarantee_risk').val()
 
-            if(((show_dps == '1' && dps.length > 1) || area_between.length > 1) && ((show_ac == '1' && ac.length > 1) || zona_type.length > 0) && ((show_af == '1' && af.length > 1) || ebby.length > 1) && ((show_spi == '1' && spi.length > 1) || show_spi == '0') && ((show_forecast == '1' && forecast.length > 1) || show_forecast == '0') && minsale_price.length > 0 && maxsale_price.length > 0 && risk.length > 1) {
+            if(((show_dps == '1' && dps.length > 0) || area_between.length > 0) && ((show_ac == '1' && ac.length > 0) || zona_type.length > 0) && ((show_af == '1' && af.length > 0) || ebby.length > 0) && ((show_spi == '1' && spi.length > 0) || show_spi == '0') && ((show_forecast == '1' && forecast.length > 0) || show_forecast == '0') &&  minsale_price.length > 0 && maxsale_price.length > 0 && range.length > 0 && risk.length > 0) {
                 $("#market-form").submit();
             } else {
                 if(show_dps == '1' && dps.length < 1) { 
@@ -376,6 +418,14 @@
                     $('#id_minsale_price').removeClass('required')
                     $('#id_maxsale_price').removeClass('required')
                     $(".sale_price").text('')
+                }
+
+                if(range.length < 1) {
+                    $('#id_range').addClass('required')
+                    $(".range").text('This field is required')
+                } else {
+                    $('#id_range').removeClass('required')
+                    $(".range").text('')
                 }
 
                 if(risk.length < 1) {
