@@ -35,7 +35,7 @@ def dashboardView(request):
     else:
         msg = None
     template_name = 'dashboard/evaluari_complete.html'
-    complete = vmodels.ValuatedProperty.objects.filter(status__status__icontains="completed").order_by('-id')
+    complete = vmodels.ValuatedProperty.objects.filter(status__id=2).order_by('-id')
     context = {
         'segment': 'complete',
         'msg': msg,
@@ -90,7 +90,7 @@ def evaluari_incomplete(request):
 	else:
 		msg = None
 
-	incomplete = vmodels.ValuatedProperty.objects.exclude(status__status__icontains="completed").order_by('-id')
+	incomplete = vmodels.ValuatedProperty.objects.exclude(status__id=2).order_by('-id')
 	status = vmodels.Status.objects.all()
 	context = {
 		'segment': 'incomplet',

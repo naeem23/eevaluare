@@ -3123,9 +3123,9 @@
                 var ad_val = this.value;
                 if (ad_val=='Tranzactie') {
                     $('#margin_'+i+'').val('0');
-                    $('#margin_'+i+'').attr('disabled','disabled');
+                    $('#margin_'+i+'').css('background','gray');
                     $('#cv_'+i+'').val(0);
-                    $('#cv_'+i+'').attr('disabled','disabled');
+                    $('#cv_'+i+'').css('background','gray');
                     let mp = Number($('#op_'+i+'').val()) + Number($('#cv_'+i+'').val());
                     $('#mp_'+i+'').val(mp);
                     $('#mvb_pc'+i+'').val(mp);
@@ -3150,8 +3150,8 @@
                     get_total(i);
                     get_gross_total(i);
                 } else {
-                    $('#margin_'+i+'').prop("disabled", false);
-                    $('#cv_'+i+'').prop("disabled", false);
+                    $('#margin_'+i+'').css("background", 'transparent');
+                    $('#cv_'+i+'').css("background", 'transparent');
                 }
             });
 

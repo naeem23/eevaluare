@@ -146,7 +146,7 @@
                                 <div class="form-group" style="width: 30%;">
                                     <label for="nr_comparatii">Nr comparatii</label>
                                     <input type="number" class="form-control" id="nr_comparatii" name="nr_comapratii" value="{% if comp_table %}{{comp_table|length}}{% else %}0{% endif %}">
-                                    <small class="form-text text-danger nr_warning">This field must be grater than one</small>
+                                    <small class="form-text text-danger nr_warning">This field must be grater than zero</small>
                                 </div>
                             </div>
                         </div>
@@ -172,7 +172,11 @@
         var comp = "{{comp_table.comparable}}";
         (comp == '') ? comp = [] : comp = JSON.parse(comp); 
         var remove = [];
-        // $("input[name='remove[]']").each(function(){selected_comp.push(Number(this.value))});
+
+        // set min value for nr comp 
+        var $checkboxes = $('input[type="checkbox"]');
+        var nr_min = $checkboxes.filter(':checked').length;
+        $('#nr_comparatii').attr('min', nr_min);
 
         $(".search-btn").on('click', function() {
             var location = $('#location').val()
@@ -211,8 +215,10 @@
                         let nr = parseInt($('#nr_comparatii').val()) - 1;
                         $('#nr_comparatii').val(nr);
                     };
-                    // var countCheckedCheckboxes = $checkboxes.filter(':checked').length;
-                    // $('#nr_comparatii').val(nr + countCheckedCheckboxes);
+                    // set min value for nr comp after change 
+                    let $checkboxes = $('input[type="checkbox"]');
+                    let nr_min = $checkboxes.filter(':checked').length;
+                    $('#nr_comparatii').attr('min', nr_min);
                 });
             })
         });
@@ -230,6 +236,10 @@
                 let nr = parseInt($('#nr_comparatii').val()) + 1;
                 $('#nr_comparatii').val(nr);
             }
+            // set min value for nr comp after change 
+            let $checkboxes = $('input[type="checkbox"]');
+            let nr_min = $checkboxes.filter(':checked').length;
+            $('#nr_comparatii').attr('min', nr_min);
         });
 
         $('#submitbtn').on('click', function() {

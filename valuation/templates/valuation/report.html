@@ -334,8 +334,12 @@
             <p style="margin-bottom: 10px; text-indent: 3rem; font-weight: bold;">2. Identificarea clientului</p>
             <p style="margin-bottom: 10px;">
                 <span>Client: {{valuation.nume_client}}</span>  <br>
+                {% if valuation.ct_address %}
                 <span>Adresa: {{valuation.ct_address}}</span> <br>
+                {% endif %}
+                {% if valuation.cui %}
                 <span>CUI: {{valuation.cui}}</span> <br>
+                {% endif %}
             </p>
             <p style="margin-bottom: 10px;text-align: justify;">Acest raport de evaluare este confidential atat pentru client cat si pentru evaluator si utilizatorii desemnati si este valabil numai pentru scopul mentionat in prezentul raport. Nu se accepta nicio responsabilitate daca este transmis altei persoane, fie pentru scopul declarat, fie pentru oricare alt scop.</p>
 
@@ -664,10 +668,13 @@
                 </tr>
             </table>
             <br>
+            {% if const.comments %}
             <p style="margin: 10px 0;text-align: justify;"><b>Mentiuni:</b>{{ const.comments|safe }}</p>
-
+            {% endif %}
+            {% if pdata.history %}
             <p style="margin-bottom: 10px; text-indent: 3rem; font-weight: bold;">13. Istoricul proprietatii subiect</p>
             <p style="margin-bottom: 10px;text-align: justify;">{{ pdata.history|safe }}</p>
+            {% endif %}
         </div>
 
         <div>
@@ -791,7 +798,7 @@
                 </tr>
             </table>
 
-            <p style="margin-top: 15px;text-align: justify;">Avand in vedere compartimentarea fiecarui nivel, cat si specificul zonei din care face parte proprietatea evaluata, opinia mea este ca CMBU este {% if 'Apartamente' in valuation.property_type.type %}rezidentiala{% endif %}.</p>
+            <p style="margin-top: 15px;text-align: justify;">Avand in vedere compartimentarea fiecarui nivel, cat si specificul zonei din care face parte proprietatea evaluata, opinia mea este ca CMBU este {% if 'Apartament' in valuation.property_type.type %}rezidentiala{% endif %}.</p>
         </div>
 
         <div>
@@ -829,11 +836,11 @@
             </p>
 
             <table border="1" id="grid-table">
-                <tr valign="middel"><td colspan="5" style="font-weight:bold;">Date de piata</td></tr>
+                <tr valign="middel"><td colspan="{{comp_table|length|add:'2'}}" style="font-weight:bold;">Date de piata</td></tr>
                 <tr valign="middel">
                     <td style="font-weight: bold;">Element de comparatie</td>
                     <td style="font-weight: bold;">Subiect</td>
-                    <td colspan="3" style="font-weight: bold;">Proprietati comparabile</td>
+                    <td colspan="{{comp_table|length}}" style="font-weight: bold;">Proprietati comparabile</td>
                 </tr>
                 <tr valign="middel">
                     <td></td>
@@ -984,11 +991,11 @@
             </p>
 
             <table border="1" id="comparable_tbl">
-                <tr valign="middel"><td colspan="5">ABORDAREA PRIN PIATA, METODA COMPARATIILOR DE PIATA</td></tr>
+                <tr valign="middel"><td colspan="{{comp_table|length|add:'2'}}">ABORDAREA PRIN PIATA, METODA COMPARATIILOR DE PIATA</td></tr>
                 <tr valign="middel">
                     <td>Element de comparatie</td>
                     <td>Subiect</td>
-                    <td colspan="3">Proprietati comparabile</td>
+                    <td colspan="{{comp_table|length}}">Proprietati comparabile</td>
                 </tr>
                 <tr valign="middel">
                     <td></td>
@@ -1067,10 +1074,10 @@
                 </tr>
                 <tr valign="middel">
                     <td style="text-align: left;padding-left:3px" valign="top">Motivare corectie</td>
-                    <td colspan="4" style="font-weight: normal; text-align: left;padding-left:3px">{{sub_prop.motivation}}</td>
+                    <td colspan="{{comp_table|length|add:'1'}}" style="font-weight: normal; text-align: left;padding-left:3px">{{sub_prop.motivation}}</td>
                 </tr>
 
-                <tr valign="middel"><td colspan="5">Ajustari pentru conditiile tranzactiilor</td></tr>
+                <tr valign="middel"><td colspan="{{comp_table|length|add:'2'}}">Ajustari pentru conditiile tranzactiilor</td></tr>
                 <tr valign="middel">
                     <td style="text-align: left;padding-left:3px">Drepturi de proprietate</td>
                     <td style="font-weight: normal;">{{sub_prop.pr}}</td>
@@ -1101,7 +1108,7 @@
                 </tr>
                 <tr valign="middel">
                     <td style="text-align: left;padding-left:3px">Motivare corectie</td>
-                    <td colspan="4" style="text-align: left;padding-left:3px;font-weight: normal;">{{sub_prop.pr_motivation}}</td>
+                    <td colspan="{{comp_table|length|add:'1'}}" style="text-align: left;padding-left:3px;font-weight: normal;">{{sub_prop.pr_motivation}}</td>
                 </tr>
                 
                 <tr>
@@ -1134,7 +1141,7 @@
                 </tr>
                 <tr>
                     <td style="text-align: left;padding-left:3px">Motivare corectie</td>
-                    <td colspan="4" style="text-align: left;padding-left:3px;font-weight: normal;">{{sub_prop.fc_motivation}}</td>
+                    <td colspan="{{comp_table|length|add:'1'}}" style="text-align: left;padding-left:3px;font-weight: normal;">{{sub_prop.fc_motivation}}</td>
                 </tr>
                 
                 <tr>
@@ -1167,7 +1174,7 @@
                 </tr>
                 <tr>
                     <td style="text-align: left;padding-left:3px">Motivare corectie</td>
-                    <td colspan="4" style="text-align: left;padding-left:3px;font-weight: normal;">{{sub_prop.sc_motivation}}</td>
+                    <td colspan="{{comp_table|length|add:'1'}}" style="text-align: left;padding-left:3px;font-weight: normal;">{{sub_prop.sc_motivation}}</td>
                 </tr>
                 
                 <tr>
@@ -1200,7 +1207,7 @@
                 </tr>
                 <tr>
                     <td style="text-align: left;padding-left:3px">Motivare corectie</td>
-                    <td colspan="4" style="text-align: left;padding-left:3px;font-weight: normal;">{{sub_prop.ape_motivation}}</td>
+                    <td colspan="{{comp_table|length|add:'1'}}" style="text-align: left;padding-left:3px;font-weight: normal;">{{sub_prop.ape_motivation}}</td>
                 </tr>
                 
                 <tr>
@@ -1233,10 +1240,10 @@
                 </tr>
                 <tr>
                     <td style="text-align: left;padding-left:3px">Motivare corectie</td>
-                    <td colspan="4" style="text-align: left;padding-left:3px;font-weight: normal;">{{sub_prop.me_motivation}}</td>
+                    <td colspan="{{comp_table|length|add:'1'}}" style="text-align: left;padding-left:3px;font-weight: normal;">{{sub_prop.me_motivation}}</td>
                 </tr>
 
-                <tr><td colspan="5">Ajustari specifice proprietatii</td></tr>
+                <tr><td colspan="{{comp_table|length|add:'2'}}">Ajustari specifice proprietatii</td></tr>
                 <tr>
                     <td style="text-align: left;padding-left:3px">Localizare</td>
                     <td>{{sub_prop.lc}}</td>
@@ -1260,7 +1267,7 @@
                 </tr>
                 <tr>
                     <td style="text-align: left;padding-left:3px">Motivare corectie</td>
-                    <td colspan="4" style="text-align: left;padding-left:3px;font-weight: normal;">{{sub_prop.lc_motivation}}</td>
+                    <td colspan="{{comp_table|length|add:'1'}}" style="text-align: left;padding-left:3px;font-weight: normal;">{{sub_prop.lc_motivation}}</td>
                 </tr>
 
                 <tr>
@@ -1286,7 +1293,7 @@
                 </tr>
                 <tr>
                     <td style="text-align: left;padding-left:3px">Motivare corectie</td>
-                    <td colspan="4" style="text-align: left;padding-left:3px;font-weight: normal;">{{sub_prop.cp_motivation}}</td>
+                    <td colspan="{{comp_table|length|add:'1'}}" style="text-align: left;padding-left:3px;font-weight: normal;">{{sub_prop.cp_motivation}}</td>
                 </tr>
 
                 <tr>
@@ -1312,7 +1319,7 @@
                 </tr>
                 <tr>
                     <td style="text-align: left;padding-left:3px">Motivare corectie</td>
-                    <td colspan="4" style="text-align: left;padding-left:3px;font-weight: normal;">{{ sub_prop.cy_motivation}}</td>
+                    <td colspan="{{comp_table|length|add:'1'}}" style="text-align: left;padding-left:3px;font-weight: normal;">{{ sub_prop.cy_motivation}}</td>
                 </tr>
 
                 <tr>
@@ -1345,7 +1352,7 @@
                 </tr>
                 <tr>
                     <td style="text-align: left;padding-left:3px">Motivare corectie</td>
-                    <td colspan="4" style="text-align: left;padding-left:3px;font-weight: normal;">{{sub_prop.su_motivation}}</td>
+                    <td colspan="{{comp_table|length|add:'1'}}" style="text-align: left;padding-left:3px;font-weight: normal;">{{sub_prop.su_motivation}}</td>
                 </tr>
 
                 <tr>
@@ -1371,7 +1378,7 @@
                 </tr>
                 <tr>
                     <td style="text-align: left;padding-left:3px">Motivare corectie</td>
-                    <td colspan="4" style="text-align: left;padding-left:3px;font-weight: normal;">{{sub_prop.finish_motivation}}</td>
+                    <td colspan="{{comp_table|length|add:'1'}}" style="text-align: left;padding-left:3px;font-weight: normal;">{{sub_prop.finish_motivation}}</td>
                 </tr>
 
                 <tr>
@@ -1397,7 +1404,7 @@
                 </tr>
                 <tr>
                     <td style="text-align: left;padding-left:3px">Motivare corectie</td>
-                    <td colspan="4" style="text-align: left;padding-left:3px;font-weight: normal;">{{sub_prop.etaj_motivation}}</td>
+                    <td colspan="{{comp_table|length|add:'1'}}" style="text-align: left;padding-left:3px;font-weight: normal;">{{sub_prop.etaj_motivation}}</td>
                 </tr>
 
                 <tr>
@@ -1423,7 +1430,7 @@
                 </tr>
                 <tr>
                     <td style="text-align: left;padding-left:3px">Motivare corectie</td>
-                    <td colspan="4" style="text-align: left;padding-left:3px;font-weight: normal;">{{sub_prop.balcon_motivation}}</td>
+                    <td colspan="{{comp_table|length|add:'1'}}" style="text-align: left;padding-left:3px;font-weight: normal;">{{sub_prop.balcon_motivation}}</td>
                 </tr>
 
                 <tr>
@@ -1449,7 +1456,7 @@
                 </tr>
                 <tr>
                     <td style="text-align: left;padding-left:3px">Motivare corectie</td>
-                    <td colspan="4" style="text-align: left;padding-left:3px;font-weight: normal;">{{sub_prop.hs_motivation}}</td>
+                    <td colspan="{{comp_table|length|add:'1'}}" style="text-align: left;padding-left:3px;font-weight: normal;">{{sub_prop.hs_motivation}}</td>
                 </tr>
 
                 {% if sub_prop.opt1_name %}
@@ -1476,7 +1483,7 @@
                 </tr>
                 <tr>
                     <td style="text-align: left;padding-left:3px">Motivare corectie</td>
-                    <td colspan="4" style="text-align: left;padding-left:3px;font-weight: normal;">{{sub_prop.opt1_motivation}}</td>
+                    <td colspan="{{comp_table|length|add:'1'}}" style="text-align: left;padding-left:3px;font-weight: normal;">{{sub_prop.opt1_motivation}}</td>
                 </tr>
                 {% endif %}
 
@@ -1504,7 +1511,7 @@
                 </tr>
                 <tr>
                     <td style="text-align: left;padding-left:3px">Motivare corectie</td>
-                    <td colspan="4" style="text-align: left;padding-left:3px;font-weight: normal;">{{sub_prop.opt2_motivation}}</td>
+                    <td colspan="{{comp_table|length|add:'1'}}" style="text-align: left;padding-left:3px;font-weight: normal;">{{sub_prop.opt2_motivation}}</td>
                 </tr>
                 {% endif %}
 
@@ -1532,7 +1539,7 @@
                 </tr>
                 <tr>
                     <td style="text-align: left;padding-left:3px">Motivare corectie</td>
-                    <td colspan="4" style="text-align: left;padding-left:3px;font-weight: normal;">{{sub_prop.opt3_motivation}}</td>
+                    <td colspan="{{comp_table|length|add:'1'}}" style="text-align: left;padding-left:3px;font-weight: normal;">{{sub_prop.opt3_motivation}}</td>
                 </tr>
                 {% endif %}
 
@@ -1601,7 +1608,7 @@
                 </tr>
 
                 <tr>
-                    <td colspan="4" style="text-align: left;padding-left:3px">* cea mai mica corectie totala bruta s-a a efectuat pentru comparabila:</td>
+                    <td colspan="{{comp_table|length|add:'1'}}" style="text-align: left;padding-left:3px">* cea mai mica corectie totala bruta s-a a efectuat pentru comparabila:</td>
                     <td>{{sub_prop|get_corresponding_letter}}</td>
                 </tr>
             </table>
@@ -1638,7 +1645,7 @@
             
             {% if comp_mvb %}
             <table border="1" id="mvb-table">
-                <tr valign="middel"><td colspan="4" style="font-weight:bold;text-align: left;padding-left: 3px;">Multiplicatorul venitului brut potential</td></tr>
+                <tr valign="middel"><td colspan="{{comp_table|length|add:'1'}}" style="font-weight:bold;text-align: left;padding-left: 3px;">Multiplicatorul venitului brut potential</td></tr>
                 <tr valign="middel">
                     <td style="font-weight: bold;width: 45%;">COMPARABILE</td>
                     {% for c in comp_table %}

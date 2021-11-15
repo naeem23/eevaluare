@@ -161,7 +161,8 @@
                             <div class="col-md-12">
                                 <div class="form-group">
                                     <label for="id_pardoseli">Pardoseli <span class="required-label">*</span></label>
-                                    {{ form.pardoseli }}
+                                    <!-- {{ form.pardoseli }} -->
+                                    <textarea name="pardoseli" id="id_pardoseli" rows="5" class="form-control">{% if const.pardoseli %}{{const.pardoseli|safe }}{% else %}Pardoselile sunt placate cu gresie in hol, baie, bucatarie si balcoane, placate cu parchet laminat in restul incaperilor.{% endif %}</textarea>
                                     <small class="form-text text-danger pardoseli_error"></small>
                                 </div>
                             </div>
@@ -171,7 +172,8 @@
                             <div class="col-md-12">
                                 <div class="form-group">
                                     <label for="id_walls">Pereti <span class="required-label">*</span></label>
-                                    {{ form.walls }}
+                                    <!-- {{ form.walls }} -->
+                                    <textarea name="walls" id="id_walls" rows="5" class="form-control">{% if const.walls %}{{const.walls|safe }}{% else %}Peretii sunt finisati cu tenuieli acoperite cu vopsea lavabila in majoritatea incaperilor, mai putin in bai si partial in bucatarie unde sunt placate cu faianta.{% endif %}</textarea>
                                     <small class="form-text text-danger walls_error"></small>
                                 </div>
                             </div>
@@ -181,14 +183,16 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="id_interior_carpentry">Tamplarie interioara <span class="required-label">*</span></label>
-                                    {{ form.interior_carpentry }}
+                                    <!-- {{ form.interior_carpentry }} -->
+                                    <input type="text" name="interior_carpentry" value="{% if const.interior_carpentry %}{{const.interior_carpentry}}{% else %}Tamplaria interioara este din lemn.{% endif %}" class="form-control" id="id_interior_carpentry">
                                     <small class="form-text text-danger interior_carpentry"></small>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="id_ceiling">Plafonul <span class="required-label">*</span></label>
-                                    {{ form.ceiling }}
+                                    <!-- {{ form.ceiling }} -->
+                                    <input type="text" name="ceiling" value="{% if const.ceiling %}{{const.ceiling}}{% else %}Plafonul este finisat cu tencuieli acoperite cu vopsea lavabila.{% endif %}" class="form-control" id="id_ceiling">
                                     <small class="form-text text-danger ceiling_error"></small>
                                 </div>
                             </div>
@@ -211,7 +215,8 @@
                             <div class="col-md-12">
                                 <div class="form-group">
                                     <label for="id_exterior_carpentry">Tamplarie exterioara <span class="required-label">*</span></label>
-                                    {{ form.exterior_carpentry }}
+                                    <!-- {{ form.exterior_carpentry }} -->
+                                    <textarea name="exterior_carpentry" id="id_exterior_carpentry" rows="5" class="form-control">{% if const.exterior_carpentry %}{{const.exterior_carpentry|safe }}{% else %}Tamplaria exterioara este realizata din PVC cu geam termopan. Usa de acces este metalica.{% endif %}</textarea>
                                     <small class="form-text text-danger ec_error"></small>
                                 </div>
                             </div>
@@ -245,7 +250,8 @@
                             <div class="col-md-12">
                                 <div class="form-group">
                                     <label id="dotari_label">Dotari Suplimentare, Sistem de Incalzire si mentiuni <span class="required-label mr-2">*</span></label>
-                                    {{form.dotari}}
+                                    <!-- {{form.dotari}} -->
+                                    <textarea name="dotari" id="id_dotari" rows="5" class="form-control">{% if const.dotari %}{{const.dotari|safe }}{% else %}Incalzirea se realizeaza cu ajutorul caloriferelor conectate la centrala termica proprie a imobilului.&#13;&#10;Dotari suplimentare: -{% endif %}</textarea>
                                     <small class="form-text text-danger dotari_error"></small>
                                 </div>
                             </div>

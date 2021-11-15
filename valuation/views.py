@@ -3,6 +3,7 @@ import datetime
 import json
 from django.db.models.expressions import Value
 from django.utils.translation import templatize
+from django.utils.dateparse import parse_date
 import requests
 import string
 import urllib.parse
@@ -35,7 +36,7 @@ def initial_form(request):
         form = forms.InitialForm(request.POST)
         if form.is_valid():
             data = form.save(commit=False)
-            data.status = models.Status.objects.get(status__icontains='progress')
+            data.status = models.Status.objects.get(id=1)
             data.inspection_date = timezone.now()
             data.assigned_to = request.user.get_full_name()
             data.save()
@@ -44,9 +45,8 @@ def initial_form(request):
             compart = request.POST.getlist('compart[]')
             i = 0
             for c in compartments:
-                if compart[i] != '0':
-                    res = models.CompartimentareValue.objects.create(ref_no=data, attr_id=c, attr_value=compart[i])
-                    success = True if res else False
+                res = models.CompartimentareValue.objects.create(ref_no=data, attr_id=c, attr_value=compart[i])
+                success = True if res else False
                 i += 1
             
             # save custom field 
@@ -211,9 +211,9 @@ def add_construction(request, id):
     utila_filter = Q()
     for x in ['balcon','terasa','parcare','boxa']:
         utila_filter = utila_filter | Q(attr_id__name__icontains=x)
-    rooms = models.CompartimentareValue.objects.filter(ref_no=valuation).exclude(utila_filter)
+    rooms = models.CompartimentareValue.objects.filter(ref_no=valuation, attr_value__gte=1).exclude(utila_filter)
     customs = models.CustomFieldValue.objects.filter(ref_no=valuation)
-    balcons = models.CompartimentareValue.objects.filter(ref_no=valuation, attr_id__name__icontains='balcon')
+    balcons = models.CompartimentareValue.objects.filter(ref_no=valuation, attr_id__id__in=[7,8], attr_value__gte=1)
     floor_type = models.FloorType.objects.all()
     pre_url = request.META.get("HTTP_REFERER")
 
@@ -427,8 +427,8 @@ def select_comparable(request, id):
         remove = request.POST.get('remove')
         nr_comp = request.POST.get('nr_comapratii')
         if comp_table:
-            comp_table.filter(comparable__id__in=ast.literal_eval(remove)).delete()
-            mvb_table.filter(cp__id__in=ast.literal_eval(remove)).delete()
+            comp_del = comp_table.filter(comparable__id__in=ast.literal_eval(remove)).delete()
+            mvb_del = mvb_table.filter(cp__id__in=ast.literal_eval(remove)).delete()
             return redirect(reverse('valuation:edit_comparable', args=[id])+'?comp='+str(comp)+'&nr_comp='+str(nr_comp))
         else:
             return redirect(reverse('valuation:add_comparable', args=[id])+'?comp='+str(comp)+'&nr_comp='+str(nr_comp))
@@ -602,7 +602,7 @@ def add_comparable(request, id):
 
         comp_list = []
         if comparable:
-            comp_list = comparable  
+            comp_list = list(comparable)  
             if len(comparable) != int(nr_comp):
                 for i in range(len(comparable), int(nr_comp)):
                     prop = models.ComparableProperty.objects.create(sale_price=sale_price[i], mobila=mobila[i], ma=ma[i], parking_boxa=parking_boxa[i], pba=pba[i], ad=ad[i], pr=pr[i], fc=fc[i], sc=sc[i], ape=ape[i], me=me[i],lc=lc[i], cp=cp[i], cy=cy[i], camara=camara[i], area=area[i], finish=finish[i], etaj=etaj[i], balcon=balcon[i], hs=hs[i])
@@ -611,9 +611,10 @@ def add_comparable(request, id):
             for i in range(int(nr_comp)):
                 prop = models.ComparableProperty.objects.create(sale_price=sale_price[i], mobila=mobila[i], ma=ma[i], parking_boxa=parking_boxa[i], pba=pba[i], ad=ad[i], pr=pr[i], fc=fc[i], sc=sc[i], ape=ape[i], me=me[i],lc=lc[i], cp=cp[i], cy=cy[i], area=area[i], finish=finish[i], etaj=etaj[i], balcon=balcon[i], hs=hs[i])
                 comp_list.append(prop)
-        
-        for cp in range(len(comp_list)):
-            table = models.ComparableTable.objects.create(ref_no=valuation, comparable=comp_list[cp], name=letters[cp], op=op[cp], margin=margin[cp], cv=cv[cp], mp=mp[cp], pr_percent=pr_percent[cp], pr_euro=pr_euro[cp], pr_price=pr_price[cp], fc_percent=fc_percent[cp], fc_euro=fc_euro[cp], fc_price=fc_price[cp], sc_percent=sc_percent[cp], sc_euro=sc_euro[cp], sc_price=sc_price[cp], ape_percent=ape_percent[cp], ape_euro=ape_euro[cp], ape_price=ape_price[cp], me_percent=me_percent[cp], me_euro=me_euro[cp], me_price=me_price[cp], lc_percent=lc_percent[cp], lc_euro=lc_euro[cp], cp_percent=cp_percent[cp], cp_euro=cp_euro[cp], cy_percent=cy_percent[cp], cy_euro=cy_euro[cp], su_diff=su_diff[cp], su_percent=su_percent[cp], su_euro=su_euro[cp], finish_percent=finish_percent[cp], finish_euro=finish_euro[cp], etaj_percent=etaj_percent[cp], etaj_euro=etaj_euro[cp], balcon_percent=balcon_percent[cp], balcon_euro=balcon_euro[cp], hs_percent=hs_percent[cp], hs_euro=hs_euro[cp], opt1_val=opt1_val[cp], opt1_percent=opt1_percent[cp], opt1_euro=opt1_euro[cp], opt2_val=opt2_val[cp], opt2_percent=opt2_percent[cp], opt2_euro=opt2_euro[cp], opt3_val=opt3_val[cp], opt3_percent=opt3_percent[cp], opt3_euro=opt3_euro[cp], net_adjustment=net_adjustment[cp], adjustment_price=adjustment_price[cp], adjustment_no=adjustment_no[cp], total_percent=total_percent[cp], total_euro=total_euro[cp], gross_percent=gross_percent[cp], gross_euro=gross_euro[cp])
+        s = 0
+        for cp in comp_list:
+            table = models.ComparableTable.objects.create(ref_no=valuation, comparable=cp, name=letters[s], op=op[s], margin=margin[s], cv=cv[s], mp=mp[s], pr_percent=pr_percent[s], pr_euro=pr_euro[s], pr_price=pr_price[s], fc_percent=fc_percent[s], fc_euro=fc_euro[s], fc_price=fc_price[s], sc_percent=sc_percent[s], sc_euro=sc_euro[s], sc_price=sc_price[s], ape_percent=ape_percent[s], ape_euro=ape_euro[s], ape_price=ape_price[s], me_percent=me_percent[s], me_euro=me_euro[s], me_price=me_price[s], lc_percent=lc_percent[s], lc_euro=lc_euro[s], cp_percent=cp_percent[s], cp_euro=cp_euro[s], cy_percent=cy_percent[s], cy_euro=cy_euro[s], su_diff=su_diff[s], su_percent=su_percent[s], su_euro=su_euro[s], finish_percent=finish_percent[s], finish_euro=finish_euro[s], etaj_percent=etaj_percent[s], etaj_euro=etaj_euro[s], balcon_percent=balcon_percent[s], balcon_euro=balcon_euro[s], hs_percent=hs_percent[s], hs_euro=hs_euro[s], opt1_val=opt1_val[s], opt1_percent=opt1_percent[s], opt1_euro=opt1_euro[s], opt2_val=opt2_val[s], opt2_percent=opt2_percent[s], opt2_euro=opt2_euro[s], opt3_val=opt3_val[s], opt3_percent=opt3_percent[s], opt3_euro=opt3_euro[s], net_adjustment=net_adjustment[s], adjustment_price=adjustment_price[s], adjustment_no=adjustment_no[s], total_percent=total_percent[s], total_euro=total_euro[s], gross_percent=gross_percent[s], gross_euro=gross_euro[s])
+            s+=1
 
         # mvb table creation 
         sub_rent_sqm = request.POST.get('sub_rent_sqm')
@@ -814,7 +815,7 @@ def edit_comparable(request, id):
 
         comp_list = []
         if comparable:
-            comp_list = comparable
+            comp_list = list(comparable)
 
         if (len(comp_table) + len(comparable)) != int(nr_comp):
             for i in range(k+len(comparable), int(nr_comp)):
@@ -867,6 +868,7 @@ def edit_comparable(request, id):
         'comparable': comparable,
         'sub_comp': sub_comp,
         'comb_len': len(comp_table) + len(comparable),
+        'len': int(nr_comp) - (len(comp_table) + len(comparable)),
         'nr_comp': int(nr_comp),
         'mobila': mobila,
         'prop_rights': prop_rights,
@@ -1092,15 +1094,16 @@ def edit_initial_data(request, id):
         if form.is_valid():
             data = form.save(commit=False)
             data.assigned_to = request.user.get_full_name()
+            data.valuation_date = parse_date(request.POST.get('valuation_date'))
+            data.report_date = parse_date(request.POST.get('report_date'))
             data.save()
 
             # save compartimentare 
             compart = request.POST.getlist('compart[]')
             i = 0
             for c in rooms:
-                if compart[i] != '0':
-                    c.attr_value=compart[i]
-                    c.save()
+                c.attr_value=compart[i]
+                c.save()
                 i += 1
             
             # save custom field 
@@ -1123,6 +1126,8 @@ def edit_initial_data(request, id):
                 return redirect('dashboard:details', id=data.id)
             else:
                 return redirect('valuation:add_summary', id=data.id)
+        else:
+            print('invalid')
     else:
         form = forms.EditInitialForm(instance=valuation)
 

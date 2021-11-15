@@ -59,12 +59,12 @@ class EditInitialForm(forms.ModelForm):
 	report_recipient = forms.CharField(max_length=150, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Destinatar Raport'}))
 	status = forms.ModelChoiceField(queryset=Status.objects.all(), widget=forms.Select(attrs={'class': 'form-control',}))
 	inspection_date = forms.DateField(required=False, widget=forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}))
-	valuation_date = forms.DateField(required=False, widget=forms.DateInput(attrs={'class': 'form-control','type': 'date'}))
-	report_date = forms.DateField(required=False, widget=forms.DateInput(attrs={'class': 'form-control','type': 'date'}))
+	# valuation_date = forms.DateField(required=False, widget=forms.DateInput(attrs={'class': 'form-control','type': 'date'}))
+	# report_date = forms.DateField(required=False, widget=forms.DateInput(attrs={'class': 'form-control','type': 'date'}))
 
 	class Meta:
 		model = ValuatedProperty
-		exclude = ('reference_no',)
+		exclude = ('reference_no', 'valuation_date', 'report_date')
 
 
 class AddValuationSummary(forms.ModelForm):
@@ -81,23 +81,23 @@ class ConstructionForm(forms.ModelForm):
 	# etaj = forms.CharField(max_length=55, widget=forms.TextInput(attrs={'class': 'form-control'}))
 	# build_in = forms.CharField(max_length=55, widget=forms.TextInput(attrs={'class': 'form-control'}))
 	conform = forms.ModelChoiceField(queryset=ConformType.objects.all(), widget=forms.Select(attrs={'class': 'form-control',})) 
-	structure = forms.ModelChoiceField(queryset=StructureType.objects.all(), widget=forms.Select(attrs={'class': 'form-control',}))
-	foundation = forms.ModelChoiceField(queryset=FoundationType.objects.all(), widget=forms.Select(attrs={'class': 'form-control',}))
-	floors = forms.ModelChoiceField(queryset=FloorType.objects.all(), widget=forms.Select(attrs={'class': 'form-control',}))
+	structure = forms.ModelChoiceField(queryset=StructureType.objects.all(), widget=forms.Select(attrs={'class': 'form-control',}), empty_label=None)
+	foundation = forms.ModelChoiceField(queryset=FoundationType.objects.all(), widget=forms.Select(attrs={'class': 'form-control',}), empty_label=None)
+	floors = forms.ModelChoiceField(queryset=FloorType.objects.all(), widget=forms.Select(attrs={'class': 'form-control',}), empty_label=None)
 	roof = forms.ModelChoiceField(queryset=RoofType.objects.all(), widget=forms.Select(attrs={'class': 'form-control',}))
 	invelitoare = forms.ModelChoiceField(queryset=InvelitoareType.objects.all(), widget=forms.Select(attrs={'class': 'form-control'}))
 	finish = forms.ModelChoiceField(queryset=FinishType.objects.all(), widget=forms.Select(attrs={'class': 'form-control'}))
-	pardoseli = forms.CharField(widget=forms.Textarea(attrs={'class': 'form-control', 'rows': '5'}))
-	walls = forms.CharField(widget=forms.Textarea(attrs={'class': 'form-control', 'rows': '5'}))
-	interior_carpentry = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}))
-	ceiling = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}))
+	# pardoseli = forms.CharField(widget=forms.Textarea(attrs={'class': 'form-control', 'rows': '5'}))
+	# walls = forms.CharField(widget=forms.Textarea(attrs={'class': 'form-control', 'rows': '5'}))
+	# interior_carpentry = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}))
+	# ceiling = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}))
 	exterior_finishes = forms.CharField(widget=forms.Textarea(attrs={'class': 'form-control', 'rows': '5'}))
 	ef_choice = forms.ChoiceField(choices=EXTERIOR_FINISHS, widget=forms.Select(attrs={'class': 'form-control'}))
-	exterior_carpentry = forms.CharField(widget=forms.Textarea(attrs={'class': 'form-control', 'rows': '5'}))
+	# exterior_carpentry = forms.CharField(widget=forms.Textarea(attrs={'class': 'form-control', 'rows': '5'}))
 	utilities = forms.ModelMultipleChoiceField(queryset=Utility.objects.all(), widget=forms.SelectMultiple(attrs={'class': 'form-control', 'multiple': 'multiple'}))
 	closure = forms.ModelChoiceField(queryset=ClouserType.objects.all(), widget=forms.Select(attrs={'class': 'form-control',}))
 	subcompartment = forms.ModelChoiceField(queryset=SubcompartmentType.objects.all(), widget=forms.Select(attrs={'class': 'form-control',}))
-	dotari = forms.CharField(required=False, widget=forms.Textarea(attrs={'class': 'form-control', 'rows': '5'}))
+	# dotari = forms.CharField(required=False, widget=forms.Textarea(attrs={'class': 'form-control', 'rows': '5'}))
 	# heating = forms.ModelChoiceField(queryset=HeatingSystem.objects.all(), widget=forms.Select(attrs={'class': 'form-control',}))
 	comments = forms.CharField(required=False, widget=forms.Textarea(attrs={'class': 'form-control', 'rows': '5'}))
 

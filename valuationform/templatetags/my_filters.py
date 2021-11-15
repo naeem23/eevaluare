@@ -227,3 +227,4 @@ def get_price_sqm(obj):
     except:
         price_sqm = '0.00/0.00'
     return price_sqm
+

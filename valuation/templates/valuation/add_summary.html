@@ -166,7 +166,7 @@
                             <div class="col-md-12">
                                 <div class="form-group">
                                     <label for="id_valued_property">Proprietate Evaluata <span class="required-label">*</span></label>
-                                    <textarea name="valued_property" id="id_valued_property" rows="5" class="form-control">{% if summary.valued_property %}{{summary.valued_property}}{% else %}Dreptul deplin de proprietate asupra apartamentului cu nr. {{valuation.apartment_no}}, compus din {{camara|floatformat:"0"}} camere si dependinte cu o suprafata utila de 0.00 mp si trei balcoane cu suprafata lor totala de 0.00, rezultand suprafata utila totala de 0.00 mp, impreuna cu dreptul de proprietate asupra cotei indivize de 0.00 mp din partile si dependintele comune ale imobilului si dreptul de proprietate asupra terenului in suprafata de indiviza de 0.00 mp.{% endif %}</textarea>
+                                    <textarea name="valued_property" id="id_valued_property" rows="5" class="form-control">{% if summary.valued_property %}{{summary.valued_property}}{% else %}Dreptul deplin de proprietate asupra apartamentului format din trei camera de locuit si dependinte cu suprafata utila de 73.04 mp si balcon cu suprafata de 11.22 mp, rezultand suprafata totala de 84.26 mp, impreuna cu cota parte de 0.93% din partile si dependintele comune ale imobilului reprezentand suprafata de 32.65 mp, cota parte de teren aferent apartamentului in suprafata de 28.64 mp din terenul pe care este edificat imobilul, precum si locul de parcare exterior cu suprafata de 14 mp, identificat cu numarul cadastral 125894. Apartamentul are numarul cadastral 12345-C1-U22 si este intabulat in Cartea Funciara numarul 12345-C1-U22 Bucuresti, Sectorul 2.{% endif %}</textarea>
                                     <small class="form-text text-danger valued_property_error"></small>
                                 </div>
                             </div>
@@ -202,7 +202,7 @@
                             </div>
                             <div class="col-md-4">
                                 <div class="form-group">
-                                    <label for="id_fer_date">Data <span class="required-label">*</span></label>
+                                    <label for="id_fer_date">Data curs valutar <span class="required-label">*</span></label>
                                     {% if summary.fer_date %}
                                     <input type="date" id="id_fer_date" class="form-control" name="fer_date" value="{{summary.fer_date|date:'Y-m-d'}}">
                                     {% else %}

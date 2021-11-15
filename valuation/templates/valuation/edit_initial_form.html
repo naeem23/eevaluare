@@ -30,6 +30,10 @@
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@ttskch/select2-bootstrap4-theme@x.x.x/dist/select2-bootstrap4.min.css">
 
+    <!-- datepicker  -->
+	<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+
+
     <style>
         ul {
             margin: 0;
@@ -114,7 +118,6 @@
                     </div>
                 </div>
 
-
                 <form method="POST" action="" id="initial_form">
                     {% csrf_token %}
                     {% if 'details' in pre_url %}
@@ -134,11 +137,11 @@
                         <div class="row">
                             <div class="col-md-8">
                                 <div class="form-group">
-                                    <label for="id_title">Titlul raportului <span class="required-label">*</span></label>
+                                    <label for="id_title">Tip Imobil <span class="required-label">*</span></label>
                                     {% if valuation.title %}
                                         <input type="text" class="form-control" name="title" id="id_title" value="{{ valuation.title }}" required>
                                     {% else %}
-                                        <input type="text" class="form-control" name="title" id="id_title" value="{{ valuation.property_type.type }} cu {{camara.camara|floatformat:0}} si dependinte" required>
+                                        <input type="text" class="form-control" name="title" id="id_title" value="{{ valuation.property_type.type }} cu {{camara.camara|floatformat:0}} camere si dependinte" required>
                                     {% endif %}
                                     <small class="form-text text-danger title"></small>
                                 </div>
@@ -168,7 +171,7 @@
                             </div>
                             <div class="col-md-4">
                                 <div class="form-group">
-                                    <label for="id_property_type">Apartamentului nr.</label>
+                                    <label for="id_property_type">Apartament nr.</label>
                                     {{ form.apartment_no }}
                                 </div>
                             </div>
@@ -264,8 +267,9 @@
 
                             <div class="col-md-4">
                                 <div class="form-group">
-                                    <label for="id_ct_address">Client Address</label>
+                                    <label for="id_ct_address">Adresa Client</label>
                                     {{ form.ct_address }}
+                                    <small class="form-text text-muted">Se va completa doar pentru Persoane Juridice</small>
                                 </div>
                             </div>
                             
@@ -273,7 +277,7 @@
                                 <div class="form-group">
                                     <label for="id_cui">CUI</label>
                                     {{ form.cui }}
-                                    <small class="form-text text-muted">Only for business Client</small>
+                                    <small class="form-text text-muted">Se va completa doar pentru Persoane Juridice</small>
                                 </div>
                             </div>
                         </div>
@@ -281,7 +285,7 @@
                         <div class="row">
                             <div class="col-md-4">
                                 <div class="form-group">
-                                    <label for="report_recipient">Utilizator semnat <span class="required-label">*</span></label>
+                                    <label for="report_recipient">Utilizator desemnat <span class="required-label">*</span></label>
                                     {{ form.report_recipient }}
                                     <small class="form-text text-danger recipient"></small>
                                 </div>
@@ -305,14 +309,16 @@
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="id_valuation_date">Valuation Date</label>
-                                    {{ form.valuation_date }}
+                                    <!-- {{ form.valuation_date }} -->
+                                    <input type="text" name="valuation_date" id="id_valuation_date" class="form-control" autocomplete="off" value="{{valuation.valuation_date|date:'Y-m-d'}}">
                                     <small class="form-text text-danger valuation_date"></small>
                                 </div>
                             </div>
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="id_report_date">Report Date</label>
-                                    {{ form.report_date }}
+                                    <!-- {{ form.report_date }} -->
+                                    <input type="text" name="report_date" id="id_report_date" class="form-control" autocomplete="off" value="{{valuation.report_date|date:'Y-m-d'}}">
                                     <small class="form-text text-danger report_date"></small>
                                 </div>
                             </div>
@@ -353,7 +359,7 @@
                                 <div class="col-md-4 mb-2">
                                     <div class="form-group">
                                         <label>Value</label>
-                                        <input type="number" value="{{c.attr_value}}" class="form-control" id="cf_value{{c.id}}" name="cf_value_yes[]" >
+                                        <input type="number" value="{{c.attr_value}}" min="0" class="form-control" id="cf_value{{c.id}}" name="cf_value_yes[]" >
                                     </div>
                                 </div>
                                 <div class="col-md-4 mb-2">
@@ -374,7 +380,7 @@
                             <div class="col-md-4 mb-2">
                                 <div class="form-group">
                                     <label>Value</label>
-                                    <input type="number" value="0" class="form-control" name="cf_value[]" >
+                                    <input type="number" value="0" min="0" class="form-control" name="cf_value[]" >
                                 </div>
                             </div>
                             <div class="col-md-4 mb-2">
@@ -403,8 +409,22 @@
 
 <!-- Specific Page JS goes HERE  -->
 {% block javascripts %}
+    <!-- datepicker  -->
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <!-- select 2 js  -->
     <script src="{% static 'dashboard/js/select2.min.js' %}"></script>
+    
     <script type="text/javascript">
+        // date picker 
+        $("#id_valuation_date").datepicker({
+            dateFormat: "yy-mm-dd",
+            minDate: "{{valuation.inspection_date|date:'Y-m-d'}}"
+        });
+        $("#id_report_date").datepicker({
+            dateFormat: "yy-mm-dd",
+            minDate: "{{valuation.inspection_date|date:'Y-m-d'}}"
+        });
+
         // select2 js
         $(document).ready(function() {
             $('#id_area').select2({
@@ -636,7 +656,7 @@
             var maxField = 10;
             var addButton = $('#add_cf');
             var wrapper = $('.custom-field');
-            var form_input = '<div class="row"><div class="col-md-4 mb-2"><div class="form-group"><label>Name</label><input type="text" class="form-control" name="cf_name[]" placeholder="e.g. Name"></div></div><div class="col-md-4 mb-2"><div class="form-group"><label>Value</label><input type="number" value="0" class="form-control" name="cf_value[]" ></div></div><div class="col-md-4 mb-2"><div class="form-group"><button type="button" class="btn btn-icon btn-round btn-danger" style="margin-top: 1.7rem;" id="remove_cf" data-toggle="tooltip" data-placement="top" title="Remove Field"><i class="fas fa-minus"></i></button></div></div></div>';
+            var form_input = '<div class="row"><div class="col-md-4 mb-2"><div class="form-group"><label>Name</label><input type="text" class="form-control" name="cf_name[]" placeholder="e.g. Name"></div></div><div class="col-md-4 mb-2"><div class="form-group"><label>Value</label><input type="number" value="0" min="0" class="form-control" name="cf_value[]" ></div></div><div class="col-md-4 mb-2"><div class="form-group"><button type="button" class="btn btn-icon btn-round btn-danger" style="margin-top: 1.7rem;" id="remove_cf" data-toggle="tooltip" data-placement="top" title="Remove Field"><i class="fas fa-minus"></i></button></div></div></div>';
             var x = 1;
             
             //Once add button is clicked

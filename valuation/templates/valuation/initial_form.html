@@ -142,7 +142,7 @@
                             </div>
                             <div class="col-md-4">
                                 <div class="form-group">
-                                    <label for="id_property_type">Apartamentului nr.</label>
+                                    <label for="id_property_type">Apartament nr.</label>
                                     {{ form.apartment_no }}
                                 </div>
                             </div>
@@ -160,7 +160,7 @@
                             </div>
                             <div class="col-md-4">
                                 <div class="form-group">
-                                    <label for="id_area">Zona <span class="required-label">*</span></label>
+                                    <label for="id_area">Judet/Municipiu <span class="required-label">*</span></label>
                                     {{ form.area }}
                                     <small class="form-text text-danger area"></small>
                                 </div>
@@ -232,8 +232,9 @@
 
                             <div class="col-md-4">
                                 <div class="form-group">
-                                    <label for="id_ct_address">Client Address</label>
+                                    <label for="id_ct_address">Adresa Client</label>
                                     {{ form.ct_address }}
+                                    <small class="form-text text-muted">Se va completa doar pentru Persoane Juridice</small>
                                 </div>
                             </div>
                             
@@ -241,7 +242,7 @@
                                 <div class="form-group">
                                     <label for="id_cui">CUI</label>
                                     {{ form.cui }}
-                                    <small class="form-text text-muted">Only for business Client</small>
+                                    <small class="form-text text-muted">Se va completa doar pentru Persoane Juridice</small>
                                 </div>
                             </div>
                         </div>
@@ -249,7 +250,7 @@
                         <div class="row">
                             <div class="col-md-4">
                                 <div class="form-group">
-                                    <label for="report_recipient">Utilizator semnat <span class="required-label">*</span></label>
+                                    <label for="report_recipient">Utilizator desemnat <span class="required-label">*</span></label>
                                     {{ form.report_recipient }}
                                     <small class="form-text text-danger recipient"></small>
                                 </div>
@@ -273,7 +274,7 @@
                                 <div class="col-md-3 mb-2">
                                     <div class="form-group">
                                         <label>Nr. {{ c.name }} </label>
-                                        <input type="number" value="0" class="form-control" name="compart[]">
+                                        <input type="number" value="0" min="0" class="form-control" name="compart[]">
                                     </div>
                                 </div>
                             {% endfor %}
@@ -295,7 +296,7 @@
                             <div class="col-md-4 mb-2">
                                 <div class="form-group">
                                     <label>Value</label>
-                                    <input type="number" value="0" class="form-control" name="cf_value[]" >
+                                    <input type="number" value="0" min="0" class="form-control" name="cf_value[]" >
                                 </div>
                             </div>
                             <div class="col-md-4 mb-2">
@@ -518,7 +519,7 @@
             var maxField = 10;
             var addButton = $('#add_cf');
             var wrapper = $('.custom-field');
-            var form_input = '<div class="row"><div class="col-md-4 mb-2"><div class="form-group"><label>Name</label><input type="text" class="form-control" name="cf_name[]" placeholder="e.g. Name"></div></div><div class="col-md-4 mb-2"><div class="form-group"><label>Value</label><input type="number" value="0" class="form-control" name="cf_value[]" ></div></div><div class="col-md-4 mb-2"><div class="form-group"><button type="button" class="btn btn-icon btn-round btn-danger" style="margin-top: 1.7rem;" id="remove_cf" data-toggle="tooltip" data-placement="top" title="Remove Field"><i class="fas fa-minus"></i></button></div></div></div>';
+            var form_input = '<div class="row"><div class="col-md-4 mb-2"><div class="form-group"><label>Name</label><input type="text" class="form-control" name="cf_name[]" placeholder="e.g. Name"></div></div><div class="col-md-4 mb-2"><div class="form-group"><label>Value</label><input type="number" value="0" min="0" class="form-control" name="cf_value[]" ></div></div><div class="col-md-4 mb-2"><div class="form-group"><button type="button" class="btn btn-icon btn-round btn-danger" style="margin-top: 1.7rem;" id="remove_cf" data-toggle="tooltip" data-placement="top" title="Remove Field"><i class="fas fa-minus"></i></button></div></div></div>';
             var x = 1;
             
             //Once add button is clicked
