@@ -28,6 +28,20 @@
             margin-right: 8px;
             margin-left: 8px;
         }
+        #id_cadastral_no, #id_land_book_no, #id_uat {
+            display: inline-block;
+            width: 22%;
+            border: none;
+            border-bottom: 2px dotted!important;
+            padding: 0;
+            padding-top: 0.6rem;
+            border-radius: 0px;
+            margin-right: 8px;
+            margin-left: 8px;
+        }
+        .fa-pencil-alt {
+            cursor: pointer;
+        }
     </style>
 {% endblock stylesheets %}
 
@@ -81,16 +95,16 @@
                             {% if sources %}
                                 {% for source in sources %}
                                     <div class="col-md-6">
-                                        <div class="form-group">
+                                        <div class="form-group source-form">
                                             <label>Nume documente <span class="required-label">*</span></label>
                                             <input type="text" name="src[]" id="src_{{source.id}}" class="form-control" value="{{source.source}}" required>
-                                            <small class="form-text text-danger" style="cursor:pointer;" onclick="remove_src(this, '{{source.id}}')">Remove</small>
+                                            <small class="form-text text-danger remove_src" style="cursor:pointer;" onclick="remove_src(this, '{{source.id}}')">Remove</small>
                                         </div>
                                     </div>
                                 {% endfor %}
                             {% else %}
                             <div class="col-md-6">
-                                <div class="form-group">
+                                <div class="form-group source-form">
                                     <label>Nume documente <span class="required-label">*</span></label>
                                     <input type="text" name="src" class="form-control" required>
                                 </div>
@@ -141,9 +155,10 @@
                                         {% if valued_property.valued_property != None %}
                                             <textarea name="sub_identi" rows="5" class="form-control" id="id_sub_identi">{{valued_property.valued_property}}</textarea>
                                         {% else %}
-                                            <textarea name="sub_identi" rows="5" class="form-control" id="id_sub_identi">Dreptul deplin de proprietate asupra apartamentului cu nr. {{valuation.apartment_no}}, compus din {{camara|floatformat:"0"}} camere si dependinte cu o suprafata utila de {% if const.utila %}{{ const.utila }}{% else %}0.00{% endif %} mp si trei balcoane cu suprafata lor totala de {% if const.utila and const.totala %}{{ const.totala|sub:const.utila }}{% else %}0.00{% endif %}, rezultand suprafata utila totala de {% if const.totala %}{{ const.totala }}{% else %}0.00{% endif %} mp, impreuna cu dreptul de proprietate asupra cotei indivize de 56.72 mp din partile si dependintele comune ale imobilului si dreptul de proprietate asupra terenului in suprafata de indiviza de 53.59 mp.</textarea>
+                                            <textarea name="sub_identi" rows="5" class="form-control" id="id_sub_identi">Dreptul deplin de proprietate asupra apartamentului cu nr. {{valuation.apartment_no}}, compus din {{camara|floatformat:"0"}} camere si dependinte cu o suprafata utila de {% if const.utila %}{{ const.utila }}{% else %}0.0 0{% endif %} mp si trei balcoane cu suprafata lor totala de {% if const.utila and const.totala %}{{ const.totala|sub:const.utila }}{% else %}0.00{% endif %}, rezultand suprafata utila totala de {% if const.totala %}{{ const.totala }}{% else %}0.00{% endif %} mp, impreuna cu dreptul de proprietate asupra cotei indivize de .......... mp din partile si dependintele comune ale imobilului si dreptul de proprietate asupra terenului in suprafata de indiviza de .......... mp.</textarea>
                                         {% endif %}
                                     {% endif %}
+                                    <small class="form-text">*Se va completa descrierea detaliata a proprietatii conform documentelor</small>
                                     <small class="form-text text-danger sub_identi"></small>
                                 </div>
                             </div>
@@ -155,7 +170,7 @@
                                     {% if pdata.sp_hypo %}
                                         <textarea name="sp_hypo" rows="5" class="form-control" id="id_sp_hypo">{{pdata.sp_hypo}}</textarea>
                                     {% else %}
-                                        <textarea name="sp_hypo" rows="5" class="form-control" id="id_sp_hypo">Deoarece nu a fost pus la dispozitia evaluatorului un Extras de Carte Funciara actualizat, evaluatorul a considerat proprietatea imobiliara subiect libera de sarcini, fiind evaluata in aceasta ipoteza.</textarea>
+                                        <textarea name="sp_hypo" rows="5" class="form-control" id="id_sp_hypo"></textarea>
                                     {% endif %}
                                     <small class="form-text text-danger sp_hypo"></small>
                                 </div>
@@ -168,7 +183,7 @@
                                     {% if pdata.zona %}
                                         <textarea name="zona" rows="5" class="form-control" id="id_zona">{{pdata.zona}}</textarea>
                                     {% else %}
-                                        <textarea name="zona" rows="5" class="form-control" id="id_zona">Microzona din care face parte proprietatea are caracter mixt preponderent rezidential-comercial. Regimul specific de inaltime al cladirilor este P+4E-P+10E. Drumurile sunt asfaltate. Drumurile din zona au configuratia si capacitatea necesara pentru deservirea in bune conditii a imobilelor adiacente.</textarea>
+                                        <textarea name="zona" rows="5" class="form-control" id="id_zona">Proprietatea este amplasta pe Strada ................... din orasul .................... in zona ...................., zona urbana mediana a localitatii.&#13;&#10;Microzona din care face parte proprietatea are caracter mixt preponderent rezidential-comercial. Regimul specific de inaltime al cladirilor este P+4E-P+10E. Drumurile sunt asfaltate. Drumurile din zona au configuratia si capacitatea necesara pentru deservirea in bune conditii a imobilelor adiacente.</textarea>
                                     {% endif %}
                                     <small class="form-text text-danger zona"></small>
                                 </div>
@@ -199,7 +214,7 @@
                                         <input type="text" name="poi" required id="id_poi">
                                         <!-- {{ form.poi }} -->
                                     </div>
-                                    <small class="form-text text-muted">Comma separated value</small>
+                                    <small class="form-text text-muted">Campuri separate prin virgula</small>
                                     <small class="form-text text-danger poi-error"></small>
                                 </div>
                             </div>
@@ -226,7 +241,7 @@
                             <div class="col-md-4">
                                 <div class="form-group legal_doc">
                                     <label for="id_legal_doc">Proprietar si situatia juridica <span class="required-label">*</span></label>
-                                    {% if pdata %}
+                                    {% if pdata or sources %}
                                         <select multiple="multiple" id="id_legal_doc" class="form-control" name="legal_doc[]">
                                             {% for src in sources %}
                                                 <option data-toggle='tooltip' data-placement='top' title='{{src.source}}' value="{{src.id}}" {% if src.id|stringformat:"i" in pdata.legal_doc %}selected{% endif %}>{{src.source|truncatechars:30 }}</option>
@@ -234,7 +249,7 @@
                                         </select>
                                     {% else %}
                                         <select multiple="multiple" id="id_legal_doc" class="form-control" name="legal_doc[]">
-                                    </select>
+                                        </select> 
                                     {% endif %}
                                     <small class="form-text text-muted">Add source of documents first</small>
                                     <small class="form-text text-danger legal_doc_error"></small>
@@ -250,7 +265,23 @@
                         </div>
 
                         <div class="row">
-                            <div class="col-md-4">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label id="cadastral_text_label">Date privind documentatia cadastrala <span class="required-label mr-2">*</span><i class="fas fa-pencil-alt text-info" id="edit-cadastral"></i></label>
+                                    {% if pdata.cadastral_text %}
+                                        <p class="text-light cadastral" style="display: none;">Apartamentul are numarul cadastral {{form.cadastral_no}} si este intabulat in Cartea Funciara numarul {{form.land_book_no}}, {{form.uat}}.</p>
+                                        <input type="hidden" name="show_cadastral" id="show_cadastral" value="1">
+                                        <textarea name="cadastral_text" id="id_cadastral_text" rows="3" class="form-control">{{pdata.cadastral_text}}</textarea>
+                                    {% else %}
+                                        <p class="text-light cadastral">Apartamentul are numarul cadastral {{form.cadastral_no}} si este intabulat in Cartea Funciara numarul {{form.land_book_no}}, {{form.uat}}.</p>
+                                        <input type="hidden" name="show_cadastral" id="show_cadastral" value="0">
+                                        <textarea name="cadastral_text" id="id_cadastral_text" rows="3" style="display: none;" class="form-control">Apartamentul are numarul cadastral .................... si este intabulat in Cartea Funciara numarul .................... , ....................</textarea>
+                                    {% endif %}
+                                    <small class="form-text text-danger cadastral_error"></small>
+                                </div>
+                            </div>
+                        </div>
+                            <!-- <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="id_cadastral_no">Cadastral Nr <span class="required-label">*</span></label>
                                     {{ form.cadastral_no }}
@@ -273,7 +304,7 @@
                                     <small class="form-text text-danger uat"></small>
                                 </div>
                             </div>
-                        </div>
+                        </div> -->
 
                         <div class="row">
                             <div class="col-md-4">
@@ -307,10 +338,24 @@
                         <div class="row"> 
                             <div class="col-md-12">
                                 <div class="form-group">
+                                    <label id="access_label">Acces <span class="required-label mr-2">*</span><i class="fas fa-pencil-alt text-info" id="edit-access"></i></label>
+                                    {% if pdata.access %}
+                                        <p class="text-light access" style="display: none;">Din punct de vedere juridic accesul la proprietate pietonal si auto se face {{form.access}}. Imobilul se afla in zona {{valuation.locatie}} a intravilanului munincipiului Bucuresti, fiind reprezentat de un bloc cu regim de inaltime {{valuation.height}}. Apartamentului ii revin cote din partile comune si dependintele imobilului conform extrasului de carte funciara prezentat evaluatorului.</p>
+                                        <input type="hidden" name="show_access" id="show_access" value="1">
+                                        <textarea name="access_text" id="id_access_text" rows="3" class="form-control">{{pdata.access_text}}</textarea>
+                                    {% else %}
+                                        <p class="text-light access">Din punct de vedere juridic accesul la proprietate pietonal si auto se face {{form.access}}. Imobilul se afla in zona {{valuation.locatie}} a intravilanului munincipiului Bucuresti, fiind reprezentat de un bloc cu regim de inaltime {{valuation.height}}. Apartamentului ii revin cote din partile comune si dependintele imobilului conform extrasului de carte funciara prezentat evaluatorului.</p>
+                                        <input type="hidden" name="show_access" id="show_access" value="0">
+                                        <textarea name="access_text" id="id_access_text" rows="3" style="display: none;" class="form-control">Din punct de vedere juridic accesul la proprietate pietonal si auto se face ..................... Imobilul se afla in zona {{valuation.locatie}} a intravilanului munincipiului Bucuresti, fiind reprezentat de un bloc cu regim de inaltime {{valuation.height}}. Apartamentului ii revin cote din partile comune si dependintele imobilului conform extrasului de carte funciara prezentat evaluatorului.</textarea>
+                                    {% endif %}
+                                    <small class="form-text text-danger access_error"></small>
+                                </div>
+
+                                <!-- <div class="form-group">
                                     <label for="id_history">Acces <span class="required-label">*</span></label>
                                     <p class="text-justify text-light">Din punct de vedere juridic accesul la proprietate pietonal si auto se face {{form.access}}. Imobilul se afla in zona {{valuation.locatie}} a intravilanului munincipiului Bucuresti, fiind reprezentat de un bloc cu regim de inaltime {{valuation.height}}. Apartamentului ii revin cote din partile comune si dependintele imobilului conform extrasului de carte funciara prezentat evaluatorului.</p>
                                     <small class="form-text text-danger access"></small>
-                                </div>
+                                </div> -->
                             </div>
                         </div>
 
@@ -323,16 +368,16 @@
                             </div>
                         </div>
                     </div>
+                </form>
 
-                    <div class="card-action">
-                        {% if pdata %}
-                            <button class="btn btn-success" id="next">Update</button>
-                        {% else %}
-                            <button class="btn btn-success" id="next">{% if 'details' in pre_url %}SAVE{% else %}NEXT{% endif %}</button>
-                        {% endif %}
-                    </div>
+                <div class="card-action">
+                    {% if pdata %}
+                        <button class="btn btn-success" id="next">Update</button>
+                    {% else %}
+                        <button class="btn btn-success" id="next">{% if 'details' in pre_url %}SAVE{% else %}NEXT{% endif %}</button>
+                    {% endif %}
                 </div>
-            </form>
+            </div>
         </div>
     </div>
 
@@ -347,7 +392,7 @@
             $('#id_pt').multipleSelect()
             $('#id_legal_doc').multipleSelect()
             $('#id_identification').multipleSelect()
-        })
+        });
 
         // disable enable sarcini 
         $("#id_charges").change(function () {
@@ -357,7 +402,19 @@
             } else {
                 $('#id_sarcini').prop('disabled', true)
             }
-        })
+        });
+        $("#edit-cadastral").on('click', function() {
+            var val = $('#show_cadastral').val();
+            $('#show_cadastral').val(val=='0' ? '1' : '0');
+            $('.cadastral').toggle();
+            $('#id_cadastral_text').toggle();
+        });
+        $("#edit-access").on('click', function() {
+            var val = $('#show_access').val();
+            $('#show_access').val(val=='0' ? '1' : '0');
+            $('.access').toggle();
+            $('#id_access_text').toggle();
+        });
 
         // submit form 
         $('#next').on('click', function() {
@@ -374,14 +431,21 @@
             var pt = $('#id_pt').val()
             var legal_doc = $('#id_legal_doc').val()
             var current_use = $('#id_current_use').val()
+            
+            var show_cadastral = $('#show_cadastral').val()
+            var cadastral = $("#id_cadastral_text").val();
             var cadastral_no = $('#id_cadastral_no').val()
             var land_book_no = $('#id_land_book_no').val()
             var uat = $('#id_uat').val()
+
             var charges = $('#id_charges').val()
             var identification = $('#id_identification').val()
-            var access = $('#id_access').val()
 
-            if(sub_identi.length > 1 && sp_hypo.length > 1 && zona.length > 1 && strada.length > 0 && poi.length > 0 && pt.length > 0 && legal_doc.length > 0 && current_use.length > 0 && cadastral_no.length > 1 && land_book_no.length > 1 && uat.length > 1 && charges.length > 0 && identification.length > 0 && access.length > 1) {
+            var show_access = $('#show_access').val()
+            var access_text = $("#id_access_text").val();
+            var access = $('#id_access').val();
+
+            if(sub_identi.length > 0 && sp_hypo.length > 0 && zona.length > 0 && strada.length > 0 && poi.length > 0 && pt.length > 0 && legal_doc.length > 0 && current_use.length > 0 && ((show_cadastral == '1' && cadastral.length > 0) || (cadastral_no.length > 0 && land_book_no.length > 0 && uat.length > 0)) && charges.length > 0 && identification.length > 0 && ((show_access == '1' && access_text.length > 0) || access.length > 0)) {
                 $("#presentation-form").submit();
             } else {
                 if(sub_identi.length < 1) {
@@ -447,30 +511,51 @@
                     $("#id_current_use").removeClass('required')
                     $(".current_use").text('')
                 }
+
                 
-                if(cadastral_no.length < 1) {
-                    $("#id_cadastral_no").addClass('required')
-                    $(".cadastral_no").text('This field is required')
+                if(show_cadastral == '1' && cadastral.length < 1) { 
+                    $('#id_cadastral_text').addClass('required')
+                    $(".cadastral_error").text('This field is required')
+                } else if (cadastral_no.length < 1) {
+                    $('#id_cadastral_no').addClass('required')
+                    $(".cadastral_error").text('This field is required')
+                } else if (land_book_no.length < 1) {
+                    $('#id_land_book_no').addClass('required')
+                    $(".cadastral_error").text('This field is required')
+                } else if (uat.length < 1) {
+                    $('#id_uat').addClass('required')
+                    $(".cadastral_error").text('This field is required')
                 } else {
-                    $("#id_cadastral_no").removeClass('required')
-                    $(".cadastral_no").text('')
+                    $('#id_cadastral_text').removeClass('required')
+                    $('#id_cadastral_no').removeClass('required')
+                    $('#id_land_book_no').removeClass('required')
+                    $('#id_uat').removeClass('required')
+                    $(".cadastral_error").text('')
                 }
                 
-                if(land_book_no.length < 1) {
-                    $("#id_land_book_no").addClass('required')
-                    $(".land_book_no").text('This field is required')
-                } else {
-                    $("#id_land_book_no").removeClass('required')
-                    $(".land_book_no").text('')
-                }
+                // if(cadastral_no.length < 1) {
+                //     $("#id_cadastral_no").addClass('required')
+                //     $(".cadastral_no").text('This field is required')
+                // } else {
+                //     $("#id_cadastral_no").removeClass('required')
+                //     $(".cadastral_no").text('')
+                // }
                 
-                if(uat.length < 1) {
-                    $("#id_uat").addClass('required')
-                    $(".uat").text('This field is required')
-                } else {
-                    $("#id_uat").removeClass('required')
-                    $(".uat").text('')
-                }
+                // if(land_book_no.length < 1) {
+                //     $("#id_land_book_no").addClass('required')
+                //     $(".land_book_no").text('This field is required')
+                // } else {
+                //     $("#id_land_book_no").removeClass('required')
+                //     $(".land_book_no").text('')
+                // }
+                
+                // if(uat.length < 1) {
+                //     $("#id_uat").addClass('required')
+                //     $(".uat").text('This field is required')
+                // } else {
+                //     $("#id_uat").removeClass('required')
+                //     $(".uat").text('')
+                // }
                 
                 if(charges.length < 1) {
                     $("#id_charges").addClass('required')
@@ -487,16 +572,27 @@
                     $(".identification .ms-parent").removeClass('required')
                     $(".identification_error").text('')
                 }
-                
-                if(access.length < 1) {
-                    $("#id_access").addClass('required')
-                    $(".access").text('This field is required')
-                } else {
-                    $("#id_access").removeClass('required')
-                    $(".access").text('')
-                }
-            }
 
+                if(show_access == '1' && access_text.length < 1) { 
+                    $('#id_access_text').addClass('required')
+                    $(".access_error").text('This field is required')
+                } else if (access.length < 1) {
+                    $('#id_access').addClass('required')
+                    $(".access_error").text('This field is required')
+                } else {
+                    $('#id_access_text').removeClass('required')
+                    $('#id_access').removeClass('required')
+                    $(".access_error").text('')
+                }
+                
+                // if(access.length < 1) {
+                //     $("#id_access").addClass('required')
+                //     $(".access").text('This field is required')
+                // } else {
+                //     $("#id_access").removeClass('required')
+                //     $(".access").text('')
+                // }
+            }
         })
 
         // ====================== source of information ==========================
@@ -518,7 +614,7 @@
                 last.removeClass('required')
                 save_source(val, "add_src")
                 var div = "<div class='col-md-6'>\
-                            <div class='form-group'> \
+                            <div class='form-group source-form'> \
                                 <label>Nume documente <span class='required-label'>*</span></label> \
                                 <input type='text' name='src' class='form-control' required>\
                             </div>\
@@ -542,8 +638,21 @@
                 },
                 success: function (e) {
                     if(e.success=='true') {
-                        $('#id_legal_doc').append("<option data-toggle='tooltip' data-placement='top' title='"+val+"' value=\"" + e.id + "\">" + val.substring(0,30) + "...</option>");
+                        $('#id_legal_doc').append("<option data-toggle='tooltip' data-placement='top' title='"+val+"' value=\"" + e.id + "\">" + val.substring(0,30) + " " +(val.length > 29) ? "...":"" + "</option>");
                         $('#id_legal_doc').multipleSelect( 'refresh' );
+        
+                        let last = null;
+                        if (id == "add_src") {
+                            last = $(".documents").find('input').eq(-2);
+                        } else {
+                            last = $(".documents").find('input').eq(-1);
+                        }
+                        let parent = last.parent('.source-form');
+                        if(parent.find('.remove_src').length > 0) {
+                            console.log('yes')
+                        } else {
+                            parent.append('<small class="form-text text-danger remove_src" style="cursor:pointer;" onclick="remove_src(this, '+e.id+')">Remove</small>')
+                        }
                     } else {  
                         $(".msg").css('display', 'block');  
                         if (e.msg=='exists') {
@@ -552,9 +661,6 @@
                     }
                 },
                 complete: function(e) {
-                    // if(e.responseJSON.success=='false') {
-
-                    // }
                     $('#'+id+' .save').css('display', 'block');
                     $('#'+id+' .loading').css('display', 'none');
                 },
@@ -604,7 +710,7 @@
             if (source_valid == true) {
                 update_source(sources, ids, values, "update_add_src");
                 var div = "<div class='col-md-6'>\
-                            <div class='form-group'> \
+                            <div class='form-group source-form'> \
                                 <label>Nume documente <span class='required-label'>*</span></label> \
                                 <input type='text' name='src[]' id='src_0' class='form-control' required>\
                             </div>\
@@ -632,10 +738,23 @@
                         var i = 0;
                         source.each(function () {
                             $(this).attr('id', 'src_'+res_id[i]);
-                            $('#id_legal_doc').append("<option data-toggle='tooltip' data-placement='top' title='"+values[i]+"' value=\"" + res_id[i] + "\">" + values[i].substring(0,30) + "...</option>");
+                            $('#id_legal_doc').append("<option data-toggle='tooltip' data-placement='top' title='"+values[i]+"' value=\"" + res_id[i] + "\">" + values[i].substring(0,30) +"...</option>");
                             i++;
                         });
                         $('#id_legal_doc').multipleSelect('refresh');
+                        let last = null;
+                        if (udpate_or_save == "update_add_src") {
+                            last = $(".documents").find('input').eq(-2);
+                        } else {
+                            last = $(".documents").find('input').eq(-1);
+                        }
+                        let parent = last.parent('.source-form');
+                        console.log(last.val());
+                        if(parent.find('.remove_src').length > 0) {
+                            console.log('yes')
+                        } else {
+                            parent.append('<small class="form-text text-danger remove_src" style="cursor:pointer;" onclick="remove_src(this, '+res_id.slice(-1)+')">Remove</small>')
+                        }
                     } else {  
                         $(".msg").css('display', 'block');  
                         if (e.msg=='exists') {
@@ -650,7 +769,7 @@
                 error: function (err) {
                     $(".msg").css('display', 'block')
                 }
-            })
+            });
         }
 
         function remove_src(event, id) {
@@ -663,6 +782,13 @@
                         $("#id_legal_doc").find('option[value="'+id+'"]').remove();
                         $('#id_legal_doc').multipleSelect('refresh');
                         $(event).parents('.col-md-6').remove();
+                        console.log($('.documents').find('.col-md-6'))
+                        if($('.documents').find('.col-md-6').length > 0) {
+                            console.log('yes');
+                        } else {
+                            let srcc = '<div class="col-md-6"><div class="form-group source-form"><label>Nume documente <span class="required-label">*</span></label><input type="text" name="src" class="form-control" required></div></div>';
+                            $('.documents').append(srcc);
+                        }
                     }
                 }
             })

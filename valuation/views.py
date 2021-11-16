@@ -142,7 +142,7 @@ def add_summary(request, id):
                 for iv in summary_value:
                     if iv.approache == 'income':
                         iv.field_name = iv_name[ii]
-                        iv.field_value = iv_value[ii]
+                        iv.field_value = iv_value[ii] 
                         iv.save()
                         ii += 1
             else:
@@ -315,6 +315,8 @@ def add_presentation(request, id):
             data.ref_no = valuation
             data.pt = request.POST.getlist('pt[]')
             data.legal_doc = request.POST.getlist('legal_doc[]')
+            data.cadastral_text = form.cleaned_data.get('cadastral_text') if request.POST.get('show_cadastral') == '1' else None 
+            data.access_text = form.cleaned_data.get('access_text') if request.POST.get('show_access') == '1' else None 
             data.identification = request.POST.getlist('identification[]')
             data.save()
             if request.POST.get('pre_url') == 'details':
@@ -1226,7 +1228,6 @@ def update_sources(request):
 @login_required(login_url='/signin/')
 def delete_source(request):
     id = request.GET.get('id')
-    print(id)
     source = get_object_or_404(models.SourceofInformation, id=id)
     try:
         response = source.delete()

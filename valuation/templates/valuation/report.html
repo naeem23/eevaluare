@@ -198,7 +198,7 @@
                 {% if pdata.sub_identi %}
                     {{ pdata.sub_identi }}
                 {% else %}
-                    Dreptul deplin de proprietate asupra apartamentului cu nr. {{valuation.apartment_no}}, compus din {{camara.camara|floatformat:"0"}} camere si dependinte cu o suprafata utila de {{ const.utila }} mp si trei balcoane cu suprafata lor totala de {{ const.totala|sub:const.utila }}, rezultand suprafata utila totala de {{ const.totala }} mp. Apartamentul are numarul cadastral {{pdata.cadastral_no}} si este intabulat in Cartea Funciara numarul {{pdata.land_book_no}}.
+                    Dreptul deplin de proprietate asupra apartamentului cu nr. {{valuation.apartment_no}}, compus din {{camara.camara|floatformat:"0"}} camere si dependinte cu o suprafata utila de {{ const.utila }} mp si trei balcoane cu suprafata lor totala de {{ const.totala|sub:const.utila }}, rezultand suprafata utila totala de {{ const.totala }} mp. {% if pdata.cadastral_text %}{{pdata.cadastral_text|safe}}{% else %}Apartamentul are numarul cadastral {{pdata.cadastral_no}} si este intabulat in Cartea Funciara numarul {{pdata.land_book_no}}.{% endif %}
                 {% endif %}
             </p>
             <br>
@@ -353,7 +353,7 @@
             <p style="margin-bottom: 10px;text-align: justify;">Rezultatul evaluarii se va raporta in moneda europeana (Euro) si in moneda nationala (Leu), cursul de schimb intre cele doua monede fiind cel raportat de Banca Nationala a Romaniei pentru data evaluarii.</p>
 
             <p style="margin-bottom: 10px; text-indent: 3rem; font-weight: bold;">6. Identificarea proprietatii imobiliare subiect al evaluarii</p>
-            <p style="margin-bottom: 10px;text-align: justify;">{% if pdata.sub_identi %}{{ pdata.sub_identi }}{% else %}Dreptul deplin de proprietate asupra apartamentului cu nr. {{valuation.apartment_no}}, compus din {{camara.camara|floatformat:"0"}} camere si dependinte cu o suprafata utila de {{ const.utila }} mp si trei balcoane cu suprafata lor totala de {{ const.totala|sub:const.utila }}, rezultand suprafata utila totala de {{ const.totala }} mp. Apartamentul are numarul cadastral {{pdata.cadastral_no}} si este intabulat in Cartea Funciara numarul {{pdata.land_book_no}}.{% endif %}</p>
+            <p style="margin-bottom: 10px;text-align: justify;">{% if pdata.sub_identi %}{{ pdata.sub_identi }}{% else %}Dreptul deplin de proprietate asupra apartamentului cu nr. {{valuation.apartment_no}}, compus din {{camara.camara|floatformat:"0"}} camere si dependinte cu o suprafata utila de {{ const.utila }} mp si trei balcoane cu suprafata lor totala de {{ const.totala|sub:const.utila }}, rezultand suprafata utila totala de {{ const.totala }} mp. {% if pdata.cadastral_text %}{{pdata.cadastral_text|safe}}{% else %}Apartamentul are numarul cadastral {{pdata.cadastral_no}} si este intabulat in Cartea Funciara numarul {{pdata.land_book_no}}.{% endif %}{% endif %}</p>
 
             <p style="margin-bottom: 10px; text-indent: 3rem; font-weight: bold;">7. Tipul valorii utilizate</p>
             <p style="margin-bottom: 10px;text-align: justify;">
@@ -573,7 +573,7 @@
             </table>
 
             <p style="margin: 10px 0; text-indent: 3rem; font-weight: bold;">5. Descrierea si adresa</p>
-            <p style="text-align: justify;">{% if pdata.sub_identi %}{{ pdata.sub_identi }}{% else %}Dreptul deplin de proprietate asupra apartamentului cu nr. {{valuation.apartment_no}}, compus din {{camara.camara|floatformat:"0"}} camere si dependinte cu o suprafata utila de {{ const.utila }} mp si trei balcoane cu suprafata lor totala de {{ const.totala|sub:const.utila }}, rezultand suprafata utila totala de {{ const.totala }} mp. Apartamentul are numarul cadastral {{pdata.cadastral_no}} si este intabulat in Cartea Funciara numarul {{pdata.land_book_no}}{% endif %}.</p>
+            <p style="text-align: justify;">{% if pdata.sub_identi %}{{ pdata.sub_identi }}{% else %}Dreptul deplin de proprietate asupra apartamentului cu nr. {{valuation.apartment_no}}, compus din {{camara.camara|floatformat:"0"}} camere si dependinte cu o suprafata utila de {{ const.utila }} mp si trei balcoane cu suprafata lor totala de {{ const.totala|sub:const.utila }}, rezultand suprafata utila totala de {{ const.totala }} mp. {% if pdata.cadastral_text %}{{pdata.cadastral_text|safe}}{% else %}Apartamentul are numarul cadastral {{pdata.cadastral_no}} si este intabulat in Cartea Funciara numarul {{pdata.land_book_no}}.{% endif %}{% endif %}</p>
             <p style="margin-top: 5px;">Adresa proprietatii este</p>
             <p style="margin-bottom: 10px;">{{valuation.address}}, {{valuation.city.name}}, {{valuation.area.name}}</p>
 
@@ -590,7 +590,7 @@
             </div>
 
             <p style="margin: 10px 0; text-indent: 3rem; font-weight: bold;">7. Date privind documentatia cadastrala</p>
-            <p style="margin-bottom: 10px;text-align: justify;">Apartamentul are numarul cadastral {{ pdata.cadastral_no }} si este intabulat in Cartea Funciara numarul {{ pdata.land_book_no }} {{ pdata.uat }}.</p>
+            <p style="margin-bottom: 10px;text-align: justify;">{% if pdata.cadastral_text %}{{pdata.cadastral_text}}{% else %}Apartamentul are numarul cadastral {{ pdata.cadastral_no }} si este intabulat in Cartea Funciara numarul {{ pdata.land_book_no }}, {{ pdata.uat }}.{% endif %}</p>
 
             <p style="margin-bottom: 10px; text-indent: 3rem; font-weight: bold;">8. Sarcini</p>
             <p style="margin-bottom: 10px;text-align: justify;">Conform Extrasului de Carte Funciara pus la dispozitie, proprietatea {{ pdata.get_charges_display }} {% if pdata.charges == 'yes' %}de sarcini in favoarea {{ pdata.sarcini }}{% else %}de sarcini{% endif %}. La data evaluarii proprietatea este considerata libera de sarcini. </p>
@@ -602,7 +602,7 @@
             <p style="margin-bottom: 10px;text-align: justify;">Indentificarea imobilului s-a realizat pe baza documentelor puse la dispozitie, cu ajutorul {{pdata.identification|get_identification}}</p>
             
             <p style="margin-bottom: 10px; text-indent: 3rem; font-weight: bold;">11. Acces</p>
-            <p style="margin-bottom: 10px;text-align: justify;">Din punct de vedere juridic accesul la proprietate pietonal si auto se face {{pdata.access}}. Imobilul se afla in zona {{valuation.locatie}} a intravilanului munincipiului Bucuresti, fiind reprezentat de un bloc cu regim de inaltime {{valuation.height}}. Apartamentului ii revin cote din partile comune si dependintele imobilului conform extrasului de carte funciara prezentat evaluatorului.</p> 
+            <p style="margin-bottom: 10px;text-align: justify;">{% if pdata.access_text %}{{pdata.access_text|safe}}{% else %}Din punct de vedere juridic accesul la proprietate pietonal si auto se face {{pdata.access}}. Imobilul se afla in zona {{valuation.locatie}} a intravilanului munincipiului Bucuresti, fiind reprezentat de un bloc cu regim de inaltime {{valuation.height}}. Apartamentului ii revin cote din partile comune si dependintele imobilului conform extrasului de carte funciara prezentat evaluatorului.{% endif %}</p> 
 
             <p style="margin-bottom: 10px; text-indent: 3rem; font-weight: bold;">12. Constructia</p>
             <p style="margin-bottom: 5px;">{% if const.conform_text %}{{const.conform_text}}{% else %}Conform {{const.conform}}, constructia are un regim de inaltime {{ valuation.height }} si a fost edificata in anul {{ valuation.construction_year }}{% endif %}</p>

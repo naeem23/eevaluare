@@ -158,7 +158,7 @@ EXTERIOR_FINISHS = [
 ZONA_TYPE_CHOICE = [
 	('medii', 'medii'),
 	('sub medie', 'sau sub medie'),
-	('above average', 'de vârstă medie/medii sau peste medie'),
+	('above average', 'de varsta medie/medii sau peste medie'),
 	('medium age', 'de varsta medie'),
 ]
 
@@ -234,7 +234,7 @@ APE_CHOICE = [
 ]
 
 CONCLUSION_CHOICE = [
-	('scadere', 'In scadere'), 
 	('echilibru', 'In echilibru'), 
+	('scadere', 'In scadere'), 
 	('crestere', 'In crestere'),
 ]

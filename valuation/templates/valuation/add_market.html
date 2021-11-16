@@ -95,7 +95,7 @@
                                     {% else %}
                                         <p class="text-light dps">Piata specifica a proprietatii analizate este reprezentata de apartamentele cu {{camara|floatformat:"0"}} camere si suprafete cuprinse intre {{form.area_between}}, situate in zona {{valuation.area.name}}.</p>
                                         <input type="hidden" name="show_dps" id="show_dps" value="0">
-                                        <textarea name="dps" id="id_dps" rows="3" style="display: none;" class="form-control">Piata specifica a proprietatii analizate este reprezentata de apartamentele cu {{camara|floatformat:"0"}} camere si suprafete cuprinse intre (manual number entry) mp si (manual number entry) mp, situate in zona {{valuation.area.name}}
+                                        <textarea name="dps" id="id_dps" rows="3" style="display: none;" class="form-control">Piata specifica a proprietatii analizate este reprezentata de apartamentele cu {{camara|floatformat:"0"}} camere si suprafete cuprinse intre .......... mp si .......... mp, situate in zona {{valuation.area.name}}
                                         </textarea>
                                     {% endif %}
                                     <small class="form-text text-danger dps_error"></small>

@@ -260,7 +260,7 @@
                                         <div class="form-group">
                                             <input type="text" name="field_name_mv[]" value="Parcare suprateran" class="form-control">
                                             <div class="input-group">
-                                                <input type="number" name="field_value_mv[]" class="form-control mv_ap" step="0.01">
+                                                <input type="number" name="field_value_mv[]" class="form-control mv_ap" step="0.01" value="0.00">
                                                 <div class="input-group-append">
                                                     <span class="input-group-text">EUR</span>
                                                 </div>
@@ -277,7 +277,7 @@
                                         <div class="form-group">
                                             <input type="text" name="field_name_mv[]" value="Parcare subteran" class="form-control" >
                                             <div class="input-group">
-                                                <input type="number" name="field_value_mv[]" class="form-control mv_bp" step="0.01">
+                                                <input type="number" name="field_value_mv[]" class="form-control mv_bp" step="0.01" value="0.00">
                                                 <div class="input-group-append">
                                                     <span class="input-group-text">EUR</span>
                                                 </div>
@@ -294,7 +294,7 @@
                                         <div class="form-group">
                                             <input type="text" name="field_name_mv[]" value="Boxa" class="form-control" >
                                             <div class="input-group">
-                                                <input type="number" name="field_value_mv[]" class="form-control mv_boxa" step="0.01">
+                                                <input type="number" name="field_value_mv[]" class="form-control mv_boxa" step="0.01" value="0.00">
                                                 <div class="input-group-append">
                                                     <span class="input-group-text">EUR</span>
                                                 </div>
@@ -355,7 +355,7 @@
                                         <div class="form-group">
                                             <input type="text" name="field_name_iv[]" value="Parcare suprateran" class="form-control" >
                                             <div class="input-group">
-                                                <input type="number" name="field_value_iv[]" class="form-control iv_ap" step="0.01">
+                                                <input type="number" name="field_value_iv[]" class="form-control iv_ap" step="0.01" value="0.00">
                                                 <div class="input-group-append">
                                                     <span class="input-group-text">EUR</span>
                                                 </div>
@@ -372,7 +372,7 @@
                                         <div class="form-group">
                                             <input type="text" name="field_name_iv[]" value="Parcare subteran" class="form-control" >
                                             <div class="input-group">
-                                                <input type="number" name="field_value_iv[]" class="form-control iv_bp" step="0.01">
+                                                <input type="number" name="field_value_iv[]" class="form-control iv_bp" step="0.01" value="0.00">
                                                 <div class="input-group-append">
                                                     <span class="input-group-text">EUR</span>
                                                 </div>
@@ -389,7 +389,7 @@
                                         <div class="form-group">
                                             <input type="text" name="field_name_iv[]" value="Boxa" class="form-control" >
                                             <div class="input-group">
-                                                <input type="number" name="field_value_iv[]" class="form-control iv_boxa" step="0.01">
+                                                <input type="number" name="field_value_iv[]" class="form-control iv_boxa" step="0.01" value="0.00">
                                                 <div class="input-group-append">
                                                     <span class="input-group-text">EUR</span>
                                                 </div>
@@ -630,35 +630,36 @@
                 let input = $(this).val();
                 mv_ap = (input == '') ? false : true;
             })
-            var iv_ap = false;
-            $(".iv_ap").each(function () {
-                let input = $(this).val();
-                iv_ap = (input == '') ? false : true;
-            })
+            // var iv_ap = false;
+            // $(".iv_ap").each(function () {
+            //     let input = $(this).val();
+            //     iv_ap = (input == '') ? false : true;
+            // })
             var bp = parseInt('{% if below_parking %}{{below_parking}}{% else %}0{% endif %}');
             var mv_bp = false;
             $(".mv_bp").each(function () {
                 let input = $(this).val();
                 mv_bp = (input == '') ? false : true;
             })
-            var iv_bp = false;
-            $(".iv_bp").each(function () {
-                let input = $(this).val();
-                iv_bp = (input == '') ? false : true;
-            })
+            // var iv_bp = false;
+            // $(".iv_bp").each(function () {
+            //     let input = $(this).val();
+            //     iv_bp = (input == '') ? false : true;
+            // })
             var boxa = parseInt('{% if boxa %}{{boxa}}{% else %}0{% endif %}');
             var mv_boxa = false;
             $(".mv_boxa").each(function () {
                 let input = $(this).val();
                 mv_boxa = (input == '') ? false : true;
             })
-            var iv_boxa = false;
-            $(".iv_boxa").each(function () {
-                let input = $(this).val();
-                iv_boxa = (input == '') ? false : true;
-            })
+            // var iv_boxa = false;
+            // $(".iv_boxa").each(function () {
+            //     let input = $(this).val();
+            //     iv_boxa = (input == '') ? false : true;
+            // })
 
-            if(valued_property.length > 0 && purpose.length > 0 && ((market_approach == true && amav.length > 0) || market_approach == false) && ((income_approach == true && aiav.length > 0) || income_approach == false) && ((market_approach == true && ap >= 1 && mv_ap == true) || (market_approach==false || ap < 1)) && ((income_approach == true && ap >= 1 && iv_ap == true) || (income_approach==false || ap < 1)) && ((market_approach == true && bp >= 1 && mv_bp == true) || (market_approach==false || bp < 1)) && ((income_approach == true && bp >= 1 && iv_bp == true) || (income_approach==false || bp < 1)) && ((market_approach == true && boxa >= 1 && mv_boxa == true) || (market_approach==false || boxa < 1)) && ((income_approach == true && boxa >= 1 && iv_boxa == true) || (income_approach==false || boxa < 1))) {
+            if(valued_property.length > 0 && purpose.length > 0 && ((market_approach == true && amav.length > 0) || market_approach == false) && ((income_approach == true && aiav.length > 0) || income_approach == false) && ((market_approach == true && ap >= 1 && mv_ap == true) || (market_approach==false || ap < 1)) && ((market_approach == true && bp >= 1 && mv_bp == true) || (market_approach==false || bp < 1)) && ((market_approach == true && boxa >= 1 && mv_boxa == true) || (market_approach==false || boxa < 1))) {
+                // valued_property.length > 0 && purpose.length > 0 && ((market_approach == true && amav.length > 0) || market_approach == false) && ((income_approach == true && aiav.length > 0) || income_approach == false) && ((market_approach == true && ap >= 1 && mv_ap == true) || (market_approach==false || ap < 1)) && ((income_approach == true && ap >= 1 && iv_ap == true) || (income_approach==false || ap < 1)) && ((market_approach == true && bp >= 1 && mv_bp == true) || (market_approach==false || bp < 1)) && ((income_approach == true && bp >= 1 && iv_bp == true) || (income_approach==false || bp < 1)) && ((market_approach == true && boxa >= 1 && mv_boxa == true) || (market_approach==false || boxa < 1)) && ((income_approach == true && boxa >= 1 && iv_boxa == true) || (income_approach==false || boxa < 1))
                 $("#summary-value").submit();
             } else {
                 if (valued_property.length < 1) {
@@ -717,29 +718,29 @@
                     $('.mv_boxa_error').text('');
                 }
                 
-                if (income_approach == true && ap >= 1 && iv_ap == false) {
-                    $('.iv_ap').addClass('required');
-                    $('.iv_ap_error').text('This field is required');
-                } else {
-                    $('.iv_ap').removeClass('required');
-                    $('.iv_ap_error').text('');
-                }
+                // if (income_approach == true && ap >= 1 && iv_ap == false) {
+                //     $('.iv_ap').addClass('required');
+                //     $('.iv_ap_error').text('This field is required');
+                // } else {
+                //     $('.iv_ap').removeClass('required');
+                //     $('.iv_ap_error').text('');
+                // }
                 
-                if (income_approach == true && bp >= 1 && iv_bp == false) {
-                    $('.iv_bp').addClass('required');
-                    $('.iv_bp_error').text('This field is required');
-                } else {
-                    $('.iv_bp').removeClass('required');
-                    $('.iv_bp_error').text('');
-                }
+                // if (income_approach == true && bp >= 1 && iv_bp == false) {
+                //     $('.iv_bp').addClass('required');
+                //     $('.iv_bp_error').text('This field is required');
+                // } else {
+                //     $('.iv_bp').removeClass('required');
+                //     $('.iv_bp_error').text('');
+                // }
                 
-                if (income_approach == true && boxa >= 1 && iv_boxa == false) {
-                    $('.iv_boxa').addClass('required');
-                    $('.iv_boxa_error').text('This field is required');
-                } else {
-                    $('.iv_boxa').removeClass('required');
-                    $('.iv_boxa_error').text('');
-                }
+                // if (income_approach == true && boxa >= 1 && iv_boxa == false) {
+                //     $('.iv_boxa').addClass('required');
+                //     $('.iv_boxa_error').text('This field is required');
+                // } else {
+                //     $('.iv_boxa').removeClass('required');
+                //     $('.iv_boxa_error').text('');
+                // }
             }
         });
         // submit form

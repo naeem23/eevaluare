@@ -318,6 +318,7 @@ class PresentationData(models.Model):
 	pt = models.CharField(max_length=155, blank=True, null=True) #public transport
 	poi = models.CharField(max_length=1000, blank=True, null=True) #points of interest
 	legal_doc = models.CharField(max_length=1000, blank=True, null=True) 
+	cadastral_text = models.TextField(blank=True, null=True)
 	cadastral_no = models.CharField(max_length=155, blank=True, null=True)
 	land_book_no = models.CharField(max_length=155, blank=True, null=True)
 	uat = models.CharField(max_length=255, blank=True, null=True)
@@ -325,6 +326,7 @@ class PresentationData(models.Model):
 	sarcini = models.CharField(max_length=55, blank=True, null=True) #if charges this field will appear.
 	current_use = models.CharField(max_length=155, blank=True, null=True, choices=CURRENT_USE_CHOICE)
 	identification = models.CharField(max_length=155, blank=True, null=True, choices=IDENTIFICATION_CHOICE)
+	access_text = models.TextField(blank=True)
 	access = models.CharField(max_length=255, blank=True, null=True)
 	history = models.TextField(blank=True, null=True)
 
