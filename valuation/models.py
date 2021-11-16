@@ -156,11 +156,17 @@ class ValuatedProperty(models.Model):
 	title = models.CharField(max_length=255, blank=True, null=True)
 	property_type = models.ForeignKey(PropertyType, models.SET_NULL, blank=True, null=True)
 	compartment_type = models.ForeignKey(CompartmentType, models.SET_NULL, blank=True, null=True)
+	street = models.CharField(max_length=255, blank=True, null=True)
+	numarul = models.CharField(max_length=55, blank=True, null=True)
+	building_no = models.CharField(max_length=55, blank=True, null=True)
+	scara = models.CharField(max_length=55, blank=True, null=True)
+	floor_no = models.CharField(max_length=55, blank=True, null=True) 
 	apartment_no = models.CharField(max_length=55, blank=True, null=True)
-	address = models.CharField(max_length=255, blank=True, null=True)
+	postal_code = models.CharField(max_length=55, blank=True, null=True)
 	area = models.ForeignKey(Area, models.SET_NULL, blank=True, null=True)
 	city = models.ForeignKey(City, models.SET_NULL, blank=True, null=True)
 	urbana = models.CharField(max_length=55, blank=True, null=True, choices=URBANA_CHOICE)
+	zona = models.CharField(max_length=255, blank=True, null=True)
 	locatie = models.CharField(max_length=55, blank=True, null=True, choices=LOCATIE_CHOICE)
 	latitude = models.CharField(max_length=255, blank=True, null=True)
 	longitude = models.CharField(max_length=255, blank=True, null=True)
@@ -391,33 +397,6 @@ class ComparableProperty(models.Model):
 	etaj = models.CharField(max_length=55, blank=True, null=True)
 	balcon = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True) 
 	hs = models.CharField(max_length=55, blank=True, null=True) #heating system 
-	#followings are only for subject property
-	price_persqm = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
-	opt1_name = models.CharField(max_length=155, blank=True, null=True) 
-	opt1_val = models.TextField(blank=True, null=True) 
-	opt2_name = models.CharField(max_length=155, blank=True, null=True)
-	opt2_val = models.TextField(blank=True, null=True) 
-	opt3_name = models.CharField(max_length=155, blank=True, null=True)
-	opt3_val = models.TextField(blank=True, null=True) 
-	motivation = models.TextField(blank=True, null=True)
-	pr_motivation = models.TextField(blank=True, null=True)
-	fc_motivation = models.TextField(blank=True, null=True)
-	sc_motivation = models.TextField(blank=True, null=True)
-	ape_motivation = models.TextField(blank=True, null=True)
-	me_motivation = models.TextField(blank=True, null=True)
-	lc_motivation = models.TextField(blank=True, null=True)
-	cp_motivation = models.TextField(blank=True, null=True)
-	cy_motivation = models.TextField(blank=True, null=True)
-	su_motivation = models.TextField(blank=True, null=True)
-	finish_motivation = models.TextField(blank=True, null=True)
-	etaj_motivation = models.TextField(blank=True, null=True)
-	balcon_motivation = models.TextField(blank=True, null=True)
-	hs_motivation = models.TextField(blank=True, null=True)
-	opt1_motivation = models.TextField(blank=True, null=True)
-	opt2_motivation = models.TextField(blank=True, null=True)
-	opt3_motivation = models.TextField(blank=True, null=True)
-	estimated_value = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
-	smallest_gross = models.CharField(max_length=15, blank=True, null=True)
 
 	def __str__(self):
 		return str(self.id)
@@ -429,67 +408,125 @@ class ComparableTable(models.Model):
 	ref_no = models.ForeignKey(ValuatedProperty, on_delete=models.CASCADE)
 	comparable = models.ForeignKey(ComparableProperty, models.SET_NULL, blank=True, null=True)
 	name = models.CharField(max_length=2, blank=True, null=True)
+	sale_price = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+	mobila = models.CharField(max_length=55, blank=True, null=True)
+	ma = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True) #margin adjustment
+	parking_boxa = models.CharField(max_length=155, blank=True, null=True) 
+	pba = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True) #parking boxa adjustment
 	op = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True) #offer price
+	
+	sub_ad = models.CharField(max_length=55, blank=True, null=True)
+	ad = models.CharField(max_length=55, blank=True, null=True) #available data
 	margin = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
 	cv = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True) #correction price
 	mp = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True) #margin value
+	motivation = models.TextField(blank=True, null=True)
 
+	sub_pr = models.CharField(max_length=55, blank=True, null=True)
+	pr = models.CharField(max_length=55, blank=True, null=True) #property rights
 	pr_percent = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
 	pr_euro = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
 	pr_price = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+	pr_motivation = models.TextField(blank=True, null=True)
 
+	sub_fc = models.CharField(max_length=55, blank=True, null=True)
+	fc = models.CharField(max_length=55, blank=True, null=True) #financial condition
 	fc_percent = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
 	fc_euro = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
 	fc_price = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+	fc_motivation = models.TextField(blank=True, null=True)
 
+	sub_sc = models.CharField(max_length=55, blank=True, null=True)
+	sc = models.CharField(max_length=55, blank=True, null=True) #sale condition
 	sc_percent = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
 	sc_euro = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
 	sc_price = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+	sc_motivation = models.TextField(blank=True, null=True)
 
+	sub_ape = models.CharField(max_length=55, blank=True, null=True)
+	ape = models.CharField(max_length=55, blank=True, null=True) #after purchase expenditure
 	ape_percent = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
 	ape_euro = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
 	ape_price = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+	ape_motivation = models.TextField(blank=True, null=True)
 
+	sub_me = models.CharField(max_length=55, blank=True, null=True)
+	me = models.CharField(max_length=55, blank=True, null=True) #month and year check field please
 	me_percent = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
 	me_euro = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
 	me_price = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+	me_motivation = models.TextField(blank=True, null=True)
 
+	sub_lc = models.CharField(max_length=55, blank=True, null=True)
+	lc = models.CharField(max_length=255, blank=True, null=True) #location
 	lc_percent = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
 	lc_euro = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+	lc_motivation = models.TextField(blank=True, null=True)
 
+	sub_cp = models.CharField(max_length=55, blank=True, null=True)
+	cp = models.CharField(max_length=55, blank=True, null=True) #compartment
 	cp_percent = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
 	cp_euro = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+	cp_motivation = models.TextField(blank=True, null=True)
 	
+	sub_cy = models.CharField(max_length=55, blank=True, null=True)
+	cy = models.CharField(max_length=10, blank=True, null=True) #construction year
 	cy_percent = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
 	cy_euro = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+	cy_motivation = models.TextField(blank=True, null=True)
 	
+	sub_area = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+	area = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
 	su_diff = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
 	su_percent = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
 	su_euro = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+	su_motivation = models.TextField(blank=True, null=True)
 	
+	sub_finish = models.CharField(max_length=55, blank=True, null=True)
+	finish = models.CharField(max_length=55, blank=True, null=True)
 	finish_percent = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
 	finish_euro = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+	finish_motivation = models.TextField(blank=True, null=True)
 
+	sub_etaj = models.CharField(max_length=55, blank=True, null=True)
+	etaj = models.CharField(max_length=55, blank=True, null=True)
 	etaj_percent = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
 	etaj_euro = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+	etaj_motivation = models.TextField(blank=True, null=True)
 
+	sub_balcon = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True) 
+	balcon = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True) 
+	price_persqm = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
 	balcon_percent = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
 	balcon_euro = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+	balcon_motivation = models.TextField(blank=True, null=True)
 
+	sub_hs = models.CharField(max_length=55, blank=True, null=True)
+	hs = models.CharField(max_length=55, blank=True, null=True) #heating system 
 	hs_percent = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
 	hs_euro = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+	hs_motivation = models.TextField(blank=True, null=True)
 
-	opt1_val = models.TextField(blank=True, null=True) 
+	opt1_name = models.CharField(max_length=155, blank=True, null=True) 
+	sub_opt1 = models.CharField(max_length=155, blank=True, null=True) 
+	opt1_val = models.CharField(max_length=155, blank=True, null=True) 
 	opt1_percent = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
 	opt1_euro = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+	opt1_motivation = models.TextField(blank=True, null=True)
 
-	opt2_val = models.TextField(blank=True, null=True) 
+	opt2_name = models.CharField(max_length=155, blank=True, null=True)
+	sub_opt2 = models.CharField(max_length=155, blank=True, null=True) 
+	opt2_val = models.CharField(max_length=155, blank=True, null=True) 
 	opt2_percent = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
 	opt2_euro = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+	opt2_motivation = models.TextField(blank=True, null=True)
 
+	opt3_name = models.CharField(max_length=155, blank=True, null=True)
+	sub_opt3 = models.CharField(max_length=155, blank=True, null=True) 
 	opt3_val = models.TextField(blank=True, null=True) 
 	opt3_percent = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
 	opt3_euro = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+	opt3_motivation = models.TextField(blank=True, null=True)
 
 	net_adjustment = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
 	adjustment_price = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
@@ -498,6 +535,8 @@ class ComparableTable(models.Model):
 	total_euro = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
 	gross_percent = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
 	gross_euro = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+	estimated_value = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+	smallest_gross = models.CharField(max_length=15, blank=True, null=True)
 
 	def __str__(self):
 		return str(self.id)

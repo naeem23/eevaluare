@@ -106,7 +106,7 @@
                                     <td></td>
                                     {% for c in comp_table %}
                                         <td>
-                                            <input type="number" name="sale_price[]" class="form-control" step="0.01" value="{{c.comparable.sale_price|floatformat:'0'}}" id="sp_{{forloop.counter}}">
+                                            <input type="number" name="sale_price[]" class="form-control" step="0.01" value="{{c.sale_price|floatformat:'0'}}" id="sp_{{forloop.counter}}">
                                         </td>
                                     {% endfor %}
                                     {% with l=comp_table|length %}
@@ -129,7 +129,7 @@
                                             <td>
                                                 <select id="id_mobila" class="form-control" name="mobila[]">
                                                     {% for mt in mobila %}
-                                                    <option value="{{mt.type}}" {% if c.comparable.mobila == mt.type %}selected{% endif %}>{{mt.type}}</option>
+                                                    <option value="{{mt.type}}" {% if c.mobila == mt.type %}selected{% endif %}>{{mt.type}}</option>
                                                     {% endfor %}
                                                 </select>
                                             </td>
@@ -160,7 +160,7 @@
                                 <tr>
                                     {% for c in comp_table %}
                                         <td>
-                                            <input type="number" name="ma[]" id="ma_{{forloop.counter}}" class="form-control" step="0.01" value="{{c.comparable.ma|floatformat:'0'}}">
+                                            <input type="number" name="ma[]" id="ma_{{forloop.counter}}" class="form-control" step="0.01" value="{{c.ma|floatformat:'0'}}">
                                         </td>
                                     {% endfor %}
                                     {% with l=comp_table|length %}
@@ -182,7 +182,7 @@
                                     <td rowspan="2">Loc de parcare/boxa</td>
                                     {% for n in comp_table %}
                                     <td>
-                                        <input type="text" name="parking_boxa[]" class="form-control" value="{{n.comparable.parking_boxa}}">
+                                        <input type="text" name="parking_boxa[]" class="form-control" value="{{n.parking_boxa}}">
                                     </td>
                                     {% endfor %}
                                     {% with l=comp_table|length %}
@@ -204,7 +204,7 @@
                                     <td class="text-center">Ajustare (EUR)</td>
                                     {% for n in comp_table %}
                                         <td>
-                                            <input type="number" name="pba[]" class="form-control" step="0.01" value="{{n.comparable.pba|floatformat:'0'}}" id="pba_{{forloop.counter}}">
+                                            <input type="number" name="pba[]" class="form-control" step="0.01" value="{{n.pba|floatformat:'0'}}" id="pba_{{forloop.counter}}">
                                         </td>
                                     {% endfor %}
                                     {% with l=comp_table|length %}
@@ -227,7 +227,7 @@
                                     <td></td>
                                     {% for n in comp_table %}
                                         <td>
-                                            <input type="number" name="op[]" class="form-control" step="0.01" id="op_{{forloop.counter}}" value="{% if n.comparable.sale_price and n.comparable.ma and n.comparable.pba %}{{n.comparable|get_offer_price}}{% endif %}">
+                                            <input type="number" name="op[]" class="form-control" step="0.01" id="op_{{forloop.counter}}" value="{% if n.sale_price and n.ma and n.pba %}{{n|get_offer_price}}{% endif %}">
                                         </td>
                                     {% endfor %}
                                     {% with l=comp_table|length %}
@@ -254,8 +254,8 @@
                                     {% for n in comp_table %}
                                         <td>
                                             <select id="id_ad{{forloop.counter}}" class="form-control ad" name="ad[]">
-                                                <option value="Oferta" {% if n.comparable.ad == 'Oferta' %}selected{% endif%}>Oferta</option>
-                                                <option value="Tranzactie" {% if n.comparable.ad == 'Tranzactie' %}selected{% endif%}>Tranzactie</option>
+                                                <option value="Oferta" {% if n.ad == 'Oferta' %}selected{% endif%}>Oferta</option>
+                                                <option value="Tranzactie" {% if n.ad == 'Tranzactie' %}selected{% endif%}>Tranzactie</option>
                                             </select>
                                         </td>
                                     {% endfor %}
@@ -379,7 +379,7 @@
                                         <td>
                                             <select id="id_pr" class="form-control" name="pr[]">
                                                 {% for p in prop_rights %}
-                                                <option value="{{p.type}}" {% if n.comparable.pr == p.type %}selected{% endif%}>{{p.type}}</option>
+                                                <option value="{{p.type}}" {% if n.pr == p.type %}selected{% endif%}>{{p.type}}</option>
                                                 {% endfor %}
                                             </select>
                                         </td>
@@ -751,8 +751,8 @@
                                     {% for n in comp_table %}
                                         <td>
                                             <select id="id_ape" class="form-control" name="ape[]">
-                                                <option value="Nu" {% if n.comparable.ape == 'Nu' %}selected{% endif%}>Nu</option>
-                                                <option value="Da" {% if n.comparable.ape == 'Da' %}selected{% endif%}>Da</option>
+                                                <option value="Nu" {% if n.ape == 'Nu' %}selected{% endif%}>Nu</option>
+                                                <option value="Da" {% if n.ape == 'Da' %}selected{% endif%}>Da</option>
                                             </select>
                                         </td>
                                     {% endfor %}
@@ -873,7 +873,7 @@
                                     </td>
                                     {% for n in comp_table %}
                                         <td>
-                                            <input type="text" class="form-control market_env" name="me[]" value="{{n.comparable.me}}"/>
+                                            <input type="text" class="form-control market_env" name="me[]" value="{{n.me}}"/>
                                         </td>
                                     {% endfor %}
                                     {% with l=comp_table|length %}
@@ -990,7 +990,7 @@
                                     </td>
                                     {% for n in comp_table %}
                                         <td>
-                                            <input type="text" class="form-control" name="lc[]" value="{{n.comparable.lc}}"/>
+                                            <input type="text" class="form-control" name="lc[]" value="{{n.lc}}"/>
                                         </td>
                                     {% endfor %}
                                     {% with l=comp_table|length %}
@@ -1087,7 +1087,7 @@
                                         <td>
                                             <select id="id_cp" class="form-control" name="cp[]">
                                                 {% for c in comp_type %}
-                                                <option value="{{c.type}}" {% if c.type == n.comparable.cp %}selected{% endif %}>{{c.type}}</option>
+                                                <option value="{{c.type}}" {% if c.type == n.cp %}selected{% endif %}>{{c.type}}</option>
                                                 {% endfor %}
                                             </select>
                                         </td>
@@ -1188,7 +1188,7 @@
                                     </td>
                                     {% for n in comp_table %}
                                         <td>
-                                            <input type="text" class="form-control" name="cy[]" value="{{n.comparable.cy}}"/>
+                                            <input type="text" class="form-control" name="cy[]" value="{{n.cy}}"/>
                                         </td>
                                     {% endfor %}
                                     {% with l=comp_table|length %}
@@ -1304,7 +1304,7 @@
                                     </td>
                                     {% for n in comp_table %}
                                         <td>
-                                            <input type="number" class="form-control" name="area[]" id="id_area{{forloop.counter}}" value="{{n.comparable.area}}" step="0.01"/>
+                                            <input type="number" class="form-control" name="area[]" id="id_area{{forloop.counter}}" value="{{n.area}}" step="0.01"/>
                                         </td>
                                     {% endfor %}
                                     {% with l=comp_table|length %}
@@ -1424,7 +1424,7 @@
                                         <td>
                                             <select id="id_finish" class="form-control" name="finish[]">
                                                 {% for f in finish_type %}
-                                                <option value="{{f.type}}" {% if f.type == n.comparable.finish %}selected{% endif %}>{{f.type}}</option>
+                                                <option value="{{f.type}}" {% if f.type == n.finish %}selected{% endif %}>{{f.type}}</option>
                                                 {% endfor %}
                                             </select>
                                         </td>
@@ -1525,7 +1525,7 @@
                                     </td>
                                     {% for n in comp_table %}
                                         <td>
-                                            <input type="text" name="etaj[]" id="etaj_{{forloop.counter}}" class="form-control" value="{{n.comparable.etaj}}">
+                                            <input type="text" name="etaj[]" id="etaj_{{forloop.counter}}" class="form-control" value="{{n.etaj}}">
                                         </td>
                                     {% endfor %}
                                     {% with l=comp_table|length %}
@@ -1616,7 +1616,7 @@
                                     </td>
                                     {% for n in comp_table %}
                                         <td>
-                                            <input type="number" class="form-control" name="balcon[]" value="{{n.comparable.balcon}}" step="0.01" id="balcon_{{forloop.counter}}"/>
+                                            <input type="number" class="form-control" name="balcon[]" value="{{n.balcon}}" step="0.01" id="balcon_{{forloop.counter}}"/>
                                         </td>
                                     {% endfor %}
                                     {% with l=comp_table|length %}
@@ -1719,7 +1719,7 @@
                                         <td>
                                             <select class="form-control" name="hs[]">
                                                 {% for h in heating %}
-                                                <option value="{{h.name}}" {% if h.name == n.comparable.hs %}selected{% endif %}>{{h.name}}</option>
+                                                <option value="{{h.name}}" {% if h.name == n.hs %}selected{% endif %}>{{h.name}}</option>
                                                 {% endfor %}
                                             </select>
                                         </td>
@@ -2315,8 +2315,8 @@
                             <tr>
                                 <td>Regim inaltime</td>
                                 {% if comp_mvb %}
-                                    {% for n in comp_mvb %}
-                                        <td><input type="text" name="mvb_height[]" class="form-control mvb_height" id="mvb_height{{forloop.counter}}" value="{{n.cp.etaj}}" readonly></td>
+                                    {% for n in comp_table %}
+                                        <td><input type="text" name="mvb_height[]" class="form-control mvb_height" id="mvb_height{{forloop.counter}}" value="{{n.etaj}}" readonly></td>
                                     {% endfor %}
                                     {% with l=comp_table|length %}
                                         {% for n in comparable %}
@@ -2337,8 +2337,8 @@
                             <tr>
                                 <td>Suprafata utila</td>
                                 {% if comp_mvb %}
-                                    {% for n in comp_mvb %}
-                                        <td><input type="number" name="mvb_area[]" class="form-control" id="mvb_area{{forloop.counter}}" step="0.01" value="{{n.cp.area}}" readonly></td>
+                                    {% for n in comp_table %}
+                                        <td><input type="number" name="mvb_area[]" class="form-control" id="mvb_area{{forloop.counter}}" step="0.01" value="{{n.area}}" readonly></td>
                                     {% endfor %}
                                     {% with l=comp_table|length %}
                                         {% for n in comparable %}
@@ -2491,7 +2491,7 @@
                             </tr>
                             <tr>
                                 <td>Suprafata utila</td>
-                                <td><input type="number" name="vbp_area" class="form-control" step="0.01" id="vbp_area" value="{{sub_mvb.cp.area}}" readonly></td>
+                                <td><input type="number" name="vbp_area" class="form-control" step="0.01" id="vbp_area" value="{{sub_comp.area}}" readonly></td>
                             </tr>
                             <tr>
                                 <td>Chirie lunara solicitata/mp</td>

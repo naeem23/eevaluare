@@ -62,9 +62,7 @@
 									<thead>
 										<tr>
 											<th>#</th>
-											<th>Full Name</th>
-                                            <th>Email</th>
-											<th>Certification Number</th>
+											<th>Type</th>
 											<th style="width: 12%">Action</th>
 										</tr>
 									</thead>
@@ -76,18 +74,6 @@
                                                     {{ inspector.id }}
                                                 </a>
 											</td>
-											<td>
-												<a href="{% url 'authentication:inspector_details' id=inspector.id %}">
-                                                    <span class="text-light">{{inspector.get_full_name}}</span>
-                                                </a>
-											</td>
-											<td>
-												<a href="{% url 'authentication:inspector_details' id=inspector.id %}"><span class="text-light">{{inspector.email}}
-                                                    </span></a>
-											</td>
-                                            <td>
-                                                <a href="{% url 'authentication:inspector_details' id=inspector.id %}"><span class="text-light">{{inspector.certification_number}}</span></a>
-                                            </td>
 											<td>
                                                 <span class="mr-3 text-light" href="" id="delete" onclick="delete_modal('{{inspector.id}}')" data-toggle="tooltip" data-placement="top" title="Delete"><i class="la flaticon-remove-user"></i></span>
                                                 <a href="{% url 'authentication:inspector_details' id=inspector.id %}" data-toggle="tooltip" data-placement="top" title="View Details"><i class="la flaticon-user-5 text-light"></i></a>

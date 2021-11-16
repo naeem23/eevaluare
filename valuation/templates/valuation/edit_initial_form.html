@@ -171,8 +171,57 @@
                             </div>
                             <div class="col-md-4">
                                 <div class="form-group">
-                                    <label for="id_property_type">Apartament nr.</label>
+                                    <label for="id_street">Strada <span class="required-label">*</span></label>
+                                    {{ form.street }}
+                                    <small class="form-text text-danger street"></small>
+                                </div>
+                            </div>
+                        </div>
+
+                        
+                        <div class="row">
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label for="id_numarul">Numarul <span class="required-label">*</span></label>
+                                    {{ form.numarul }}
+                                    {{ form.latitude }}
+                                    {{ form.longitude }}
+                                    <small class="form-text text-danger numarul"></small>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label for="id_building_no">Blocul <span class="required-label">*</span></label>
+                                    {{ form.building_no }}
+                                    <small class="form-text text-danger building_no"></small>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label for="id_scara">Scara <span class="required-label">*</span></label>
+                                    {{ form.scara }}
+                                    <small class="form-text text-danger scara"></small>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label for="id_floor_no">Etaj <span class="required-label">*</span></label>
+                                    {{ form.floor_no }}
+                                    <small class="form-text text-danger floor_no"></small>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label for="id_apartment_no">Apartament <span class="required-label">*</span></label>
                                     {{ form.apartment_no }}
+                                    <small class="form-text text-danger apartment_no"></small>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label for="id_postal_code">Cod Postal <span class="required-label">*</span></label>
+                                    {{ form.postal_code }}
+                                    <small class="form-text text-danger postal_code"></small>
                                 </div>
                             </div>
                         </div>
@@ -180,16 +229,7 @@
                         <div class="row">
                             <div class="col-md-4">
                                 <div class="form-group">
-                                    <label for="id_address">Adresa <span class="required-label">*</span></label>
-                                    {{ form.address }}
-                                    {{ form.latitude }}
-                                    {{ form.longitude }}
-                                    <small class="form-text text-danger street"></small>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label for="id_area">Zona <span class="required-label">*</span></label>
+                                    <label for="id_area">Judet/Municipiul <span class="required-label">*</span></label>
                                     {{ form.area }}
                                     <small class="form-text text-danger area"></small>
                                 </div>
@@ -232,14 +272,21 @@
                             </div>
                             <div class="col-md-4">
                                 <div class="form-group">
-                                    <label for="id_height">Regim de inaltime imobil <span class="required-label">*</span></label>
-                                    {{ form.height }}
-                                    <small class="form-text text-danger height"></small>
+                                    <label for="id_zona">Zona <span class="required-label">*</span></label>
+                                    {{ form.zona }}
+                                    <small class="form-text text-danger zona"></small>
                                 </div>
                             </div>
                         </div>
                         
                         <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="id_height">Regim de inaltime imobil <span class="required-label">*</span></label>
+                                    {{ form.height }}
+                                    <small class="form-text text-danger height"></small>
+                                </div>
+                            </div>
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="id_construction_year">An constructie <span class="required-label">*</span></label>

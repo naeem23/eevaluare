@@ -191,7 +191,7 @@
                                 </div>
                             </div>
                             <div class="row mb-2">
-                                <div class="col-md-6"><b class="text-light mr-2">Address:</b> {{valuation.address}}, {{valuation.city.name}}, {{valuation.area.name}}</div>
+                                <div class="col-md-6"><b class="text-light mr-2">Address:</b> {{valuation.street}}, {{valuation.city.name}}, {{valuation.area.name}}</div>
                                 <div class="col-md-6"><b class="text-light mr-2">Proprietar:</b> {{valuation.owner}}</div>
                             </div>
 
@@ -255,36 +255,6 @@
             </div>
 
             <!-- =========================================================================== -->
-            <!-- ================================ cover photos ============================= -->
-            <div class="card">
-                <div class="card-header">
-                    <div class="d-flex align-items-center">
-                        <h4 class="card-title">Cover Fotografii</h4>
-                    </div>
-                </div>
-
-                <div class="card-body">
-                    <div class="row">
-                        {% if cover_photo %}
-                            <div class="col-md-12">
-                                <div id="cover-container">
-                                    <div id="txtresponse" >Images order is updated</div>
-                                    <ul id="cover-list" class="mb-2">
-                                        {% for c in cover_photo %}
-                                            <li id="cover_{{ c.id }}" class="text-center">
-                                                <img src="{{ c.image.url }}" alt="Cover photo" class="photos">
-                                            </li>
-                                        {% endfor %}
-                                    </ul>
-                                    <button class="btn btn-secondary re-order btn-sm">REORDER</button>
-                                </div>
-                            </div>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-
-            <!-- =========================================================================== -->
             <!-- =========================== valuation summary ============================= -->
             <div class="card">
                 <div class="card-header">
@@ -302,10 +272,107 @@
                     </div>
                 </div>
                 
-                {% if summary %}
                 <div class="card-body">
-                    {% if summary_photo %}
+                    {% if cover_photo %}
                         <div class="row">
+                            <div class="col-md-12">
+                                <h4 class="text-light">Cover Fotografii</h4>
+                            </div>
+                        </div>
+                        <div class="row">
+                            {% if cover_photo %}
+                                <div class="col-md-12">
+                                    <div id="cover-container">
+                                        <div id="txtresponse" >Images order is updated</div>
+                                        <ul id="cover-list" class="mb-2">
+                                            {% for c in cover_photo %}
+                                                <li id="cover_{{ c.id }}" class="text-center">
+                                                    <img src="{{ c.image.url }}" alt="Cover photo" class="photos">
+                                                </li>
+                                            {% endfor %}
+                                        </ul>
+                                        <button class="btn btn-secondary re-order btn-sm">REORDER</button>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+
+                    {% if summary %}
+                        <div class="row mt-4">
+                            <div class="col-md-4">
+                                <b class="text-light mr-2">Scopul Evaluarii:</b> {{ summary.purpose.purpose }}
+                            </div>
+                            <div class="col-md-4">
+                                <b class="text-light mr-2">Curs valutar:</b> 1 EUR = {{ summary.fer }} RON
+                            </div>
+                            <div class="col-md-4">
+                                <b class="text-light mr-2">Curs valutar data:</b> {{ summary.fer_date|date:"d M Y" }}
+                            </div>
+                        </div>
+
+                        <p class="mt-3 text-light" style="font-size: 18px;">Valori rezultate</p>
+                        <div class="row">
+                            {% if summary.amav %}
+                            <div class="col-md-6">
+                                <table class="table table-bordered">
+                                    <tbody>
+                                        <tr>
+                                            <td><b>Valoarea de piata proprietate</b></td>
+                                            <td>
+                                                <b>{{summary|get_market_value|floatformat:'0'}} EUR</b><br>
+                                                <b>{{summary|get_market_value_ron:summary|floatformat:'0'}} RON</b>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Apartament</td>
+                                            <td><b>{{ summary.amav|floatformat:'0' }} EUR</b></td>
+                                        </tr>
+                                        {% for sv in summary_value %}
+                                            {% if sv.approache == 'market' %}
+                                            <tr>
+                                                <td>{{sv.field_name}}</td>
+                                                <td><b>{{ sv.field_value }} EUR</b></td>
+                                            </tr>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            {% endif %} 
+
+                            {% if summary.aiav %}
+                            <div class="col-md-6">
+                                <table class="table table-bordered">
+                                    <tbody>
+                                        <tr>
+                                            <td><b>Valoarea de venit proprietate</b></td>
+                                            <td>
+                                                <b>{{summary|get_income_value|floatformat:'0'}} EUR</b><br>
+                                                <b>{{summary|get_income_value_ron:summary|floatformat:'0'}} RON</b>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Apartament</td>
+                                            <td><b>{{ summary.aiav|floatformat:'0' }} EUR</b></td>
+                                        </tr>
+                                        <!-- {% for sv in summary_value %}
+                                            {% if sv.approache == 'income' %}
+                                            <tr>
+                                                <td>{{sv.field_name}}</td>
+                                                <td><b>{{ sv.field_value }} EUR</b></td>
+                                            </tr>
+                                            {% endif %}
+                                        {% endfor %} -->
+                                    </tbody>
+                                </table>
+                            </div>
+                            {% endif %} 
+                        </div>
+                    {% endif %}
+                    
+                    {% if summary_photo %}
+                        <div class="row mt-4">
                             <div class="col-md-12">
                                 <h4 class="text-light">Rezumantul Fotografii</h4>
                             </div>
@@ -326,80 +393,68 @@
                             </div>
                         </div>
                     {% endif %}
+                </div>
+            </div>
 
-                    <div class="row mt-4">
-                        <div class="col-md-4">
-                            <b class="text-light mr-2">Scopul Evaluarii:</b> {{ summary.purpose.purpose }}
-                        </div>
-                        <div class="col-md-4">
-                            <b class="text-light mr-2">Curs valutar:</b> 1 EUR = {{ summary.fer }} RON
-                        </div>
-                        <div class="col-md-4">
-                            <b class="text-light mr-2">Curs valutar data:</b> {{ summary.fer_date|date:"d M Y" }}
-                        </div>
+            
+            <!-- =========================================================================== -->
+            <!-- ============================= compartments ============================= -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="d-flex align-items-center">
+                        <h4 class="card-title">Compartimentare</h4>
+                        {% if rooms %}
+                        <button type="button" class="ml-auto btn btn-icon btn-round btn-primary" id="edit_rooms" data-toggle="tooltip" data-placement="top" title="Edit Compartimentare">
+                            <i class="fas fa-pencil-alt"></i>
+                        </button>
+                        {% else %}
+                        <button type="button" class="ml-auto btn btn-icon btn-round btn-primary" id="add_rooms" data-toggle="tooltip" data-placement="top" title="Add Compartimentare">
+                            <i class="fa fa-plus"></i>
+                        </button>
+                        {% endif %}
                     </div>
+                </div>
 
-                    <p class="mt-3 text-light" style="font-size: 18px;">Valori rezultate</p>
+                {% if rooms %}
+                <div class="card-body values">
                     <div class="row">
-                        {% if summary.amav %}
-                        <div class="col-md-6">
-                            <table class="table table-bordered">
-                                <tbody>
-                                    <tr>
-                                        <td><b>Valoarea de piata proprietate</b></td>
-                                        <td>
-                                            <b>{{valuation|get_market_value|floatformat:'0'}} EUR</b><br>
-                                            <b>{{valuation|get_market_value_ron:summary|floatformat:'0'}} RON</b>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>Apartament</td>
-                                        <td><b>{{ summary.amav|floatformat:'0' }} EUR</b></td>
-                                    </tr>
-                                    {% for sv in summary_value %}
-                                        {% if sv.approache == 'market' %}
-                                        <tr>
-                                            <td>{{sv.field_name}}</td>
-                                            <td><b>{{ sv.field_value }} EUR</b></td>
-                                        </tr>
-                                        {% endif %}
-                                    {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
-                        {% endif %} 
-
-                        {% if summary.aiav %}
-                        <div class="col-md-6">
-                            <table class="table table-bordered">
-                                <tbody>
-                                    <tr>
-                                        <td><b>Valoarea de venit proprietate</b></td>
-                                        <td>
-                                            <b>{{valuation|get_income_value|floatformat:'0'}} EUR</b><br>
-                                            <b>{{valuation|get_income_value_ron:summary|floatformat:'0'}} RON</b>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>Apartament</td>
-                                        <td><b>{{ summary.aiav|floatformat:'0' }} EUR</b></td>
-                                    </tr>
-                                    {% for sv in summary_value %}
-                                        {% if sv.approache == 'income' %}
-                                        <tr>
-                                            <td>{{sv.field_name}}</td>
-                                            <td><b>{{ sv.field_value }} EUR</b></td>
-                                        </tr>
-                                        {% endif %}
-                                    {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
-                        {% endif %} 
+                        {% for c in rooms %}
+                            <div class="col-md-3">
+                                <p class="font-weight-bold pb-0 mb-0">Nr. {{ c.attr_id.name }}</p>
+                                <p>{{c.attr_value}}</p>
+                            </div>
+                        {% endfor %}
+                        {% for c in customs %}
+                            <div class="col-md-3">
+                                <p class="font-weight-bold pb-0 mb-0">Nr. {{c.attr_name}}</p>
+                                <p>{{c.attr_value}}</p>
+                            </div>
+                        {% endfor %}
                     </div>
                 </div>
                 {% endif %}
             </div>
+            
+            
+            <!-- =========================================================================== -->
+            <!-- ============================= Contruction data =========================== -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="d-flex align-items-center">
+                        <h4 class="card-title">Constructia</h4>
+                        {% if const %}
+                            <button type="button" class="ml-auto btn btn-icon btn-round btn-primary" id="edit_const" data-toggle="tooltip" data-placement="top" title="Edit Constructia">
+                                <i class="fas fa-pencil-alt"></i>
+                            </button>
+                        {% else %}
+                            <button type="button" class="ml-auto btn btn-icon btn-round btn-primary" id="add_const" data-toggle="tooltip" data-placement="top" title="Add Constructia">
+                                <i class="fa fa-plus"></i>
+                            </button>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
 

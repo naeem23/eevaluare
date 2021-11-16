@@ -230,12 +230,12 @@ def evaluare_details(request, id):
 
 # ============================== Modules ===============================
 # =========================================================================
-modules = {'area':'Area','city':'City','property-type':'Property Type','compartment-type':'Compartment Type','status':'Status','valuation-purpose':'Valuation Purpose','valuation-approach':'Valuation Approach','strada-type':'Strada Type','transport':'Transport','conform-type':'ConformType','structure-type':'Structure Type','foundation-type':'Foundation Type','floor-type':'Floor Type','clouser-type':'ClouserType','subcompartment-type':'Subcompartment Type','roof-type':'Roof Type','invelitoare-type':'Invelitoare Type','mobila-type':'Mobila Type','property-right-type':'Property Right Type','heating-system':'Heating System','finish-type':'FinishType'}
+modules = {'area':'Area','city':'City','property-type':'Property Type','compartment-type':'Compartment Type','valuation-purpose':'Valuation Purpose','valuation-approach':'Valuation Approach','strada-type':'Strada Type','transport':'Transport','conform-type':'ConformType','structure-type':'Structure Type','foundation-type':'Foundation Type','floor-type':'Floor Type','clouser-type':'ClouserType','subcompartment-type':'Subcompartment Type','roof-type':'Roof Type','invelitoare-type':'Invelitoare Type','mobila-type':'Mobila Type','property-right-type':'Property Right Type','heating-system':'Heating System','finish-type':'FinishType'}
 
 @login_required(login_url='/signin/')
 def modules_list(request):
 	template_name = 'dashboard/modules_list.html'
-	modules = {'area':'Area','city':'City','property-type':'Property Type','compartment-type':'Compartment Type','status':'Status','valuation-purpose':'Valuation Purpose','valuation-approach':'Valuation Approach','strada-type':'Strada Type','transport':'Transport','conform-type':'ConformType','structure-type':'Structure Type','foundation-type':'Foundation Type','floor-type':'Floor Type','clouser-type':'ClouserType','subcompartment-type':'Subcompartment Type','roof-type':'Roof Type','invelitoare-type':'Invelitoare Type','mobila-type':'Mobila Type','property-right-type':'Property Right Type','heating-system':'Heating System','finish-type':'FinishType'}
+	modules = {'area':'Area','city':'City','property-type':'Property Type','compartment-type':'Compartment Type','valuation-purpose':'Valuation Purpose','valuation-approach':'Valuation Approach','strada-type':'Strada Type','transport':'Transport','conform-type':'ConformType','structure-type':'Structure Type','foundation-type':'Foundation Type','floor-type':'Floor Type','clouser-type':'ClouserType','subcompartment-type':'Subcompartment Type','roof-type':'Roof Type','invelitoare-type':'Invelitoare Type','mobila-type':'Mobila Type','property-right-type':'Property Right Type','heating-system':'Heating System','finish-type':'FinishType'}
 
 	if request.session.get('success'):
 		msg = 'deleted'
@@ -273,7 +273,7 @@ def modules_list(request):
 @login_required(login_url='/signin/')
 def go_module(request, key):
 	template_name = 'dashboard/go_module.html'
-	modules = {'area':'Area','city':'City','property-type':'Property Type','compartment-type':'Compartment Type','status':'Status','valuation-purpose':'Valuation Purpose','valuation-approach':'Valuation Approach','strada-type':'Strada Type','transport':'Transport','conform-type':'ConformType','structure-type':'Structure Type','foundation-type':'Foundation Type','floor-type':'Floor Type','clouser-type':'ClouserType','subcompartment-type':'Subcompartment Type','roof-type':'Roof Type','invelitoare-type':'Invelitoare Type','mobila-type':'Mobila Type','property-right-type':'Property Right Type','heating-system':'Heating System','finish-type':'FinishType'}
+	modules = {'area':'Area','city':'City','property-type':'Property Type','compartment-type':'Compartment Type','valuation-purpose':'Valuation Purpose','valuation-approach':'Valuation Approach','strada-type':'Strada Type','transport':'Transport','conform-type':'ConformType','structure-type':'Structure Type','foundation-type':'Foundation Type','floor-type':'Floor Type','clouser-type':'ClouserType','subcompartment-type':'Subcompartment Type','roof-type':'Roof Type','invelitoare-type':'Invelitoare Type','mobila-type':'Mobila Type','property-right-type':'Property Right Type','heating-system':'Heating System','finish-type':'FinishType'}
 
 	if request.method=="POST":
 		if 'add' in request.POST:
@@ -281,8 +281,6 @@ def go_module(request, key):
 				area = vmodels.Area.objects.create(auto = request.POST.get('auto'), name = request.POST.get('name'))
 			elif request.POST.get('add')=="city":
 				city = vmodels.City.objects.create(area = request.POST.get('area'), name = request.POST.get('name'))
-			elif request.POST.get('add')=="status":
-				status = vmodels.Status.objects.create(status = request.POST.get('status'))
 			elif request.POST.get('add')=="valuation-purpose":
 				valuation_purpose = vmodels.ValuationPurpose.objects.create(purpose = request.POST.get('purpose'))
 			elif request.POST.get('add')=="valuation-approach":
@@ -331,10 +329,6 @@ def go_module(request, key):
 				obj = vmodels.City.objects.get(id = idd)
 				obj.area = request.POST.get('area')
 				obj.name = request.POST.get('name')
-				obj.save()
-			elif request.POST.get('update')=="status":
-				obj = vmodels.Status.objects.get(id = idd)
-				obj.status = request.POST.get('status')
 				obj.save()
 			elif request.POST.get('update')=="valuation-purpose":
 				obj = vmodels.ValuationPurpose.objects.get(id = idd)
@@ -418,8 +412,6 @@ def go_module(request, key):
 	elif key=="city":
 		areas = vmodels.Area.objects.all()
 		module_keys = vmodels.City.objects.all()
-	elif key=="status":
-		module_keys = vmodels.Status.objects.all()
 	elif key=="valuation-purpose":
 		module_keys = vmodels.ValuationPurpose.objects.all()
 	elif key=="valuation-approach":
@@ -456,7 +448,7 @@ def go_module(request, key):
 		module_keys = vmodels.FloorType.objects.all()
 	elif key=="foundation-type":
 		module_keys = vmodels.FoundationType.objects.all()
-	
+	print(modules[key], "--", key)
 	context = {
 		'modules': modules,
 		'key': key,
@@ -475,8 +467,6 @@ def delete_module(request,key, id):
 		module_obj = get_object_or_404(vmodels.Area, id=id)
 	elif key=="city":
 		module_obj = get_object_or_404(vmodels.City, id=id)
-	elif key=="status":
-		module_obj = get_object_or_404(vmodels.Status, id=id)
 	elif key=="valuation-purpose":
 		module_obj = get_object_or_404(vmodels.ValuationPurpose, id=id)
 	elif key=="valuation-approach":

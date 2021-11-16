@@ -142,8 +142,56 @@
                             </div>
                             <div class="col-md-4">
                                 <div class="form-group">
-                                    <label for="id_property_type">Apartament nr.</label>
+                                    <label for="id_street">Strada <span class="required-label">*</span></label>
+                                    {{ form.street }}
+                                    <small class="form-text text-danger street"></small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label for="id_numarul">Numarul <span class="required-label">*</span></label>
+                                    {{ form.numarul }}
+                                    {{ form.latitude }}
+                                    {{ form.longitude }}
+                                    <small class="form-text text-danger numarul"></small>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label for="id_building_no">Blocul <span class="required-label">*</span></label>
+                                    {{ form.building_no }}
+                                    <small class="form-text text-danger building_no"></small>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label for="id_scara">Scara <span class="required-label">*</span></label>
+                                    {{ form.scara }}
+                                    <small class="form-text text-danger scara"></small>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label for="id_floor_no">Etaj <span class="required-label">*</span></label>
+                                    {{ form.floor_no }}
+                                    <small class="form-text text-danger floor_no"></small>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label for="id_apartment_no">Apartament <span class="required-label">*</span></label>
                                     {{ form.apartment_no }}
+                                    <small class="form-text text-danger apartment_no"></small>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label for="id_postal_code">Cod Postal <span class="required-label">*</span></label>
+                                    {{ form.postal_code }}
+                                    <small class="form-text text-danger postal_code"></small>
                                 </div>
                             </div>
                         </div>
@@ -151,16 +199,7 @@
                         <div class="row">
                             <div class="col-md-4">
                                 <div class="form-group">
-                                    <label for="id_address">Adresa <span class="required-label">*</span></label>
-                                    {{ form.address }}
-                                    {{ form.latitude }}
-                                    {{ form.longitude }}
-                                    <small class="form-text text-danger street"></small>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label for="id_area">Judet/Municipiu <span class="required-label">*</span></label>
+                                    <label for="id_area">Judet/Municipiul <span class="required-label">*</span></label>
                                     {{ form.area }}
                                     <small class="form-text text-danger area"></small>
                                 </div>
@@ -197,14 +236,21 @@
                             </div>
                             <div class="col-md-4">
                                 <div class="form-group">
-                                    <label for="id_height">Regim de inaltime imobil <span class="required-label">*</span></label>
-                                    {{ form.height }}
-                                    <small class="form-text text-danger height"></small>
+                                    <label for="id_zona">Zona <span class="required-label">*</span></label>
+                                    {{ form.zona }}
+                                    <small class="form-text text-danger zona"></small>
                                 </div>
                             </div>
                         </div>
                         
                         <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="id_height">Regim de inaltime imobil <span class="required-label">*</span></label>
+                                    {{ form.height }}
+                                    <small class="form-text text-danger height"></small>
+                                </div>
+                            </div>
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="id_construction_year">An constructie <span class="required-label">*</span></label>
@@ -357,7 +403,6 @@
 
         // ========================= map management  =============================
         var map = L.map('mapid').setView([44.4268, 26.1025], 13);
-        // var map = L.map('mapid').setView([24.774265, 46.738586], 13);
 
         L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibmFlZW0yMyIsImEiOiJja2lyNmpzdjUwMHVrMnRreXZyNHdubHptIn0.X3OwhHNVTJG_SzVzHEeLnQ', {
             attribution: '&copy; <a href="https://osm.org/copyright">OpenStreetMap</a> contributors',
@@ -379,8 +424,10 @@
 
         var marker = L.marker()
         searchControl.on('results', function (data) {
-            console.log(data)
-            $('#id_address').val(data.text)
+            let address = data.text.split(',');
+            console.log(address)
+            $('#id_street').val(address[0]);
+            $('#id_postal_code').val(address[0].trim());
             map.removeLayer(marker)
             for (var i = data.results.length - 1; i >= 0; i--) {
                 marker = L.marker(data.results[i].latlng, {draggable:'true'}).addTo(map);
@@ -421,7 +468,7 @@
         // ======================== form validation check ===========================
         $("#submitBtn").on('click', function () {
             var prop_type =  $("#id_property_type").val()
-            var address = $("#id_address").val()
+            var street = $("#id_street").val()
             var lat = $("#id_latitude").val()
             var lng = $("#id_longitude").val()
             var area = $("#id_area").val()
@@ -432,7 +479,7 @@
             var height = $("#id_height").val()
             var cy = $("#id_construction_year").val()
             
-            if(prop_type.length > 0 && address.length > 0 && lat.length > 0 && lng.length > 0 && area.length > 0 && city.length > 0 && height.length > 0 && cy.length > 0 && owner.length > 0 && client.length > 0 && recipient.length > 0) {
+            if(prop_type.length > 0 && street.length > 0 && lat.length > 0 && lng.length > 0 && area.length > 0 && city.length > 0 && height.length > 0 && cy.length > 0 && owner.length > 0 && client.length > 0 && recipient.length > 0) {
                 $("#initial_form").submit();
             } else {
                 if (prop_type.length < 1) {
@@ -443,7 +490,7 @@
                     $(".prop_type").text('')
                 }
 
-                if (address.length < 1) {
+                if (street.length < 1) {
                     $("#id_street").addClass('required')
                     $(".street").text('This field is required')
                 } else {
