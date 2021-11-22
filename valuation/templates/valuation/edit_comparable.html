@@ -249,7 +249,7 @@
                                 <tr>
                                     <td>Date disponibile</td>
                                     <td>
-                                        <input type="text" id="id_sub_avdata" name="sub_avdata" value="{{sub_comp.ad}}" class="form-control">
+                                        <input type="text" id="id_sub_avdata" name="sub_avdata" value="{{sub_comp.sub_ad}}" class="form-control">
                                     </td>
                                     {% for n in comp_table %}
                                         <td>
@@ -371,7 +371,7 @@
                                     <td>
                                         <select id="id_sub_pr" class="form-control" name="sub_pr">
                                             {% for p in prop_rights %}
-                                            <option value="{{p.type}}" {% if sub_comp.pr == p.type %}selected{% endif%}>{{p.type}}</option>
+                                            <option value="{{p.type}}" {% if sub_comp.sub_pr == p.type %}selected{% endif%}>{{p.type}}</option>
                                             {% endfor %}
                                         </select>
                                     </td>
@@ -744,8 +744,8 @@
                                     <td>Cheltuieli necesare imediat dupa cumparare</td>
                                     <td>
                                         <select id="id_sub_ape" class="form-control" name="sub_ape">
-                                            <option value="Nu" {% if sub_comp.ape == 'Nu' %}selected{% endif%}>Nu</option>
-                                            <option value="Da" {% if sub_comp.ape == 'Da' %}selected{% endif%}>Da</option>
+                                            <option value="Nu" {% if sub_comp.sub_ape == 'Nu' %}selected{% endif%}>Nu</option>
+                                            <option value="Da" {% if sub_comp.sub_ape == 'Da' %}selected{% endif%}>Da</option>
                                         </select>
                                     </td>
                                     {% for n in comp_table %}
@@ -869,7 +869,7 @@
                                 <tr>
                                     <td>Conditii de piata</td>
                                     <td>
-                                        <input type="text" class="form-control" name="sub_me" id="id_sub_me" value="{{sub_comp.me}}"/>
+                                        <input type="text" class="form-control" name="sub_me" id="id_sub_me" value="{{sub_comp.sub_me}}"/>
                                     </td>
                                     {% for n in comp_table %}
                                         <td>
@@ -986,7 +986,7 @@
                                 <tr>
                                     <td>Localizare</td>
                                     <td>
-                                        <input type="text" class="form-control" name="sub_location" id="id_sub_location" value="{{sub_comp.lc}}"/>
+                                        <input type="text" class="form-control" name="sub_location" id="id_sub_location" value="{{sub_comp.sub_lc}}"/>
                                     </td>
                                     {% for n in comp_table %}
                                         <td>
@@ -1079,7 +1079,7 @@
                                     <td>
                                         <select id="id_sub_cp" class="form-control" name="sub_cp">
                                             {% for c in comp_type %}
-                                            <option value="{{c.type}}" {% if c.type == sub_comp.cp %}selected{% endif %}>{{c.type}}</option>
+                                            <option value="{{c.type}}" {% if c.type == sub_comp.sub_cp %}selected{% endif %}>{{c.type}}</option>
                                             {% endfor %}
                                         </select>
                                     </td>
@@ -1184,7 +1184,7 @@
                                 <tr>
                                     <td>AN PIF</td>
                                     <td>
-                                        <input type="text" class="form-control" name="sub_cy" id="id_cy" value="{{sub_comp.cy}}"/>
+                                        <input type="text" class="form-control" name="sub_cy" id="id_cy" value="{{sub_comp.sub_cy}}"/>
                                     </td>
                                     {% for n in comp_table %}
                                         <td>
@@ -1275,7 +1275,7 @@
                                 <tr>
                                     <td>Numar de camere</td>
                                     <td>
-                                        <input type="number" class="form-control" name="sub_camara" id="id_sub_camara" min="2" value="{{sub_comp.camara}}"/>
+                                        <input type="number" class="form-control" name="sub_camara" id="id_sub_camara" min="2" value="{{sub_comp.comparable.camara}}"/>
                                     </td>
                                     {% for n in comp_table %}
                                         <td>
@@ -1300,7 +1300,7 @@
                                 <tr>
                                     <td>Suprafata utila (mp)</td>
                                     <td>
-                                        <input type="number" class="form-control" name="sub_area" id="id_sub_area" step="0.01" value="{{sub_comp.area}}"/>
+                                        <input type="number" class="form-control" name="sub_area" id="id_sub_area" step="0.01" value="{{sub_comp.sub_area}}"/>
                                     </td>
                                     {% for n in comp_table %}
                                         <td>
@@ -1416,7 +1416,7 @@
                                     <td>
                                         <select id="id_sub_finish" class="form-control" name="sub_finish">
                                             {% for f in finish_type %}
-                                            <option value="{{f.type}}" {% if f.id == sub_comp.finish %}selected{% endif %}>{{f.type}}</option>
+                                            <option value="{{f.type}}" {% if f.id == sub_comp.sub_finish %}selected{% endif %}>{{f.type}}</option>
                                             {% endfor %}
                                         </select>
                                     </td>
@@ -1521,7 +1521,7 @@
                                 <tr>
                                     <td>Regim de inaltime</td>
                                     <td>
-                                        <input type="text" name="sub_etaj" class="form-control" value="{{sub_comp.etaj}}">
+                                        <input type="text" name="sub_etaj" class="form-control" value="{{sub_comp.sub_etaj}}">
                                     </td>
                                     {% for n in comp_table %}
                                         <td>
@@ -1612,7 +1612,7 @@
                                 <tr>
                                     <td>Balcon (mp)</td>
                                     <td>
-                                        <input type="number" class="form-control" name="sub_balcon" step="0.01" id="sub_balcon" value="{{sub_comp.balcon}}"/>
+                                        <input type="number" class="form-control" name="sub_balcon" step="0.01" id="sub_balcon" value="{{sub_comp.sub_balcon}}"/>
                                     </td>
                                     {% for n in comp_table %}
                                         <td>
@@ -1711,7 +1711,7 @@
                                     <td>
                                         <select class="form-control" name="sub_hs">
                                             {% for h in heating %}
-                                            <option value="{{h.name}}" {% if h.name == sub_comp.hs %}selected{% endif %}>{{h.name}}</option>
+                                            <option value="{{h.name}}" {% if h.name == sub_comp.sub_hs %}selected{% endif %}>{{h.name}}</option>
                                             {% endfor %}
                                         </select>
                                     </td>
@@ -1818,7 +1818,7 @@
                                         <input type="text" class="form-control" name="opt1_name" value="{{sub_comp.opt1_name}}">
                                     </td>
                                     <td>
-                                        <input type="text" class="form-control" name="sub_opt1_val" value="{{sub_comp.opt1_val}}">
+                                        <input type="text" class="form-control" name="sub_opt1_val" value="{{sub_comp.sub_opt1}}">
                                     </td>
                                     {% for n in comp_table %}
                                         <td>
@@ -1911,7 +1911,7 @@
                                         <input type="text" class="form-control" name="opt2_name" value="{{sub_comp.opt2_name}}">
                                     </td>
                                     <td>
-                                        <input type="text" class="form-control" name="sub_opt2_val" value="{{sub_comp.opt2_val}}">
+                                        <input type="text" class="form-control" name="sub_opt2_val" value="{{sub_comp.sub_opt2}}">
                                     </td>
                                     {% for n in comp_table %}
                                         <td>
@@ -2004,7 +2004,7 @@
                                         <input type="text" class="form-control" name="opt3_name" value="{{sub_comp.opt3_name}}">
                                     </td>
                                     <td>
-                                        <input type="text" class="form-control" name="sub_opt3_val" value="{{sub_comp.opt3_val}}">
+                                        <input type="text" class="form-control" name="sub_opt3_val" value="{{sub_comp.sub_opt3}}">
                                     </td>
                                     {% for n in comp_table %}
                                         <td>
@@ -2491,7 +2491,7 @@
                             </tr>
                             <tr>
                                 <td>Suprafata utila</td>
-                                <td><input type="number" name="vbp_area" class="form-control" step="0.01" id="vbp_area" value="{{sub_comp.area}}" readonly></td>
+                                <td><input type="number" name="vbp_area" class="form-control" step="0.01" id="vbp_area" value="{{sub_comp.sub_area}}" readonly></td>
                             </tr>
                             <tr>
                                 <td>Chirie lunara solicitata/mp</td>
@@ -2654,8 +2654,8 @@
                     get_total(i);
                     get_gross_total(i);
                 } else {
-                    $('#margin_'+i+'').css("background", 'transparent');
-                    $('#cv_'+i+'').css("background", 'transparent');
+                    $('#margin_'+i+'').css("background", '#1a2035');
+                    $('#cv_'+i+'').css("background", '#1a2035');
                 }
             });
 

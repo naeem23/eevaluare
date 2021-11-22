@@ -638,8 +638,8 @@
                 },
                 success: function (e) {
                     if(e.success=='true') {
-                        $('#id_legal_doc').append("<option data-toggle='tooltip' data-placement='top' title='"+val+"' value=\"" + e.id + "\">" + val.substring(0,30) + " " +(val.length > 29) ? "...":"" + "</option>");
-                        $('#id_legal_doc').multipleSelect( 'refresh' );
+                        $('#id_legal_doc').append("<option data-toggle='tooltip' data-placement='top' title='"+val+"' value=\"" + e.id + "\">" + val.substring(0,30) + "...</option>");
+                        $('#id_legal_doc').multipleSelect('refresh');
         
                         let last = null;
                         if (id == "add_src") {

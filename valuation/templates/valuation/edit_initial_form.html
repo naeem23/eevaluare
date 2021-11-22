@@ -191,16 +191,14 @@
                             </div>
                             <div class="col-md-2">
                                 <div class="form-group">
-                                    <label for="id_building_no">Blocul <span class="required-label">*</span></label>
+                                    <label for="id_building_no">Blocul</label>
                                     {{ form.building_no }}
-                                    <small class="form-text text-danger building_no"></small>
                                 </div>
                             </div>
                             <div class="col-md-2">
                                 <div class="form-group">
-                                    <label for="id_scara">Scara <span class="required-label">*</span></label>
+                                    <label for="id_scara">Scara</label>
                                     {{ form.scara }}
-                                    <small class="form-text text-danger scara"></small>
                                 </div>
                             </div>
                             <div class="col-md-2">
@@ -531,7 +529,12 @@
         })
 
         searchControl.on('results', function (data) {
-            $('#id_address').val(data.text)
+            let address = data.text.split(',');
+            $('#id_street').val(address[0]);
+            $('#id_postal_code').val(address[1].trim());
+            let area = address[3];
+            $("#id_area option:contains("+area+")").prop("selected","selected");
+            $('#id_area').trigger('change'); 
             map.removeLayer(marker)
             for (var i = data.results.length - 1; i >= 0; i--) {
                 marker = L.marker(data.results[i].latlng, {draggable:'true'}).addTo(map);
@@ -579,7 +582,11 @@
             var title = $("#id_title").val()
             var status = $("#id_status").val()
             var prop_type =  $("#id_property_type").val()
-            var address = $("#id_address").val()
+            var street = $("#id_street").val()
+            var numarul = $("#id_numarul").val()
+            var floor_no = $("#id_floor_no").val()
+            var apartment_no = $("#id_apartment_no").val()
+            var zona = $("#id_zona").val()
             var lat = $("#id_latitude").val()
             var lng = $("#id_longitude").val()
             var area = $("#id_area").val()
@@ -591,7 +598,7 @@
             var cy = $("#id_construction_year").val()
             var inspection_date = $("#id_inspection_date").val()
             
-            if(title.length > 0 && status.length > 0 && prop_type.length > 0 && address.length > 0 && lat.length > 0 && lng.length > 0 && area.length > 0 && city.length > 0 && height.length > 0 && cy.length > 0 && owner.length > 0 && client.length > 0 && recipient.length > 0 && inspection_date.length > 0) {
+            if(title.length > 0 && status.length > 0 && prop_type.length > 0 && street.length > 0 && numarul.length > 0 && floor_no.length > 0 && apartment_no.length > 0 && zona.length > 0 && lat.length > 0 && lng.length > 0 && area.length > 0 && city.length > 0 && height.length > 0 && cy.length > 0 && owner.length > 0 && client.length > 0 && recipient.length > 0 && inspection_date.length > 0) {
                 $("#initial_form").submit();
             } else {
                 if (title.length < 1) {
@@ -618,12 +625,44 @@
                     $(".prop_type").text('')
                 }
 
-                if (address.length < 1) {
+                if (street.length < 1) {
                     $("#id_street").addClass('required')
                     $(".street").text('This field is required')
                 } else {
                     $("#id_street").removeClass('required')
                     $(".street").text('')
+                }
+
+                if (numarul.length < 1) {
+                    $("#id_numarul").addClass('required')
+                    $(".numarul").text('This field is required')
+                } else {
+                    $("#id_numarul").removeClass('required')
+                    $(".numarul").text('')
+                }
+
+                if (floor_no.length < 1) {
+                    $("#id_floor_no").addClass('required')
+                    $(".floor_no").text('This field is required')
+                } else {
+                    $("#id_floor_no").removeClass('required')
+                    $(".floor_no").text('')
+                }
+
+                if (apartment_no.length < 1) {
+                    $("#id_apartment_no").addClass('required')
+                    $(".apartment_no").text('This field is required')
+                } else {
+                    $("#id_apartment_no").removeClass('required')
+                    $(".apartment_no").text('')
+                }
+
+                if (zona.length < 1) {
+                    $("#id_zona").addClass('required')
+                    $(".zona").text('This field is required')
+                } else {
+                    $("#id_zona").removeClass('required')
+                    $(".zona").text('')
                 }
 
                 if (lat.length < 1 || lng.length < 1) {

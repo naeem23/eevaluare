@@ -588,9 +588,9 @@ def pdf(request, id):
 		market = vmodels.MarketAnalysis.objects.filter(ref_no=valuation).latest('id')
 	except:
 		market = None 
-	comp_table = vmodels.ComparableTable.objects.filter(ref_no=valuation)
+	comp_table = vmodels.ComparableTable.objects.filter(ref_no=valuation).exclude(name=None)
 	try:
-		sub_prop = vmodels.ComparableProperty.objects.filter(ref_no=valuation).latest('id')
+		sub_prop = vmodels.ComparableTable.objects.filter(ref_no=valuation, name=None).latest('id')
 	except:
 		sub_prop = None
 	try:

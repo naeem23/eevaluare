@@ -22,8 +22,17 @@
                 left: 40pt; width: 522pt; top: 782pt; height: 30pt;
             }
         }
+        @font-face {
+            font-family: "Verdana";
+            src: url("C:/Users/naeem/Downloads/verdana/verdana.ttf");
+        }
+        @font-face {
+            font-family: "Verdana";
+            src: url("C:/Users/naeem/Downloads/verdana/Verdana Bold.ttf");
+            font-weight: bold;
+        }
         body {
-            font-family: Helvetica;
+            font-family: Verdana;
             font-size: 14px;
         }
         h1, h2, h3, h4, h5, h6, p, a, ul, li {
@@ -106,7 +115,7 @@
                     {{ valuation.property_type.type }} cu {{camara.camara|floatformat:0}} si dependinte
                 {% endif %}
             </p>    
-            <p>Adresa: {{valuation.address}}, {{valuation.city.name}}, {{valuation.area.name}}</p>  
+            <p>Adresa: {{valuation.street}}, {{valuation.numarul}}, {% if valuation.building_no %}{{valuation.building_no}}, {% endif %}{% if valuation.scara%}{{valuation.scara}}, {% endif %}{{valuation.floor_no}}, {{valuation.apartment_no}}, {{valuation.city.name}}, {{valuation.area.name}}</p>  
 
             <h3 style="margin-top: 20px; font-size: 16px;">PROPERTY VALUE</h3>
             <p style="font-size: 14px; font-weight: bold;">
@@ -209,7 +218,7 @@
                     {{ valuation.property_type.type }} cu {{camara.camara|floatformat:0}} si dependinte
                 {% endif %}
             </p>
-            <p style="margin-bottom: 10px;"><b>Adresa:</b> {{valuation.address}}, {{valuation.city.name}}, {{valuation.area.name}}</p>
+            <p style="margin-bottom: 10px;"><b>Adresa:</b> {{valuation.street}}, {{valuation.numarul}}, {% if valuation.building_no %}{{valuation.building_no}}, {% endif %}{% if valuation.scara%}{{valuation.scara}}, {% endif %}{{valuation.floor_no}}, {{valuation.apartment_no}}, {{valuation.city.name}}, {{valuation.area.name}}</p>
             <p style="margin-bottom: 10px;"><b>Utilizator:</b>{{valuation.report_recipient}}</p>
             <p style="margin-bottom: 10px;"><b>Client:</b> {{valuation.nume_client}}</p>
             <p style="margin-bottom: 10px;"><b>Proprietar:</b> {{valuation.owner}}</p>
@@ -224,7 +233,7 @@
                     {% endfor %}
                 </tr>
             </table>
-            <br> <br>
+            <br>
             <table>
                 <tr valign="middle" style="height: 150px;">
                     <td style="text-align:center;">
@@ -300,7 +309,7 @@
                     <td>-rezentulraport de evaluaretrebuieluat ca un intreg, nefiindacceptatautilizareadivizata a acestuia.</td>  
                 </tr>   
             </table>
-            <br> <br>
+            <br>
             <table>
                 <tr valign="middle" style="height: 150px;">
                     <td style="text-align:center;">
@@ -575,7 +584,7 @@
             <p style="margin: 10px 0; text-indent: 3rem; font-weight: bold;">5. Descrierea si adresa</p>
             <p style="text-align: justify;">{% if pdata.sub_identi %}{{ pdata.sub_identi }}{% else %}Dreptul deplin de proprietate asupra apartamentului cu nr. {{valuation.apartment_no}}, compus din {{camara.camara|floatformat:"0"}} camere si dependinte cu o suprafata utila de {{ const.utila }} mp si trei balcoane cu suprafata lor totala de {{ const.totala|sub:const.utila }}, rezultand suprafata utila totala de {{ const.totala }} mp. {% if pdata.cadastral_text %}{{pdata.cadastral_text|safe}}{% else %}Apartamentul are numarul cadastral {{pdata.cadastral_no}} si este intabulat in Cartea Funciara numarul {{pdata.land_book_no}}.{% endif %}{% endif %}</p>
             <p style="margin-top: 5px;">Adresa proprietatii este</p>
-            <p style="margin-bottom: 10px;">{{valuation.address}}, {{valuation.city.name}}, {{valuation.area.name}}</p>
+            <p style="margin-bottom: 10px;">{{valuation.street}}, {{valuation.numarul}}, {% if valuation.building_no %}{{valuation.building_no}}, {% endif %}{% if valuation.scara%}{{valuation.scara}}, {% endif %}{{valuation.floor_no}}, {{valuation.apartment_no}}, {{valuation.city.name}}, {{valuation.area.name}}</p>
 
             <p style="margin-bottom: 10px; text-indent: 3rem; font-weight: bold;">6. Proprietar si situatia juridica</p>
             <p style="margin-bottom: 5px;text-align: justify;">
@@ -853,111 +862,111 @@
                     <td>Pret (EURO)</td>
                     <td></td>
                     {% for c in comp_table %}
-                    <td>{{c.comparable.sale_price|floatformat:"0"}}</td>
+                    <td>{{c.sale_price|floatformat:"0"}}</td>
                     {% endfor %}
                 </tr>
                 <tr valign="middel">
                     <td>Date disponibile</td>
                     <td></td>
                     {% for p in comp_table %}
-                    <td>{{p.comparable.ad}}</td>
+                    <td>{{p.ad}}</td>
                     {% endfor %}
                 </tr>
                 <tr valign="middel">
                     <td>Drepturi de proprietate</td>
-                    <td>{{sub_prop.pr}}</td>
+                    <td>{{sub_prop.sub_pr}}</td>
                     {% for p in comp_table %}
-                    <td>{{p.comparable.pr}}</td>
+                    <td>{{p.pr}}</td>
                     {% endfor %}
                 </tr>
                 <tr valign="middel">
                     <td>Conditii de finantare</td>
-                    <td>{{sub_prop.fc}}</td>
+                    <td>{{sub_prop.sub_fc}}</td>
                     {% for p in comp_table %}
-                    <td>{{p.comparable.fc}}</td>
+                    <td>{{p.fc}}</td>
                     {% endfor %}
                 </tr>
                 <tr valign="middel">
                     <td>Conditii de vanzare</td>
-                    <td>{{sub_prop.sc}}</td>
+                    <td>{{sub_prop.sub_sc}}</td>
                     {% for p in comp_table %}
-                    <td>{{p.comparable.sc}}</td>
+                    <td>{{p.sc}}</td>
                     {% endfor %}
                 </tr>
                 <tr valign="middel">
                     <td>Cheltuieli necesare imediat dupa cumparare</td>
-                    <td>{{sub_prop.ape}}</td>
+                    <td>{{sub_prop.sub_ape}}</td>
                     {% for p in comp_table %}
-                    <td>{{p.comparable.ape}}</td>
+                    <td>{{p.ape}}</td>
                     {% endfor %}
                 </tr>
                 <tr valign="middel">
                     <td>Conditii de piata</td>
-                    <td>{{sub_prop.me}}</td>
+                    <td>{{sub_prop.sub_me}}</td>
                     {% for p in comp_table %}
-                    <td>{{p.comparable.me}}</td>
+                    <td>{{p.me}}</td>
                     {% endfor %}
                 </tr>
                 <tr valign="middel">
                     <td>Localizare</td>
-                    <td>{{sub_prop.lc}}</td>
+                    <td>{{sub_prop.sub_lc}}</td>
                     {% for p in comp_table %}
-                    <td>{{p.comparable.lc}}</td>
+                    <td>{{p.lc}}</td>
                     {% endfor %}
                 </tr>
                 <tr valign="middel">
                     <td>Compartimentare</td>
-                    <td>{{sub_prop.cp}}</td>
+                    <td>{{sub_prop.sub_cp}}</td>
                     {% for p in comp_table %}
-                    <td>{{p.comparable.cp}}</td>
+                    <td>{{p.cp}}</td>
                     {% endfor %}
                 </tr>
                 <tr valign="middel">
                     <td>AN PIF</td>
-                    <td>{{sub_prop.cy}}</td>
+                    <td>{{sub_prop.sub_cy}}</td>
                     {% for p in comp_table %}
-                    <td>{{p.comparable.cy}}</td>
+                    <td>{{p.cy}}</td>
                     {% endfor %}
                 </tr>
                 <tr valign="middel">
                     <td>Suprafata utila (mp)</td>
-                    <td>{{sub_prop.area}}</td>
+                    <td>{{sub_prop.sub_area}}</td>
                     {% for p in comp_table %}
-                    <td>{{p.comparable.area}}</td>
+                    <td>{{p.area}}</td>
                     {% endfor %}
                 </tr>
                 <tr valign="middel">
                     <td>Finisaje</td>
-                    <td>{{sub_prop.finish}}</td>
+                    <td>{{sub_prop.sub_finish}}</td>
                     {% for p in comp_table %}
-                    <td>{{p.comparable.finish}}</td>
+                    <td>{{p.finish}}</td>
                     {% endfor %}
                 </tr>
                 <tr valign="middel">
                     <td>Regim de inaltime</td>
-                    <td>{{sub_prop.etaj}}</td>
+                    <td>{{sub_prop.sub_etaj}}</td>
                     {% for p in comp_table %}
-                    <td>{{p.comparable.etaj}}</td>
+                    <td>{{p.etaj}}</td>
                     {% endfor %}
                 </tr>
                 <tr valign="middel">
                     <td>Balcon (mp)</td>
-                    <td>{{sub_prop.balcon}}</td>
+                    <td>{{sub_prop.sub_balcon}}</td>
                     {% for p in comp_table %}
-                    <td>{{p.comparable.balcon}}</td>
+                    <td>{{p.balcon}}</td>
                     {% endfor %}
                 </tr>
                 <tr valign="middel">
                     <td>Sistem de incalzire</td>
-                    <td>{{sub_prop.hs}}</td>
+                    <td>{{sub_prop.sub_hs}}</td>
                     {% for p in comp_table %}
-                    <td>{{p.comparable.hs}}</td>
+                    <td>{{p.hs}}</td>
                     {% endfor %}
                 </tr>
                 {% if sub_prop.opt1_name %}
                 <tr valign="middel">
                     <td>{{sub_prop.opt1_name}}</td>
-                    <td>{{sub_prop.opt1_val}}</td>
+                    <td>{{sub_prop.sub_opt1}}</td>
                     {% for p in comp_table %}
                     <td>{{p.opt1_val}}</td>
                     {% endfor %}
@@ -966,7 +975,7 @@
                 {% if sub_prop.opt2_name %}
                 <tr valign="middel">
                     <td>{{sub_prop.opt2_name}}</td>
-                    <td>{{sub_prop.opt2_val}}</td>
+                    <td>{{sub_prop.sub_opt2}}</td>
                     {% for p in comp_table %}
                     <td>{{p.opt2_val}}</td>
                     {% endfor %}
@@ -975,7 +984,7 @@
                 {% if sub_prop.opt3_name %}
                 <tr valign="middel">
                     <td>{{sub_prop.opt3_name}}</td>
-                    <td>{{sub_prop.opt3_val}}</td>
+                    <td>{{sub_prop.sub_opt3}}</td>
                     {% for p in comp_table %}
                     <td>{{p.opt3_val}}</td>
                     {% endfor %}
@@ -1008,7 +1017,7 @@
                     <td style="text-align: left;padding-left:3px">Pret de oferta/vanzare (EURO)</td>
                     <td></td>
                     {% for p in comp_table %}
-                    <td>{{p.comparable.sale_price|floatformat:"0"}}</td>
+                    <td>{{p.sale_price|floatformat:"0"}}</td>
                     {% endfor %}
                 </tr>
                 
@@ -1016,24 +1025,24 @@
                     <td rowspan="3">Componente non imobiliare (non real-estate component)</td>
                     <td rowspan="2">Mobila</td>
                     {% for p in comp_table %}
-                    <td>{{p.comparable.mobila}}</td>
+                    <td>{{p.mobila}}</td>
                     {% endfor %}
                 </tr>
                 <tr valign="middel">
                     {% for c in comp_table %}
-                    <td>{{c.comparable.ma|floatformat:"0"}}</td>
+                    <td>{{c.ma|floatformat:"0"}}</td>
                     {% endfor %}
                 </tr>
                 <tr valign="middel"> 
                     <td rowspan="2">Loc de parcare/boxa</td>
                     {% for p in comp_table %}
-                    <td>{{p.comparable.parking_boxa}}</td>
+                    <td>{{p.parking_boxa}}</td>
                     {% endfor %}
                 </tr>
                 <tr valign="middel">
                     <td style="text-align:left;padding-left:3px;">Ajustare (EUR)</td>
                     {% for c in comp_table %}
-                    <td>{{c.comparable.pba|floatformat:"0"}}</td>
+                    <td>{{c.pba|floatformat:"0"}}</td>
                     {% endfor %}
                 </tr>
 
@@ -1046,9 +1055,9 @@
                 </tr>
                 <tr valign="middel">
                     <td style="text-align: left;padding-left:3px">Date disponibile</td>
-                    <td>{{sub_prop.ad}}</td>
+                    <td>{{sub_prop.sub_ad}}</td>
                     {% for p in comp_table %}
-                    <td>{{p.comparable.ad}}</td>
+                    <td>{{p.ad}}</td>
                     {% endfor %}
                 </tr>
                 <tr valign="middel">
@@ -1080,9 +1089,9 @@
                 <tr valign="middel"><td colspan="{{comp_table|length|add:'2'}}">Ajustari pentru conditiile tranzactiilor</td></tr>
                 <tr valign="middel">
                     <td style="text-align: left;padding-left:3px">Drepturi de proprietate</td>
-                    <td style="font-weight: normal;">{{sub_prop.pr}}</td>
+                    <td style="font-weight: normal;">{{sub_prop.sub_pr}}</td>
                     {% for p in comp_table %}
-                    <td style="font-weight: normal;">{{p.comparable.pr}}</td>
+                    <td style="font-weight: normal;">{{p.pr}}</td>
                     {% endfor %}
                 </tr>
                 <tr valign="middel">
@@ -1113,9 +1122,9 @@
                 
                 <tr>
                     <td style="text-align: left;padding-left:3px">Conditii de finantare</td>
-                    <td style="font-weight: normal;">{{sub_prop.fc}}</td>
+                    <td style="font-weight: normal;">{{sub_prop.sub_fc}}</td>
                     {% for p in comp_table %}
-                    <td style="font-weight: normal;">{{p.comparable.fc}}</td>
+                    <td style="font-weight: normal;">{{p.fc}}</td>
                     {% endfor %}
                 </tr>
                 <tr>
@@ -1146,9 +1155,9 @@
                 
                 <tr>
                     <td style="text-align: left;padding-left:3px">Conditii de vanzare</td>
-                    <td style="font-weight: normal;">{{sub_prop.sc}}</td>
+                    <td style="font-weight: normal;">{{sub_prop.sub_sc}}</td>
                     {% for p in comp_table %}
-                    <td style="font-weight: normal;">{{p.comparable.sc}}</td>
+                    <td style="font-weight: normal;">{{p.sc}}</td>
                     {% endfor %}
                 </tr>
                 <tr>
@@ -1179,9 +1188,9 @@
                 
                 <tr>
                     <td style="text-align: left;padding-left:3px">Cheltuieli necesare imediat dupa cumparare</td>
-                    <td style="font-weight: normal;">{{sub_prop.ape}}</td>
+                    <td style="font-weight: normal;">{{sub_prop.sub_ape}}</td>
                     {% for p in comp_table %}
-                    <td style="font-weight: normal;">{{p.comparable.ape}}</td>
+                    <td style="font-weight: normal;">{{p.ape}}</td>
                     {% endfor %}
                 </tr>
                 <tr>
@@ -1212,9 +1221,9 @@
                 
                 <tr>
                     <td style="text-align: left;padding-left:3px">Conditii de piata</td>
-                    <td>{{sub_prop.me}}</td>
+                    <td style="font-weight: normal;">{{sub_prop.sub_me}}</td>
                     {% for p in comp_table %}
-                    <td style="font-weight: normal;">{{p.comparable.me}}</td>
+                    <td style="font-weight: normal;">{{p.me}}</td>
                     {% endfor %}
                 </tr>
                 <tr>
@@ -1246,9 +1255,9 @@
                 <tr><td colspan="{{comp_table|length|add:'2'}}">Ajustari specifice proprietatii</td></tr>
                 <tr>
                     <td style="text-align: left;padding-left:3px">Localizare</td>
-                    <td>{{sub_prop.lc}}</td>
+                    <td>{{sub_prop.sub_lc}}</td>
                     {% for p in comp_table %}
-                    <td>{{p.comparable.lc}}</td>
+                    <td>{{p.lc}}</td>
                     {% endfor %}
                 </tr>
                 <tr>
@@ -1272,9 +1281,9 @@
 
                 <tr>
                     <td style="text-align: left;padding-left:3px">Compartimentare</td>
-                    <td>{{sub_prop.cp}}</td>
+                    <td>{{sub_prop.sub_cp}}</td>
                     {% for p in comp_table %}
-                    <td>{{p.comparable.cp}}</td>
+                    <td>{{p.cp}}</td>
                     {% endfor %}
                 </tr>
                 <tr>
@@ -1298,9 +1307,9 @@
 
                 <tr>
                     <td style="text-align: left;padding-left:3px">AN PIF</td>
-                    <td>{{sub_prop.cy}}</td>
+                    <td>{{sub_prop.sub_cy}}</td>
                     {% for p in comp_table %}
-                    <td>{{p.comparable.cy}}</td>
+                    <td>{{p.cy}}</td>
                     {% endfor %}
                 </tr>
                 <tr>
@@ -1324,9 +1333,9 @@
 
                 <tr>
                     <td style="text-align: left;padding-left:3px">Suprafata utila (mp)</td>
-                    <td>{{sub_prop.area}}</td>
+                    <td>{{sub_prop.sub_area}}</td>
                     {% for p in comp_table %}
-                    <td>{{p.comparable.area}}</td>
+                    <td>{{p.area}}</td>
                     {% endfor %}
                 </tr>
                 <tr>
@@ -1357,9 +1366,9 @@
 
                 <tr>
                     <td style="text-align: left;padding-left:3px">Finisaje</td>
-                    <td>{{sub_prop.finish}}</td>
+                    <td>{{sub_prop.sub_finish}}</td>
                     {% for p in comp_table %}
-                    <td>{{p.comparable.finish}}</td>
+                    <td>{{p.finish}}</td>
                     {% endfor %}
                 </tr>
                 <tr>
@@ -1383,9 +1392,9 @@
 
                 <tr>
                     <td style="text-align: left;padding-left:3px">Regim de inaltime</td>
-                    <td>{{sub_prop.etaj}}</td>
+                    <td>{{sub_prop.sub_etaj}}</td>
                     {% for p in comp_table %}
-                    <td>{{p.comparable.etaj}}</td>
+                    <td>{{p.etaj}}</td>
                     {% endfor %}
                 </tr>
                 <tr>
@@ -1409,9 +1418,9 @@
 
                 <tr>
                     <td style="text-align: left;padding-left:3px">Balcon (mp)</td>
-                    <td>{{sub_prop.balcon}}</td>
+                    <td>{{sub_prop.sub_balcon}}</td>
                     {% for p in comp_table %}
-                    <td>{{p.comparable.balcon}}</td>
+                    <td>{{p.balcon}}</td>
                     {% endfor %}
                 </tr>
                 <tr>
@@ -1435,9 +1444,9 @@
 
                 <tr>
                     <td style="text-align: left;padding-left:3px">Sistem de incalzire</td>
-                    <td>{{sub_prop.hs}}</td>
+                    <td>{{sub_prop.sub_hs}}</td>
                     {% for p in comp_table %}
-                    <td>{{p.comparable.hs}}</td>
+                    <td>{{p.hs}}</td>
                     {% endfor %}
                 </tr>
                 <tr>
@@ -1462,7 +1471,7 @@
                 {% if sub_prop.opt1_name %}
                 <tr>
                     <td style="text-align: left;padding-left:3px">{{sub_prop.opt1_name }}</td>
-                    <td>{{sub_prop.opt1_val }}</td>
+                    <td>{{sub_prop.sub_opt1 }}</td>
                     {% for p in comp_table %}
                     <td>{{p.opt1_val}}</td>
                     {% endfor %}
@@ -1490,7 +1499,7 @@
                 {% if sub_prop.opt2_name %}
                 <tr>
                     <td style="text-align: left;padding-left:3px">{{sub_prop.opt2_name }}</td>
-                    <td>{{sub_prop.opt2_val }}</td>
+                    <td>{{sub_prop.sub_opt2 }}</td>
                     {% for p in comp_table %}
                     <td>{{p.opt2_val}}</td>
                     {% endfor %}
@@ -1518,7 +1527,7 @@
                 {% if sub_prop.opt3_name %}
                 <tr>
                     <td style="text-align: left;padding-left:3px">{{sub_prop.opt3_name }}</td>
-                    <td>{{sub_prop.opt3_val }}</td>
+                    <td>{{sub_prop.sub_opt3 }}</td>
                     {% for p in comp_table %}
                     <td>{{p.opt3_val}}</td>
                     {% endfor %}
@@ -1660,14 +1669,14 @@
                 </tr>
                 <tr valign="middel">
                     <td style="text-align: left;padding-left: 3px;width: 45%">Regim inaltime</td>
-                    {% for c in comp_mvb %}
-                    <td style="font-weight: bold;">{{ c.cp.etaj }}</td>
+                    {% for c in comp_table %}
+                    <td style="font-weight: bold;">{{ c.etaj }}</td>
                     {% endfor %}
                 </tr>
                 <tr valign="middel">
                     <td style="text-align: left;padding-left: 3px;width: 45%">Suprafata utila</td>
-                    {% for c in comp_mvb %}
-                    <td style="font-weight: bold;">{{ c.cp.area }}</td>
+                    {% for c in comp_table %}
+                    <td style="font-weight: bold;">{{ c.area }}</td>
                     {% endfor %}
                 </tr>
                 <tr valign="middel">
