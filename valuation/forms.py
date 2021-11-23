@@ -70,7 +70,7 @@ class EditInitialForm(forms.ModelForm):
 	cui = forms.CharField(required=False, max_length=150, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Company Reg No.'}))
 	report_recipient = forms.CharField(max_length=150, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Destinatar Raport'}))
 	status = forms.ModelChoiceField(queryset=Status.objects.all(), widget=forms.Select(attrs={'class': 'form-control',}))
-	inspection_date = forms.DateField(required=False, widget=forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}))
+	inspection_date = forms.DateField(required=False, widget=forms.DateInput(attrs={'class': 'form-control'}))
 	# valuation_date = forms.DateField(required=False, widget=forms.DateInput(attrs={'class': 'form-control','type': 'date'}))
 	# report_date = forms.DateField(required=False, widget=forms.DateInput(attrs={'class': 'form-control','type': 'date'}))
 
@@ -81,8 +81,8 @@ class EditInitialForm(forms.ModelForm):
 
 class AddValuationSummary(forms.ModelForm):
 	purpose = forms.ModelChoiceField(queryset=ValuationPurpose.objects.all(), widget=forms.Select(attrs={'class': 'form-control',}))
-	amav = forms.DecimalField(max_digits=10, decimal_places=2, widget=forms.NumberInput(attrs={'class': 'form-control', 'placeholder': '0.00', 'step': '0.01'}))
-	aiav = forms.DecimalField(max_digits=10, decimal_places=2, widget=forms.NumberInput(attrs={'class': 'form-control', 'placeholder': '0.00', 'step': '0.01'}))
+	amav = forms.DecimalField(max_digits=10, decimal_places=2, widget=forms.NumberInput(attrs={'class': 'form-control', 'placeholder': '0.00', 'step': '0.01', 'min': '0.00'}))
+	aiav = forms.DecimalField(max_digits=10, decimal_places=2, widget=forms.NumberInput(attrs={'class': 'form-control', 'placeholder': '0.00', 'step': '0.01', 'min': '0.00'}))
 
 	class Meta:
 		model = ValuationSummary
@@ -148,8 +148,7 @@ class MarketAnalysisForm(forms.ModelForm):
 	market_balance = forms.ChoiceField(choices=CONCLUSION_CHOICE, widget=forms.Select(attrs={'class': 'form-control'}))
 	minsale_price = forms.DecimalField(required=False, max_digits=10, decimal_places=2, widget=forms.NumberInput(attrs={'class': 'form-control'})) 
 	maxsale_price = forms.DecimalField(required=False, max_digits=10, decimal_places=2, widget=forms.NumberInput(attrs={'class': 'form-control'})) 
-	range = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}))
-
+	
 	class Meta:
 		model = MarketAnalysis
 		exclude = ('ref_no',)

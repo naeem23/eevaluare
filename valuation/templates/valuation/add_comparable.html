@@ -5,6 +5,27 @@
 <!-- Specific Page CSS goes HERE  -->
 {% block stylesheets %}
     {% load static %}
+    <!-- Load Leaflet from CDN -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+    integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+    crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+    integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+    crossorigin=""></script>
+
+    <!-- Load Esri Leaflet from CDN -->
+    <script src="https://unpkg.com/esri-leaflet@3.0.2/dist/esri-leaflet.js"
+    integrity="sha512-myckXhaJsP7Q7MZva03Tfme/MSF5a6HC2xryjAM4FxPLHGqlh5VALCbywHnzs2uPoF/4G/QVXyYDDSkp5nPfig=="
+    crossorigin=""></script>
+
+    <!-- Load Esri Leaflet Geocoder from CDN -->
+    <link rel="stylesheet" href="https://unpkg.com/esri-leaflet-geocoder@3.1.1/dist/esri-leaflet-geocoder.css"
+    integrity="sha512-IM3Hs+feyi40yZhDH6kV8vQMg4Fh20s9OzInIIAc4nx7aMYMfo+IenRUekoYsHZqGkREUgx0VvlEsgm7nCDW9g=="
+    crossorigin="">
+    <script src="https://unpkg.com/esri-leaflet-geocoder@3.1.1/dist/esri-leaflet-geocoder.js"
+    integrity="sha512-enHceDibjfw6LYtgWU03hke20nVTm+X5CRi9ity06lGQNtC9GkBNl/6LoER6XzSudGiXy++avi1EbIg9Ip4L1w=="
+    crossorigin=""></script>
+
     <!-- bootstrap datepicker  -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.2.0/css/datepicker.min.css" rel="stylesheet">
 
@@ -44,6 +65,25 @@
             border: 1px solid #F25961 !important;
             border-color: #F25961 !important;
             color: #F25961 !important;
+        }
+        #showMap .modal-dialog {
+            max-width: 600px;
+        }
+        #showMap .modal-content {
+            background-color: #1a2035;
+        }
+        #showMap .modal-header {
+            border-bottom: 1px solid #2f374b;
+        }
+        #showMap .modal-footer {
+            border-top: 1px solid #2f374b;
+        }
+        #showMap .close {
+            color: #fff;
+        }
+        #map { 
+            height: 300px;
+            width: 100%; 
         }
     </style>
 {% endblock stylesheets %}
@@ -1262,14 +1302,26 @@
                                             {% endfor %}
                                             {% for n in comparable|get_extra_length:nr_comp %}
                                             <td>
-                                                <input type="text" class="form-control" name="lc[]"/>
+                                                <div class="input-group">
+                                                    <input type="text" class="form-control" name="lc[]"/>
+                                                    <div class="input-group-append" style="cursor: pointer;"  data-toggle="modal" data-target="#showMap">
+                                                        <span class="input-group-text"><i class="fas fa-map-marker-alt"></i></span>
+                                                    </div>
+                                                </div>
                                             </td>
                                             {% endfor %}
                                         {% endif %}
                                     {% else %}
                                         {% for n in nr_comp|list_range %}
                                         <td>
-                                            <input type="text" class="form-control" name="lc[]"/>
+                                            <div class="input-group">
+                                                <input type="text" class="form-control" name="lc[]"/>
+                                                <div class="input-group-append" style="cursor: pointer;" onclick="showMapModal('{{n}}')">
+                                                    <span class="input-group-text"><i class="fas fa-map-marker-alt"></i></span>
+                                                </div>
+                                                <input type="hidden" name="lat[]" id="lat_{{n}}">
+                                                <input type="hidden" name="lng[]" id="lng_{{n}}">
+                                            </div>
                                         </td>
                                         {% endfor %}
                                     {% endif %}
@@ -1797,7 +1849,7 @@
                                     <td>
                                         <select id="id_sub_finish" class="form-control" name="sub_finish">
                                             {% for f in finish_type %}
-                                            <option value="{{f.type}}" {% if f.id == const.finish_id %}selected{% endif %}>{{f.type}}</option>
+                                            <option value="{{f.type}}" {% if f.id == const.finish_id %}selected{% elif f.id == 3 %}selected{% endif %}>{{f.type}}</option>
                                             {% endfor %}
                                         </select>
                                     </td>
@@ -1826,7 +1878,7 @@
                                             <td>
                                                 <select id="id_finish" class="form-control" name="finish[]">
                                                     {% for f in finish_type %}
-                                                    <option value="{{f.type}}">{{f.type}}</option>
+                                                    <option value="{{f.type}}" {% if f.id == 3%}selected{% endif %}>{{f.type}}</option>
                                                     {% endfor %}
                                                 </select>
                                             </td>
@@ -1837,7 +1889,7 @@
                                         <td>
                                             <select id="id_finish" class="form-control" name="finish[]">
                                                 {% for f in finish_type %}
-                                                <option value="{{f.type}}">{{f.type}}</option>
+                                                <option value="{{f.type}}" {% if f.id == 3%}selected{% endif %}>{{f.type}}</option>
                                                 {% endfor %}
                                             </select>
                                         </td>
@@ -1932,7 +1984,7 @@
                                 <tr>
                                     <td>Regim de inaltime</td>
                                     <td>
-                                        <input type="text" name="sub_etaj" class="form-control" value="{{valuation.height}}">
+                                        <input type="text" name="sub_etaj" class="form-control" value="{{valuation.floor_no}}/{{valuation.height}}">
                                     </td>
                                     {% if comparable %}
                                         {% if comparable|length == nr_comp %}
@@ -3008,6 +3060,25 @@
         </div>
     </div>
 
+    <!-- Modal -->
+    <div class="modal fade" id="showMap" tabindex="-1" role="dialog" aria-labelledby="showMapTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title text-white" id="showMapLongTitle">Localizare</h3>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
 {% endblock content %}
 
 <!-- Specific Page JS goes HERE  -->
@@ -3980,5 +4051,95 @@
                 $('.error').css('display', 'block');
             }
         })
+    </script>
+
+    <!-- leaflet map  -->
+    <script>
+        function showMapModal(column_id) {
+            $("#showMap").modal('toggle');
+            $('#showMap .modal-body').html('<div id="map"></div>');
+            let lat = parseFloat($('#lat_'+column_id).val());
+            let lng = parseFloat($('#lng_'+column_id).val());
+            if(isNaN(lat) && isNaN(lng)) {
+                var map = L.map('map').setView([44.4268, 26.1025], 13);
+            } else {
+                var map = L.map('map').setView([lat, lng], 15);
+            }
+            L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibmFlZW0yMyIsImEiOiJja2lyNmpzdjUwMHVrMnRreXZyNHdubHptIn0.X3OwhHNVTJG_SzVzHEeLnQ', {
+                attribution: '&copy; <a href="https://osm.org/copyright">OpenStreetMap</a> contributors',
+                maxZoom: 18,
+                id: 'mapbox/streets-v11',
+                tileSize: 512,
+                zoomOffset: -1,
+                accessToken: 'pk.eyJ1IjoibmFlZW0yMyIsImEiOiJja2lyNmpzdjUwMHVrMnRreXZyNHdubHptIn0.X3OwhHNVTJG_SzVzHEeLnQ'
+            }).addTo(map);
+
+            var searchControl = L.esri.Geocoding.geosearch({
+                position: 'topright',
+                placeholder: 'Search for places and addresses',
+                useMapBounds: false,
+                providers: [L.esri.Geocoding.arcgisOnlineProvider({
+                    apikey: 'AAPK5f52374845404757a5eb02c2b5bc9e1cbjcT5ty0oXBKBseoCLCC_JhCLvbOLn1nXEgiuOcKaUUK8yLa7hmuYQd0fVtKOfoy',
+                })]
+            }).addTo(map);
+
+            if(isNaN(lat) && isNaN(lng)) {
+                var marker = L.marker();
+            } else {
+                var marker = L.marker([lat, lng], {draggable:true}).addTo(map);
+                marker.on('click', function(e) {
+                    var latlng = [e.target.getLatLng()];
+                    var markerbounds = L.latLngBounds(latlng);
+                    map.fitBounds(markerbounds);
+                });
+                marker.on('dragend', function (e) {
+                    $('#lat_'+column_id).val(marker.getLatLng().lat.toFixed(6))
+                    $('#lng_'+column_id).val(marker.getLatLng().lng.toFixed(6))
+                });
+            }
+            searchControl.on('results', function (data) {
+                map.removeLayer(marker);
+                for (var i = data.results.length - 1; i >= 0; i--) {
+                    marker = L.marker(data.results[i].latlng, {draggable:'true'}).addTo(map);
+                    marker.on('dragend', function(event){
+                        var marker = event.target;
+                        var position = marker.getLatLng();
+                        marker.setLatLng(new L.LatLng(position.lat, position.lng),{draggable:'true'});
+                        map.panTo(new L.LatLng(position.lat, position.lng))
+                        $('#lat_'+column_id).val(position.lat.toFixed(6)) 
+                        $('#lng_'+column_id).val(position.lng.toFixed(6))
+                    });
+                    var lat = data.results[i].latlng.lat
+                    var lng = data.results[i].latlng.lng
+                    $('#lat_'+column_id).val(lat.toFixed(6)) 
+                    $('#lng_'+column_id).val(lng.toFixed(6))
+                }
+            });
+
+            function onMapClick(e) {
+                map.removeLayer(marker);
+                marker = L.marker([e.latlng.lat, e.latlng.lng], {draggable:'true'}).addTo(map);
+                marker.on('dragend', function(event){
+                    var marker = event.target;
+                    var position = marker.getLatLng();
+                    marker.setLatLng(new L.LatLng(position.lat, position.lng),{draggable:'true'});
+                    map.panTo(new L.LatLng(position.lat, position.lng))
+                    $('#lat_'+column_id).val(position.lat.toFixed(6))
+                    $('#lng_'+column_id).val(position.lng.toFixed(6))
+                });
+                var lat = e.latlng.lat 
+                var lng = e.latlng.lng 
+                $('#lat_'+column_id).val(lat.toFixed(6))
+                $('#lng_'+column_id).val(lng.toFixed(6))
+            }
+            map.on('click', onMapClick);
+            
+            $('#showMap').on('shown.bs.modal', function() {
+                map.invalidateSize();
+            });
+        }
+        $('.close').on('click', function() {
+            $('#showMap .modal-body').html('<div id="map"></div>');
+        });
     </script>
 {% endblock javascripts %}  

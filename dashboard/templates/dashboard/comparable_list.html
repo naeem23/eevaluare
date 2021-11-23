@@ -51,8 +51,8 @@
                                 <table id="comparable_table" class="display table table-striped table-hover" >
                                     <thead>
                                         <tr>
-                                            <th>ID</th>
-                                            <th>Preţ de oferta/vanzare</th>
+                                            <th style="width: 10%">ID</th>
+                                            <th style="width: 20%">Preţ de oferta/vanzare</th>
                                             <th>Localizare</th>
                                             <th>Camere</th>
                                             <th>Suprafata utila (mp)</th>
@@ -66,7 +66,7 @@
                                                 <a href="{% url 'valuation:comp_prop_details' id=obj.id %}"><span class="text-light">ID-{{obj.id}}</span></a>
                                             </td>
                                             <td>
-                                                <a href="{% url 'valuation:comp_prop_details' id=obj.id %}"><span class="text-light">{{obj.sale_price|floatformat:"0"}}</span></a>
+                                                <a href="{% url 'valuation:comp_prop_details' id=obj.id %}"><span class="text-light">{% if obj.sale_price %}{{obj.sale_price|floatformat:"0"}} EUR{% endif %}</span></a>
                                             </td>
                                             <td>
                                                 <a href="{% url 'valuation:comp_prop_details' id=obj.id %}"><span class="text-light">{{obj.lc|truncatechars:30}}</span></a>

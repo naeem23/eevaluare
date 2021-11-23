@@ -424,9 +424,10 @@
             let address = data.text.split(',');
             $('#id_street').val(address[0]);
             $('#id_postal_code').val(address[1].trim());
-            let area = address[3];
+            let area = address[3].trim();
             $("#id_area option:contains("+area+")").prop("selected","selected");
             $('#id_area').trigger('change'); 
+            map.removeLayer(marker);
             for (var i = data.results.length - 1; i >= 0; i--) {
                 marker = L.marker(data.results[i].latlng, {draggable:'true'}).addTo(map);
                 marker.on('dragend', function(event){
@@ -464,7 +465,8 @@
         // map management
 
         // ======================== form validation check ===========================
-        $("#submitBtn").on('click', function () {
+        $("#submitBtn").on('click', function (e) {
+            e.preventDefault();
             var prop_type =  $("#id_property_type").val()
             var street = $("#id_street").val()
             var numarul = $("#id_numarul").val()

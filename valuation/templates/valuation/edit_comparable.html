@@ -1445,7 +1445,7 @@
                                             <td>
                                                 <select id="id_finish" class="form-control" name="finish[]">
                                                     {% for f in finish_type %}
-                                                    <option value="{{f.type}}">{{f.type}}</option>
+                                                    <option value="{{f.type}}" {% if f.id == 3 %}selected{% endif%}>{{f.type}}</option>
                                                     {% endfor %}
                                                 </select>
                                             </td>

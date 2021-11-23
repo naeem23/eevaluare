@@ -23,16 +23,16 @@
             }
         }
         @font-face {
-            font-family: "Verdana";
-            src: url("C:/Users/naeem/Downloads/verdana/verdana.ttf");
+            font-family: "Georgia";
+            src: url("D:/ASA Distribution/property_valuation/dashboard/static/dashboard/fonts/Georgia Regular font.ttf");
         }
         @font-face {
-            font-family: "Verdana";
-            src: url("C:/Users/naeem/Downloads/verdana/Verdana Bold.ttf");
+            font-family: "Georgia";
+            src: url("D:/ASA Distribution/property_valuation/dashboard/static/dashboard/fonts/georgia bold.ttf");
             font-weight: bold;
         }
         body {
-            font-family: Verdana;
+            font-family: 'Georgia';
             font-size: 14px;
         }
         h1, h2, h3, h4, h5, h6, p, a, ul, li {
@@ -155,11 +155,11 @@
             <h2 style="margin:0; padding:0;">Cuprins</h2>
             <table>
                 <tr style="padding-top: 10px;">
-                    <td width="8%" style="padding-left: 5px;">03</td>
+                    <td width="8%" style="padding-left: 5px;">04</td>
                     <td>Rezumental Evaluarii</td>
                 </tr>
                 <tr style="height: 30px;">
-                    <td width="8%" style="padding-left: 5px;">05</td>
+                    <td width="8%" style="padding-left: 5px;">06</td>
                     <td>CERTIFICARE</td>
                 </tr>
                 <tr style="height: 30px;">
@@ -202,7 +202,7 @@
         </div>
         
         <div class="summary">
-            <h2 style="margin-bottom: 10px; padding: 0; text-align: center; font-size: 24px;">Rezumatul Evaluarii</h2>
+            <h2 style="margin-bottom: 10px; padding: 0; text-align: center; font-size: 20px;">Rezumatul Evaluarii</h2>
             <p style="text-align: justify;"><b>Proprietatea evaluata:</b> 
                 {% if pdata.sub_identi %}
                     {{ pdata.sub_identi }}
@@ -219,13 +219,14 @@
                 {% endif %}
             </p>
             <p style="margin-bottom: 10px;"><b>Adresa:</b> {{valuation.street}}, {{valuation.numarul}}, {% if valuation.building_no %}{{valuation.building_no}}, {% endif %}{% if valuation.scara%}{{valuation.scara}}, {% endif %}{{valuation.floor_no}}, {{valuation.apartment_no}}, {{valuation.city.name}}, {{valuation.area.name}}</p>
-            <p style="margin-bottom: 10px;"><b>Utilizator:</b>{{valuation.report_recipient}}</p>
+            <p style="margin-bottom: 10px;"><b>Utilizator:</b> {{valuation.report_recipient}}</p>
             <p style="margin-bottom: 10px;"><b>Client:</b> {{valuation.nume_client}}</p>
             <p style="margin-bottom: 10px;"><b>Proprietar:</b> {{valuation.owner}}</p>
             <p><b>Scopul Evaluarii:</b> {{ summary.purpose.purpose }}</p>
             <br>
-            <h2 style="font-size: 18px; text-align: center;">Valoarea de {% if summary.amav %}piata a proprietatii: {{summary.amav|floatformat:'0'}} Euro{% else %}venit a proprietatii: {{summary.aiav|floatformat:'0'}} Euro{% endif %}</h2>
+            <h2 style="font-size: 16px; text-align: center;">Valoarea de {% if summary.amav %}piata a proprietatii: {{summary.amav|floatformat:'0'}} Euro{% else %}venit a proprietatii: {{summary.aiav|floatformat:'0'}} Euro{% endif %}</h2>
             <br> 
+            {% if summary_photo %}
             <table>
                 <tr>
                     {% for simg in summary_photo %}
@@ -234,6 +235,7 @@
                 </tr>
             </table>
             <br>
+            {% endif %}
             <table>
                 <tr valign="middle" style="height: 150px;">
                     <td style="text-align:center;">
@@ -263,7 +265,7 @@
         </div>
 
         <div class="certificare">
-            <h2 style="margin-bottom: 10px; padding: 0; text-align: center; font-size: 24px;">I. CERTIFICARE</h2>
+            <h2 style="margin-bottom: 10px; padding: 0; text-align: center; font-size: 20px;">I. CERTIFICARE</h2>
             <p>Certific, dupacelemaibunecunostinte ale mele, ca:</p>
             <table>
                 <tr>
@@ -311,7 +313,7 @@
             </table>
             <br>
             <table>
-                <tr valign="middle" style="height: 150px;">
+                <tr valign="middle" style="height: 100px;">
                     <td style="text-align:center;">
                         <span>Evaulator</span> <br>
                         <span style="font-weight: bold; margin: 10px 0;">{{ valuation.evaluator.get_full_name }}</span> <br>
@@ -330,7 +332,7 @@
         </div>
 
         <div class="terms">
-            <h2 style="margin-bottom: 20px; padding: 0; text-align: center; font-size: 24px;">II. TERMENI DE REFERINTA AI EVALUARII</h2>
+            <h2 style="margin-bottom: 20px; padding: 0; text-align: center; font-size: 22px;">II. TERMENI DE REFERINTA AI EVALUARII</h2>
             <p style="margin-bottom: 10px; text-indent: 3rem; font-weight: bold;">1. Identificarea evaluatorului</p>
             <p style="margin-bottom: 10px;">
                 <span>{{ valuation.evaluator.get_full_name }} - Legitimatie numar {{valuation.evaluator.certification_number}}</span> <br>
@@ -1647,7 +1649,7 @@
                 
                 In continuare, am estimat mutiplicatorul chiriei brute pentru proprietatile comparabile utilizate in abordarea prin piata impartind chiria bruta anuala la pretul solicitat de catre vanzator (pretul solicitat a fost ajustat cu marja de negociere). <br>
 
-                Din analiza pietei, am identificat o chirie lunara cuprinsa intre {{market.range}} euro/mp/luna pentru proprietati comparabile. Pentru determinarea multiplicatorului chirie brute am estimat o chirie de {{market.range}} euro/luna/mp pentru toate comparabilele luate in considerare. Totodata, pentru proprietatea subiect am estimat o chirie lunara de {% if sub_mvb %}{{sub_mvb.sub_rent_sqm}}{% endif %} euro/mp/luna. <br>
+                Din analiza pietei, am identificat o chirie lunara cuprinsa intre {% if comp_mvb%}{{comp_mvb|get_range }}{% endif %} euro/mp/luna pentru proprietati comparabile. Pentru determinarea multiplicatorului chirie brute am estimat o chirie de {% if comp_mvb%}{{comp_mvb|get_range }}{% endif %} euro/luna/mp pentru toate comparabilele luate in considerare. Totodata, pentru proprietatea subiect am estimat o chirie lunara de {% if sub_mvb %}{{sub_mvb.sub_rent_sqm}}{% endif %} euro/mp/luna. <br>
 
                 In tabelul urmator sunt prezentate calculele privind multiplicatorul chiriei brute: 
             </p>   
@@ -1720,7 +1722,7 @@
 
                 Pornind de la o chirie lunara {% if sub_mvb %}{{sub_mvb.sub_rent_sqm}}{% endif %} euro/mp/luna, aplicarea metodei capitalizarii directe pe baza multiplului venitului brut potenital conduce la o valoare a proprietatii evaluate calculata astfel: V = VBP * MVBP.
             </p>
-            
+            {% if sub_mvb %}
             <table border="1" id="vbp-table">
                 <tr valign="middel">
                     <td style="font-weight:bold;text-align: left;padding-left: 3px;width: 70%;">Venit brut potential  VBP</td>
@@ -1744,6 +1746,7 @@
                 </tr>
             </table>
             <br>
+            {% endif %}
  
             <p style="text-align: center;margin-bottom: 10px;font-weight: bold;">Valoare de venit {{ sub_mvb.vpcd_rotund|floatformat:'0' }} EUR</p>
             <br>

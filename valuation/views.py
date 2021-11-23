@@ -106,14 +106,20 @@ def add_summary(request, id):
 
     # check if valued propery has summary, summary value, photos
     try:
-        cover_photo = models.Photo.objects.filter(ref_no=valuation, refer_to='cover')
-        summary = models.ValuationSummary.objects.filter(ref_no=valuation).latest('id')
-        summary_value = models.SummaryValue.objects.filter(summary=summary)
-        summary_photo = models.Photo.objects.filter(ref_no=valuation, refer_to='summary')
+        cover_photo = models.Photo.objects.filter(ref_no=valuation, refer_to='cover').order_by('image_order')
     except:
         cover_photo = None
+    try:
+        summary = models.ValuationSummary.objects.filter(ref_no=valuation).latest('id')
+    except:
         summary = None 
-        summary_value = None 
+    try:
+        summary_value = models.SummaryValue.objects.filter(summary=summary)
+    except:
+        summary_value = None
+    try:
+        summary_photo = models.Photo.objects.filter(ref_no=valuation, refer_to='summary').order_by('image_order')
+    except:
         summary_photo = None
 
     if request.method == 'POST':
@@ -194,9 +200,9 @@ def save_photos(request):
     if request.method == 'POST':
         valuation = get_object_or_404(models.ValuatedProperty, id=request.POST.get('vid'))
         file = request.FILES['file']
-        image_order = request.POST.get('order')
+        # image_order = request.POST.get('order')
         refer_to = request.POST.get('refer_to')
-        save = models.Photo.objects.create(ref_no=valuation, refer_to=refer_to, image_order=image_order, image=file)
+        save = models.Photo.objects.create(ref_no=valuation, refer_to=refer_to, image=file)
         if save:
             return JsonResponse({'success': 'true'})
         else: 
@@ -547,6 +553,8 @@ def add_comparable(request, id):
         me_euro = request.POST.getlist('me_euro[]')
         me_price = request.POST.getlist('me_price[]')
         me_motivation = request.POST.get('me_motivation')
+        lat = request.POST.getlist('lat[]')
+        lng = request.POST.getlist('lng[]')
         lc_percent = request.POST.getlist('lc_percent[]')
         lc_euro = request.POST.getlist('lc_euro[]')
         lc_motivation = request.POST.get('lc_motivation')
@@ -603,7 +611,7 @@ def add_comparable(request, id):
         estimated_value = request.POST.get('estimated_value')
         smallest_gross = request.POST.get('smallest_gross')
         
-        sub_prop = models.ComparableProperty.objects.create(ref_no=valuation, is_comparable=0, ad=sub_avdata, pr=sub_pr, fc=sub_fc, sc=sub_sc, ape=sub_ape, me=sub_me,lc=sub_location, cp=sub_cp, cy=sub_cy, camara=sub_camara, area=subarea, finish=sub_finish, etaj=sub_etaj, balcon=subbalcon, hs=sub_hs)
+        sub_prop = models.ComparableProperty.objects.create(ref_no=valuation, is_comparable=0, ad=sub_avdata, pr=sub_pr, fc=sub_fc, sc=sub_sc, ape=sub_ape, me=sub_me,lc=sub_location, lat=valuation.latitude, lng=valuation.longitude, cp=sub_cp, cy=sub_cy, camara=sub_camara, area=subarea, finish=sub_finish, etaj=sub_etaj, balcon=subbalcon, hs=sub_hs)
 
         # add sub_prop to comparable table 
         models.ComparableTable.objects.create(ref_no=valuation, comparable=sub_prop, sub_ad=sub_avdata, sub_pr=sub_pr, sub_fc=sub_fc, sub_sc=sub_sc, sub_ape=sub_ape, sub_me=sub_me, sub_lc=sub_location, sub_cp=sub_cp, sub_cy=sub_cy, sub_area=subarea, sub_finish=sub_finish, sub_etaj=sub_etaj, sub_balcon=subbalcon, sub_hs=sub_hs, price_persqm=price_persqm,  opt1_name=opt1_name, sub_opt1=sub_opt1_val, opt2_name=opt2_name, sub_opt2=sub_opt2_val, opt3_name=opt3_name, sub_opt3=sub_opt3_val, motivation=motivation, pr_motivation=pr_motivation, fc_motivation=fc_motivation, sc_motivation=sc_motivation, ape_motivation=ape_motivation, me_motivation=me_motivation, lc_motivation=lc_motivation, cp_motivation=cp_motivation, cy_motivation=cy_motivation, su_motivation=su_motivation, finish_motivation=finish_motivation, etaj_motivation=etaj_motivation, balcon_motivation=balcon_motivation, hs_motivation=hs_motivation, opt1_motivation=opt1_motivation, opt2_motivation=opt2_motivation, opt3_motivation=opt3_motivation, estimated_value=estimated_value, smallest_gross=smallest_gross)
@@ -613,11 +621,11 @@ def add_comparable(request, id):
             comp_list = list(comparable)  
             if len(comparable) != int(nr_comp):
                 for i in range(len(comparable), int(nr_comp)):
-                    prop = models.ComparableProperty.objects.create(sale_price=sale_price[i], mobila=mobila[i], ma=ma[i], parking_boxa=parking_boxa[i], pba=pba[i], ad=ad[i], pr=pr[i], fc=fc[i], sc=sc[i], ape=ape[i], me=me[i],lc=lc[i], cp=cp[i], cy=cy[i], camara=camara[i], area=area[i], finish=finish[i], etaj=etaj[i], balcon=balcon[i], hs=hs[i])
+                    prop = models.ComparableProperty.objects.create(sale_price=sale_price[i], mobila=mobila[i], ma=ma[i], parking_boxa=parking_boxa[i], pba=pba[i], ad=ad[i], pr=pr[i], fc=fc[i], sc=sc[i], ape=ape[i], me=me[i], lc=lc[i], lat=lat[i], lng=lng[i], cp=cp[i], cy=cy[i], camara=camara[i], area=area[i], finish=finish[i], etaj=etaj[i], balcon=balcon[i], hs=hs[i])
                     comp_list.append(prop)
         else:
             for i in range(int(nr_comp)):
-                prop = models.ComparableProperty.objects.create(sale_price=sale_price[i], mobila=mobila[i], ma=ma[i], parking_boxa=parking_boxa[i], pba=pba[i], ad=ad[i], pr=pr[i], fc=fc[i], sc=sc[i], ape=ape[i], me=me[i],lc=lc[i], cp=cp[i], cy=cy[i], area=area[i], finish=finish[i], etaj=etaj[i], balcon=balcon[i], hs=hs[i])
+                prop = models.ComparableProperty.objects.create(sale_price=sale_price[i], mobila=mobila[i], ma=ma[i], parking_boxa=parking_boxa[i], pba=pba[i], ad=ad[i], pr=pr[i], fc=fc[i], sc=sc[i], ape=ape[i], me=me[i], lc=lc[i], lat=lat[i], lng=lng[i], cp=cp[i], cy=cy[i], camara=camara[i], area=area[i], finish=finish[i], etaj=etaj[i], balcon=balcon[i], hs=hs[i])
                 comp_list.append(prop)
         s = 0
         for cl in comp_list:
@@ -757,6 +765,8 @@ def edit_comparable(request, id):
         me_euro = request.POST.getlist('me_euro[]')
         me_price = request.POST.getlist('me_price[]')
         me_motivation = request.POST.get('me_motivation')
+        lat = request.POST.getlist('lat[]')
+        lng = request.POST.getlist('lng[]')
         lc_percent = request.POST.getlist('lc_percent[]')
         lc_euro = request.POST.getlist('lc_euro[]')
         lc_motivation = request.POST.get('lc_motivation')
@@ -827,7 +837,7 @@ def edit_comparable(request, id):
 
         if (len(comp_table) + len(comparable)) != int(nr_comp):
             for i in range(k+len(comparable), int(nr_comp)):
-                prop = models.ComparableProperty.objects.create(sale_price=sale_price[i], mobila=mobila[i], ma=ma[i], parking_boxa=parking_boxa[i], pba=pba[i], ad=ad[i], pr=pr[i], fc=fc[i], sc=sc[i], ape=ape[i], me=me[i],lc=lc[i], cp=cp[i], cy=cy[i], camara=camara[i], area=area[i], finish=finish[i], etaj=etaj[i], balcon=balcon[i], hs=hs[i])
+                prop = models.ComparableProperty.objects.create(sale_price=sale_price[i], mobila=mobila[i], ma=ma[i], parking_boxa=parking_boxa[i], pba=pba[i], ad=ad[i], pr=pr[i], fc=fc[i], sc=sc[i], ape=ape[i], me=me[i],lc=lc[i], lat=lat[i], lng=lng[i], cp=cp[i], cy=cy[i], camara=camara[i], area=area[i], finish=finish[i], etaj=etaj[i], balcon=balcon[i], hs=hs[i])
                 comp_list.append(prop)
 
         for cl in comp_list:
@@ -899,7 +909,6 @@ from io import BytesIO
 from PIL import Image
 from django.core.files.base import ContentFile
 import random
-import pyautogui 
 from django.conf import settings
 from django.db.models import Q
 from pathlib import Path
@@ -1186,10 +1195,30 @@ def delete_photos(request):
     id = request.GET.get('id')
     photo = get_object_or_404(models.Photo, id=id)
     try:
-        response = 1 #photo.delete()
+        response = photo.delete()
         if response:
             return JsonResponse({'success': 'true'})
     except:
+        return JsonResponse({'success': 'false'})
+
+
+@login_required(login_url='/signin/')
+def delete_image(request):
+    if request.method == 'POST':
+        vid = request.POST.get('vid')
+        file = request.POST.get('file').split('.')
+        print(file)
+        refer_to = request.POST.get('refer_to')
+        try:
+            photo = models.Photo.objects.filter(ref_no__id=vid, refer_to=refer_to, image__icontains=file[0]).latest('id')
+        except:
+            photo = None 
+        if photo:
+            photo.delete()
+            return JsonResponse({'success': 'true'})
+        else:
+            return JsonResponse({'success': 'false'})
+    else:
         return JsonResponse({'success': 'false'})
 
 

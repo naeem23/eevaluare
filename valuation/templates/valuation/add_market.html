@@ -259,16 +259,6 @@
                         </div>
 
                         <div class="row">
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label for="id_range">Chiria lunara <span class="required-label">*</span> (euro/mp/luna)</label>
-                                    {{form.range}}
-                                    <small class="form-text text-danger range"></small>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row">
                             <div class="col-md-12">
                                 <div class="form-group">
                                     <label id="risk_label">Riscul de garantie <span class="required-label">*</span></label>
@@ -360,10 +350,9 @@
             var forecast = $('#id_forecast').val()
             var minsale_price = $('#id_minsale_price').val()
             var maxsale_price = $('#id_maxsale_price').val()
-            var range = $('#id_range').val()
             var risk = $('#id_guarantee_risk').val()
 
-            if(((show_dps == '1' && dps.length > 0) || area_between.length > 0) && ((show_ac == '1' && ac.length > 0) || zona_type.length > 0) && ((show_af == '1' && af.length > 0) || ebby.length > 0) && ((show_spi == '1' && spi.length > 0) || show_spi == '0') && ((show_forecast == '1' && forecast.length > 0) || show_forecast == '0') &&  minsale_price.length > 0 && maxsale_price.length > 0 && range.length > 0 && risk.length > 0) {
+            if(((show_dps == '1' && dps.length > 0) || area_between.length > 0) && ((show_ac == '1' && ac.length > 0) || zona_type.length > 0) && ((show_af == '1' && af.length > 0) || ebby.length > 0) && ((show_spi == '1' && spi.length > 0) || show_spi == '0') && ((show_forecast == '1' && forecast.length > 0) || show_forecast == '0') &&  minsale_price.length > 0 && maxsale_price.length > 0 && risk.length > 0) {
                 $("#market-form").submit();
             } else {
                 if(show_dps == '1' && dps.length < 1) { 
@@ -419,15 +408,7 @@
                     $('#id_maxsale_price').removeClass('required')
                     $(".sale_price").text('')
                 }
-
-                if(range.length < 1) {
-                    $('#id_range').addClass('required')
-                    $(".range").text('This field is required')
-                } else {
-                    $('#id_range').removeClass('required')
-                    $(".range").text('')
-                }
-
+                
                 if(risk.length < 1) {
                     $('#id_guarantee_risk').addClass('required')
                     $(".risk_error").text('This field is required')

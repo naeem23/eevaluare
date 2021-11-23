@@ -168,8 +168,8 @@ class ValuatedProperty(models.Model):
 	urbana = models.CharField(max_length=55, blank=True, null=True, choices=URBANA_CHOICE)
 	zona = models.CharField(max_length=255, blank=True, null=True)
 	locatie = models.CharField(max_length=55, blank=True, null=True, choices=LOCATIE_CHOICE)
-	latitude = models.CharField(max_length=255, blank=True, null=True)
-	longitude = models.CharField(max_length=255, blank=True, null=True)
+	latitude = models.CharField(max_length=10, blank=True, null=True)
+	longitude = models.CharField(max_length=10, blank=True, null=True)
 	height = models.CharField(max_length=55, blank=True, null=True)
 	construction_year = models.CharField(max_length=5, blank=True, null=True)
 	owner = models.CharField(max_length=150, blank=True, null=True)
@@ -332,7 +332,7 @@ class PresentationData(models.Model):
 	sarcini = models.CharField(max_length=55, blank=True, null=True) #if charges this field will appear.
 	current_use = models.CharField(max_length=155, blank=True, null=True, choices=CURRENT_USE_CHOICE)
 	identification = models.CharField(max_length=155, blank=True, null=True, choices=IDENTIFICATION_CHOICE)
-	access_text = models.TextField(blank=True)
+	access_text = models.TextField(blank=True, null=True)
 	access = models.CharField(max_length=255, blank=True, null=True)
 	history = models.TextField(blank=True, null=True)
 
@@ -364,7 +364,6 @@ class MarketAnalysis(models.Model):
 	market_balance = models.CharField(max_length=25, blank=True, null=True, choices=CONCLUSION_CHOICE)
 	minsale_price = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True) 
 	maxsale_price = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True) 
-	range = models.TextField(blank=True, null=True)
 	guarantee_risk = models.TextField(blank=True, null=True)
 
 	def __str__(self):
@@ -389,6 +388,8 @@ class ComparableProperty(models.Model):
 	ape = models.CharField(max_length=55, blank=True, null=True) #after purchase expenditure
 	me = models.CharField(max_length=55, blank=True, null=True) #month and year check field please
 	lc = models.CharField(max_length=255, blank=True, null=True) #location
+	lat = models.CharField(max_length=10, blank=True, null=True)
+	lng = models.CharField(max_length=10, blank=True, null=True)
 	cp = models.CharField(max_length=55, blank=True, null=True) #compartment
 	cy = models.CharField(max_length=10, blank=True, null=True) #construction year
 	camara = models.CharField(max_length=10, blank=True, null=True)

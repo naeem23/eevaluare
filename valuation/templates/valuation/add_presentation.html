@@ -6,7 +6,7 @@
 {% block stylesheets %}
     {% load static %}   
     <link rel="stylesheet" href="https://unpkg.com/multiple-select@1.5.2/dist/multiple-select.min.css">
-    <link rel="stylesheet" type="text/css" href="{% static 'valuationform/presentation-data.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'valuation/presentation-data.css' %}">
     
     <style>
         .required {
@@ -339,7 +339,7 @@
                             <div class="col-md-12">
                                 <div class="form-group">
                                     <label id="access_label">Acces <span class="required-label mr-2">*</span><i class="fas fa-pencil-alt text-info" id="edit-access"></i></label>
-                                    {% if pdata.access %}
+                                    {% if pdata.access_text %}
                                         <p class="text-light access" style="display: none;">Din punct de vedere juridic accesul la proprietate pietonal si auto se face {{form.access}}. Imobilul se afla in zona {{valuation.locatie}} a intravilanului munincipiului Bucuresti, fiind reprezentat de un bloc cu regim de inaltime {{valuation.height}}. Apartamentului ii revin cote din partile comune si dependintele imobilului conform extrasului de carte funciara prezentat evaluatorului.</p>
                                         <input type="hidden" name="show_access" id="show_access" value="1">
                                         <textarea name="access_text" id="id_access_text" rows="3" class="form-control">{{pdata.access_text}}</textarea>
@@ -385,7 +385,7 @@
 
 <!-- Specific Page JS goes HERE  -->
 {% block javascripts %}  
-    <script src="{% static 'valuationform/presentation-data.js' %}"></script>
+    <script src="{% static 'valuation/presentation-data.js' %}"></script>
     <script src="https://unpkg.com/multiple-select@1.5.2/dist/multiple-select.min.js"></script>
     <script>
         $(function () {
@@ -417,7 +417,8 @@
         });
 
         // submit form 
-        $('#next').on('click', function() {
+        $('#next').on('click', function(e) {
+            e.preventDefault();
             var all = $(".tag-name").map(function() {
                 return this.innerHTML;
             }).get();
@@ -511,51 +512,35 @@
                     $("#id_current_use").removeClass('required')
                     $(".current_use").text('')
                 }
-
                 
                 if(show_cadastral == '1' && cadastral.length < 1) { 
                     $('#id_cadastral_text').addClass('required')
                     $(".cadastral_error").text('This field is required')
-                } else if (cadastral_no.length < 1) {
+                } else {
+                    $('#id_cadastral_text').removeClass('required')
+                    $(".cadastral_error").text('')
+                }
+                if (cadastral_no.length < 1) {
                     $('#id_cadastral_no').addClass('required')
                     $(".cadastral_error").text('This field is required')
-                } else if (land_book_no.length < 1) {
+                } else {
+                    $('#id_cadastral_no').removeClass('required')
+                    $(".cadastral_error").text('')
+                }
+                if (land_book_no.length < 1) {
                     $('#id_land_book_no').addClass('required')
                     $(".cadastral_error").text('This field is required')
-                } else if (uat.length < 1) {
+                } else {
+                    $('#id_land_book_no').removeClass('required')
+                    $(".cadastral_error").text('')
+                } 
+                if (uat.length < 1) {
                     $('#id_uat').addClass('required')
                     $(".cadastral_error").text('This field is required')
                 } else {
-                    $('#id_cadastral_text').removeClass('required')
-                    $('#id_cadastral_no').removeClass('required')
-                    $('#id_land_book_no').removeClass('required')
                     $('#id_uat').removeClass('required')
                     $(".cadastral_error").text('')
                 }
-                
-                // if(cadastral_no.length < 1) {
-                //     $("#id_cadastral_no").addClass('required')
-                //     $(".cadastral_no").text('This field is required')
-                // } else {
-                //     $("#id_cadastral_no").removeClass('required')
-                //     $(".cadastral_no").text('')
-                // }
-                
-                // if(land_book_no.length < 1) {
-                //     $("#id_land_book_no").addClass('required')
-                //     $(".land_book_no").text('This field is required')
-                // } else {
-                //     $("#id_land_book_no").removeClass('required')
-                //     $(".land_book_no").text('')
-                // }
-                
-                // if(uat.length < 1) {
-                //     $("#id_uat").addClass('required')
-                //     $(".uat").text('This field is required')
-                // } else {
-                //     $("#id_uat").removeClass('required')
-                //     $(".uat").text('')
-                // }
                 
                 if(charges.length < 1) {
                     $("#id_charges").addClass('required')
@@ -584,14 +569,6 @@
                     $('#id_access').removeClass('required')
                     $(".access_error").text('')
                 }
-                
-                // if(access.length < 1) {
-                //     $("#id_access").addClass('required')
-                //     $(".access").text('This field is required')
-                // } else {
-                //     $("#id_access").removeClass('required')
-                //     $(".access").text('')
-                // }
             }
         })
 
@@ -638,7 +615,8 @@
                 },
                 success: function (e) {
                     if(e.success=='true') {
-                        $('#id_legal_doc').append("<option data-toggle='tooltip' data-placement='top' title='"+val+"' value=\"" + e.id + "\">" + val.substring(0,30) + "...</option>");
+                        let opt_text = (val.length > 30) ? val.substring(0,30) + '...' : val;
+                        $('#id_legal_doc').append("<option data-toggle='tooltip' data-placement='top' title='"+val+"' value=\"" + e.id + "\">" + opt_text + "</option>");
                         $('#id_legal_doc').multipleSelect('refresh');
         
                         let last = null;
@@ -738,7 +716,8 @@
                         var i = 0;
                         source.each(function () {
                             $(this).attr('id', 'src_'+res_id[i]);
-                            $('#id_legal_doc').append("<option data-toggle='tooltip' data-placement='top' title='"+values[i]+"' value=\"" + res_id[i] + "\">" + values[i].substring(0,30) +"...</option>");
+                            let opt_text = (values[i].length > 30) ? values[i].substring(0,30) + '...' : values[i];
+                            $('#id_legal_doc').append("<option data-toggle='tooltip' data-placement='top' title='"+values[i]+"' value=\"" + res_id[i] + "\">" + opt_text + "</option>");
                             i++;
                         });
                         $('#id_legal_doc').multipleSelect('refresh');

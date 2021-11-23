@@ -460,14 +460,14 @@
     <script src="{% static 'dashboard/js/select2.min.js' %}"></script>
     
     <script type="text/javascript">
-        // date picker 
-        $("#id_valuation_date").datepicker({
+        var dates = $("#id_inspection_date, #id_valuation_date, #id_report_date").datepicker({
             dateFormat: "yy-mm-dd",
-            minDate: "{{valuation.inspection_date|date:'Y-m-d'}}"
-        });
-        $("#id_report_date").datepicker({
-            dateFormat: "yy-mm-dd",
-            minDate: "{{valuation.inspection_date|date:'Y-m-d'}}"
+            onSelect: function(selectedDate) {
+                var option = this.id == "id_inspection_date" ? "minDate" : "maxDate",
+                    instance = $(this).data("datepicker"),
+                    date = $.datepicker.parseDate(instance.settings.dateFormat || $.datepicker._defaults.dateFormat, selectedDate, instance.settings);
+                dates.not(this).datepicker("option", option, date);
+            }
         });
 
         // select2 js
@@ -532,10 +532,10 @@
             let address = data.text.split(',');
             $('#id_street').val(address[0]);
             $('#id_postal_code').val(address[1].trim());
-            let area = address[3];
+            let area = address[3].trim();
             $("#id_area option:contains("+area+")").prop("selected","selected");
             $('#id_area').trigger('change'); 
-            map.removeLayer(marker)
+            map.removeLayer(marker);
             for (var i = data.results.length - 1; i >= 0; i--) {
                 marker = L.marker(data.results[i].latlng, {draggable:'true'}).addTo(map);
                 marker.on('dragend', function(event){
@@ -578,7 +578,8 @@
         // map management
 
         // ======================== form validation check ===========================
-        $("#submitBtn").on('click', function () {
+        $("#submitBtn").on('click', function (e) {
+            e.preventDefault();
             var title = $("#id_title").val()
             var status = $("#id_status").val()
             var prop_type =  $("#id_property_type").val()

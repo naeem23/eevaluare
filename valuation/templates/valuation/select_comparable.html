@@ -145,8 +145,8 @@
                             <div class="col-md-12">
                                 <div class="form-group" style="width: 30%;">
                                     <label for="nr_comparatii">Nr comparatii</label>
-                                    <input type="number" class="form-control" id="nr_comparatii" name="nr_comapratii" value="{% if comp_table %}{{comp_table|length}}{% else %}0{% endif %}">
-                                    <small class="form-text text-danger nr_warning">This field must be grater than zero</small>
+                                    <input type="number" class="form-control" id="nr_comparatii" name="nr_comapratii" value="{% if comp_table %}{{comp_table|length}}{% else %}0{% endif %}" min="3" max="5">
+                                    <small class="form-text text-danger nr_warning">This field must be in between 3 to 5</small>
                                 </div>
                             </div>
                         </div>
@@ -204,16 +204,32 @@
                 var $checkboxes = $('#search-result-tbl td input[type="checkbox"]');
                 $checkboxes.change(function(){
                     if (this.checked == true) {
-                        comp.push(Number(this.value));
                         let nr = parseInt($('#nr_comparatii').val()) + 1;
-                        $('#nr_comparatii').val(nr);
-                    } else {
-                        let index = comp.indexOf(Number(this.value));
-                        if (index > -1) {
-                            comp.splice(index, 1);
-                        }    
+                        if(nr > 5) {
+                            $('#nr_comparatii').addClass('required');
+                            $('.nr_warning').css('display', 'block');
+                            $(this).prop("checked", false);
+                        } else {
+                            $('#nr_comparatii').removeClass('required');
+                            $('.nr_warning').css('display', 'none');
+                            comp.push(Number(this.value));
+                            $('#nr_comparatii').val(nr);
+                        }
+                    } else {  
                         let nr = parseInt($('#nr_comparatii').val()) - 1;
-                        $('#nr_comparatii').val(nr);
+                        if(nr < 3) {
+                            $('#nr_comparatii').addClass('required');
+                            $('.nr_warning').css('display', 'block');
+                            $(this).prop("checked", true);
+                        } else {
+                            let index = comp.indexOf(Number(this.value));
+                            if (index > -1) {
+                                comp.splice(index, 1);
+                            }  
+                            $('#nr_comparatii').removeClass('required');
+                            $('.nr_warning').css('display', 'none');
+                            $('#nr_comparatii').val(nr);
+                        }
                     };
                     // set min value for nr comp after change 
                     let $checkboxes = $('input[type="checkbox"]');
@@ -225,16 +241,32 @@
 
         $('#selected-tbl td input[type="checkbox"]').change(function() {
             if(this.checked == false) {
-                remove.push(Number(this.value));
                 let nr = parseInt($('#nr_comparatii').val()) - 1;
-                $('#nr_comparatii').val(nr);
-            } else {
-                let r_index = remove.indexOf(Number(this.value));
-                if (r_index > -1) {
-                    remove.splice(r_index, 1);
+                if(nr < 3) {
+                    $('#nr_comparatii').addClass('required');
+                    $('.nr_warning').css('display', 'block');
+                    $(this).prop("checked", true);
+                } else {
+                    $('#nr_comparatii').removeClass('required');
+                    $('.nr_warning').css('display', 'none');
+                    remove.push(Number(this.value));
+                    $('#nr_comparatii').val(nr);
                 }
+            } else {
                 let nr = parseInt($('#nr_comparatii').val()) + 1;
-                $('#nr_comparatii').val(nr);
+                if(nr > 5) {
+                    $('#nr_comparatii').addClass('required');
+                    $('.nr_warning').css('display', 'block');
+                    $(this).prop("checked", false);
+                } else {
+                    let r_index = remove.indexOf(Number(this.value));
+                    if (r_index > -1) {
+                        remove.splice(r_index, 1);
+                    }
+                    $('#nr_comparatii').removeClass('required');
+                    $('.nr_warning').css('display', 'none');
+                    $('#nr_comparatii').val(nr);
+                }
             }
             // set min value for nr comp after change 
             let $checkboxes = $('input[type="checkbox"]');
@@ -247,9 +279,9 @@
             var nr_comp = $('#nr_comparatii').val();
             $('#comparable').val(JSON.stringify(comp));
             $('#remove').val(JSON.stringify(remove));
-            if(ids.length > 0 || parseInt(nr_comp) > 0) {
+            if(ids.length > 0 || parseInt(nr_comp) > 2) {
                 $('#comp_form').submit(); 
-            } else if (ids.length < 1 || parseInt(nr_comp) < 1) {
+            } else if (ids.length < 1 || parseInt(nr_comp) < 3) {
                 $('#nr_comparatii').addClass('required');
                 $('.nr_warning').css('display', 'block');
             }

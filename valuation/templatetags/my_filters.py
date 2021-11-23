@@ -4,7 +4,7 @@ import re
 import string
 from decimal import Decimal
 from django import template
-from django.db.models import Sum
+from django.db.models import Sum, Max, Min
 from valuation import models
 from valuation import choices
 register = template.Library()
@@ -64,6 +64,8 @@ def sub(var1, var2):
     if var1 != None and var2 != None and var1 > var2:
         return var1 - var2 
     elif var1 != None and var2 != None and var2 > var1:
+        return var2 - var1 
+    else:
         return var2 - var1 
     
 
@@ -228,3 +230,10 @@ def get_price_sqm(obj):
         price_sqm = '0.00/0.00'
     return price_sqm
 
+
+# get_range ron
+@register.filter(name="get_range")
+def get_range(comp_mvb):
+    max = comp_mvb.aggregate(Max('rent_sqm'))
+    min = comp_mvb.aggregate(Min('rent_sqm'))
+    return str(min['rent_sqm__min']) + ' - ' + str(max['rent_sqm__max']) 
