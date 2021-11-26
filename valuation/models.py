@@ -10,6 +10,7 @@ User = get_user_model()
 from django.db import models
 from django.utils import timezone
 from valuation.choices import *
+import os
 
 
 # =========================== area table =============================
@@ -229,6 +230,10 @@ class Photo(models.Model):
 
 	def __str__(self):
 		return str(self.ref_no) 
+
+	def delete(self, using=None, keep_parents=False):
+		self.image.storage.delete(self.image.name)
+		super().delete()
 
 
 # ====================== valuation summary table =====================
@@ -562,6 +567,32 @@ class MvbTable(models.Model):
 	def __str__(self):
 		return str(self.ref_no)
 
+
+# ======================= property files table =======================
+# ==================================================================== 
+class PropertyFiles(models.Model):
+	comp_prop = models.ForeignKey(ComparableProperty, on_delete=models.CASCADE) #comparable property
+	refer_to = models.CharField(max_length=10, blank=True, null=True) #photos, documents
+	files = models.FileField(upload_to='PropertyFiels/%Y/%m/%d', blank=True, null=True)
+
+	def __str__(self):
+		return str(self.comp_prop.id)
+
+	def delete(self, using=None, keep_parents=False):
+		self.files.storage.delete(self.files.name)
+		super().delete()
+
+	def file_extention(self):
+		file = self.files.name 
+		try:
+			ext = file.split('.')[1]
+		except:
+			ext = None
+		return ext
+	
+	def get_filename(self):
+		basename = os.path.basename(self.files.name)
+		return basename
 
 
 # ========================== anexa table =============================

@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %} Add Comparabile {% endblock %} 
+{% block title %} Edit Comparabile {% endblock %} 
 
 <!-- Specific Page CSS goes HERE  -->
 {% block stylesheets %}
@@ -58,11 +58,28 @@
             border-color: #F25961 !important;
             color: #F25961 !important;
         }
+        
         .dropzone {
             padding: 20px 60px 20px!important;
         }
         .dropzone h4 {
             font-size: 26px!important;
+        }
+        #docs-container{
+            margin-bottom: 14px;
+        }
+        #docs-list { 
+            list-style-type: none; 
+            margin: 0; 
+            padding: 0; 
+        }
+        #docs-list li { 
+            margin: 10px 20px 10px 0px; 
+            display: inline-block;
+        }
+        #docs-list li img {
+            width: 150px;
+            height: 100px;
         }
 
         /* show map modal design */
@@ -93,7 +110,7 @@
     <div class="content">
         <div class="page-inner">
             <div class="page-header">
-                <h4 class="page-title">Add Comparabile</h4>
+                <h4 class="page-title">Edit Comparabile</h4>
                 <ul class="breadcrumbs">
                     <li class="nav-home">
                         <a href="#">
@@ -110,7 +127,7 @@
                         <i class="flaticon-right-arrow"></i>
                     </li>
                     <li class="nav-item">
-                        <a href="">Add Comparabile</a>
+                        <a href="">Edit Comparabile</a>
                     </li>
                 </ul>
             </div>
@@ -118,7 +135,7 @@
             {% load my_filters %}
             <div class="card">
                 <div class="card-header">
-                    <div class="card-title">Add Comparabile</div>
+                    <div class="card-title">Edit Comparabile</div>
                 </div>
                 
                 <form method="POST" id="comp_prop_form">
@@ -128,6 +145,18 @@
                         {% if msg %}
                             <p class="text-danger">{{msg}}</p>
                         {% endif %}
+
+                        {% if form.errors %}
+                            {% for field in form %}
+                                {% for error in field.errors %}
+                                    <p class="text-danger">{{field }} - {{error}}</p>
+                                {% endfor %}
+                            {% endfor %}
+                            {% for error in form.non_field_errors %}
+                                <p class="text-danger">{{ error }}</p>
+                            {% endfor %}
+                        {% endif %}
+
                         <table class="table table-hover">
                             <tbody>
                                 <tr>
@@ -146,7 +175,7 @@
                                     <td>
                                         <select id="id_mobila" class="form-control" name="mobila">
                                             {% for mt in mobila %}
-                                            <option value="{{mt.type}}">{{mt.type}}</option>
+                                            <option value="{{mt.type}}" {% if instance.mobila == mt.type %}selected{% endif %}>{{mt.type}}</option>
                                             {% endfor %}
                                         </select>
                                     </td>
@@ -167,8 +196,8 @@
                                     <td>Date disponibile <span class="required-label">*</span></td>
                                     <td>
                                         <select id="id_ad" class="form-control ad" name="ad">
-                                            <option value="Oferta">Oferta</option>
-                                            <option value="Tranzactie">Tranzactie</option>
+                                            <option value="Oferta" {% if instance.ad == 'Oferta' %}selected{% endif%}>Oferta</option>
+                                            <option value="Tranzactie" {% if instance.ad == 'Tranzactie' %}selected{% endif%}>Tranzactie</option>
                                         </select>
                                     </td>
                                 </tr>
@@ -180,7 +209,7 @@
                                     <td>
                                         <select id="id_pr" class="form-control" name="pr">
                                             {% for p in prop_rights %}
-                                            <option value="{{p.type}}">{{p.type}}</option>
+                                            <option value="{{p.type}}" {% if instance.pr == p.type %}selected{% endif%}>{{p.type}}</option>
                                             {% endfor %}
                                         </select>
                                     </td>
@@ -205,15 +234,19 @@
                                     <td>Cheltuieli necesare imediat dupa cumparare <span class="required-label">*</span></td>
                                     <td>
                                         <select id="id_ape" class="form-control" name="ape">
-                                            <option value="nu">Nu</option>
-                                            <option value="da">Da</option>
+                                            <option value="nu" {% if instance.ape == 'nu' %}selected{% endif%}>Nu</option>
+                                            <option value="da" {% if instance.ape == 'da' %}selected{% endif%}>Da</option>
                                         </select>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td>Conditii de piata <span class="required-label">*</span></td>
                                     <td>
+                                        {% if instance %}
+                                        <input type="text" class="form-control" name="me" id="id_me" value="{{ instance.me }}"/>
+                                        {% else %}
                                         <input type="text" class="form-control" name="me" id="id_me"/>
+                                        {% endif %}
                                     </td>
                                 </tr>
                                 <tr>
@@ -227,8 +260,8 @@
                                             <div class="input-group-append" style="cursor: pointer;"  data-toggle="modal" data-target="#showMap">
                                                 <span class="input-group-text"><i class="fas fa-map-marker-alt"></i></span>
                                             </div>
-                                            <input type="hidden" name="lat" id="lat">
-                                            <input type="hidden" name="lng" id="lng">
+                                            <input type="hidden" name="lat" id="lat" value="{{instance.lat}}">
+                                            <input type="hidden" name="lng" id="lng" value="{{instance.lng}}">
                                         </div>
                                     </td>
                                 </tr>
@@ -237,7 +270,7 @@
                                     <td>
                                         <select id="id_cp" class="form-control" name="cp">
                                             {% for c in comp_type %}
-                                            <option value="{{c.type}}">{{c.type}}</option>
+                                            <option value="{{c.type}}" {% if c.type == instance.cp %}selected{% endif %}>{{c.type}}</option>
                                             {% endfor %}
                                         </select>
                                     </td>
@@ -259,7 +292,7 @@
                                     <td>
                                         <select id="id_finish" class="form-control" name="finish">
                                             {% for f in finish_type %}
-                                            <option value="{{f.type}}">{{f.type}}</option>
+                                            <option value="{{f.type}}" {% if f.type == instance.finish %}selected{% endif %}>{{f.type}}</option>
                                             {% endfor %}
                                         </select>
                                     </td>
@@ -277,7 +310,7 @@
                                     <td>
                                         <select class="form-control" name="hs">
                                             {% for h in heating %}
-                                            <option value="{{h.name}}">{{h.name}}</option>
+                                            <option value="{{h.name}}" {% if h.name == instance.hs %}selected{% endif %}>{{h.name}}</option>
                                             {% endfor %}
                                         </select>
                                     </td>
@@ -286,23 +319,40 @@
                                     <td>Stare</td>
                                     <td>
                                         <select class="form-control" name="is_comparable" id="is_comparable">
-                                            <option value="1">Complet</option>
-                                            <option value="0">Incomplet</option>
+                                            <option value="1" {% if instance.is_comparable == 1 %}selected{% endif %}>Complet</option>
+                                            <option value="0" {% if instance.is_comparable == 0 %}selected{% endif %}>Incomplet</option>
                                         </select>
                                     </td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
-                    <input type="hidden" name="prop_id" id="prop_id">
                 </form>
 
-                <div class="card-body pt-1" style="padding-left: 2.50rem; padding-right: 2.5rem;">
+                <div class="card-body pt-1" style="padding-left: 2.5rem; padding-right: 2.5rem">
+                    <p>Documente tranzactie</p>
+                    {% if files %}
+                        <div id="docs-container">
+                            <ul id="docs-list" class="mb-2">
+                                {% for file in files %}
+                                    <li id="doc_{{ file.id }}" class="text-center">
+                                        {% if file.file_extention in img_format %}
+                                            <img src="{{ file.files.url }}" alt="Property Documents"> <br>
+                                        {% else %}
+                                            <div class="text-light" style="width: 150px; height: 100px; background: #aaaaaa70;text-align: center;"><p class="mb-0 pt-2" style="line-height: 20px;">{{file.get_filename}}</p></div>
+                                        {% endif %}
+                                        <span onclick="delete_prop_files('{{file.id}}')" class="text-info" style="cursor: pointer;"><u>Remove</u></span>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %}
+                    
                     <div class="property_docs">
-                        <p>Documente tranzactie</p>
                         <form action="{% url 'valuation:porperty_files' %}" class="dropzone dz-clickable" id="porpertyDocs">
                             {% csrf_token %}
                             <input type="hidden" name="refer_to" value="documents">
+                            <input type="hidden" name="prop_id" value="{{instance.id}}">
                             <div class="dz-message" data-dz-message="">
                                 <div class="icon">
                                     <i class="flaticon-file"></i>
@@ -312,10 +362,10 @@
                         </form>
                     </div>
                 </div>
-                
+                    
                 <div class="card-action">
                     <p class="text-danger error" style="display: none;">Red box fields are required.</p>
-                    <button class="btn btn-success" id="submitbtn">Save</button>
+                    <button class="btn btn-success" id="submitbtn">Update</button>
                 </div>
             </div>
         </div>
@@ -369,11 +419,6 @@
         Dropzone.options.porpertyDocs = {
             addRemoveLinks: true,
             init: function() {
-                var id = '';
-                this.on('success', function(file, json) {
-                    id = json.id;
-                    $('#prop_id').val(id);
-                });
                 this.on('removedfile', function(file) {
                     $.ajax({
                         url: "{% url 'valuation:delete_prop_files' %}",
@@ -382,7 +427,7 @@
                             "csrfmiddlewaretoken": '{{ csrf_token }}',
                             'refer_to': 'documents',
                             'file': file.name,
-                            'prop_id': id,
+                            'prop_id': '{{instance.id}}',
                         },
                         success: function(e) {
                             if(e.success=='true') {
@@ -412,6 +457,20 @@
                 $('.error').css('display', 'block');
             }
         });
+
+        // delete prop file 
+        function delete_prop_files(pid) {
+            $.ajax({
+                url: "{% url 'valuation:delete_prop_files' %}",
+                type: 'GET',
+                data: {id: pid},
+                success: function (e) {
+                    if(e.success=='true') {
+                        $('#docs-list').find('#doc_'+pid).remove();
+                    }
+                }
+            });
+        }
     </script>
 
     <!-- leaflet map  -->

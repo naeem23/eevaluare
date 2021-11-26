@@ -66,6 +66,8 @@
             border-color: #F25961 !important;
             color: #F25961 !important;
         }
+
+        /* show map modal design */
         #showMap .modal-dialog {
             max-width: 600px;
         }
@@ -383,7 +385,7 @@
                                             {% for n in comparable %}
                                             <td>
                                                 <div class="input-group">
-                                                    <input type="text" name="margin[]" class="form-control" id="margin_{{forloop.counter}}">
+                                                    <input type="text" name="margin[]" class="form-control" id="margin_{{forloop.counter}}" value="{% if n.ad == 'Tranzactie' %}0{% endif%}">
                                                     <div class="input-group-append">
                                                         <span class="input-group-text">%</span>
                                                     </div>
@@ -394,7 +396,7 @@
                                             {% for n in comparable %}
                                             <td>
                                                 <div class="input-group">
-                                                    <input type="text" name="margin[]" class="form-control" id="margin_{{forloop.counter}}">
+                                                    <input type="text" name="margin[]" class="form-control" id="margin_{{forloop.counter}}" value="{% if n.ad == 'Tranzactie' %}0{% endif%}">
                                                     <div class="input-group-append">
                                                         <span class="input-group-text">%</span>
                                                     </div>
@@ -431,11 +433,11 @@
                                     {% if comparable %}
                                         {% if comparable|length == nr_comp %}
                                             {% for n in comparable %}
-                                                <td><input type="number" name="cv[]" class="form-control" step="0.01" value="{{n.cv}}" id="cv_{{forloop.counter}}"></td>
+                                                <td><input type="number" name="cv[]" class="form-control" step="0.01"  value="{% if n.ad == 'Tranzactie' %}0{% endif%}" id="cv_{{forloop.counter}}"></td>
                                             {% endfor %}
                                         {% else %}
                                             {% for n in comparable %}
-                                                <td><input type="number" name="cv[]" class="form-control" step="0.01" value="{{n.cv}}" id="cv_{{forloop.counter}}"></td>
+                                                <td><input type="number" name="cv[]" class="form-control" step="0.01"  value="{% if n.ad == 'Tranzactie' %}0{% endif%}" id="cv_{{forloop.counter}}"></td>
                                             {% endfor %}
                                             {% for n in comparable|get_extra_length:nr_comp %}
                                                 <td>
@@ -1308,6 +1310,8 @@
                                                         <span class="input-group-text"><i class="fas fa-map-marker-alt"></i></span>
                                                     </div>
                                                 </div>
+                                                <input type="hidden" name="lat[]" id="lat_{{n}}">
+                                                <input type="hidden" name="lng[]" id="lng_{{n}}">
                                             </td>
                                             {% endfor %}
                                         {% endif %}
@@ -3100,16 +3104,16 @@
         var nr = "{{nr_comp}}";
         $(document).ready(function() {
             for(let i=1; i<=nr; i++) {
-                let sp = Number($('#sp_'+i+'').val());
-                let ma = Number($('#ma_'+i+'').val());
-                let pba = Number($('#pba_'+i+'').val());
+                let sp = Number($('#sp_'+i).val());
+                let ma = Number($('#ma_'+i).val());
+                let pba = Number($('#pba_'+i).val());
                 if(sp != '' && ma != '' && pba != '') {
                     let offer_price = sp + ma + pba;
-                    $("#op_"+i+"").val(offer_price);
+                    $("#op_"+i).val(offer_price);
                 }
-                let area = Number($('#id_area'+i+'').val());
+                let area = Number($('#id_area'+i).val());
                 let su_diff = Number($('#id_sub_area').val()) - area;
-                $('#su_diff'+i+'').val(su_diff.toFixed(2));
+                $('#su_diff'+i).val(su_diff.toFixed(2));
             }
         })
         
@@ -3119,8 +3123,9 @@
             for(let i=1; i<=nr; i++) { 
                 if($('#id_ad'+i+'').val()=='Oferta') {
                     $('#margin_'+i).val(this.value);
+                }
                     let op = Number($('#op_'+i).val());
-                    let cv = (op*margin)/100;
+                    let cv = ($('#id_ad'+i).val() == 'Tranzactie') ? 0 : (op*margin)/100;
                     $('#cv_'+i+'').val(cv);
                     let mp = op + cv;
                     $('#mp_'+i+'').val(mp);
@@ -3145,7 +3150,7 @@
                     get_adjustment_no(i);
                     get_total(i);
                     get_gross_total(i);
-                }
+                // }
             }
         });
 

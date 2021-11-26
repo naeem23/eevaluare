@@ -72,7 +72,14 @@
                         <div class="col-md-12">
                             <div>
                                 <input type="text" class="form-control" value="{{valuation.street}}" id="location">
-                                <input type="number" placeholder="Redius in km" class="form-control radius">
+                                <div style="display: inline-block;">
+                                    <div class="input-group">
+                                        <input type="number" class="form-control radius" value="1" min="1">
+                                        <div class="input-group-append">
+                                            <span class="input-group-text">KM</span>
+                                        </div>
+                                    </div>
+                                </div>
                                 <input type="button" value="Search" class="form-control search-btn">
                             </div>
                         </div>
@@ -83,7 +90,7 @@
                     {% csrf_token %}
                     
                     {% if comp_table %}
-                    <div class="card-body mb-3">
+                    <div class="card-body mb-2">
                         <h3 class="text-light mb-0 pb-0">Selected Comparables</h3>
                         <table class="table table-hover" id="selected-tbl">
                             <thead>
@@ -120,7 +127,7 @@
                     <div class="card-body pt-0">
                         <div class="row search-result">
                             <div class="col-md-12">
-                                <h3 class="mb-3 text-light">Search results</h3>
+                                <h3 class="text-light mb-3">Search results</h3>
                                 <p class="text-danger search-warning" style="display: none;">No match found</p>
 
                                 <table class="table table-hover" id="search-result-tbl">
@@ -179,8 +186,9 @@
         $('#nr_comparatii').attr('min', nr_min);
 
         $(".search-btn").on('click', function() {
-            var location = $('#location').val()
-            var radius = $('.radius').val()
+            var location = $('#location').val();
+            var radius = $('.radius').val();
+            console.log(radius);
             $.ajax({
                 url: "{% url 'valuation:search_comparable' %}",
                 type: "GET",
@@ -191,13 +199,15 @@
                         $('.search-warning').css('display', 'none');
                         $('.search-result').css('display', 'block');
                         $('#search-result-tbl').css('display', 'block');
+                        $('#search-result-tbl tbody').html('');
                         for(let i=0; i<comp.length; i++) {
                             var tr = '<tr><td><div class="form-check"><label class="form-check-label"><input class="form-check-input" type="checkbox" name="comp[]" value="'+comp[i][0]+'"><span class="form-check-sign text-light">ID '+comp[i][0]+'</span></label></div></td><td>'+comp[i][1]+'</td><td>'+comp[i][2]+'</td><td>'+comp[i][3]+'</td><td>'+comp[i][4]+'</td></tr>';
                             $('#search-result-tbl tbody').append(tr);
                         }
                     } else {
-                        $('.search-result').css('display', 'block')
-                        $('.search-warning').css('display', 'block')
+                        $('#search-result-tbl').css('display', 'none');
+                        $('.search-result').css('display', 'block');
+                        $('.search-warning').css('display', 'block');
                     }
                 }
             }).done(function() {

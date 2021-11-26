@@ -460,14 +460,16 @@
     <script src="{% static 'dashboard/js/select2.min.js' %}"></script>
     
     <script type="text/javascript">
-        var dates = $("#id_inspection_date, #id_valuation_date, #id_report_date").datepicker({
+        $("#id_inspection_date").datepicker({
             dateFormat: "yy-mm-dd",
-            onSelect: function(selectedDate) {
-                var option = this.id == "id_inspection_date" ? "minDate" : "maxDate",
-                    instance = $(this).data("datepicker"),
-                    date = $.datepicker.parseDate(instance.settings.dateFormat || $.datepicker._defaults.dateFormat, selectedDate, instance.settings);
-                dates.not(this).datepicker("option", option, date);
+            defaultDate: new Date(),
+            onClose: function (selectedDate) {
+                $("#id_valuation_date").datepicker("option", "minDate", selectedDate);
+                $("#id_report_date").datepicker("option", "minDate", selectedDate);
             }
+        });
+        $("#id_valuation_date, #id_report_date").datepicker({
+            dateFormat: "yy-mm-dd"
         });
 
         // select2 js

@@ -453,15 +453,21 @@ def select_comparable(request, id):
 
 @login_required(login_url='/signin/')
 def search_comparable(request):
-    location = request.GET.get('location')
     radius = request.GET.get('radius')
     vid = request.GET.get('vid') 
-    comp_table = models.ComparableTable.objects.filter(ref_no__id=vid).values_list('comparable__id', flat=True)
-    if comp_table:
-        comparable = models.ComparableProperty.objects.filter(lc__icontains=location, is_comparable=1).exclude(id__in=list(comp_table)).values_list('id', 'lc', 'area', 'camara', 'cy')
+    valuation = get_object_or_404(models.ValuatedProperty, id=vid)
+    comp_ids = models.ComparableTable.objects.filter(ref_no=valuation).values_list('comparable__id', flat=True)
+    if comp_ids:
+        query= "SELECT id, lc, area, camara, cy, lat, lng, 6371 * 2 * ASIN(SQRT(POWER(SIN((%s - lat) * 0.0174532925 / 2), 2) + COS(%s * 0.0174532925) * COS(lat * 0.0174532925) * POWER(SIN((%s - lng) * 0.0174532925 / 2), 2) )) as distance from valuation_comparableproperty WHERE id NOT IN %s and is_comparable=1 having distance < %s ORDER BY distance ASC LIMIT 20" % (valuation.latitude, valuation.latitude, valuation.longitude, tuple(comp_ids), radius)
+        cursor = connection.cursor()
+        cursor.execute(query)
+        rows = cursor.fetchall()
     else:
-        comparable = models.ComparableProperty.objects.filter(lc__icontains=location, is_comparable=1).values_list('id', 'lc', 'area', 'camara', 'cy')
-    return JsonResponse({'comparable': list(comparable)})
+        query= "SELECT id, lc, area, camara, cy, lat, lng, 6371 * 2 * ASIN(SQRT(POWER(SIN((%s - lat) * 0.0174532925 / 2), 2) + COS(%s * 0.0174532925) * COS(lat * 0.0174532925) * POWER(SIN((%s - lng) * 0.0174532925 / 2), 2) )) as distance from valuation_comparableproperty WHERE is_comparable=1 having distance < %s ORDER BY distance ASC LIMIT 20" % (valuation.latitude, valuation.latitude, valuation.longitude, radius)
+        cursor = connection.cursor()
+        cursor.execute(query)
+        rows = cursor.fetchall()
+    return JsonResponse({'comparable': list(rows)})
 
 
 # ========================================================
@@ -621,11 +627,13 @@ def add_comparable(request, id):
             comp_list = list(comparable)  
             if len(comparable) != int(nr_comp):
                 for i in range(len(comparable), int(nr_comp)):
-                    prop = models.ComparableProperty.objects.create(sale_price=sale_price[i], mobila=mobila[i], ma=ma[i], parking_boxa=parking_boxa[i], pba=pba[i], ad=ad[i], pr=pr[i], fc=fc[i], sc=sc[i], ape=ape[i], me=me[i], lc=lc[i], lat=lat[i], lng=lng[i], cp=cp[i], cy=cy[i], camara=camara[i], area=area[i], finish=finish[i], etaj=etaj[i], balcon=balcon[i], hs=hs[i])
+                    is_comparable = 0 if ad[i] == 'Tranzactie' else 1
+                    prop = models.ComparableProperty.objects.create(is_comparable=is_comparable, sale_price=sale_price[i], mobila=mobila[i], ma=ma[i], parking_boxa=parking_boxa[i], pba=pba[i], ad=ad[i], pr=pr[i], fc=fc[i], sc=sc[i], ape=ape[i], me=me[i], lc=lc[i], lat=lat[i], lng=lng[i], cp=cp[i], cy=cy[i], camara=camara[i], area=area[i], finish=finish[i], etaj=etaj[i], balcon=balcon[i], hs=hs[i])
                     comp_list.append(prop)
         else:
             for i in range(int(nr_comp)):
-                prop = models.ComparableProperty.objects.create(sale_price=sale_price[i], mobila=mobila[i], ma=ma[i], parking_boxa=parking_boxa[i], pba=pba[i], ad=ad[i], pr=pr[i], fc=fc[i], sc=sc[i], ape=ape[i], me=me[i], lc=lc[i], lat=lat[i], lng=lng[i], cp=cp[i], cy=cy[i], camara=camara[i], area=area[i], finish=finish[i], etaj=etaj[i], balcon=balcon[i], hs=hs[i])
+                is_comparable = 0 if ad[i] == 'Tranzactie' else 1
+                prop = models.ComparableProperty.objects.create(is_comparable=is_comparable, sale_price=sale_price[i], mobila=mobila[i], ma=ma[i], parking_boxa=parking_boxa[i], pba=pba[i], ad=ad[i], pr=pr[i], fc=fc[i], sc=sc[i], ape=ape[i], me=me[i], lc=lc[i], lat=lat[i], lng=lng[i], cp=cp[i], cy=cy[i], camara=camara[i], area=area[i], finish=finish[i], etaj=etaj[i], balcon=balcon[i], hs=hs[i])
                 comp_list.append(prop)
         s = 0
         for cl in comp_list:
@@ -837,7 +845,8 @@ def edit_comparable(request, id):
 
         if (len(comp_table) + len(comparable)) != int(nr_comp):
             for i in range(k+len(comparable), int(nr_comp)):
-                prop = models.ComparableProperty.objects.create(sale_price=sale_price[i], mobila=mobila[i], ma=ma[i], parking_boxa=parking_boxa[i], pba=pba[i], ad=ad[i], pr=pr[i], fc=fc[i], sc=sc[i], ape=ape[i], me=me[i],lc=lc[i], lat=lat[i], lng=lng[i], cp=cp[i], cy=cy[i], camara=camara[i], area=area[i], finish=finish[i], etaj=etaj[i], balcon=balcon[i], hs=hs[i])
+                is_comparable = 0 if ad[i] == 'Tranzactie' else 1
+                prop = models.ComparableProperty.objects.create(is_comparable=is_comparable, sale_price=sale_price[i], mobila=mobila[i], ma=ma[i], parking_boxa=parking_boxa[i], pba=pba[i], ad=ad[i], pr=pr[i], fc=fc[i], sc=sc[i], ape=ape[i], me=me[i], lc=lc[i], lat=lat[i], lng=lng[i], cp=cp[i], cy=cy[i], camara=camara[i], area=area[i], finish=finish[i], etaj=etaj[i], balcon=balcon[i], hs=hs[i])
                 comp_list.append(prop)
 
         for cl in comp_list:
@@ -900,6 +909,7 @@ def edit_comparable(request, id):
         'letters': letters,
     }
     return render(request, template, context)
+
 
 # ==========================================================
 # ====================== anexa data ========================
@@ -1201,13 +1211,11 @@ def delete_photos(request):
     except:
         return JsonResponse({'success': 'false'})
 
-
 @login_required(login_url='/signin/')
 def delete_image(request):
     if request.method == 'POST':
         vid = request.POST.get('vid')
         file = request.POST.get('file').split('.')
-        print(file)
         refer_to = request.POST.get('refer_to')
         try:
             photo = models.Photo.objects.filter(ref_no__id=vid, refer_to=refer_to, image__icontains=file[0]).latest('id')
@@ -1272,7 +1280,7 @@ def delete_source(request):
         return JsonResponse({'success': 'false'})
 
 
-# ==================== manage photos reorder & delete ======================
+# ==================== manage comparable property ======================
 # ==========================================================================
 @login_required(login_url='/signin/')
 def add_comp_prop(request):
@@ -1286,7 +1294,12 @@ def add_comp_prop(request):
     if request.method == 'POST':
         form = forms.ComparableForm(request.POST)
         if form.is_valid():
-            form.save()
+            if(request.POST.get('prop_id')):
+                prop = models.ComparableProperty.objects.filter(id=request.POST.get('prop_id')).update(is_comparable=request.POST.get('is_comparable'), sale_price=form.cleaned_data['sale_price'], mobila=form.cleaned_data['mobila'], ma=form.cleaned_data['ma'], parking_boxa=form.cleaned_data['parking_boxa'], pba=form.cleaned_data['pba'], ad=form.cleaned_data['ad'], pr=form.cleaned_data['pr'], fc=form.cleaned_data['fc'], sc=form.cleaned_data['sc'], ape=form.cleaned_data['ape'], me=form.cleaned_data['me'], lc=form.cleaned_data['lc'], lat=form.cleaned_data['lat'], lng=form.cleaned_data['lng'], cp=form.cleaned_data['cp'], cy=form.cleaned_data['cy'], camara=form.cleaned_data['camara'], area=form.cleaned_data['area'], finish=form.cleaned_data['finish'], etaj=form.cleaned_data['etaj'], balcon=form.cleaned_data['balcon'], hs=form.cleaned_data['hs'])
+            else:
+                prop = form.save(commit=False)
+                prop.is_comparable = request.POST.get('is_comparable')
+                prop.save()
             request.session['comp_added'] = True
             return redirect('dashboard:comparable_list')
     else:
@@ -1305,8 +1318,9 @@ def add_comp_prop(request):
 
 @login_required(login_url='/signin/')
 def comp_prop_details(request, id):
-    template = 'valuation/add_comp_property.html'
+    template = 'valuation/edit_comp_property.html'
     instance = get_object_or_404(models.ComparableProperty, id=id)
+    files = models.PropertyFiles.objects.filter(comp_prop=instance)
     mobila = models.MobilaType.objects.all()
     prop_rights = models.PropertyRightType.objects.all()
     comp_type = models.CompartmentType.objects.all()
@@ -1315,8 +1329,16 @@ def comp_prop_details(request, id):
 
     if request.method == 'POST':
         form = forms.ComparableForm(request.POST, instance=instance)
+        files = request.FILES.getlist('files')
         if form.is_valid():
-            form.save()
+            data = form.save()
+            files = models.PropertyFiles.objects.filter(comp_prop=data)
+            if files:
+                data.is_comparable = 1
+                data.save()
+            else:
+                data.is_comparable = request.POST.get('is_comparable')
+                data.save()
             request.session['comp_added'] = True
             return redirect('dashboard:comparable_list')
     else:
@@ -1325,6 +1347,8 @@ def comp_prop_details(request, id):
     context = {
         'segment': 'comparable',
         'instance': instance,
+        'files': files,
+        'img_format': ['jpg', 'jpeg', 'png'],
         'mobila': mobila,
         'prop_rights': prop_rights,
         'comp_type': comp_type,
@@ -1334,6 +1358,55 @@ def comp_prop_details(request, id):
     }
     return render(request, template, context)
 
+@login_required(login_url='/signin/')
+def porperty_files(request):
+    if request.method == 'POST':
+        if(request.POST.get('prop_id')):
+            prop = get_object_or_404(models.ComparableProperty, id=request.POST.get('prop_id'))
+        else:
+            prop = models.ComparableProperty.objects.create()
+        file = request.FILES['file']
+        refer_to = request.POST.get('refer_to')
+        res = models.PropertyFiles.objects.create(comp_prop=prop, refer_to=refer_to, files=file)
+        if res:
+            return JsonResponse({'success': 'true', 'id': prop.id})
+        else: 
+            return JsonResponse({'success': 'false'})
+    return JsonResponse({'success': 'false'})
 
+@login_required(login_url='/signup/')
+def delete_porperty_files(request):
+    if request.method == 'POST':
+        prop_id = request.POST.get('prop_id')
+        file = request.POST.get('file').split('.')
+        refer_to = request.POST.get('refer_to')
+        try:
+            files = models.PropertyFiles.objects.filter(comp_prop__id=prop_id, refer_to=refer_to, files__icontains=file[0]).latest('id')
+        except:
+            files = None 
+        if files:
+            files.delete()
+            return JsonResponse({'success': 'true'})
+        else:
+            return JsonResponse({'success': 'false'})
+    else:
+        file_id = request.GET.get('id')
+        file = get_object_or_404(models.PropertyFiles, id=file_id)
+        if file:
+            file.delete()
+            return JsonResponse({'success': 'true'})
+        else:
+            return JsonResponse({'success': 'false'})
+
+
+from django.db import connection
 def test(request):
-    return render(request, 'valuation/test.html')
+    location = request.GET.get('location')
+    radius = request.GET.get('radius')
+    vid = request.GET.get('vid') 
+    comp_table = models.ComparableTable.objects.filter(ref_no__id=vid).values_list('comparable__id', flat=True)
+    if comp_table:
+        comparable = models.ComparableProperty.objects.filter(lc__icontains=location, is_comparable=1).exclude(id__in=list(comp_table)).values_list('id', 'lc', 'area', 'camara', 'cy')
+    else:
+        comparable = models.ComparableProperty.objects.filter(lc__icontains=location, is_comparable=1).values_list('id', 'lc', 'area', 'camara', 'cy')
+    return JsonResponse({'comparable': list(comparable)})

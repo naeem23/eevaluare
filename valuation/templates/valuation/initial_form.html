@@ -425,6 +425,7 @@
             $('#id_street').val(address[0]);
             $('#id_postal_code').val(address[1].trim());
             let area = address[3].trim();
+            console.log(area)
             $("#id_area option:contains("+area+")").prop("selected","selected");
             $('#id_area').trigger('change'); 
             map.removeLayer(marker);

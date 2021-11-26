@@ -41,4 +41,6 @@ urlpatterns = [
     # comparable property url 
     path('add-comparabile/', views.add_comp_prop, name="add_comp_prop"),
     path('detalii-comparabile/<int:id>/', views.comp_prop_details, name="comp_prop_details"),
+    path('api/property-files/', views.porperty_files, name="porperty_files"),
+    path('api/delete/property-files/', views.delete_porperty_files, name="delete_prop_files"),
 ]
