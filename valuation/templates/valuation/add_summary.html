@@ -467,7 +467,7 @@
                 $('.cover_upload').css('display', 'none');
             }
         }
-        
+        Dropzone.autoDiscover = false;
         var cmaxFiles = $('#coverphotos').attr('data-count');
         var coverDz = new Dropzone('#coverphotos', {
             addRemoveLinks: true,
@@ -654,6 +654,7 @@
                 type: 'GET',
                 data: {id: pid},
                 success: function (e) {
+                    console.log(e)
                     if(e.success=='true') {
                         if(pid == last_summary_id && summary_size == 1) {
                             $('.summary_photos').find('#summary-container').remove();

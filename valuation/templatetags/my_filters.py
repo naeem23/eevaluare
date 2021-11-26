@@ -175,7 +175,8 @@ def get_market_value(summary):
 def get_market_value_ron(obj, summary):
     market_val = get_market_value(summary)
     market_val = market_val * summary.fer
-    return round(market_val,0)
+    return market_val
+    
 
 # get_income_value
 @register.filter(name="get_income_value")
@@ -195,7 +196,7 @@ def get_income_value(summary):
 def get_income_value_ron(obj, summary):
     income_val = get_income_value(summary)
     income_val = income_val * summary.fer
-    return round(income_val,0)
+    return income_val
 
 # get_utila_totala
 @register.filter(name="get_utila_totala")
@@ -237,3 +238,14 @@ def get_range(comp_mvb):
     max = comp_mvb.aggregate(Max('rent_sqm'))
     min = comp_mvb.aggregate(Min('rent_sqm'))
     return str(min['rent_sqm__min']) + ' - ' + str(max['rent_sqm__max']) 
+
+
+@register.filter(name="get_pret_mp_util")
+def get_pret_mp_util(obj):
+    pret = obj.sale_price + obj.ma + obj.pba
+    return pret/obj.area
+
+@register.filter(name="thousand_separator")
+def thousand_separator(num):
+    num = round(num,0)
+    return '{:,}'.format(num).replace(',','.')

@@ -911,24 +911,24 @@
                                 <tr>
                                     <td>Conditii de piata</td>
                                     <td>
-                                        <input type="text" class="form-control" name="sub_me" id="id_sub_me" value="{{sub_comp.sub_me}}"/>
+                                        <input type="text" class="form-control" name="sub_me" id="id_sub_me" value="{{sub_comp.sub_me}}" autocomplete="off"/>
                                     </td>
                                     {% for n in comp_table %}
                                         <td>
-                                            <input type="text" class="form-control market_env" name="me[]" value="{{n.me}}"/>
+                                            <input type="text" class="form-control market_env" name="me[]" value="{{n.me}}" autocomplete="off"/>
                                         </td>
                                     {% endfor %}
                                     {% with l=comp_table|length %}
                                         {% for n in comparable %}
                                             <td>
-                                                <input type="text" class="form-control market_env" name="me[]" value="{{n.me}}"/>
+                                                <input type="text" class="form-control market_env" name="me[]" value="{{n.me}}" autocomplete="off"/>
                                             </td>
                                         {% endfor %}
                                     {% endwith %}
                                     {% with l=comb_len %}
                                         {% for n in len|list_range %}
                                             <td>
-                                                <input type="text" class="form-control market_env" name="me[]"/>
+                                                <input type="text" class="form-control market_env" name="me[]" autocomplete="off"/>
                                             </td>
                                         {% endfor %}
                                     {% endwith %}

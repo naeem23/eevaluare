@@ -85,6 +85,12 @@
             height: 300px;
             width: 100%; 
         }
+
+        #file_upload{
+            display: none;
+            padding-left: 2.50rem; 
+            padding-right: 2.5rem;
+        }
     </style>
 {% endblock stylesheets %}
 
@@ -213,7 +219,7 @@
                                 <tr>
                                     <td>Conditii de piata <span class="required-label">*</span></td>
                                     <td>
-                                        <input type="text" class="form-control" name="me" id="id_me"/>
+                                        <input type="text" class="form-control" name="me" id="id_me" autocomplete="off"/>
                                     </td>
                                 </tr>
                                 <tr>
@@ -297,12 +303,28 @@
                     <input type="hidden" name="prop_id" id="prop_id">
                 </form>
 
-                <div class="card-body pt-1" style="padding-left: 2.50rem; padding-right: 2.5rem;">
+                <div class="card-body pt-1" id="file_upload">
                     <div class="property_docs">
                         <p>Documente tranzactie</p>
                         <form action="{% url 'valuation:porperty_files' %}" class="dropzone dz-clickable" id="porpertyDocs">
                             {% csrf_token %}
                             <input type="hidden" name="refer_to" value="documents">
+                            <input type="hidden" name="prop_id" class="prop_id" value="None">
+                            <div class="dz-message" data-dz-message="">
+                                <div class="icon">
+                                    <i class="flaticon-file"></i>
+                                </div>
+                                <h4 class="message">Drag and Drop files here</h4>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="property_photos mt-4">
+                        <p>Fotografii tranzactie</p>
+                        <form action="{% url 'valuation:porperty_files' %}" class="dropzone dz-clickable" id="porpertyPhotos">
+                            {% csrf_token %}
+                            <input type="hidden" name="refer_to" value="photos">
+                            <input type="hidden" name="prop_id" class="prop_id" value="None">
                             <div class="dz-message" data-dz-message="">
                                 <div class="icon">
                                     <i class="flaticon-file"></i>
@@ -360,19 +382,26 @@
             var val = this.value;
             if(val=='Tranzactie') {
                 $("#is_comparable").val('0').change();
+                $("#file_upload").css('display', 'block');
             } else {
                 $("#is_comparable").val('1').change();
+                $("#file_upload").css('display', 'none');
             }
         });
 
         // property docs upload 
+        var id = '';
         Dropzone.options.porpertyDocs = {
             addRemoveLinks: true,
             init: function() {
-                var id = '';
                 this.on('success', function(file, json) {
-                    id = json.id;
-                    $('#prop_id').val(id);
+                    if(json.success == 'true') {
+                        $("#is_comparable").val('1').change();
+                        id = json.id;
+                        console.log('docs prop id ' + id)
+                        $('#prop_id').val(id);
+                        $('.prop_id').val(id);
+                    }
                 });
                 this.on('removedfile', function(file) {
                     $.ajax({
@@ -394,6 +423,37 @@
             }
         }
 
+        // property photos upload 
+        Dropzone.options.porpertyPhotos = {
+            addRemoveLinks: true,
+            init: function() {
+                this.on('success', function(file, json) {
+                    if(json.success == 'true') {
+                        id = json.id;
+                        console.log('photos prop id ' + id)
+                        $('#prop_id').val(id);
+                        $('.prop_id').val(id);
+                    }
+                });
+                this.on('removedfile', function(file) {
+                    $.ajax({
+                        url: "{% url 'valuation:delete_prop_files' %}",
+                        type: "POST",
+                        data: {
+                            "csrfmiddlewaretoken": '{{ csrf_token }}',
+                            'refer_to': 'photos',
+                            'file': file.name,
+                            'prop_id': id,
+                        },
+                        success: function(e) {
+                            if(e.success=='true') {
+                                file.previewElement.remove();
+                            }
+                        }
+                    });
+                });
+            }
+        }
         // form submit 
         $('#submitbtn').on('click', function (e) {
             e.preventDefault();

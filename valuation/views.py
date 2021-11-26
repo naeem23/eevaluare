@@ -1,6 +1,7 @@
 import ast
 import datetime
 import json
+from django.db import connection
 from django.db.models.expressions import Value
 from django.utils.translation import templatize
 from django.utils.dateparse import parse_date
@@ -1205,11 +1206,11 @@ def delete_photos(request):
     id = request.GET.get('id')
     photo = get_object_or_404(models.Photo, id=id)
     try:
-        response = photo.delete()
-        if response:
-            return JsonResponse({'success': 'true'})
+        photo.delete()
+        return JsonResponse({'success': 'true'})
     except:
         return JsonResponse({'success': 'false'})
+    
 
 @login_required(login_url='/signin/')
 def delete_image(request):
@@ -1320,7 +1321,8 @@ def add_comp_prop(request):
 def comp_prop_details(request, id):
     template = 'valuation/edit_comp_property.html'
     instance = get_object_or_404(models.ComparableProperty, id=id)
-    files = models.PropertyFiles.objects.filter(comp_prop=instance)
+    files = models.PropertyFiles.objects.filter(comp_prop=instance, refer_to='documents')
+    photos = models.PropertyFiles.objects.filter(comp_prop=instance, refer_to='photos')
     mobila = models.MobilaType.objects.all()
     prop_rights = models.PropertyRightType.objects.all()
     comp_type = models.CompartmentType.objects.all()
@@ -1348,6 +1350,7 @@ def comp_prop_details(request, id):
         'segment': 'comparable',
         'instance': instance,
         'files': files,
+        'photos': photos,
         'img_format': ['jpg', 'jpeg', 'png'],
         'mobila': mobila,
         'prop_rights': prop_rights,
@@ -1361,7 +1364,7 @@ def comp_prop_details(request, id):
 @login_required(login_url='/signin/')
 def porperty_files(request):
     if request.method == 'POST':
-        if(request.POST.get('prop_id')):
+        if(request.POST.get('prop_id') != 'None'):
             prop = get_object_or_404(models.ComparableProperty, id=request.POST.get('prop_id'))
         else:
             prop = models.ComparableProperty.objects.create()
@@ -1399,14 +1402,74 @@ def delete_porperty_files(request):
             return JsonResponse({'success': 'false'})
 
 
-from django.db import connection
 def test(request):
-    location = request.GET.get('location')
-    radius = request.GET.get('radius')
-    vid = request.GET.get('vid') 
-    comp_table = models.ComparableTable.objects.filter(ref_no__id=vid).values_list('comparable__id', flat=True)
-    if comp_table:
-        comparable = models.ComparableProperty.objects.filter(lc__icontains=location, is_comparable=1).exclude(id__in=list(comp_table)).values_list('id', 'lc', 'area', 'camara', 'cy')
-    else:
-        comparable = models.ComparableProperty.objects.filter(lc__icontains=location, is_comparable=1).values_list('id', 'lc', 'area', 'camara', 'cy')
-    return JsonResponse({'comparable': list(comparable)})
+    id = 1
+    template_path = 'valuation/test.html'
+    valuation = get_object_or_404(models.ValuatedProperty, id=id)
+    utila_filter = Q()
+    for x in ['balcon','terasa','parcare','boxa']:
+        utila_filter = utila_filter | Q(attr_id__name__icontains=x)
+    rooms = models.CompartimentareValue.objects.filter(ref_no=valuation).exclude(utila_filter)
+    customs = models.CustomFieldValue.objects.filter(ref_no=valuation)
+    try:
+        camara = models.CompartimentareValue.objects.filter(ref_no=valuation,attr_id__pk__in=[1,3,4]).aggregate(camara=Sum('attr_value'))
+    except:
+        camara = None
+    try:
+        cover_photo = models.Photo.objects.filter(ref_no__id=id, refer_to="cover").order_by('image_order')
+        summary_photo = models.Photo.objects.filter(ref_no__id=id, refer_to="summary").order_by('image_order')
+    except:
+        cover_photo = None
+        summary_photo = None
+    try:
+        summary = models.ValuationSummary.objects.filter(ref_no=valuation).latest('id')
+        summary_value = models.SummaryValue.objects.filter(summary=summary)
+    except:
+        summary = None
+        summary_value = None 
+    try:
+        const = models.Construction.objects.filter(ref_no=valuation).latest('id')
+    except:
+        const = None 
+    suprafete = models.Suprafete.objects.filter(ref_no=valuation)
+    source = models.SourceofInformation.objects.filter(ref_no=valuation)
+    try:
+        presentation = models.PresentationData.objects.filter(ref_no=valuation).latest('id')
+    except:
+        presentation = None 
+    try:
+        market = models.MarketAnalysis.objects.filter(ref_no=valuation).latest('id')
+    except:
+        market = None 
+    comp_table = models.ComparableTable.objects.filter(ref_no=valuation).exclude(name=None)
+    try:
+        sub_prop = models.ComparableTable.objects.filter(ref_no=valuation, name=None).latest('id')
+    except:
+        sub_prop = None
+    try:
+        sub_mvb = models.MvbTable.objects.filter(ref_no=valuation, monthly_rent=None).latest('id')
+    except:
+        sub_mvb = None
+    comp_mvb = models.MvbTable.objects.filter(ref_no=valuation, sub_rent_sqm=None)
+    utility = models.Utility.objects.all()
+    context = {
+        'valuation': valuation, 
+        'rooms': rooms,
+        'customs': customs,
+        'camara': camara,
+        'cover_photo': cover_photo,
+        'summary_photo': summary_photo,
+        'summary': summary,
+        'summary_value': summary_value,
+        'const': const,
+        'suprafete': suprafete,
+        'source': source,
+        'pdata': presentation,
+        'market': market,
+        'comp_table': comp_table,
+        'sub_prop': sub_prop,
+        'sub_mvb': sub_mvb,
+        'comp_mvb': comp_mvb,
+        'utility': utility,
+    }
+    return render(request, template_path, context)

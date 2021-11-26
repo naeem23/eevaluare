@@ -1137,31 +1137,31 @@
                                 <tr>
                                     <td>Conditii de piata</td>
                                     <td>
-                                        <input type="text" class="form-control" name="sub_me" id="id_sub_me"/>
+                                        <input type="text" class="form-control" name="sub_me" id="id_sub_me" autocomplete="off"/>
                                     </td>
                                     {% if comparable %}
                                         {% if comparable|length == nr_comp %}
                                             {% for n in comparable %}
                                             <td>
-                                                <input type="text" class="form-control market_env" name="me[]" value="{{n.me}}"/>
+                                                <input type="text" class="form-control market_env" name="me[]" value="{{n.me}}" autocomplete="off"/>
                                             </td>
                                             {% endfor %}
                                         {% else %}
                                             {% for n in comparable %}
                                             <td>
-                                                <input type="text" class="form-control market_env" name="me[]" value="{{n.me}}"/>
+                                                <input type="text" class="form-control market_env" name="me[]" value="{{n.me}}" autocomplete="off"/>
                                             </td>
                                             {% endfor %}
                                             {% for n in comparable|get_extra_length:nr_comp %}
                                             <td>
-                                                <input type="text" class="form-control market_env" name="me[]"/>
+                                                <input type="text" class="form-control market_env" name="me[]" autocomplete="off"/>
                                             </td>
                                             {% endfor %}
                                         {% endif %}
                                     {% else %}
                                         {% for n in nr_comp|list_range %}
                                         <td>
-                                            <input type="text" class="form-control market_env" name="me[]"/>
+                                            <input type="text" class="form-control market_env" name="me[]" autocomplete="off"/>
                                         </td>
                                         {% endfor %}
                                     {% endif %}

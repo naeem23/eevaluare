@@ -5,7 +5,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <title>EPI-{{valuation.reference_no}}-{{valuation.inspection_date|date:"dmy"}}</title>
     <meta content='width=device-width, initial-scale=1.0, shrink-to-fit=no' name='viewport' />
-    <link rel="stylesheet" href="/home/eevaluare/property_valuation/dashboard/static/dashboard/css/report.css">
+    <link rel="stylesheet" href="http://127.0.0.1:8000/static/dashboard/css/report.css">
     <style>
         /* page config */
         @page {
@@ -23,16 +23,16 @@
             }
         }
         @font-face {
-            font-family: "Roboto";
-            src: url("/home/eevaluare/property_valuation/dashboard/static/dashboard/fonts/Roboto-Regular.ttf");
+            font-family: "Georgia";
+            src: url("D:/ASA Distribution/property_valuation/dashboard/static/dashboard/fonts/Georgia Regular font.ttf");
         }
         @font-face {
-            font-family: "Roboto";
-            src: url("/home/eevaluare/property_valuation/dashboard/static/dashboard/fonts/Roboto-Bold.ttf");
+            font-family: "Georgia";
+            src: url("D:/ASA Distribution/property_valuation/dashboard/static/dashboard/fonts/georgia bold.ttf");
             font-weight: bold;
         }
         body {
-            font-family: 'Roboto';
+            font-family: 'Georgia';
             font-size: 14px;
         }
         h1, h2, h3, h4, h5, h6, p, a, ul, li {
@@ -83,13 +83,13 @@
                 </td>
                 <td>
                     <div class="logo">
-                        <img src="/home/eevaluare/property_valuation/dashboard/static/dashboard/image/LOGO_CON.png" width="100" height="40">
+                        <img src="http://127.0.0.1:8000/static/dashboard/image/LOGO_CON.png" width="100" height="40">    
                     </div>
                 </td>
             </tr>
         </table>
     </div>
-
+    
     <!-- Content for Static Frame 'footer_frame' -->
     <div id="footer_content">
         page <pdf:pagenumber> of <pdf:pagecount>
@@ -102,7 +102,7 @@
             <p class="ref_no">EPI-{{valuation.reference_no}}-{{valuation.report_date|date:"dmy"}}</p>
 
             <h3 style="margin-top: 40px; font-size: 16px;">DATA RAPORTULUI</h3>
-            <p>{{valuation.report_date|date:"F d, Y"}}</p>
+            <p>{{valuation.report_date|date:"F d, Y"}}</p> 
 
             <h3 style="margin-top: 20px; font-size: 16px;">DESTINATAR</h3>
             <p>{{valuation.nume_client}}</p>
@@ -114,8 +114,8 @@
                 {% else %}
                     {{ valuation.property_type.type }} cu {{camara.camara|floatformat:0}} si dependinte
                 {% endif %}
-            </p>
-            <p>{{valuation.street}}, {{valuation.numarul}}, {% if valuation.building_no %}{{valuation.building_no}}, {% endif %}{% if valuation.scara%}{{valuation.scara}}, {% endif %}{{valuation.floor_no}}, {{valuation.apartment_no}}, {{valuation.city.name}}, {{valuation.area.name}}</p>
+            </p>    
+            <p>{{valuation.street}}, {{valuation.numarul}}, {% if valuation.building_no %}{{valuation.building_no}}, {% endif %}{% if valuation.scara%}{{valuation.scara}}, {% endif %}{{valuation.floor_no}}, {{valuation.apartment_no}}, {{valuation.city.name}}, {{valuation.area.name}}</p>  
 
             <h3 style="margin-top: 20px; font-size: 16px;">VALOARE IMOBIL</h3>
             <p style="font-size: 14px; font-weight: bold;">
@@ -124,9 +124,9 @@
                 {% elif summary.aiav %}
                     {{summary|get_income_value|thousand_separator}} EUR
                 {% endif %}
-            </p>
+            </p>  
 
-            <p style="margin: 20px 0; text-align: justify;">Valoarea de piata a fost stabilita de catre un Evaluator, membru al Asociatiei Nationale a Evaluatorilor Autorizati din Romania, avand la baza Standardele de evaluare a bunurilor, editia 2020. In completarea misiunii de evaluare am utilizat informatiile si documentele furnizate de catre client cat si date furnizate din piata si baza de date proprie</p>
+            <p style="margin: 20px 0; text-align: justify;">Valoarea de piata a fost stabilita de catre un Evaluator, membru al Asociatiei Nationale a Evaluatorilor Autorizati din Romania, avand la baza Standardele de evaluare a bunurilor, editia 2020. In completarea misiunii de evaluare am utilizat informatiile si documentele furnizate de catre client cat si date furnizate din piata si baza de date proprie</p>  
             <br><br>
             {% if cover_photo %}
                 <div class="cover_photos">
@@ -153,7 +153,7 @@
                     <td>Rezumental Evaluarii</td>
                 </tr>
                 <tr style="height: 30px;">
-                    <td width="8%" style="padding-left: 5px;">04</td>
+                    <td width="8%" style="padding-left: 5px;">05</td>
                     <td>CERTIFICARE</td>
                 </tr>
                 <tr style="height: 30px;">
@@ -194,97 +194,54 @@
         <div>
             <pdf:nextpage />
         </div>
-
+        
         <div class="summary">
             <h2 style="margin-bottom: 10px; padding: 0; text-align: center; font-size: 20px;">Rezumatul Evaluarii</h2>
-            <p style="text-align: justify; margin-bottom: 6px;"><b>Proprietatea evaluata:</b>
+            <p style="text-align: justify;"><b>Proprietatea evaluata:</b> 
                 {% if pdata.sub_identi %}
                     {{ pdata.sub_identi }}
                 {% else %}
                     Dreptul deplin de proprietate asupra apartamentului cu nr. {{valuation.apartment_no}}, compus din {{camara.camara|floatformat:"0"}} camere si dependinte cu o suprafata utila de {{ const.utila }} mp si trei balcoane cu suprafata lor totala de {{ const.totala|sub:const.utila }}, rezultand suprafata utila totala de {{ const.totala }} mp. {% if pdata.cadastral_text %}{{pdata.cadastral_text|safe}}{% else %}Apartamentul are numarul cadastral {{pdata.cadastral_no}} si este intabulat in Cartea Funciara numarul {{pdata.land_book_no}}.{% endif %}
                 {% endif %}
             </p>
-            <p style="margin-bottom: 3px;"><b>Tip imobil:</b>
+            <br>
+            <p style="margin-bottom: 10px;"><b>Tip imobil:</b>
                 {% if valuation.title %}
                     {{ valuation.title }}
                 {% else %}
                     {{ valuation.property_type.type }} cu {{camara.camara|floatformat:0}} si dependinte
                 {% endif %}
             </p>
-            <p style="margin-bottom: 3px;"><b>Adresa:</b> {{valuation.street}}, {{valuation.numarul}}, {% if valuation.building_no %}{{valuation.building_no}}, {% endif %}{% if valuation.scara%}{{valuation.scara}}, {% endif %}{{valuation.floor_no}}, {{valuation.apartment_no}}, {{valuation.city.name}}, {{valuation.area.name}}</p>
-            <p style="margin-bottom: 3px;"><b>Utilizator:</b> {{valuation.report_recipient}}</p>
-            <p style="margin-bottom: 3px;"><b>Client:</b> {{valuation.nume_client}}</p>
-            <p style="margin-bottom: 3px;"><b>Proprietar:</b> {{valuation.owner}}</p>
-            <p style="margin-bottom: 6px;"><b>Scopul Evaluarii:</b> {{ summary.purpose.purpose }}</p>
-            <table>
-                <tr>
-                    <td width="30%">
-                        {% for simg in summary_photo %}
-                            <img src="{{simg.image.path}}" alt="Summary photo {{img.id}}" width="160" height="120"> <br> <br>
-                        {% endfor %}
-                    </td>
-                    <td style="vertical-align: top;">
-                        <table>
-                            <tr valign="top">
-                                <td style="vertical-align: top; padding-bottom: 5px;"><b>Valoarea de piata proprietate:</b></td>
-                                <td style="padding-bottom: 5px; text-align: right;">
-                                    <b>{{summary|get_market_value|thousand_separator}} EUR</b> <br>
-                                    <b>{{summary|get_market_value_ron:summary|thousand_separator}} RON</b>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td style="padding-bottom: 5px;">Apartament</td>
-                                <td style="padding-bottom: 5px; text-align: right;"><b>{{ summary.amav|thousand_separator }} EUR</b></td>
-                            </tr>
-                            {% for sv in summary_value %}
-                                {% if sv.approache == 'market' %}
-                                <tr>
-                                    <td style="padding-bottom: 5px;">{{sv.field_name}}</td>
-                                    <td style="padding-bottom: 5px; text-align: right;"><b>{{ sv.field_value|thousand_separator }} EUR</b></td>
-                                </tr>
-                                {% endif %}
-                            {% endfor %}
-                            <tr>
-                                <td colspan="2" style="padding-bottom: 5px;">Valoarea estimata nu tine cont de TVA</td>
-                            </tr>
-                            <tr>
-                                <td style="padding-bottom: 5px;">Valori rezultate:</td>
-                                <td style="padding-bottom: 5px;"></td>
-                            </tr>
-                            <tr>
-                                <td style="padding-bottom: 5px;">Abordarea prin piata:</td>
-                                <td style="padding-bottom: 5px; text-align: right;">{{summary|get_market_value|thousand_separator}} EUR</td>
-                            </tr>
-                            <tr>
-                                <td style="padding-bottom: 5px;">Abordarea prin venit:</td>
-                                <td style="padding-bottom: 5px; text-align: right;">{{ summary.aiav|thousand_separator }} EUR</td>
-                            </tr>
-                        </table>
-                    </td>
-                    <td width="20%"></td>
-                </tr>
-            </table>
+            <p style="margin-bottom: 5px;"><b>Adresa:</b> {{valuation.street}}, {{valuation.numarul}}, {% if valuation.building_no %}{{valuation.building_no}}, {% endif %}{% if valuation.scara%}{{valuation.scara}}, {% endif %}{{valuation.floor_no}}, {{valuation.apartment_no}}, {{valuation.city.name}}, {{valuation.area.name}}</p>
+            <p style="margin-bottom: 5px;"><b>Utilizator:</b> {{valuation.report_recipient}}</p>
+            <p style="margin-bottom: 5px;"><b>Client:</b> {{valuation.nume_client}}</p>
+            <p style="margin-bottom: 5px;"><b>Proprietar:</b> {{valuation.owner}}</p>
+            <p><b>Scopul Evaluarii:</b> {{ summary.purpose.purpose }}</p>
+            <br>
 
-            <table style="margin-top: 3px;">
+            
+            <table>
                 <tr valign="middle" style="height: 150px;">
-                    <td style="text-align:left;">
+                    <td style="text-align:center;">
                         <span>Evaluator</span> <br>
                         <span style="font-weight: bold; margin: 10px 0;">{{ valuation.evaluator.get_full_name }}</span> <br>
-                        <span>Trainee Member</span><br>
+                        <span>Trainee Member</span><br> 
                         <span>E.P.I. Legitimacy {{valuation.evaluator.certification_number}}</span>
                     </td>
                     <td style="text-align: center;">
                         <img src="{{valuation.evaluator.stamp.path}}" alt="Evaluator Stamp" width="150px" height="150px">
                     </td>
-                    <td width="10%"></td>
-                    <td>
-                        <p><b>Curs:</b> 1 EUR = {{ summary.fer }} RON</p>
-                        <p>Data Inspection: {{valuation.inspection_date|date:"d.m.Y"}}</p>
-                        <p>Data Evaluare: {{valuation.valuation_date|date:"d.m.Y"}}</p>
-                    </td>
                 </tr>
             </table>
-
+            
+            <div>
+                <pdf:nextpage />
+            </div>
+            
+            <p style="margin-bottom: 10px;"><b>Curs:</b> 1 EUR = {{ summary.fer }} RON</p>
+            <p style="margin-bottom: 10px;"><b>Data Inspection:</b> {{valuation.inspection_date|date:"d.m.Y"}}</p>
+            <p style="margin-bottom: 10px;"><b>Data Evaluare:</b> {{valuation.valuation_date|date:"d.m.Y"}}</p>
+            <p><b>Data Report:</b> {{valuation.report_date|date:"d.m.Y"}}</p>
         </div>
 
         <div>
@@ -295,48 +252,48 @@
             <h2 style="margin-bottom: 10px; padding: 0; text-align: center; font-size: 20px;">I. Certificare</h2>
             <p>Certific, dupacelemaibunecunostinte ale mele, ca:</p>
             <table>
-                <tr style="padding-bottom: 2px;">
-                    <td> — afirmatiile sustinute in prezentul raport sunt reale si corecte;</td>
-                </tr>
-                <tr style="padding-bottom: 2px;">
-                    <td style="text-align: justify;"> — analizele, opiniile si concluziile sunt limitate numai la ipotezele si ipotezele specifice prezentate in raport si reprezinta opinia mea impartiala, opinie care nu a fost influentata de terte parti si nu este in niciun mod supusa vreunei cerinte de a ajunge la concluzii predeterminate;</td>
-                </tr>
-                <tr style="padding-bottom: 2px;">
-                    <td style="text-align: justify;"> — nu am niciun interes actual sau de perspectiva, referitor la bunul care face obiectul evaluarii si nu am niciun interes personal fata de vreuna din partile implicate;</td>
-                </tr>
-                <tr style="padding-bottom: 2px;">
-                    <td> — nu sunt influentat de nicio constrangere legata de bunul evaluat in raportul de evaluare sau de partile implicate in aceasta activitate de evaluare;</td>
-                </tr>
-                <tr style="padding-bottom: 2px;">
-                    <td> — implicarea mea in aceasta activitate de evaluare nu se bazeaza pe solicitarea din partea nimanui, de obtinere a unor rezultate predeterminate;</td>
-                </tr>
-                <tr style="padding-bottom: 2px;">
-                    <td style="text-align: justify;"> — onorariul platit de catre client nu are nicio legatura cu obtinerea unor rezultate predeterminate sau cu vreo actiune sau eveniment, rezultate in urma utilizarii analizelor, opiniilor si concluziilor prezentului raport;</td>
-                </tr>
-                <tr style="padding-bottom: 2px;">
-                    <td style="text-align: justify;"> — analizele, opiniile si concluziile au fost exprimate in conformitate cu prevederile standardelor de evaluare si cu respectarea Codului de etica al profesiei de evaluator autorizat;</td>
-                </tr>
-                <tr style="padding-bottom: 2px;">
-                    <td> — detin cunostintele si experienta necesara pentru efectuarea, in mod competent, a acestei lucrari;</td>
-                </tr>
-                <tr style="padding-bottom: 2px;">
-                    <td> — pentru realizarea raportului nu am primit asistenta din partea altor persoane nesemnatare ale certificarii; </td>
-                </tr>
-                <tr style="padding-bottom: 2px;">
-                    <td style="text-align: justify;"> — la data acestui raport, subsemnatul este membru stagiar si urmeaza cursul de formare profesionala initiala in domeniul evaluarii bunurilor imobile; </td>
-                </tr>
-                <tr style="padding-bottom: 2px;">
-                    <td style="text-align: justify;"> — rezentul raport a fost efectuat in concordanta cu Standardele de evaluare a bunurilor 2020, respectiv se supune normelor nationale;</td>
-                </tr>
-                <tr style="padding-bottom: 2px;">
-                    <td style="text-align: justify;"> — acest raport de evaluare este confidential atat pentru client cat si pentru evaluator si este valabil numai pentru scopul mentionat in prezentul raport; nu se accepta nicio responsabilitate daca este transmis altei persoane, fie pentru scopul declarat, fie pentru oricare alt scop;</td>
-                </tr>
-                <tr style="padding-bottom: 2px;">
-                    <td style="text-align: justify;"> — raportul de evaluare nu va putea fi inclus, in intregime sau partial, in documente, circulare sau in declaratii, nici publicat sau mentionat in alt fel, fara acordul scris si prealabil al evaluatorului si al clientului acestuia, cu specificatia formei si a contextului in care ar urma sa apara;</td>
+                <tr>
+                    <td>-afirmatiilesustinute in prezentulraport sunt realesicorecte;</td>
                 </tr>
                 <tr>
-                    <td> — rezentul raport de evaluare trebuie luat ca un intreg, nefiind acceptata utilizarea divizata a acestuia;</td>
+                    <td>-analizele, opiniilesiconcluziile sunt limitatenumai la ipotezelesiipotezelespecificeprezentate in raportsireprezintaopiniameaimpartiala, opinie care nu a fostinfluentata de terte parti si nu este in niciun mod supusavreuneicerinte de a ajunge la concluzii predeterminate;</td>     
+                </tr> 
+                <tr>
+                    <td>-nu am niciuninteres actual sau de perspectiva, referitor la bunul care face obiectulevaluariisi nu am niciuninteres personal fata de vreuna din partile implicate;</td>  
+                </tr>  
+                <tr>  
+                    <td>-nu sunt influentat de nicioconstrangerelegata de bunulevaluat in raportul de evaluaresau de partile implicate in aceastaactivitate de evaluare;</td>    
+                </tr>  
+                <tr>   
+                    <td>-implicareamea in aceastaactivitate de evaluare nu se bazeaza pe solicitarea din parteanimanui, de obtinere a unorrezultate predeterminate;</td>     
+                </tr>   
+                <tr> 
+                    <td>-onorariulplatit de catre client nu are niciolegatura cu obtinereaunorrezultate predeterminate sau cu vreoactiunesaueveniment, rezultate in urmautilizariianalizelor, opiniilorsiconcluziilorprezentuluiraport;</td>  
+                </tr>    
+                <tr>   
+                    <td>-analizele, opiniilesiconcluziile au fostexprimate in conformitate cu prevederilestandardelor de evaluaresi cu respectareaCodului de etica al profesiei de evaluator autorizat;</td>     
+                </tr>   
+                <tr> 
+                    <td>-detin cunostintelesiexperientanecesarapentruefectuarea, in mod competent, a acesteilucrari;</td>    
+                </tr> 
+                <tr>    
+                    <td>-pentrurealizarearaportului nu am primitasistenta din parteaaltorpersoanenesemnatare ale certificarii; </td>   
+                </tr> 
+                <tr>    
+                    <td>-la data acestuiraport, subsemnatulestemembrustagiarsiurmeazacursul de formareprofesionalainitiala in domeniulevaluariibunurilorimobile; </td>   
+                </tr>    
+                <tr>  
+                    <td>-rezentulraport a fostefectuat in concordanta cu Standardele de evaluare a bunurilor 2020, respectiv se supunenormelornationale;</td>    
+                </tr>  
+                <tr>   
+                    <td>-acestraport de evaluareeste confidential atatpentru client cat sipentru evaluator siestevalabilnumaipentruscopulmentionat in prezentulraport; nu se acceptanicioresponsabilitatedacaestetransmisalteipersoane, fie pentruscopuldeclarat, fie pentruoricare alt scop.</td>    
                 </tr>
+                <tr>     
+                    <td>-raportul de evaluare nu vaputea fi inclus, in intregimesau partial, in documente, circularesau in declaratii, nicipublicatsaumentionat in alt fel, faraacordulscrissiprealabil al evaluatoruluisi al clientuluiacestuia, cu specificatiaformeisi a contextului in care arurmasaapara. </td> 
+                </tr>
+                <tr>        
+                    <td>-rezentulraport de evaluaretrebuieluat ca un intreg, nefiindacceptatautilizareadivizata a acestuia.</td>  
+                </tr>   
             </table>
             <br>
             <table>
@@ -344,7 +301,7 @@
                     <td style="text-align:center;">
                         <span>Evaluator</span> <br>
                         <span style="font-weight: bold; margin: 10px 0;">{{ valuation.evaluator.get_full_name }}</span> <br>
-                        <span>Trainee Member</span><br>
+                        <span>Trainee Member</span><br> 
                         <span>E.P.I. Legitimacy {{valuation.evaluator.certification_number}}</span>
                     </td>
                     <td style="text-align: center;">
@@ -398,13 +355,13 @@
 
             <p style="margin-bottom: 10px; text-indent: 3rem; font-weight: bold;">7. Tipul valorii utilizate</p>
             <p style="margin-bottom: 10px;text-align: justify;">
-                <span>Se estimeaza valoarea de {% if summary.amav %}piata{% else %}venit{% endif %} a proprietatii supuse evaluarii.</span> <br>
+                <span>Se estimeaza valoarea de {% if summary.amav %}piata{% else %}venit{% endif %} a proprietatii supuse evaluarii.</span> <br> 
                 <span>In conformitate cu Standardul de Evaluare a bunurilor SEV 104 – Tipuri ale valorii "Valoarea de piata reprezinta suma estimata pentru care un activ sau o datorie ar putea fi schimbat(a) la data evaluarii, intre un cumparator hotarat si un vanzator hotarat, intr-o tranzactie nepartinitoare, dupa un marketing adecvat si in care partile au actionat fiecare in cunostinta de cauza, prudent si faraconstrangere".</span>
             </p>
 
             <p style="margin-bottom: 10px; text-indent: 3rem; font-weight: bold;">8. Data evaluarii</p>
             <p style="margin-bottom: 10px;">
-                <span>Data evaluarii {{valuation.valuation_date|date:"d.m.Y"}}</span> <br>
+                <span>Data evaluarii {{valuation.valuation_date|date:"d.m.Y"}}</span> <br> 
                 <span>Data inspectiei {{valuation.inspection_date|date:"d.m.Y"}}</span> <br>
                 <span>Data raportului {{valuation.report_date|date:"d.m.Y"}}</span>
             </p>
@@ -431,109 +388,109 @@
             <table>
                 <tr>
                     <td width="3%" valign="top">-</td>
-                    <td style="text-align: justify;">Nu s-a facut nicio investigatie si nici nu s-au inspectat acele parti ce erau acoperite, neexpuse sau inaccesibile si s-a presupus astfel ca aceste parti sunt in stare tehnica buna. Nu se poate exprima nicio opinie despre starea tehnica a partilor neinspectate si acest raport nu trebuie considerat ca ar valida integritatea elementelor.</td>
+                    <td>Nu s-a facut nicio investigatie si nici nu s-au inspectat acele parti ce erau acoperite, neexpuse sau inaccesibile si s-a presupus astfel ca aceste parti sunt in stare tehnica buna. Nu se poate exprima nicio opinie despre starea tehnica a partilor neinspectate si acest raport nu trebuie considerat ca ar valida integritatea elementelor.</td>
+                </tr>    
+                <tr>
+                    <td width="3%" valign="top">-</td>
+                    <td>Nu imi asum nicio responsabilitate pentru orice vicii ascunse sau informatii neconcludente ale dreptului de proprietate, structurilor sau infrastructurilor care ar putea afecta valoarea imobilului. Mai mult, nu fac investigatii pentru a le descoperi.</td>
+                </tr>  
+                <tr>
+                    <td width="3%" valign="top">-</td>
+                    <td>Suprafetele pe baza carora se estimeaza valoarea sunt cele din documentele puse la dispozitia evaluatorului. Calitatea de evaluator autorizat nu ofera competente in domeniul masurarii suprafetelor, responsabilitatea corectitudinii acestora fiind a persoanelor ce au intocmit documentele ce stau la baza evaluarii.</span> </td>
+                </tr>  
+                <tr>
+                    <td width="3%" valign="top">-</td>
+                    <td>Nu s-au realizat estimari cu privire la starea structurala a imbunatatirilor sau la dimensiunea si adecvarea sistemelor mecanice si a altor componente precum incalzire, canalizare, sistemul electric, etc. Valorile estimate in raportul de fata au plecat de la premisa ca imobilul evaluat este construit si utilizat in concordanta cu toate autorizatiile de constructie, neexistand nicio disputa cu vecinii, ocupantii spatiilor invecinate sau administratia locala.</td>
+                </tr>  
+                <tr>
+                    <td width="3%" valign="top">-</td>
+                    <td>Evaluatorul a presupus ca imobilul evaluat se conformeaza restrictiilor urbanistice din zona, detine toate licentele, autorizatiile, certificatele necesare utilizarii sale.</td>
+                </tr>  
+                <tr>
+                    <td width="3%" valign="top">-</td>
+                    <td>Am considerat ca toate informatiile obtinute de la client sunt adevarate si corecte. Toate informatiile (inclusiv situatiile financiare, estimari si avize) obtinute de la terte parti se presupun a fi adevarate si corecte. Nu imi asum nicio responsabilitate pentru neconcordantele generate de informatii eronate oferite de client.</td>
+                </tr>  
+                <tr>
+                    <td width="3%" valign="top">-</td>
+                    <td>Daca nu este precizat, se presupune ca nu exista abuzuri sau incalcari ale legii, care sa afecteze proprietatea evaluata.</td>
+                </tr>  
+                <tr>
+                    <td width="3%" valign="top">-</td>
+                    <td>Se presupune ca proprietatea este in deplina conformitate cu toate codurile, legile, consimtamintele, licentele sau reglementarile relevante la nivel national, orasenesc, local sau privat, si ca toate autorizatiile, permisele, certificatele, francizele si asa mai departe pot fi reinoite si / sau transferate catre un eventual cumparator sau alt ocupant;</td>
+                </tr>  
+                <tr>
+                    <td width="3%" valign="top">-</td>
+                    <td>Evaluatorul, prin reglementarile profesionale carora se supune, nu are calitatea juridica de a certifica corectitudinea, din punct de vedere legal, a actelor mentionate si nici a dreptului deplin de proprietate asupra bunului imobil evaluat, considerat existent in prezenta lucrare, ca ipoteza de lucru.</td>
+                </tr>  
+                <tr>
+                    <td width="3%" valign="top">-</td>
+                    <td>Nu s-a efectuat nicio investigatie referitoare la prezenta sau absenta substantelor poluante si, prin urmare, nu se poate oferi nicio asigurare a potentialului sau impact asupra evaluarii. In consecinta, pentru scopul acestei evaluari, am presupus ca nu exista, pe sau in cadrul proprietatii, niciun fel de substanta poluanta, care ar putea contamina proprietatea si diminua valoarea acesteia. Orice identificare ulterioara nu imi este imputabila.</td>
+                </tr>  
+                <tr>
+                    <td width="3%" valign="top">-</td>
+                    <td>Valorile estimate in raport se aplica intregii proprietati si orice divizare sau distribuire a acestora pe interese fractionate va invalida valorile estimate.</td>
+                </tr>  
+                <tr>
+                    <td width="3%" valign="top">-</td>
+                    <td>Evaluatorul, prin natura muncii sale, nu este obligat sa ofere in continuare consultanta sau sa depuna marturie in instanta relativ la proprietatea in chestiune.</td>
+                </tr>  
+                <tr>
+                    <td width="3%" valign="top">-</td>
+                    <td>In cazul in care cititorul este pe punctul de a lua o decizie pe plan investitional, chiar si personal, fiduciar sau corporativ, si are orice nelamurire in ceea ce priveste continutul material al acestui raport, se recomanda contactarea evaluatorului.</td>
+                </tr>  
+                <tr>
+                    <td width="3%" valign="top">-</td>
+                    <td>Evaluatorul nu isi asuma nicio responsabilitate pentru orice eveniment, conditie sau circumstante care pot sa afecteze valoarea proprietatii, ce pot aparea ulterior, fie datei de evaluare mentionata in acest raport, fie datei inspectiei, oricare ar fi ordinea.</td>
+                </tr> 
+                <tr>
+                    <td width="3%" valign="top">-</td>
+                    <td>Calitatea managementului proprietatii are un efect direct asupra viabilitatii economice si valorii de piata a acesteia. Previziunile financiare prezentate in acest raport presupun un drept de proprietate responsabil si competenta manageriala. Orice variatie de la aceasta ipoteza ar putea avea un impact semnificativ asupra estimarilor de valoare rezultate.</td>
+                </tr> 
+                <tr>
+                    <td width="3%" valign="top">-</td>
+                    <td>Estimarea rezultatelor prezentate in acest raport se bazeaza pe o evaluare a economiei actuale la nivel national si local, fara a exclude niciun element si fara a face previziuni cu privire la efectele de crestere sau scadere brusca, in conditiile economice locale. Nu pot si nu garantez ca estimarile vor fi atinse, insa acestea au fost intocmite pe baza informatiilor obtinute in cursul acestui studiu, si sunt destinate sa tina seama de experienta investitorilor.</td>
+                </tr> 
+                <tr>
+                    <td width="3%" valign="top">-</td>
+                    <td>Unele dintre cifrele prezentate in acest raport se poate sa fi fost generate de modele financiare, facand calcule bazate pe numere cu trei sau mai multe zecimale. Din motive de claritate si simplificare, cele mai multe cifre prezentate in acest raport au fost rotunjite si pot fi, prin urmare, pasibile de mici erori de rotunjire, in anumite cazuri.</td>
+                </tr> 
+                <tr>
+                    <td width="3%" valign="top">-</td>
+                    <td>Evaluarea proprietatilor imobiliare trebuie sa fie considerata ca fiind in acelasi timp o stiinta si o arta. Desi aceasta evaluare utilizeaza diferite calcule matematice pentru a oferi indicatii de valoare, decizia finala a valorii este subiectiva si poate fi influentata de experienta anterioara a evaluatorului si de alti factori care sunt sau nu, specificati in prezentul raport.</td>
+                </tr> 
+                <tr>
+                    <td width="3%" valign="top">-</td>
+                    <td>Dreptul deplin de proprietate se presupune a fi transmisibil cu usurinta, fara nicio restrictie nejustificata, cu exceptia cazurilor in care este altfel specificat.</td>
+                </tr> 
+                <tr>
+                    <td width="3%" valign="top">-</td>
+                    <td>Chiar daca toate informatiile continute in acest raport sunt considerate a fi corecte, acestea se pot schimba. Nicio parte a continutului acestui raport nu trebuie sa fie interpretata ca o garantie de orice fel.</td>
                 </tr>
                 <tr>
                     <td width="3%" valign="top">-</td>
-                    <td style="text-align: justify;">Nu imi asum nicio responsabilitate pentru orice vicii ascunse sau informatii neconcludente ale dreptului de proprietate, structurilor sau infrastructurilor care ar putea afecta valoarea imobilului. Mai mult, nu fac investigatii pentru a le descoperi.</td>
+                    <td>Nu s-au facut verificari in ceea ce priveste probleme legate de buget, de sarcini si monitorizari ale constructiei. In acest domeniu, ne-am bazat, inca o data, pe informatiile furnizate de catre proprietar / dezvoltator.</td>
                 </tr>
                 <tr>
                     <td width="3%" valign="top">-</td>
-                    <td style="text-align: justify;">Suprafetele pe baza carora se estimeaza valoarea sunt cele din documentele puse la dispozitia evaluatorului. Calitatea de evaluator autorizat nu ofera competente in domeniul masurarii suprafetelor, responsabilitatea corectitudinii acestora fiind a persoanelor ce au intocmit documentele ce stau la baza evaluarii.</span> </td>
+                    <td>Evaluatorul nu isi asuma nicio responsabilitate pentru evenimentele ce influenteaza valoarea proprietatii care au avut loc dupa data evaluarii sau data inspectiei si care nu au fost indicate.</td>
                 </tr>
                 <tr>
                     <td width="3%" valign="top">-</td>
-                    <td style="text-align: justify;">Nu s-au realizat estimari cu privire la starea structurala a imbunatatirilor sau la dimensiunea si adecvarea sistemelor mecanice si a altor componente precum incalzire, canalizare, sistemul electric, etc. Valorile estimate in raportul de fata au plecat de la premisa ca imobilul evaluat este construit si utilizat in concordanta cu toate autorizatiile de constructie, neexistand nicio disputa cu vecinii, ocupantii spatiilor invecinate sau administratia locala.</td>
+                    <td>Raportul de evaluare nu poate fi folosit ca proba in instanta fiind o expertiza extrajudiciara.</td>
                 </tr>
                 <tr>
                     <td width="3%" valign="top">-</td>
-                    <td style="text-align: justify;">Evaluatorul a presupus ca imobilul evaluat se conformeaza restrictiilor urbanistice din zona, detine toate licentele, autorizatiile, certificatele necesare utilizarii sale.</td>
+                    <td>Natura pietelor emergente cum este si Romania presupune anumite dificultati in cuantificarea unor valori de piata. Oricum, valorile exprimate in cadrul acestui raport trebuie sa fie considerate ca fiind cea mai buna estimare a proprietatii in cauza. Subliniez ca valoarearecomandata a fost determinata strict prin perspectiva situatiei pietei, la data de referinta a 10 evaluarii, situatie care se poate modifica, intr-un interval mai scurt sau mai lung, in functie de dinamica economica, ceea ce ar implica reconsiderarea pozitiei mele.</td>
                 </tr>
                 <tr>
                     <td width="3%" valign="top">-</td>
-                    <td style="text-align: justify;">Am considerat ca toate informatiile obtinute de la client sunt adevarate si corecte. Toate informatiile (inclusiv situatiile financiare, estimari si avize) obtinute de la terte parti se presupun a fi adevarate si corecte. Nu imi asum nicio responsabilitate pentru neconcordantele generate de informatii eronate oferite de client.</td>
-                </tr>
-                <tr>
-                    <td width="3%" valign="top">-</td>
-                    <td style="text-align: justify;">Daca nu este precizat, se presupune ca nu exista abuzuri sau incalcari ale legii, care sa afecteze proprietatea evaluata.</td>
-                </tr>
-                <tr>
-                    <td width="3%" valign="top">-</td>
-                    <td style="text-align: justify;">Se presupune ca proprietatea este in deplina conformitate cu toate codurile, legile, consimtamintele, licentele sau reglementarile relevante la nivel national, orasenesc, local sau privat, si ca toate autorizatiile, permisele, certificatele, francizele si asa mai departe pot fi reinoite si / sau transferate catre un eventual cumparator sau alt ocupant;</td>
-                </tr>
-                <tr>
-                    <td width="3%" valign="top">-</td>
-                    <td style="text-align: justify;">Evaluatorul, prin reglementarile profesionale carora se supune, nu are calitatea juridica de a certifica corectitudinea, din punct de vedere legal, a actelor mentionate si nici a dreptului deplin de proprietate asupra bunului imobil evaluat, considerat existent in prezenta lucrare, ca ipoteza de lucru.</td>
-                </tr>
-                <tr>
-                    <td width="3%" valign="top">-</td>
-                    <td style="text-align: justify;">Nu s-a efectuat nicio investigatie referitoare la prezenta sau absenta substantelor poluante si, prin urmare, nu se poate oferi nicio asigurare a potentialului sau impact asupra evaluarii. In consecinta, pentru scopul acestei evaluari, am presupus ca nu exista, pe sau in cadrul proprietatii, niciun fel de substanta poluanta, care ar putea contamina proprietatea si diminua valoarea acesteia. Orice identificare ulterioara nu imi este imputabila.</td>
-                </tr>
-                <tr>
-                    <td width="3%" valign="top">-</td>
-                    <td style="text-align: justify;">Valorile estimate in raport se aplica intregii proprietati si orice divizare sau distribuire a acestora pe interese fractionate va invalida valorile estimate.</td>
-                </tr>
-                <tr>
-                    <td width="3%" valign="top">-</td>
-                    <td style="text-align: justify;">Evaluatorul, prin natura muncii sale, nu este obligat sa ofere in continuare consultanta sau sa depuna marturie in instanta relativ la proprietatea in chestiune.</td>
-                </tr>
-                <tr>
-                    <td width="3%" valign="top">-</td>
-                    <td style="text-align: justify;">In cazul in care cititorul este pe punctul de a lua o decizie pe plan investitional, chiar si personal, fiduciar sau corporativ, si are orice nelamurire in ceea ce priveste continutul material al acestui raport, se recomanda contactarea evaluatorului.</td>
-                </tr>
-                <tr>
-                    <td width="3%" valign="top">-</td>
-                    <td style="text-align: justify;">Evaluatorul nu isi asuma nicio responsabilitate pentru orice eveniment, conditie sau circumstante care pot sa afecteze valoarea proprietatii, ce pot aparea ulterior, fie datei de evaluare mentionata in acest raport, fie datei inspectiei, oricare ar fi ordinea.</td>
-                </tr>
-                <tr>
-                    <td width="3%" valign="top">-</td>
-                    <td style="text-align: justify;">Calitatea managementului proprietatii are un efect direct asupra viabilitatii economice si valorii de piata a acesteia. Previziunile financiare prezentate in acest raport presupun un drept de proprietate responsabil si competenta manageriala. Orice variatie de la aceasta ipoteza ar putea avea un impact semnificativ asupra estimarilor de valoare rezultate.</td>
-                </tr>
-                <tr>
-                    <td width="3%" valign="top">-</td>
-                    <td style="text-align: justify;">Estimarea rezultatelor prezentate in acest raport se bazeaza pe o evaluare a economiei actuale la nivel national si local, fara a exclude niciun element si fara a face previziuni cu privire la efectele de crestere sau scadere brusca, in conditiile economice locale. Nu pot si nu garantez ca estimarile vor fi atinse, insa acestea au fost intocmite pe baza informatiilor obtinute in cursul acestui studiu, si sunt destinate sa tina seama de experienta investitorilor.</td>
-                </tr>
-                <tr>
-                    <td width="3%" valign="top">-</td>
-                    <td style="text-align: justify;">Unele dintre cifrele prezentate in acest raport se poate sa fi fost generate de modele financiare, facand calcule bazate pe numere cu trei sau mai multe zecimale. Din motive de claritate si simplificare, cele mai multe cifre prezentate in acest raport au fost rotunjite si pot fi, prin urmare, pasibile de mici erori de rotunjire, in anumite cazuri.</td>
-                </tr>
-                <tr>
-                    <td width="3%" valign="top">-</td>
-                    <td style="text-align: justify;">Evaluarea proprietatilor imobiliare trebuie sa fie considerata ca fiind in acelasi timp o stiinta si o arta. Desi aceasta evaluare utilizeaza diferite calcule matematice pentru a oferi indicatii de valoare, decizia finala a valorii este subiectiva si poate fi influentata de experienta anterioara a evaluatorului si de alti factori care sunt sau nu, specificati in prezentul raport.</td>
-                </tr>
-                <tr>
-                    <td width="3%" valign="top">-</td>
-                    <td style="text-align: justify;">Dreptul deplin de proprietate se presupune a fi transmisibil cu usurinta, fara nicio restrictie nejustificata, cu exceptia cazurilor in care este altfel specificat.</td>
-                </tr>
-                <tr>
-                    <td width="3%" valign="top">-</td>
-                    <td style="text-align: justify;">Chiar daca toate informatiile continute in acest raport sunt considerate a fi corecte, acestea se pot schimba. Nicio parte a continutului acestui raport nu trebuie sa fie interpretata ca o garantie de orice fel.</td>
-                </tr>
-                <tr>
-                    <td width="3%" valign="top">-</td>
-                    <td style="text-align: justify;">Nu s-au facut verificari in ceea ce priveste probleme legate de buget, de sarcini si monitorizari ale constructiei. In acest domeniu, ne-am bazat, inca o data, pe informatiile furnizate de catre proprietar / dezvoltator.</td>
-                </tr>
-                <tr>
-                    <td width="3%" valign="top">-</td>
-                    <td style="text-align: justify;">Evaluatorul nu isi asuma nicio responsabilitate pentru evenimentele ce influenteaza valoarea proprietatii care au avut loc dupa data evaluarii sau data inspectiei si care nu au fost indicate.</td>
-                </tr>
-                <tr>
-                    <td width="3%" valign="top">-</td>
-                    <td style="text-align: justify;">Raportul de evaluare nu poate fi folosit ca proba in instanta fiind o expertiza extrajudiciara.</td>
-                </tr>
-                <tr>
-                    <td width="3%" valign="top">-</td>
-                    <td style="text-align: justify;">Natura pietelor emergente cum este si Romania presupune anumite dificultati in cuantificarea unor valori de piata. Oricum, valorile exprimate in cadrul acestui raport trebuie sa fie considerate ca fiind cea mai buna estimare a proprietatii in cauza. Subliniez ca valoarearecomandata a fost determinata strict prin perspectiva situatiei pietei, la data de referinta a 10 evaluarii, situatie care se poate modifica, intr-un interval mai scurt sau mai lung, in functie de dinamica economica, ceea ce ar implica reconsiderarea pozitiei mele.</td>
-                </tr>
-                <tr>
-                    <td width="3%" valign="top">-</td>
-                    <td style="text-align: justify;">In cazul in care clientul sau destinatarul raportului de evaluare solicita in mod expres, evaluatorul poate realiza alocarea valorii pe elemente componente ale proprietatii (de exemplu, teren si constructii) in conformitate cu metodologia agreata de ANEVAR. Va rugam sa luati in considerare ca valoarea alocata pe fiecare element al proprietatii nu exprimavaloarea de piata a respectivului element considerat separat, ci este estimata exclusiv in scop administrativ.</td>
+                    <td>In cazul in care clientul sau destinatarul raportului de evaluare solicita in mod expres, evaluatorul poate realiza alocarea valorii pe elemente componente ale proprietatii (de exemplu, teren si constructii) in conformitate cu metodologia agreata de ANEVAR. Va rugam sa luati in considerare ca valoarea alocata pe fiecare element al proprietatii nu exprimavaloarea de piata a respectivului element considerat separat, ci este estimata exclusiv in scop administrativ.</td>
                 </tr>
             </table>
 
             <p style="margin: 10px 0; text-indent: 3rem; font-weight: bold;">13. Ipoteze speciale semnificative</p>
             <p style="margin-bottom: 10px;text-align: justify;">{{pdata.sp_hypo}}</p>
-
+            
             <p style="margin: 10px 0; text-indent: 3rem; font-weight: bold;">14. Restrictii de utilizare, difuzare sau publicare</p>
             <p style="margin-bottom: 10px;">
                 <p style="text-align: justify;">Prezentul raport este intocmit la cererea clientului pentru utilizatorul desemnat in scopul precizat. Nu este permisa folosirea raportului de catre o terta persoana fara obtinerea in prealabil a acordului scris al evaluatorului si al clientului. Nu se asuma responsabilitatea fata de alte persoane in afara clientului, utilizatorului desemnat si celor care au obtinut.</p>
@@ -560,7 +517,7 @@
 
             <p style="margin: 10px 0; text-indent: 3rem; font-weight: bold;">16. Tipul Raportului</p>
             <p>
-                Raportul prezent este unul descriptiv, narativ, si a fost structurat dupa cum urmeaza: <br>
+                Raportul prezent este unul descriptiv, narativ, si a fost structurat dupa cum urmeaza: <br> 
                 1. Rezumatul evaluarii. Certificarea evaluarii; <br>
                 2. Termenii de referinta ai evaluarii; <br>
                 3. Prezentarea datelor; <br>
@@ -581,18 +538,18 @@
 
             <p style="margin-bottom: 10px; text-indent: 3rem; font-weight: bold;">1. Informatii generale</p>
             <p style="margin-bottom: 10px;text-align: justify;">Proprietatea este amplasta pe {{valuation.address}} din orasul {{valuation.city.name}}, in zona {{valuation.area.name}}, zona {{ valuation.urbana }} {{ valuation.locatie }} a localitatii.</p>
-
+            
             <p style="margin-bottom: 10px; text-indent: 3rem; font-weight: bold;">2. Zona</p>
             <p style="margin-bottom: 10px; text-align: justify;">{{pdata.zona|safe}}</p>
 
             <p style="margin-bottom: 10px; text-indent: 3rem; font-weight: bold;">3. Informatii specifice</p>
             <div>
-                <img src="/home/eevaluare/property_valuation/dashboard/static/dashboard/location.png" alt="Location" width="100%" height="auto">
-            </div><br>
+                <img src="http://127.0.0.1:8000/static/dashboard/location.png" alt="Location" width="100%" height="auto">
+            </div><br>  
             <p style="margin: 10px 0;text-align: justify;">Proprietatea are caracter rezidential este amplasata in zona {{ valuation.locatie }} din orasul {{valuation.city.name}}, pe {{valuation.address}}, strada asfaltata cu {{ pdata.strada.type }} pe sens. Strada de acces are caracter public.</p>
 
             <p style="margin-bottom: 10px; text-indent: 3rem; font-weight: bold;">Transportul public</p>
-            <p style="margin-bottom: 10px;">Proprietatea este conectata la mijloacele de transport in comun:
+            <p style="margin-bottom: 10px;">Proprietatea este conectata la mijloacele de transport in comun: 
                 {% for p in pdata.pt|get_transport %}
                     {% if forloop.last %}
                         {{p.name}}.
@@ -638,12 +595,12 @@
 
             <p style="margin-bottom: 10px; text-indent: 3rem; font-weight: bold;">9. Utilizarea actuala</p>
             <p style="margin-bottom: 10px;text-align: justify;">La data inspectiei proprietatea avea utilizare rezidentiala si era {{ pdata.get_current_use_display|lower }} de proprietar.</p>
-
+            
             <p style="margin-bottom: 10px; text-indent: 3rem; font-weight: bold;">10. Identificare</p>
             <p style="margin-bottom: 10px;text-align: justify;">Indentificarea imobilului s-a realizat pe baza documentelor puse la dispozitie, cu ajutorul {{pdata.identification|get_identification}}</p>
-
+            
             <p style="margin-bottom: 10px; text-indent: 3rem; font-weight: bold;">11. Acces</p>
-            <p style="margin-bottom: 10px;text-align: justify;">{% if pdata.access_text %}{{pdata.access_text|safe}}{% else %}Din punct de vedere juridic accesul la proprietate pietonal si auto se face {{pdata.access}}. Imobilul se afla in zona {{valuation.locatie}} a intravilanului munincipiului Bucuresti, fiind reprezentat de un bloc cu regim de inaltime {{valuation.height}}. Apartamentului ii revin cote din partile comune si dependintele imobilului conform extrasului de carte funciara prezentat evaluatorului.{% endif %}</p>
+            <p style="margin-bottom: 10px;text-align: justify;">{% if pdata.access_text %}{{pdata.access_text|safe}}{% else %}Din punct de vedere juridic accesul la proprietate pietonal si auto se face {{pdata.access}}. Imobilul se afla in zona {{valuation.locatie}} a intravilanului munincipiului Bucuresti, fiind reprezentat de un bloc cu regim de inaltime {{valuation.height}}. Apartamentului ii revin cote din partile comune si dependintele imobilului conform extrasului de carte funciara prezentat evaluatorului.{% endif %}</p> 
 
             <p style="margin-bottom: 10px; text-indent: 3rem; font-weight: bold;">12. Constructia</p>
             <p style="margin-bottom: 5px;">{% if const.conform_text %}{{const.conform_text}}{% else %}Conform {{const.conform}}, constructia are un regim de inaltime {{ valuation.height }} si a fost edificata in anul {{ valuation.construction_year }}{% endif %}</p>
@@ -754,7 +711,7 @@
                 <p style="text-align: justify;">Populatia zonei este formata din persoane cu un nivel mediu si ridicat de educatie, ceea ce contribuie la mentinerea unui mediu de siguranta si confort al rezidentilor.</p>
                 <p style="text-align: justify;margin-bottom: 10px;">Zona in care este situata proprietatea beneficiaza de suprafete acoperite de parcuri si alte amenajari urbanistice destinate petrecerii in conditii optime a timpului liber, ceea ce contribuie la confortul locuitorilor, crescand atractivitatea zonei. De asemenea, apropierea de centre administrative, comerciale, educationale si de sanatate publica, precum si existenta unei retele eficiente de transport in comun determina o atractivitate ridicata a proprietatilor rezidentiale din zona.</p>
             {% endif %}
-
+            
             {% if market.ac_optional %}
                 <p style="text-align: justify;">{{market.ac_optional|safe}}</p>
             {% endif %}
@@ -814,7 +771,7 @@
             Analiza CMBU este un studiu economic al impactului fortelor de piata asupra proprietatii analizate. CMBU se bazeaza pe datele colectate si analizate pentru estimarea valorii proprietatii prin analizarea fezabilitatii legata, respectiv, de estimarea profitului potential generat de proprietate, de investitii, precum si de cresterea potentiala a valorii. <br>
 
             Cea mai buna utilizare trebuie sa fie posibila fizic (daca este cazul), fezabila din punct de vedere financiar, permisa din punct de vedere legal si sa genereze cea mai mare valoare a activului. Daca cea mai buna utilizare este diferita de utilizarea curenta, valoarea este influentata de costul conversiei activului la cea mai buna utilizare a sa. <br>
-
+            
             Potrivit standardelor de evaluare a bunurilor (GEV 630), utilizarea curenta se presupune a fi cea mai buna utilizare daca nu exista indicatii din piata sau alti factori care sa conduca la concluzia ca exista o alta utilizare care ar maximiza valoarea subiectului evaluarii.</p>
 
             <p style="margin-bottom: 5px;font-weight: bold;">Cea mai buna utilizare a proprietatii construite</p>
@@ -854,7 +811,7 @@
 
                 Evaluatorilor nu li se cere sa utilizeze mai multe metode pentru evaluarea unui activ, mai ales atunci cand evaluatorul are un grad mare de incredere in precizia si credibilitatea unei singure metode. Cu toate acestea, evaluatorii ar trebui sa ia in considerare mai multe abordari si metode, si ar trebui sa foloseasca nu doar o singura abordare sau metoda de evaluare pentru a obtine o indicatie asupra valorii, in special, atunci cand datele de intrare concrete sau observabile sunt insuficiente pentru ca o singura metoda sa conduca la o concluzie credibila. <br>
 
-                In cazul de fata s-a considerat oportun a se aplica abordarea prin piata intrucat datele din zona analizata sunt suficiente pentru a ajunge la o concluzie ferma si de incredere asupra valorii proprietatii analizata.
+                In cazul de fata s-a considerat oportun a se aplica abordarea prin piata intrucat datele din zona analizata sunt suficiente pentru a ajunge la o concluzie ferma si de incredere asupra valorii proprietatii analizata. 
             </p>
 
             <p style="margin-bottom: 10px;font-weight: bold;text-align: center;font-size: 18px;">Abordarea prin piata</p>
@@ -864,16 +821,16 @@
                 Potrivit GEV630, prin informatii despre preturile bunurilor comparabile se inteleg informatii privind preturile activelor similare care au fost tranzactionate sau oferite spre vanzare pe piata, cu conditia ca relevanta acestor informatii sa fie clar stabilita si analizata critic. Elaborarea rapoartelor de evaluare prin utilizarea partiala sau exclusiva a ofertelor de piata, avand ca obiect bunuri imobile comparabile, este conforma cu prezentele Standarde de evaluare. <br>
 
                 In cazul de fata, ca metoda de evaluare, se va utiliza comparatia vanzarilor. Aceasta reprezinta un proces prin care se stabilesc diferentele intre proprietatea supusa evaluarii si comparabile, prin cuantificarea ajustarilor. Ajustarile care se aplica preturilor unor tranzactii comparabile, reflecta superioritatea sau inferioritatea proprietatii comparabile, avand in vedere elementele de comparatie.  <br>
-
+                
                 Instrumentul de lucru pentru efectuarea ajustarilor este grila de piata care reprezinta un tablou ce are pe linii elementele de comparatie, pe prima coloana proprietatea evaluata iar pe celelalte coloane, proprietatile comparabile. Uneori pentru fiecare element de comparatie se aloca doua linii: una pentru comparare si alta pentru ajustare. <br>
 
                 In partea de jos a grilei exista o sectiune de analiza a rezultatelor cu doua linii: total ajustari exprimate absolut si procentual din pretul de vanzare. Cu aceste rezultate, evaluatorul poate estima comparabilitatea tranzactiilor fata de proprietatea evaluata si sa selecteze valoarea finala. Tranzactiile care necesita cele mai mici ajustari vor avea importanta cea mai mare in alegerea valorii finale. In acelasi timp, importanta va reflecta si increderea pe care o are evaluatorul in datele privind tranzactiile comparabile. <br>
 
                 Pentru a aplica aceasta abordare, evaluatorii analizeaza tranzactii comparabile in scopul determinarii caracteristicilor diferite de cele ale proprietatii subiect. <br>
-
+                
                 Ca surse de informatii s-au folosit ofertele de vanzare de proprietati similare din zona studiata existente in ziarele/revistele de specialitate, din paginile de web ale diferitelor firme imobiliare precum si din baza de date proprie aferenta departamentelor de evaluare respectiv de tranzactii imobiliare. Proprietatile selectate pentru analiza imobilului sunt comparabilele 1,2,3,4 si 8(vezi Anexa 4). Trebuie precizat faptul ca, pentru toate proprietatile comparabile, s-a considerat ca dreptul de proprietate transmis este integral, iar conditiile de vanzare – plata cash. <br>
 
-                In acest raport de evaluare tehnicile cantitative folosite pentru estimarea ajustarilor sunt analiza pe perechi de date, analiza datelor secundare.
+                In acest raport de evaluare tehnicile cantitative folosite pentru estimarea ajustarilor sunt analiza pe perechi de date, analiza datelor secundare. 
             </p>
 
             <table border="1" id="grid-table">
@@ -1052,7 +1009,7 @@
                     <td>{{p.sale_price|floatformat:"0"}}</td>
                     {% endfor %}
                 </tr>
-
+                
                 <tr valign="middel">
                     <td rowspan="3">Componente non imobiliare (non real-estate component)</td>
                     <td rowspan="2">Mobila</td>
@@ -1065,7 +1022,7 @@
                     <td>{{c.ma|floatformat:"0"}}</td>
                     {% endfor %}
                 </tr>
-                <tr valign="middel">
+                <tr valign="middel"> 
                     <td rowspan="2">Loc de parcare/boxa</td>
                     {% for p in comp_table %}
                     <td>{{p.parking_boxa}}</td>
@@ -1151,7 +1108,7 @@
                     <td style="text-align: left;padding-left:3px">Motivare corectie</td>
                     <td colspan="{{comp_table|length|add:'1'}}" style="text-align: left;padding-left:3px;font-weight: normal;">{{sub_prop.pr_motivation}}</td>
                 </tr>
-
+                
                 <tr>
                     <td style="text-align: left;padding-left:3px">Conditii de finantare</td>
                     <td style="font-weight: normal;">{{sub_prop.sub_fc}}</td>
@@ -1184,7 +1141,7 @@
                     <td style="text-align: left;padding-left:3px">Motivare corectie</td>
                     <td colspan="{{comp_table|length|add:'1'}}" style="text-align: left;padding-left:3px;font-weight: normal;">{{sub_prop.fc_motivation}}</td>
                 </tr>
-
+                
                 <tr>
                     <td style="text-align: left;padding-left:3px">Conditii de vanzare</td>
                     <td style="font-weight: normal;">{{sub_prop.sub_sc}}</td>
@@ -1217,7 +1174,7 @@
                     <td style="text-align: left;padding-left:3px">Motivare corectie</td>
                     <td colspan="{{comp_table|length|add:'1'}}" style="text-align: left;padding-left:3px;font-weight: normal;">{{sub_prop.sc_motivation}}</td>
                 </tr>
-
+                
                 <tr>
                     <td style="text-align: left;padding-left:3px">Cheltuieli necesare imediat dupa cumparare</td>
                     <td style="font-weight: normal;">{{sub_prop.sub_ape}}</td>
@@ -1250,7 +1207,7 @@
                     <td style="text-align: left;padding-left:3px">Motivare corectie</td>
                     <td colspan="{{comp_table|length|add:'1'}}" style="text-align: left;padding-left:3px;font-weight: normal;">{{sub_prop.ape_motivation}}</td>
                 </tr>
-
+                
                 <tr>
                     <td style="text-align: left;padding-left:3px">Conditii de piata</td>
                     <td style="font-weight: normal;">{{sub_prop.sub_me}}</td>
@@ -1666,24 +1623,24 @@
                 Capitalizarea directa este o metoda utilizata pentru a converti venitul dintr-un singur an intr-o indicatie a valorii proprietatii, intr-un singur pas, utilizand una dintre cele doua proceduri: <br>
                 1) prin impartirea venitului estimat cu o rata de capitalizare adecvata acestui tip de venit; <br>
                 2) prin inmultirea venitului estimat cu un factor corespunzator (multiplicator al venitului). <br>
-
+                
                 Se utilizeaza doar venitul obtinut dintr-un singur an de exploatare de catre un cumparator/investitor tipic pe piata locala. Capitalizarea directa se bazeaza pe venitul brut potential, venitul brut efectiv, venitul net din exploatare, profit net etc.<br>
 
                 Capitalizarea directa utilizeaza rate de capitalizare si multiplicatori obtinuti din date de piata. Este esential ca proprietatile imobiliare comparabile utilizate in acest scop sa reflecte riscul, venitul, cheltuielile si caracteristicile fizice si de localizare aferente proprietatii imobiliare ce trebuie evaluate. In consecinta, multiplicatorii si ratele de capitalizare trebuie sa fie extrase din informatii privind proprietatile imobiliare care prezinta aceleasi rapoarte intre cheltuieli si venituri, valoare teren si valoare constructii, caracteristici ale riscului asociat si previziuni de fluctuatie a veniturilor si valorii proprietatii, de-a lungul perioadei tipice de investitie.<br>
 
                 Valoarea proprietatii imobiliare a fost determinata prin metoda capitalizarii directe utilizand a doua procedura mentionata anterior.<br>
-
+                
                 Conform teoriei in domeniu, pentru calcularea multiplicatorilor de venit trebuie sa fie disponibile vanzari de proprietati similare cu cea subiect care au fost inchiriate la momentul vanzarii sau ar fi fost inchiriate intr-un timp scurt. Nu am avut acces la o baza de date cu tranzactii cu proprietati comparabile din zona de interes. Astfel, pentru aplicarea metodei capitalizarii directe am considerat oportuna utilizarea proprietatilor comparabile utilizate la abordarea prin piata. <br>
 
                 In evaluarea proprietatii subiect, am ales sa utilizam multiplicatorul chiriei brute in detrimentul altor tipuri de multiplicatori precum: multiplicatorul venitului brut, multiplicatorul venitului brut efectiv etc. <br>
-
+                
                 In continuare, am estimat mutiplicatorul chiriei brute pentru proprietatile comparabile utilizate in abordarea prin piata impartind chiria bruta anuala la pretul solicitat de catre vanzator (pretul solicitat a fost ajustat cu marja de negociere). <br>
 
                 Din analiza pietei, am identificat o chirie lunara cuprinsa intre {% if comp_mvb%}{{comp_mvb|get_range }}{% endif %} euro/mp/luna pentru proprietati comparabile. Pentru determinarea multiplicatorului chirie brute am estimat o chirie de {% if comp_mvb%}{{comp_mvb|get_range }}{% endif %} euro/luna/mp pentru toate comparabilele luate in considerare. Totodata, pentru proprietatea subiect am estimat o chirie lunara de {% if sub_mvb %}{{sub_mvb.sub_rent_sqm}}{% endif %} euro/mp/luna. <br>
 
-                In tabelul urmator sunt prezentate calculele privind multiplicatorul chiriei brute:
-            </p>
-
+                In tabelul urmator sunt prezentate calculele privind multiplicatorul chiriei brute: 
+            </p>   
+            
             {% if comp_mvb %}
             <table border="1" id="mvb-table">
                 <tr valign="middel"><td colspan="{{comp_table|length|add:'1'}}" style="font-weight:bold;text-align: left;padding-left: 3px;">Multiplicatorul venitului brut potential</td></tr>
@@ -1745,7 +1702,7 @@
                 </tr>
             </table>
             {% endif %}
-            <br>
+            <br>   
 
             <p style="text-align: justify; margin-bottom: 10px;">
                 In continuare, pentru determinarea valorii de piata a proprietatii subiect am selectat multiplicatorul chirie brute din tabelul de mai sus. In cazul de fata, am ales multiplicatorul comparabilei {{sub_prop|get_corresponding_letter}} deoarece prezinta caracteristicile cele mai apropiate de cele ale proprietatii subiect. <br>
@@ -1777,7 +1734,7 @@
             </table>
             <br>
             {% endif %}
-
+ 
             <p style="text-align: center;margin-bottom: 10px;font-weight: bold;">Valoare de venit {{ sub_mvb.vpcd_rotund|thousand_separator }} EUR</p>
             <br>
 
@@ -1795,7 +1752,7 @@
                 </tr>
             </table>
             <br>
-
+     
             <div style="margin: 10px 0; text-align:justify;">
                 <p>Conform standardelor de evaluare a bunurilor, obiectivul selectarii abordarilor si metodelor aplicate la evaluarea unui imobil este acela de a gasi metoda cea mai adecvata pentru circumstantele date. Nu exista nicio metoda care sa fie adecvata tuturor situatiilor posibile. Procesul de selectie ar trebui sa ia in considerare ca cerinte minime:</p>
                 <table>
@@ -1847,7 +1804,7 @@
                     <td style="text-align: center;font-size: 12px;padding-top: 5px;">-</td>
                 </tr>
             </table>
-
+            
             <p style="margin-top: 20px;text-align: justify;">Valoarea de piata a fost stabilita utilizand abordarea prin piata datorita urmatoarelor considerente:</p>
             <p style="margin-bottom: 10px;">- valoarea obtinuta prin abordarea prin piata este cea mai adecvata si precisa intrucat la baza aplicarii abordarii au existat numai informatii de pe piata.</p>
 
@@ -1874,7 +1831,7 @@
                     <td style="text-align:center;">
                         <span>Evaluator</span> <br>
                         <span style="font-weight: bold; margin: 10px 0;">{{ valuation.evaluator.get_full_name }}</span> <br>
-                        <span>Trainee Member</span><br>
+                        <span>Trainee Member</span><br> 
                         <span>E.P.I. Legitimacy {{valuation.evaluator.certification_number}}</span>
                     </td>
                     <td style="text-align: center;">

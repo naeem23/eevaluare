@@ -65,19 +65,19 @@
         .dropzone h4 {
             font-size: 26px!important;
         }
-        #docs-container{
+        #docs-container, #photos-container {
             margin-bottom: 14px;
         }
-        #docs-list { 
+        #docs-list, #photos-list { 
             list-style-type: none; 
             margin: 0; 
             padding: 0; 
         }
-        #docs-list li { 
+        #docs-list li, #photos-list li { 
             margin: 10px 20px 10px 0px; 
             display: inline-block;
         }
-        #docs-list li img {
+        #docs-list li img, #photos-list li img {
             width: 150px;
             height: 100px;
         }
@@ -242,11 +242,7 @@
                                 <tr>
                                     <td>Conditii de piata <span class="required-label">*</span></td>
                                     <td>
-                                        {% if instance %}
-                                        <input type="text" class="form-control" name="me" id="id_me" value="{{ instance.me }}"/>
-                                        {% else %}
-                                        <input type="text" class="form-control" name="me" id="id_me"/>
-                                        {% endif %}
+                                        <input type="text" class="form-control" name="me" id="id_me" value="{{ instance.me }}" autocomplete="off"/>
                                     </td>
                                 </tr>
                                 <tr>
@@ -330,7 +326,7 @@
                 </form>
 
                 <div class="card-body pt-1" style="padding-left: 2.5rem; padding-right: 2.5rem">
-                    <p>Documente tranzactie</p>
+                    <p class="file_label" {% if files %}style="display: block;"{% else %}style="display: none;"{% endif %}>Documente tranzactie</p>
                     {% if files %}
                         <div id="docs-container">
                             <ul id="docs-list" class="mb-2">
@@ -348,10 +344,42 @@
                         </div>
                     {% endif %}
                     
-                    <div class="property_docs">
+                    <div class="property_docs files_div" {% if instance.ad == 'Tranzactie' %}style="display: block;"{% else %}style="display: none;"{% endif %}>
                         <form action="{% url 'valuation:porperty_files' %}" class="dropzone dz-clickable" id="porpertyDocs">
                             {% csrf_token %}
                             <input type="hidden" name="refer_to" value="documents">
+                            <input type="hidden" name="prop_id" value="{{instance.id}}">
+                            <div class="dz-message" data-dz-message="">
+                                <div class="icon">
+                                    <i class="flaticon-file"></i>
+                                </div>
+                                <h4 class="message">Drag and Drop files here</h4>
+                            </div>
+                        </form>
+                    </div>
+
+                    <p class="mt-4 file_label" {% if photos %}style="display: block;"{% else %}style="display: none;"{% endif %}>Documente tranzactie</p>
+                    {% if photos %}
+                        <div id="photos-container">
+                            <ul id="photos-list" class="mb-2">
+                                {% for file in photos %}
+                                    <li id="photo_{{ file.id }}" class="text-center">
+                                        {% if file.file_extention in img_format %}
+                                            <img src="{{ file.files.url }}" alt="Property Documents"> <br>
+                                        {% else %}
+                                            <div class="text-light" style="width: 150px; height: 100px; background: #aaaaaa70;text-align: center;"><p class="mb-0 pt-2" style="line-height: 20px;">{{file.get_filename}}</p></div>
+                                        {% endif %}
+                                        <span onclick="delete_prop_files('{{file.id}}')" class="text-info" style="cursor: pointer;"><u>Remove</u></span>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %}
+                    
+                    <div class="property_photos files_div" {% if instance.ad == 'Tranzactie' %}style="display: block;"{% else %}style="display: none;"{% endif %}>
+                        <form action="{% url 'valuation:porperty_files' %}" class="dropzone dz-clickable" id="porpertyPhotos">
+                            {% csrf_token %}
+                            <input type="hidden" name="refer_to" value="photos">
                             <input type="hidden" name="prop_id" value="{{instance.id}}">
                             <div class="dz-message" data-dz-message="">
                                 <div class="icon">
@@ -410,8 +438,12 @@
             var val = this.value;
             if(val=='Tranzactie') {
                 $("#is_comparable").val('0').change();
+                $(".file_label").css('display', 'block');
+                $(".files_div").css('display', 'block');
             } else {
                 $("#is_comparable").val('1').change();
+                $(".file_label").css('display', 'none');
+                $(".files_div").css('display', 'none');
             }
         });
 
@@ -426,6 +458,30 @@
                         data: {
                             "csrfmiddlewaretoken": '{{ csrf_token }}',
                             'refer_to': 'documents',
+                            'file': file.name,
+                            'prop_id': '{{instance.id}}',
+                        },
+                        success: function(e) {
+                            if(e.success=='true') {
+                                file.previewElement.remove();
+                            }
+                        }
+                    });
+                });
+            }
+        }
+
+        // property photos upload 
+        Dropzone.options.porpertyPhotos = {
+            addRemoveLinks: true,
+            init: function() {
+                this.on('removedfile', function(file) {
+                    $.ajax({
+                        url: "{% url 'valuation:delete_prop_files' %}",
+                        type: "POST",
+                        data: {
+                            "csrfmiddlewaretoken": '{{ csrf_token }}',
+                            'refer_to': 'photos',
                             'file': file.name,
                             'prop_id': '{{instance.id}}',
                         },
