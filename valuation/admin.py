@@ -4,7 +4,7 @@ from valuation.models import *
 
 
 class AreaAdmin(admin.ModelAdmin):
-    list_display = ('name',)
+    list_display = ('auto', 'name')
 
 class CityAdmin(admin.ModelAdmin):
     list_display = ('area', 'name',)

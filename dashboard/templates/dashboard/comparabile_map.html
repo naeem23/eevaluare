@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %} Evaluare Complete Harta {% endblock %} 
+{% block title %} Comparabile Harta {% endblock %} 
 
 <!-- Specific Page CSS goes HERE  -->
 {% block stylesheets %}
@@ -30,7 +30,7 @@
     <div class="content">
         <div class="page-inner">
             <div class="page-header">
-                <h4 class="page-title">Evaluari Complete</h4>
+                <h4 class="page-title">Comparabile Harta</h4>
                 <ul class="breadcrumbs">
                     <li class="nav-home">
                         <a href="#">
@@ -41,7 +41,7 @@
                         <i class="flaticon-right-arrow"></i>
                     </li>
                     <li class="nav-item">
-                        <a href="{% url 'dashboard:dashboard' %}">Evaluari Complete</a>
+                        <a href="{% url 'dashboard:comparable_list' %}">Proprietati Comparabile</a>
                     </li>
                     <li class="separator">
                         <i class="flaticon-right-arrow"></i>
@@ -73,15 +73,16 @@
             </div>
         </div>
     </div>
-    
+
 {% endblock content %}
 
 <!-- Specific Page JS goes HERE  -->
 {% block javascripts %}
     <script type="text/javascript">
-        var mydata = JSON.parse('{{ addressPoints|safe }}')
-        var lat = mydata[0].fields.latitude
-        var lng = mydata[0].fields.longitude
+        var mydata = '{{ addressPoints|escapejs }}';
+        mydata = JSON.parse(mydata);
+        var lat = mydata[0].lat;
+        var lng = mydata[0].lng;
 
         var tiles = L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibmFlZW0yMyIsImEiOiJja2lyNmpzdjUwMHVrMnRreXZyNHdubHptIn0.X3OwhHNVTJG_SzVzHEeLnQ', {
             attribution: '&copy; <a href="https://osm.org/copyright">OpenStreetMap</a> contributors',
@@ -98,11 +99,11 @@
             showCoverageOnHover: false,
         });
         for(let i = 0; i < mydata.length; i++) {
-            var lat = mydata[i].fields.latitude 
-            var lng = mydata[i].fields.longitude
-            var title = mydata[i].pk
+            let lat = mydata[i].lat 
+            let lng = mydata[i].lng
+            let title = mydata[i].id
             var marker = L.marker(new L.LatLng(lat, lng), { title: title });
-            var url = '{% url "dashboard:details" id=1234 %}'.replace('1234', title)
+            var url = '{% url "valuation:comp_prop_details" id=1234 %}'.replace('1234', title)
             marker.bindPopup('<a href="'+url+'" target="_blank"><i class="far fa-eye mr-1"></i>View</a>');
             markers.addLayer(marker);
         }

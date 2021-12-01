@@ -41,7 +41,11 @@
                         <div class="card-header">
                             <div class="d-flex align-items-center">
                                 <h4 class="card-title">Proprietati Comparabile</h4>
-                                <a class="btn btn-primary btn-round ml-auto" href="{% url 'valuation:add_comp_prop' %}">
+                                <a class="btn btn-outline-warning btn-round ml-auto mr-2" href="{% url 'dashboard:comparabile_map' %}">
+                                    <i class="fa fa-location-arrow mr-2"></i>
+                                    Vizualizare Harta
+                                </a>
+                                <a class="btn btn-primary btn-round" href="{% url 'valuation:add_comp_prop' %}">
                                     <i class="fas fa-plus mr-2"></i>
                                     Add New
                                 </a>

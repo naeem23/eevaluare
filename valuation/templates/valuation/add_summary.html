@@ -518,16 +518,18 @@
         
         var smaxFiles = $('#summaryphotos').attr('data-count');
         var summaryDz = new Dropzone('#summaryphotos', {
+            autoProcessQueue: false,
+            parallelUploads: 2,
             addRemoveLinks: true,
-            // maxFiles: smaxFiles,
             init: function() {
                 let msg = false;
                 this.on("maxfilesexceeded", function(file){
-                    msg = true;
+                    // msg = true;
+                    this.removeFile(file); 
                 });
-                if (msg == true) {
-                    alert("No more files please!");
-                }
+                // if (msg == true) {
+                //     alert("No more files please!");
+                // }
                 this.on('success', function(file, json) {
                     var imagecount = parseInt($('#summaryphotos').attr('data-count'));
                     imagecount = imagecount - 1;
@@ -693,6 +695,7 @@
             });
 
             if(valued_property.length > 0 && purpose.length > 0 && ((market_approach == true && amav > 0) || market_approach == false) && ((income_approach == true && aiav > 0) || income_approach == false) && ((market_approach == true && mv == true) || (market_approach==false))) {
+                summaryDz.processQueue();
                 $("#summary-form").submit();
             } else {
                 if (valued_property.length < 1) {

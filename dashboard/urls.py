@@ -16,6 +16,7 @@ urlpatterns = [
     
     # comparable properties 
     path('proprietati-comparabile/', views.comparable_properties, name="comparable_list"),
+    path('comparabile-map/', views.comparabile_map, name='comparabile_map'), 
     path('api/delete-comparabile/', views.delete_comp_prop, name="delete_comp_prop"),
 
     # modules

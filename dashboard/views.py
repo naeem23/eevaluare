@@ -62,7 +62,7 @@ def delete_valuation(request):
 # =========================================================================
 @login_required(login_url='/signin/')
 def evaluari_complete_map(request):
-    data = vmodels.ValuatedProperty.objects.filter(status__status__icontains="completed")
+    data = vmodels.ValuatedProperty.objects.filter(status__id=2)
     data = serializers.serialize("json", data)
     context = {
         'segment': 'complete',
@@ -105,7 +105,7 @@ def evaluari_incomplete(request):
 # =========================================================================
 @login_required(login_url='/signin/')
 def evaluari_incomplete_map(request):
-	data = vmodels.ValuatedProperty.objects.exclude(status__status__icontains="completed")
+	data = vmodels.ValuatedProperty.objects.exclude(status__id=2)
 	data = serializers.serialize("json", data)
 	context = {
 		'segment': 'incomplet',
@@ -549,7 +549,17 @@ def delete_comp_prop(request):
 	except:
 		return JsonResponse({'success': 'false'})
 
+@login_required(login_url='/signin/')
+def comparabile_map(request):
+    results = vmodels.ComparableProperty.objects.filter(is_comparable=1).values('id', 'lat', 'lng')
+    context = {
+        'segment': 'comparable',
+        'addressPoints': json.dumps(list(results)), 
+    }
+    return render(request, 'dashboard/comparabile_map.html', context)
 
+
+@login_required(login_url='/signin/')
 def pdf(request, id):
 	template_path = 'valuation/report.html'
 	valuation = get_object_or_404(vmodels.ValuatedProperty, id=id)

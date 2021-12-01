@@ -28,7 +28,8 @@ User = get_user_model()
 # ========================================================
 @login_required(login_url='/signin/')
 def initial_form(request):
-    template = 'valuation/initial_form.html'
+    template = 'valuation/test.html'
+    # template = 'valuation/initial_form.html'
     msg = None
     areas = models.Area.objects.all()
     compartments = models.Compartimentare.objects.filter(property_type__id=1)
@@ -1403,73 +1404,10 @@ def delete_porperty_files(request):
 
 
 def test(request):
-    id = 1
-    template_path = 'valuation/test.html'
-    valuation = get_object_or_404(models.ValuatedProperty, id=id)
-    utila_filter = Q()
-    for x in ['balcon','terasa','parcare','boxa']:
-        utila_filter = utila_filter | Q(attr_id__name__icontains=x)
-    rooms = models.CompartimentareValue.objects.filter(ref_no=valuation).exclude(utila_filter)
-    customs = models.CustomFieldValue.objects.filter(ref_no=valuation)
-    try:
-        camara = models.CompartimentareValue.objects.filter(ref_no=valuation,attr_id__pk__in=[1,3,4]).aggregate(camara=Sum('attr_value'))
-    except:
-        camara = None
-    try:
-        cover_photo = models.Photo.objects.filter(ref_no__id=id, refer_to="cover").order_by('image_order')
-        summary_photo = models.Photo.objects.filter(ref_no__id=id, refer_to="summary").order_by('image_order')
-    except:
-        cover_photo = None
-        summary_photo = None
-    try:
-        summary = models.ValuationSummary.objects.filter(ref_no=valuation).latest('id')
-        summary_value = models.SummaryValue.objects.filter(summary=summary)
-    except:
-        summary = None
-        summary_value = None 
-    try:
-        const = models.Construction.objects.filter(ref_no=valuation).latest('id')
-    except:
-        const = None 
-    suprafete = models.Suprafete.objects.filter(ref_no=valuation)
-    source = models.SourceofInformation.objects.filter(ref_no=valuation)
-    try:
-        presentation = models.PresentationData.objects.filter(ref_no=valuation).latest('id')
-    except:
-        presentation = None 
-    try:
-        market = models.MarketAnalysis.objects.filter(ref_no=valuation).latest('id')
-    except:
-        market = None 
-    comp_table = models.ComparableTable.objects.filter(ref_no=valuation).exclude(name=None)
-    try:
-        sub_prop = models.ComparableTable.objects.filter(ref_no=valuation, name=None).latest('id')
-    except:
-        sub_prop = None
-    try:
-        sub_mvb = models.MvbTable.objects.filter(ref_no=valuation, monthly_rent=None).latest('id')
-    except:
-        sub_mvb = None
-    comp_mvb = models.MvbTable.objects.filter(ref_no=valuation, sub_rent_sqm=None)
-    utility = models.Utility.objects.all()
-    context = {
-        'valuation': valuation, 
-        'rooms': rooms,
-        'customs': customs,
-        'camara': camara,
-        'cover_photo': cover_photo,
-        'summary_photo': summary_photo,
-        'summary': summary,
-        'summary_value': summary_value,
-        'const': const,
-        'suprafete': suprafete,
-        'source': source,
-        'pdata': presentation,
-        'market': market,
-        'comp_table': comp_table,
-        'sub_prop': sub_prop,
-        'sub_mvb': sub_mvb,
-        'comp_mvb': comp_mvb,
-        'utility': utility,
-    }
-    return render(request, template_path, context)
+    res = requests.get('https://roloca.coldfuse.io/orase/VN')
+    area = get_object_or_404(models.Area, id=45)
+    res = res.json()
+    for r in res:
+        models.City.objects.create(area=area, name=r['nume'])
+    return HttpResponse('something')
+
