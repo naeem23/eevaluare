@@ -136,7 +136,7 @@ def get_transport(pt):
 def get_identification(iden):
     iden = ast.literal_eval(iden)
     if len(iden) > 1:
-        identi = 'adresei postale inscrise pe imobil si cadastral introdus pe platforma ANCPI'
+        identi = 'adresei postale inscrise pe imobil si al numarului cadastral introdus pe platforma ANCPI'
     else:
         if 'apii' in iden:
             identi = 'adresei postale inscrise pe imobil'
@@ -178,15 +178,11 @@ def get_market_value_ron(obj, summary):
     return market_val
     
 
-# get_income_value
+# get_income_value To-Do: update following two functions later
 @register.filter(name="get_income_value")
 def get_income_value(summary):
     try:
-        summary_value = models.SummaryValue.objects.filter(summary=summary)
         income_value = summary.aiav
-        for sv in summary_value:
-            if sv.approache == 'income':
-                income_value += sv.field_value
     except:
         income_value = 0.00
     return income_value
@@ -232,13 +228,18 @@ def get_price_sqm(obj):
     return price_sqm
 
 
-# get_range ron
+# get_range
+@register.filter(name="get_rounded_range")
+def get_rounded_range(comp_mvb):
+    max = comp_mvb.aggregate(Max('rent_sqm'))
+    min = comp_mvb.aggregate(Min('rent_sqm'))
+    return str(round(min['rent_sqm__min'], 0)) + ' - ' + str(round(max['rent_sqm__max'], 0)) 
+
 @register.filter(name="get_range")
 def get_range(comp_mvb):
     max = comp_mvb.aggregate(Max('rent_sqm'))
     min = comp_mvb.aggregate(Min('rent_sqm'))
-    return str(min['rent_sqm__min']) + ' - ' + str(max['rent_sqm__max']) 
-
+    return str(round(min['rent_sqm__min'], 1) + ' - ' + str(round(max['rent_sqm__max'], 1))) 
 
 @register.filter(name="get_pret_mp_util")
 def get_pret_mp_util(obj):

@@ -56,9 +56,9 @@ CHARGES_CHOICE = [
 ]
 
 CURRENT_USE_CHOICE = [
-	('ldp', 'Locuit de proprietar'),
-	('liber', 'Liber'),
-	('ldc', 'Locuit de chirias'),
+	('liber', 'liber'),
+	('locuit de proprietar', 'locuit de proprietar'),
+	('locuit de chirias', 'locuit de chirias'),
 ]
 
 IDENTIFICATION_CHOICE = [
@@ -156,10 +156,8 @@ EXTERIOR_FINISHS = [
 ]
 
 ZONA_TYPE_CHOICE = [
-	('medii', 'medii'),
-	('sub medie', 'sau sub medie'),
-	('above average', 'de varsta medie/medii sau peste medie'),
-	('medium age', 'de varsta medie'),
+	('1', 'Medii sau sub medie, de varsta medie'),
+	('2', 'Medii sau peste medie, de varsta medie'),
 ]
 
 CONST_DENSITY_CHOICE = [ 

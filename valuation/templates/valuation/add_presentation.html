@@ -17,7 +17,7 @@
             display: none;
             margin-bottom: 0px!important;
         }
-        #id_strada, #id_access {
+        #id_strada, #id_access, #id_current_use {
             display: inline-block;
             width: 22%;
             border: none;
@@ -163,10 +163,25 @@
                                 </div>
                             </div>
                         </div>
+                        
                         <div class="row">
                             <div class="col-md-12">
                                 <div class="form-group">
-                                    <label for="id_sp_hypo">Ipoteze speciale <span class="required-label">*</span></label>
+                                    <label for="id_inspectia">Inspectia proprietatii</label>
+                                    {% if pdata.inspectia %}
+                                        <textarea name="inspectia" rows="5" class="form-control" id="id_inspectia">{{pdata.inspectia}}</textarea>
+                                    {% else %}
+                                        <textarea name="inspectia" rows="5" class="form-control" id="id_inspectia">Inspectia proprietatii s-a efectuat de catre evaluator .................... la data de {{valuation.inspection_date}} in prezenta proprietarului ..................... Cu ocazia inspectiei proprietatii nu au fost identificate diferente intre situatia scroptica si cea faptica.</textarea>
+                                    {% endif %}
+                                    <small class="form-text text-danger sp_hypo"></small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label for="id_sp_hypo">Ipoteze speciale</label>
                                     {% if pdata.sp_hypo %}
                                         <textarea name="sp_hypo" rows="5" class="form-control" id="id_sp_hypo">{{pdata.sp_hypo}}</textarea>
                                     {% else %}
@@ -176,6 +191,7 @@
                                 </div>
                             </div>
                         </div>
+
                         <div class="row">
                             <div class="col-md-12">
                                 <div class="form-group">
@@ -189,6 +205,7 @@
                                 </div>
                             </div>
                         </div>
+
                         <div class="row">
                             <div class="col-md-12">
                                 <div class="form-group text-light">
@@ -255,11 +272,30 @@
                                     <small class="form-text text-danger legal_doc_error"></small>
                                 </div>
                             </div>
-                            <div class="col-md-4">
+                            <!-- <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="id_current_use">Utilizarea actuala <span class="required-label">*</span></label>
                                     {{ form.current_use }}
                                     <small class="form-text text-danger current_use"></small>
+                                </div>
+                            </div> -->
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group text-light">
+                                    <label>Utilizarea actuala <span class="required-label mr-2">*</span><i class="fas fa-pencil-alt text-info" id="edit_cu"></i></label>
+                                    
+                                    {% if pdata.current_use_text %}
+                                        <p class="text-justify current_use" style="display: none;">La data inspectiei proprietatea avea utilizare rezidentiala si era {{form.current_use}}</p>
+                                        <input type="hidden" name="show_cu" id="show_cu" value="1">
+                                        <textarea name="current_use_text" id="id_current_use_text" rows="2" class="form-control">{{pdata.current_use_text}}</textarea>
+                                    {% else %}
+                                        <p class="text-justify current_use">La data inspectiei proprietatea avea utilizare rezidentiala si era {{form.current_use}}</p>
+                                        <input type="hidden" name="show_cu" id="show_cu" value="0">
+                                        <textarea name="current_use_text" id="id_current_use_text" rows="2" class="form-control" style="display: none;">La data inspectiei proprietatea avea utilizare rezidentiala si era liber</textarea>
+                                    {% endif %}
+                                    <small class="form-text text-danger cu_error"></small>
                                 </div>
                             </div>
                         </div>
@@ -281,30 +317,6 @@
                                 </div>
                             </div>
                         </div>
-                            <!-- <div class="col-md-4">
-                                <div class="form-group">
-                                    <label for="id_cadastral_no">Cadastral Nr <span class="required-label">*</span></label>
-                                    {{ form.cadastral_no }}
-                                    <small class="form-text text-danger cadastral_no"></small>
-                                </div>
-                            </div>
-
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label for="id_land_book_no">Carte funciară nr <span class="required-label">*</span></label>
-                                    {{ form.land_book_no }}
-                                    <small class="form-text text-danger land_book_no"></small>
-                                </div>
-                            </div>
-
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label for="id_uat">UAT <span class="required-label">*</span></label>
-                                    {{ form.uat }}
-                                    <small class="form-text text-danger uat"></small>
-                                </div>
-                            </div>
-                        </div> -->
 
                         <div class="row">
                             <div class="col-md-4">
@@ -335,6 +347,7 @@
                                 </div>
                             </div>
                         </div>
+
                         <div class="row"> 
                             <div class="col-md-12">
                                 <div class="form-group">
@@ -350,12 +363,6 @@
                                     {% endif %}
                                     <small class="form-text text-danger access_error"></small>
                                 </div>
-
-                                <!-- <div class="form-group">
-                                    <label for="id_history">Acces <span class="required-label">*</span></label>
-                                    <p class="text-justify text-light">Din punct de vedere juridic accesul la proprietate pietonal si auto se face {{form.access}}. Imobilul se afla in zona {{valuation.locatie}} a intravilanului munincipiului Bucuresti, fiind reprezentat de un bloc cu regim de inaltime {{valuation.height}}. Apartamentului ii revin cote din partile comune si dependintele imobilului conform extrasului de carte funciara prezentat evaluatorului.</p>
-                                    <small class="form-text text-danger access"></small>
-                                </div> -->
                             </div>
                         </div>
 
@@ -394,6 +401,13 @@
             $('#id_identification').multipleSelect()
         });
 
+        // set current_use 
+        $('#id_current_use').change(function () {
+            let cu = this.value;
+            console.log(cu)
+            $('textarea#id_current_use_text').text('La data inspectiei proprietatea avea utilizare rezidentiala si era ' + cu);
+        });
+
         // disable enable sarcini 
         $("#id_charges").change(function () {
             var value = $(this).children('option:selected').val()
@@ -415,6 +429,12 @@
             $('.access').toggle();
             $('#id_access_text').toggle();
         });
+        $("#edit_cu").on('click', function() {
+            var val = $('#show_cu').val();
+            $('#show_cu').val(val=='0' ? '1' : '0');
+            $('.current_use').toggle();
+            $('#id_current_use_text').toggle();
+        });
 
         // submit form 
         $('#next').on('click', function(e) {
@@ -425,28 +445,28 @@
             $("#id_poi").val(all.join());
 
             var sub_identi = $("#id_sub_identi").val();
-            var sp_hypo = $("#id_sp_hypo").val();
             var zona = $("#id_zona").val();
             var strada = $("#id_strada").val();
-            var poi = $("#id_poi").val()
-            var pt = $('#id_pt').val()
-            var legal_doc = $('#id_legal_doc').val()
-            var current_use = $('#id_current_use').val()
+            var poi = $("#id_poi").val();
+            var pt = $('#id_pt').val();
+            var legal_doc = $('#id_legal_doc').val();
+            var show_cu = $('#show_cu').val()
+            var current_use = $("#id_current_use").val();
+            var current_use_text = $('#id_current_use_text').val();
             
             var show_cadastral = $('#show_cadastral').val()
             var cadastral = $("#id_cadastral_text").val();
             var cadastral_no = $('#id_cadastral_no').val()
             var land_book_no = $('#id_land_book_no').val()
             var uat = $('#id_uat').val()
-
             var charges = $('#id_charges').val()
             var identification = $('#id_identification').val()
-
             var show_access = $('#show_access').val()
             var access_text = $("#id_access_text").val();
             var access = $('#id_access').val();
+            
 
-            if(sub_identi.length > 0 && sp_hypo.length > 0 && zona.length > 0 && strada.length > 0 && poi.length > 0 && pt.length > 0 && legal_doc.length > 0 && current_use.length > 0 && ((show_cadastral == '1' && cadastral.length > 0) || (cadastral_no.length > 0 && land_book_no.length > 0 && uat.length > 0)) && charges.length > 0 && identification.length > 0 && ((show_access == '1' && access_text.length > 0) || access.length > 0)) {
+            if(sub_identi.length > 0 && zona.length > 0 && strada.length > 0 && poi.length > 0 && pt.length > 0 && legal_doc.length > 0 && ((show_cu == '1' && current_use_text.length > 0) || show_cu == '0') && ((show_cadastral == '1' && cadastral.length > 0) || (cadastral_no.length > 0 && land_book_no.length > 0 && uat.length > 0)) && charges.length > 0 && identification.length > 0 && ((show_access == '1' && access_text.length > 0) || access.length > 0)) {
                 $("#presentation-form").submit();
             } else {
                 if(sub_identi.length < 1) {
@@ -455,14 +475,6 @@
                 } else {
                     $("#id_sub_identi").removeClass('required')
                     $(".sub_identi").text('')
-                }
-                
-                if(sp_hypo.length < 1) {
-                    $("#id_sp_hypo").addClass('required')
-                    $(".sp_hypo").text('This field is required')
-                } else {
-                    $("#id_sp_hypo").removeClass('required')
-                    $(".sp_hypo").text('')
                 }
                 
                 if(zona.length < 1) {
@@ -505,12 +517,16 @@
                     $(".legal_doc_error").text('')
                 }
                 
-                if(current_use.length < 1) {
-                    $("#id_current_use").addClass('required')
-                    $(".current_use").text('This field is required')
+                if(show_cu == '1' && current_use.length < 1) {
+                    $("#id_current_use_text").addClass('required');
+                    $(".cu_error").text('This field is required');
+                } else if (show_cu == '0') {
+                    $("#id_current_use").addClass('required');
+                    $(".cu_error").text('This field is required');
                 } else {
-                    $("#id_current_use").removeClass('required')
-                    $(".current_use").text('')
+                    $("#id_current_use_text").removeClass('required');
+                    $("#id_current_use").removeClass('required');
+                    $(".cu_error").text('');
                 }
                 
                 if(show_cadastral == '1' && cadastral.length < 1) { 

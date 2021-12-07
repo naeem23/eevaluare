@@ -113,7 +113,7 @@
                                 {{ valuation.property_type.type }} cu {{camara.camara|floatformat:0}} si dependinte
                             {% endif %}
                         </div>
-                        <a class="btn btn-primary btn-round ml-auto" href="{% url 'dashboard:pdf' id=valuation.id %}">
+                        <a class="btn btn-primary btn-round ml-auto" target="_blank" href="{% url 'dashboard:pdf' id=valuation.id %}">
                             <i class="fas fa-file-alt mr-2"></i>
                             PDF
                         </a>
@@ -186,7 +186,7 @@
                                     {% if summary.amav %}
                                     <b class="text-light mr-2">Property Value: </b> {{ valuation|get_market_value|floatformat:'0' }} EUR
                                     {% elif summary.aiav %}
-                                    <b class="text-light mr-2">Property Value: </b> {{ valuation|get_market_value|floatformat:'0' }} EUR
+                                    <b class="text-light mr-2">Property Value: </b> {{ summary.aiav|floatformat:'0' }} EUR
                                     {% endif %}
                                 </div>
                             </div>
@@ -329,12 +329,10 @@
                                             <td><b>{{ summary.amav|floatformat:'0' }} EUR</b></td>
                                         </tr>
                                         {% for sv in summary_value %}
-                                            {% if sv.approache == 'market' %}
                                             <tr>
                                                 <td>{{sv.field_name}}</td>
                                                 <td><b>{{ sv.field_value }} EUR</b></td>
                                             </tr>
-                                            {% endif %}
                                         {% endfor %}
                                     </tbody>
                                 </table>
@@ -348,22 +346,13 @@
                                         <tr>
                                             <td><b>Valoarea de venit proprietate</b></td>
                                             <td>
-                                                <b>{{summary|get_income_value|floatformat:'0'}} EUR</b><br>
-                                                <b>{{summary|get_income_value_ron:summary|floatformat:'0'}} RON</b>
+                                                <b>{{summary.aiav|floatformat:'0'}} EUR</b><br>
                                             </td>
                                         </tr>
                                         <tr>
                                             <td>Apartament</td>
                                             <td><b>{{ summary.aiav|floatformat:'0' }} EUR</b></td>
                                         </tr>
-                                        <!-- {% for sv in summary_value %}
-                                            {% if sv.approache == 'income' %}
-                                            <tr>
-                                                <td>{{sv.field_name}}</td>
-                                                <td><b>{{ sv.field_value }} EUR</b></td>
-                                            </tr>
-                                            {% endif %}
-                                        {% endfor %} -->
                                     </tbody>
                                 </table>
                             </div>

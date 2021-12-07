@@ -12,19 +12,10 @@
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
     integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
     crossorigin=""></script>
-
-    <!-- Load Esri Leaflet from CDN -->
-    <script src="https://unpkg.com/esri-leaflet@3.0.2/dist/esri-leaflet.js"
-    integrity="sha512-myckXhaJsP7Q7MZva03Tfme/MSF5a6HC2xryjAM4FxPLHGqlh5VALCbywHnzs2uPoF/4G/QVXyYDDSkp5nPfig=="
-    crossorigin=""></script>
-
-    <!-- Load Esri Leaflet Geocoder from CDN -->
-    <link rel="stylesheet" href="https://unpkg.com/esri-leaflet-geocoder@3.1.1/dist/esri-leaflet-geocoder.css"
-    integrity="sha512-IM3Hs+feyi40yZhDH6kV8vQMg4Fh20s9OzInIIAc4nx7aMYMfo+IenRUekoYsHZqGkREUgx0VvlEsgm7nCDW9g=="
-    crossorigin="">
-    <script src="https://unpkg.com/esri-leaflet-geocoder@3.1.1/dist/esri-leaflet-geocoder.js"
-    integrity="sha512-enHceDibjfw6LYtgWU03hke20nVTm+X5CRi9ity06lGQNtC9GkBNl/6LoER6XzSudGiXy++avi1EbIg9Ip4L1w=="
-    crossorigin=""></script>
+    
+    <!-- leaflet geosearch by smeijer  -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-geosearch@3.0.0/dist/geosearch.css" />
+    <script src="https://unpkg.com/leaflet-geosearch@3.1.0/dist/geosearch.umd.js"></script>
 
     <!-- select2 js -->
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
@@ -410,43 +401,59 @@
             accessToken: 'pk.eyJ1IjoibmFlZW0yMyIsImEiOiJja2lyNmpzdjUwMHVrMnRreXZyNHdubHptIn0.X3OwhHNVTJG_SzVzHEeLnQ'
         }).addTo(map);
 
-        var searchControl = L.esri.Geocoding.geosearch({
-            position: 'topright',
-            placeholder: 'Search for places and addresses',
-            useMapBounds: false,
-            providers: [L.esri.Geocoding.arcgisOnlineProvider({
-                apikey: 'AAPK5f52374845404757a5eb02c2b5bc9e1cbjcT5ty0oXBKBseoCLCC_JhCLvbOLn1nXEgiuOcKaUUK8yLa7hmuYQd0fVtKOfoy',
-            })]
-        }).addTo(map);
-
-        var marker = L.marker()
-        searchControl.on('results', function (data) {
-            let address = data.text.split(',');
-            $('#id_street').val(address[0]);
-            $('#id_postal_code').val(address[1].trim());
-            let area = address[3].trim();
-            console.log(area)
-            $("#id_area option:contains("+area+")").prop("selected","selected");
-            $('#id_area').trigger('change'); 
+        var marker = L.marker();
+        const searchControl = new GeoSearch.GeoSearchControl({
+            provider: new GeoSearch.OpenStreetMapProvider({
+                params: {
+                    addressdetails: 1
+                }
+            }),
+            style: 'bar',
+            showMarker: true,
+            showPopup: false,
+            marker: {
+                icon: new L.Icon.Default(),
+                draggable: true,
+            },
+            popupFormat: ({ query, result }) => result.label,
+            resultFormat: ({ result }) => result.label,
+            maxMarkers: 1,
+            retainZoomLevel: false,
+            animateZoom: true,
+            autoClose: false,
+            searchLabel: 'Enter address',
+            keepResult: false,
+            updateMap: true,
+        });
+        map.addControl(searchControl);
+        map.on('geosearch/showlocation', function(result) {
             map.removeLayer(marker);
-            for (var i = data.results.length - 1; i >= 0; i--) {
-                marker = L.marker(data.results[i].latlng, {draggable:'true'}).addTo(map);
-                marker.on('dragend', function(event){
-                    var marker = event.target;
-                    var position = marker.getLatLng();
-                    marker.setLatLng(new L.LatLng(position.lat, position.lng),{draggable:'true'});
-                    map.panTo(new L.LatLng(position.lat, position.lng))
-                    $('#id_latitude').val(position.lat.toFixed(6)) 
-                    $('#id_longitude').val(position.lng.toFixed(6))
-                });
-                var lat = data.results[i].latlng.lat
-                var lng = data.results[i].latlng.lng
-                $('#id_latitude').val(lat.toFixed(6)) 
-                $('#id_longitude').val(lng.toFixed(6))
+            let address = result.location.raw.address;
+            $('#id_street').val(address.road);
+            $('#id_postal_code').val(address.postcode);
+            $("#id_area option:contains("+address.city+")").prop("selected","selected");
+            $('#id_area').trigger('change'); 
+            $("#id_city option:contains("+address.city_district+")").prop("selected","selected");
+            $('#id_city').trigger('change'); 
+            if(address.house_number) {
+                $('#id_numarul').val(address.house_number);
             }
+
+            let lat = result.location.x;
+            let lng = result.location.y;
+            $('#id_latitude').val(lat.toFixed(6));
+            $('#id_longitude').val(lng.toFixed(6));
+        });
+        map.on('geosearch/marker/dragend', function(event) {
+            map.removeLayer(marker);
+            let lat = event.location.lat;
+            let lng = event.location.lng;
+            $('#id_latitude').val(lat.toFixed(6));
+            $('#id_longitude').val(lng.toFixed(6));
         });
         
         function onMapClick(e) {
+            searchControl.clearResults();
             map.removeLayer(marker);
             marker = L.marker([e.latlng.lat, e.latlng.lng], {draggable:'true'}).addTo(map);
             marker.on('dragend', function(event){
@@ -462,7 +469,11 @@
             $('#id_latitude').val(lat.toFixed(6))
             $('#id_longitude').val(lng.toFixed(6))
         }
-        map.on('click', onMapClick);
+        map.on('click', onMapClick);        
+        marker.on('dragend', function (e) {
+            $('#id_latitude').val(marker.getLatLng().lat.toFixed(6))
+            $('#id_longitude').val(marker.getLatLng().lng.toFixed(6))
+        });
         // map management
 
         // ======================== form validation check ===========================

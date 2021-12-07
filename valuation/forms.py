@@ -80,13 +80,13 @@ class EditInitialForm(forms.ModelForm):
 
 
 class AddValuationSummary(forms.ModelForm):
-	purpose = forms.ModelChoiceField(queryset=ValuationPurpose.objects.all(), widget=forms.Select(attrs={'class': 'form-control',}))
-	amav = forms.DecimalField(max_digits=10, decimal_places=2, widget=forms.NumberInput(attrs={'class': 'form-control', 'placeholder': '0.00', 'step': '0.01', 'min': '0.00'}))
-	aiav = forms.DecimalField(max_digits=10, decimal_places=2, widget=forms.NumberInput(attrs={'class': 'form-control', 'placeholder': '0.00', 'step': '0.01', 'min': '0.00'}))
+	purpose = forms.ModelChoiceField(queryset=ValuationPurpose.objects.all(), widget=forms.Select(attrs={'class': 'form-control',}), empty_label=None)
+	amav = forms.DecimalField(required=False, max_digits=10, decimal_places=2, widget=forms.NumberInput(attrs={'class': 'form-control', 'placeholder': '0.00', 'step': '0.01', 'min': '0.00'}))
+	aiav = forms.DecimalField(required=False, max_digits=10, decimal_places=2, widget=forms.NumberInput(attrs={'class': 'form-control', 'placeholder': '0.00', 'step': '0.01', 'min': '0.00'}))
 
 	class Meta:
 		model = ValuationSummary
-		exclude = ('ref_no', 'approach')
+		exclude = ('ref_no',)
 
 
 class ConstructionForm(forms.ModelForm):
@@ -97,18 +97,11 @@ class ConstructionForm(forms.ModelForm):
 	roof = forms.ModelChoiceField(queryset=RoofType.objects.all(), widget=forms.Select(attrs={'class': 'form-control',}))
 	invelitoare = forms.ModelChoiceField(queryset=InvelitoareType.objects.all(), widget=forms.Select(attrs={'class': 'form-control'}))
 	finish = forms.ModelChoiceField(queryset=FinishType.objects.all(), widget=forms.Select(attrs={'class': 'form-control'}))
-	# pardoseli = forms.CharField(widget=forms.Textarea(attrs={'class': 'form-control', 'rows': '5'}))
-	# walls = forms.CharField(widget=forms.Textarea(attrs={'class': 'form-control', 'rows': '5'}))
-	# interior_carpentry = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}))
-	# ceiling = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}))
 	exterior_finishes = forms.CharField(widget=forms.Textarea(attrs={'class': 'form-control', 'rows': '5'}))
 	ef_choice = forms.ChoiceField(choices=EXTERIOR_FINISHS, widget=forms.Select(attrs={'class': 'form-control'}))
-	# exterior_carpentry = forms.CharField(widget=forms.Textarea(attrs={'class': 'form-control', 'rows': '5'}))
 	utilities = forms.ModelMultipleChoiceField(queryset=Utility.objects.all(), widget=forms.SelectMultiple(attrs={'class': 'form-control', 'multiple': 'multiple'}))
 	closure = forms.ModelChoiceField(queryset=ClouserType.objects.all(), widget=forms.Select(attrs={'class': 'form-control',}), empty_label=None)
 	subcompartment = forms.ModelChoiceField(queryset=SubcompartmentType.objects.all(), widget=forms.Select(attrs={'class': 'form-control',}), empty_label=None)
-	# dotari = forms.CharField(required=False, widget=forms.Textarea(attrs={'class': 'form-control', 'rows': '5'}))
-	# heating = forms.ModelChoiceField(queryset=HeatingSystem.objects.all(), widget=forms.Select(attrs={'class': 'form-control',}))
 	comments = forms.CharField(required=False, widget=forms.Textarea(attrs={'class': 'form-control', 'rows': '5'}))
 
 	class Meta:
@@ -118,7 +111,6 @@ class ConstructionForm(forms.ModelForm):
 
 class PresentationForm(forms.ModelForm):
 	strada = forms.ModelChoiceField(queryset=StradaType.objects.all(), widget=forms.Select(attrs={'class': 'form-control'}))
-	# poi = forms.CharField(widget=forms.TextInput(attrs={'autofocus': 'autofocus',}))
 	cadastral_no = forms.CharField(required=False, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Cadastral Nr'}))
 	land_book_no = forms.CharField(required=False, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Carte funciară nr'}))
 	uat = forms.CharField(required=False, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Uat'}))

@@ -111,7 +111,7 @@
                                                     <div class="dropdown-menu">
                                                         {% for s in status %}
                                                             {% if obj.status.id != s.id %}
-                                                                <a class="dropdown-item" href="{% url 'dashboard:change_status' status=s.id id=obj.id %}">{{s.status}}</a>
+                                                                <a class="dropdown-item status_opt" obj="{{obj.id}}" sid="{{s.id}}" vdate="{{obj.valuation_date}}" rdate="{{obj.report_date}}">{{s.status}}</a>
                                                             {% endif %}
                                                         {% endfor %}
                                                     </div>
@@ -145,6 +145,25 @@
 			});
 		});
 
+        // change status 
+        $(".status_opt").click(function () {
+            let sid = $(this).attr('sid');
+            let obj = $(this).attr('obj');
+            let vdate = $(this).attr('vdate');
+            let rdate = $(this).attr('rdate');
+            let url = "{% url 'dashboard:change_status' status=123 id=567 %}".replace('123', sid);
+            url = url.replace('567', obj);
+
+            if (sid == '2') {
+                if (vdate == 'None' || rdate == 'None') {
+                    createAlert("update_initial");
+                } else {
+                    window.location.href = url;
+                }
+            } else if (sid == 1 || sid == 3 || sid == 4) {
+                window.location.href = url;
+            }
+        });
 
         // delete modal
         function delete_modal(id) {
@@ -221,6 +240,10 @@
         // creating notification
         var msg = "{% if msg %}{{msg}}{% endif %}"
         if(msg !== "") {
+            createAlert(msg);
+        }
+
+        function createAlert(msg) {
             var content = {};
             if (msg=='status') {
                 var state = "success";
@@ -229,6 +252,10 @@
             } else if (msg == 'not_status') {
                 var state = "danger";
                 content.message = 'Problem updating status';
+                content.title = 'Error!';
+            } else if (msg == 'update_initial') {
+                var state = "danger";
+                content.message = 'Update data evaluare si date raport';
                 content.title = 'Error!';
             }
 

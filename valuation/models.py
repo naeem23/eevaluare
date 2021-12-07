@@ -138,6 +138,13 @@ class AdditionalEquipment(models.Model):
 	def __str__(self):
 		return self.name
 
+class Compartimentare(models.Model):
+	name = models.CharField(max_length=255, blank=True, null=True)
+	property_type = models.ForeignKey(PropertyType, models.SET_NULL, blank=True, null=True)
+
+	def __str__(self):
+		return str(self.id)
+
 
 # ==================== valuated property table =======================
 # ====================================================================
@@ -188,16 +195,6 @@ class ValuatedProperty(models.Model):
 		return str(self.reference_no)
 
 
-# ====================== compartimentare table =======================
-# ====================================================================
-class Compartimentare(models.Model):
-	name = models.CharField(max_length=255, blank=True, null=True)
-	property_type = models.ForeignKey(PropertyType, models.SET_NULL, blank=True, null=True)
-
-	def __str__(self):
-		return str(self.id)
-
-
 # =================== compartimentare value table ====================
 # ====================================================================
 class CompartimentareValue(models.Model):
@@ -241,7 +238,7 @@ class Photo(models.Model):
 class ValuationSummary(models.Model):
 	ref_no = models.ForeignKey(ValuatedProperty, on_delete=models.CASCADE)
 	purpose = models.ForeignKey(ValuationPurpose, models.SET_NULL, blank=True, null=True)
-	approach = models.ManyToManyField(ValuationApproach, blank=True)
+	purpose_text = models.TextField(blank=True, null=True)
 	amav = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True) #appartment market approach value
 	aiav = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True) #appartment income approch value
 	fer = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)  #forex exchange rate
@@ -256,7 +253,6 @@ class SummaryValue(models.Model):
 	summary = models.ForeignKey(ValuationSummary, on_delete=models.CASCADE)
 	field_name = models.CharField(max_length=55, blank=True, null=True)
 	field_value = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
-	approache = models.CharField(max_length=55, blank=True, null=True)
 
 	def __str__(self):
 		return str(self.id)
@@ -278,6 +274,7 @@ class Construction(models.Model):
 	walls = models.TextField(blank=True, null=True) #Pereti 
 	interior_carpentry = models.CharField(max_length=500, blank=True, null=True)
 	ceiling = models.CharField(max_length=500, blank=True, null=True) #Plafonul
+	interior_finishes = models.TextField(blank=True, null=True)
 	exterior_finishes = models.TextField(blank=True, null=True)
 	ef_choice = models.CharField(max_length=55, blank=True, null=True, choices=EXTERIOR_FINISHS)
 	exterior_carpentry = models.TextField(blank=True, null=True)
@@ -323,6 +320,7 @@ class SourceofInformation(models.Model):
 class PresentationData(models.Model):
 	ref_no = models.ForeignKey(ValuatedProperty, on_delete=models.CASCADE)
 	sub_identi = models.TextField(blank=True, null=True)
+	inspectia = models.TextField(blank=True, null=True)
 	sp_hypo = models.TextField(blank=True, null=True) #special hypothesis
 	zona = models.TextField(blank=True, null=True) 
 	strada = models.ForeignKey(StradaType, models.SET_NULL, blank=True, null=True)
@@ -336,6 +334,7 @@ class PresentationData(models.Model):
 	charges = models.CharField(max_length=155, blank=True, null=True, choices=CHARGES_CHOICE)
 	sarcini = models.CharField(max_length=55, blank=True, null=True) #if charges this field will appear.
 	current_use = models.CharField(max_length=155, blank=True, null=True, choices=CURRENT_USE_CHOICE)
+	current_use_text = models.TextField(blank=True, null=True)
 	identification = models.CharField(max_length=155, blank=True, null=True, choices=IDENTIFICATION_CHOICE)
 	access_text = models.TextField(blank=True, null=True)
 	access = models.CharField(max_length=255, blank=True, null=True)
@@ -373,7 +372,6 @@ class MarketAnalysis(models.Model):
 
 	def __str__(self):
 		return str(self.id)
-
 
 
 # ==================== comparable property table =====================

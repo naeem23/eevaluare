@@ -99,7 +99,7 @@
                                         <p class="text-light conform">Conform {{ form.conform }}, constructia are un regim de intaltime {{valuation.height}} si a fost edificata in anul {{valuation.construction_year}}</p>
                                         
                                         <input type="hidden" name="show_conform" id="show_conform" value="0">
-                                        <textarea name="conform_text" id="id_conform_text" rows="3" style="display: none;" class="form-control">Conform inspectiei, constructia are un regim de intaltime 8/S+P+11E si a fost edificata in anul 2008</textarea>
+                                        <textarea name="conform_text" id="id_conform_text" rows="3" style="display: none;" class="form-control">Conform ...................., constructia are un regim de intaltime {{valuation.height}} si a fost edificata in anul {{valuation.construction_year}}</textarea>
                                     {% endif %}
                                     <small class="form-text text-danger conform_error"></small>
                                 </div>
@@ -167,9 +167,17 @@
                         <div class="row mt-2">
                             <div class="col-md-12">
                                 <div class="form-group">
-                                    <label id="finish_label">Finisaje Interioare <span class="required-label mr-2">*</span></label>
-                                    <p class="text-light finish">Finisajele interioare sunt {{ form.finish }} si constau in</p>
-                                    <small class="form-text text-danger finish_error"></small>
+                                    <label for="id_finish">Finisaje Interioare <span class="required-label mr-2">*</span><i class="fas fa-pencil-alt text-info" id="edit_finish"></i></label>
+                                    {% if const.interior_finishes %}
+                                        <p class="text-light finish" style="display: none;">Finisajele interioare sunt {{ form.finish }} si constau in</p>
+                                        <input type="hidden" name="show_finish" id="show_finish" value="1">
+                                        <textarea name="interior_finishes" id="id_interior_finishes" rows="3" class="form-control">{{const.interior_finishes}}</textarea>
+                                    {% else %}
+                                        <p class="text-light finish">Finisajele interioare sunt {{ form.finish }} si constau in</p>
+                                        <input type="hidden" name="show_finish" id="show_finish" value="0">
+                                        <textarea name="interior_finishes" id="id_interior_finishes" rows="3" style="display: none;" class="form-control">Finisajele exterioare sunt .................... si constau in</textarea>
+                                    {% endif %}
+                                    <small class="form-text text-danger finish_error"></small> 
                                 </div>
                             </div>
                         </div>
@@ -222,7 +230,7 @@
                                     <p class="text-light ef">Finisajele exterioare sunt {{form.ef_choice}} si constau in tencuieli driscuite decorative</p>
 
                                     <input type="hidden" name="show_ef" id="show_ef" value="0">
-                                    <textarea name="exterior_finishes" id="id_exterior_finishes" rows="3" style="display: none;" class="form-control">Finisajele exterioare sunt medii si constau in tencuieli driscuite decorative</textarea>
+                                    <textarea name="exterior_finishes" id="id_exterior_finishes" rows="3" style="display: none;" class="form-control">Finisajele exterioare sunt .................... si constau in tencuieli driscuite decorative</textarea>
                                     <small class="form-text text-danger ef_error"></small>
                                 </div>
                             </div>
@@ -583,14 +591,21 @@
             $('#show_conform').val(val=='0' ? '1' : '0');
             $('.conform').toggle();
             $('#id_conform_text').toggle();
-        })
+        });
+        // edit interior finish 
+        $("#edit_finish").on('click', function() {
+            var val = $('#show_finish').val();
+            $('#show_finish').val(val=='0' ? '1' : '0');
+            $('.finish').toggle();
+            $('#id_interior_finishes').toggle();
+        });
         // edit exterior finish 
         $("#edit-ef").on('click', function() {
             var val = $('#show_ef').val();
             $('#show_ef').val(val=='0' ? '1' : '0');
             $('.ef').toggle();
             $('#id_exterior_finishes').toggle();
-        })
+        });
 
         // form validity check 
         $('#submitBtn').on('click', function () {
@@ -607,6 +622,9 @@
             var walls = $('#id_walls').val();
             var interior_carpentry = $('#id_interior_carpentry').val();
             var ceiling = $('#id_ceiling').val();
+            var finish = $('#id_finish').val();
+            var show_finish = $('#show_finish').val()
+            var interior_finishes = $('#id_interior_finishes').val();
             var ef_choice = $('#id_ef_choice').val();
             var show_ef = $('#show_ef').val()
             var exterior_finishes = $('#id_exterior_finishes').val();
@@ -620,7 +638,7 @@
             var room_pass = room_name_validation();
             var area_pass = area_validation();
             
-            if (((show_conform == '1' && conform_text.length > 1) || conform.length > 0) && structure.length > 0 && foundation.length > 0 && floors.length > 0 && roof.length > 0 && invelitoare.length > 0 && finish.length > 0 && pardoseli.length > 1 && walls.length > 1 && interior_carpentry.length > 1 && ceiling.length > 1 && ((show_ef == '1' && exterior_finishes.length > 1) || ef_choice.length > 0) && exterior_carpentry.length > 1 && utilities.length > 0 && closure.length > 0 && subcompartment.length > 0 && dotari.length > 1 && suprafete.length > 1 && nr_pass == true && room_pass == true && area_pass == true) {
+            if (((show_conform == '1' && conform_text.length > 0) || conform.length > 0) && structure.length > 0 && foundation.length > 0 && floors.length > 0 && roof.length > 0 && invelitoare.length > 0 && finish.length > 0 && pardoseli.length > 0 && walls.length > 0 && interior_carpentry.length > 0 && ceiling.length > 0 && ((show_finish == '1' && interior_finishes.length > 0) || finish.length > 0) && ((show_ef == '1' && exterior_finishes.length > 0) || ef_choice.length > 0) && exterior_carpentry.length > 0 && utilities.length > 0 && closure.length > 0 && subcompartment.length > 0 && dotari.length > 0 && suprafete.length > 0 && nr_pass == true && room_pass == true && area_pass == true) {
                 $("#construction-form").submit();
             } else {
                 if(show_conform == '1' && conform_text.length < 1) { 
@@ -674,15 +692,7 @@
                     $("#id_invelitoare").removeClass('required')
                     $(".invelitoare").text('')
                 }
-                
-                if (finish.length < 1) {
-                    $("#id_finish").addClass('required')
-                    $(".finish_error").text('This field is required')
-                } else {
-                    $("#id_finish").removeClass('required')
-                    $(".finish_error").text('')
-                }
-                
+
                 if (pardoseli.length < 1) {
                     $("#id_pardoseli").addClass('required')
                     $(".pardoseli_error").text('This field is required')
@@ -713,6 +723,18 @@
                 } else {
                     $("#id_ceiling").removeClass('required')
                     $(".ceiling_error").text('')
+                }
+
+                if(show_finish == '1' && interior_finishes.length < 1) { 
+                    $('#id_interior_finishes').addClass('required')
+                    $(".finish_error").text('This field is required')
+                } else if (finish.length < 1) {
+                    $('#id_finish').addClass('required')
+                    $(".finish_error").text('This field is required')
+                } else {
+                    $('#id_interior_finishes').removeClass('required')
+                    $('#id_finish').removeClass('required')
+                    $(".finish_error").text('')
                 }
 
                 if(show_ef == '1' && exterior_finishes.length < 1) { 

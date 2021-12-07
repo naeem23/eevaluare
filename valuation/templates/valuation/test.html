@@ -12,12 +12,10 @@
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
     integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
     crossorigin=""></script>
-    <link
-  rel="stylesheet"
-  href="https://unpkg.com/leaflet-geosearch@3.0.0/dist/geosearch.css"
-/>
-
-<script src="https://unpkg.com/leaflet-geosearch@3.1.0/dist/geosearch.umd.js"></script>
+    
+    <!-- leaflet geosearch by smeijer  -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-geosearch@3.0.0/dist/geosearch.css" />
+    <script src="https://unpkg.com/leaflet-geosearch@3.1.0/dist/geosearch.umd.js"></script>
 
     <!-- select2 js -->
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
@@ -361,7 +359,9 @@
 
 <!-- Specific Page JS goes HERE  -->
 {% block javascripts %}
+    <!-- select 2 js  -->
     <script src="{% static 'dashboard/js/select2.min.js' %}"></script>
+    
     <script type="text/javascript">
         // select2 js
         $(document).ready(function() {
@@ -471,7 +471,11 @@
             $('#id_latitude').val(lat.toFixed(6))
             $('#id_longitude').val(lng.toFixed(6))
         }
-        map.on('click', onMapClick);
+        map.on('click', onMapClick);        
+        marker.on('dragend', function (e) {
+            $('#id_latitude').val(marker.getLatLng().lat.toFixed(6))
+            $('#id_longitude').val(marker.getLatLng().lng.toFixed(6))
+        });
         // map management
 
         // ======================== form validation check ===========================

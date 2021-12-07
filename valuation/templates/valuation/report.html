@@ -101,13 +101,13 @@
             <h1 style="font-size: 26px;">Raport de evaluare</h1>
             <p class="ref_no">EPI-{{valuation.reference_no}}-{{valuation.report_date|date:"dmy"}}</p>
 
-            <h3 style="margin-top: 40px; font-size: 16px;">DATA RAPORTULUI</h3>
+            <h3 style="margin-top: 40px; font-size: 16px;">Data Raportului</h3>
             <p>{{valuation.report_date|date:"F d, Y"}}</p>
 
-            <h3 style="margin-top: 20px; font-size: 16px;">DESTINATAR</h3>
+            <h3 style="margin-top: 20px; font-size: 16px;">Destinatar</h3>
             <p>{{valuation.nume_client}}</p>
 
-            <h3 style="margin-top: 20px; font-size: 16px;">SUBIECTUL EVALUARII</h3>
+            <h3 style="margin-top: 20px; font-size: 16px;">Subiectul Evaluarii</h3>
             <p>
                 {% if valuation.title %}
                     {{ valuation.title }}
@@ -117,16 +117,16 @@
             </p>
             <p>{{valuation.street}}, {{valuation.numarul}}, {% if valuation.building_no %}{{valuation.building_no}}, {% endif %}{% if valuation.scara%}{{valuation.scara}}, {% endif %}{{valuation.floor_no}}, {{valuation.apartment_no}}, {{valuation.city.name}}, {{valuation.area.name}}</p>
 
-            <h3 style="margin-top: 20px; font-size: 16px;">VALOARE IMOBIL</h3>
+            <h3 style="margin-top: 20px; font-size: 16px;">Valoare Imobil</h3>
             <p style="font-size: 14px; font-weight: bold;">
                 {% if summary.amav %}
                     {{summary|get_market_value|thousand_separator}} EUR
                 {% elif summary.aiav %}
-                    {{summary|get_income_value|thousand_separator}} EUR
+                    {{summary.aiav|thousand_separator}} EUR
                 {% endif %}
             </p>
 
-            <p style="margin: 20px 0; text-align: justify;">Valoarea de piata a fost stabilita de catre un Evaluator, membru al Asociatiei Nationale a Evaluatorilor Autorizati din Romania, avand la baza Standardele de evaluare a bunurilor, editia 2020. In completarea misiunii de evaluare am utilizat informatiile si documentele furnizate de catre client cat si date furnizate din piata si baza de date proprie</p>
+            <p style="margin: 20px 0; text-align: justify;">Valoarea {% if summary.purpose.id == 3 %}justa{% else %}de piata{% endif %} a fost stabilita de catre un Evaluator, membru al Asociatiei Nationale a Evaluatorilor Autorizati din Romania, avand la baza Standardele de evaluare a bunurilor, editia 2020. In completarea misiunii de evaluare am utilizat informatiile si documentele furnizate de catre client cat si date furnizate din piata si baza de date proprie</p>
             <br><br>
             {% if cover_photo %}
                 <div class="cover_photos">
@@ -150,31 +150,31 @@
             <table>
                 <tr style="padding-top: 10px;">
                     <td width="8%" style="padding-left: 5px;">03</td>
-                    <td>Rezumental Evaluarii</td>
+                    <td>Rezumatul Evaluarii</td>
                 </tr>
                 <tr style="height: 30px;">
                     <td width="8%" style="padding-left: 5px;">04</td>
-                    <td>CERTIFICARE</td>
+                    <td>I. Certificare</td>
                 </tr>
                 <tr style="height: 30px;">
                     <td width="8%" style="padding-left: 5px;">06</td>
-                    <td>TERMENI DE REFERINTA AI EVALUARII</td>
+                    <td>II. Termenii de referinta ai evaluarii</td>
                 </tr>
                 <tr style="height: 30px;">
                     <td width="8%" style="padding-left: 5px;">12</td>
-                    <td>PREZENTAREA DATELOR</td>
+                    <td>III. Prezentarea datelor</td>
                 </tr>
                 <tr style="height: 30px;">
                     <td width="8%" style="padding-left: 5px;">16</td>
-                    <td>ANALIZA PIETEI IMOBILIARE</td>
+                    <td>IV. Analiza pietei imobiliare</td>
                 </tr>
                 <tr style="height: 30px;">
                     <td width="8%" style="padding-left: 5px;">22</td>
-                    <td>CEA MAI BUNA UTILIZARE (CMBU)</td>
+                    <td>V. Cea mai buna utilizare (CMBU)</td>
                 </tr>
                 <tr style="height: 30px;">
                     <td width="8%" style="padding-left: 5px;">23</td>
-                    <td>EVALUAREA PROPRIETATII IMOBILIARE</td>
+                    <td>VI. Evaluarea proprietatii imobiliare</td>
                 </tr>
                 <tr style="height: 30px;">
                     <td width="8%" style="padding-left: 5px;">28</td>
@@ -218,7 +218,7 @@
             <p style="margin-bottom: 6px;"><b>Scopul Evaluarii:</b> {{ summary.purpose.purpose }}</p>
             <table>
                 <tr>
-                    <td width="30%">
+                    <td width="30%" style="vertical-align: top;">
                         {% for simg in summary_photo %}
                             <img src="{{simg.image.path}}" alt="Summary photo {{img.id}}" width="160" height="120"> <br> <br>
                         {% endfor %}
@@ -226,7 +226,7 @@
                     <td style="vertical-align: top;">
                         <table>
                             <tr valign="top">
-                                <td style="vertical-align: top; padding-bottom: 5px;"><b>Valoarea de piata proprietate:</b></td>
+                                <td style="vertical-align: top; padding-bottom: 5px;"><b>Valoarea {% if summary.purpose.id == 3 %}justa{% else %}de piata{% endif %} proprietate:</b></td>
                                 <td style="padding-bottom: 5px; text-align: right;">
                                     <b>{{summary|get_market_value|thousand_separator}} EUR</b> <br>
                                     <b>{{summary|get_market_value_ron:summary|thousand_separator}} RON</b>
@@ -359,7 +359,7 @@
         </div>
 
         <div class="terms">
-            <h2 style="margin-bottom: 20px; padding: 0; text-align: center; font-size: 22px;">II. Termenii de referinta ai Evaluarii</h2>
+            <h2 style="margin-bottom: 20px; padding: 0; text-align: center; font-size: 22px;">II. Termenii de referinta ai evaluarii</h2>
             <p style="margin-bottom: 10px; text-indent: 3rem; font-weight: bold;">1. Identificarea evaluatorului</p>
             <p style="margin-bottom: 10px;">
                 <span>{{ valuation.evaluator.get_full_name }} - Legitimatie numar {{valuation.evaluator.certification_number}}</span> <br>
@@ -388,7 +388,7 @@
             </p>
 
             <p style="margin-bottom: 10px; text-indent: 3rem; font-weight: bold;">4. Scopul evaluarii</p>
-            <p style="margin-bottom: 10px;text-align: justify;">Estimarea valorii de {% if summary.amav %}piata{% else %}venit{% endif %} a proprietatii imobiliare in vederea {{ summary.purpose.purpose }}. Prezentul raport de evaluare este valabil numai pentru scopul mentionat in prezentul raport. Nu se accepta nicio responsabilitate daca este transmis altei persoane indiferent de scopul acestuia.</p>
+            <p style="margin-bottom: 10px;text-align: justify;">{{summary.purpose_text|safe}}. Prezentul raport de evaluare este valabil numai pentru scopul mentionat in prezentul raport. Nu se accepta nicio responsabilitate daca este transmis altei persoane indiferent de scopul acestuia.</p>
 
             <p style="margin-bottom: 10px; text-indent: 3rem; font-weight: bold;">5. Moneda evaluarii</p>
             <p style="margin-bottom: 10px;text-align: justify;">Rezultatul evaluarii se va raporta in moneda europeana (Euro) si in moneda nationala (Leu), cursul de schimb intre cele doua monede fiind cel raportat de Banca Nationala a Romaniei pentru data evaluarii.</p>
@@ -398,8 +398,8 @@
 
             <p style="margin-bottom: 10px; text-indent: 3rem; font-weight: bold;">7. Tipul valorii utilizate</p>
             <p style="margin-bottom: 10px;text-align: justify;">
-                <span>Se estimeaza valoarea de {% if summary.amav %}piata{% else %}venit{% endif %} a proprietatii supuse evaluarii.</span> <br>
-                <span>In conformitate cu Standardul de Evaluare a bunurilor SEV 104 – Tipuri ale valorii "Valoarea de piata reprezinta suma estimata pentru care un activ sau o datorie ar putea fi schimbat(a) la data evaluarii, intre un cumparator hotarat si un vanzator hotarat, intr-o tranzactie nepartinitoare, dupa un marketing adecvat si in care partile au actionat fiecare in cunostinta de cauza, prudent si faraconstrangere".</span>
+                Se estimeaza valoarea justa a proprietatii supuse evaluarii. <br>
+                In conformitate cu Standardul de Evaluare a bunurilor SEV104 – Tipuri ale valorii "Valoarea justă de piață este prețul pentru care o proprietate ar fi schimbată între un cumpărător hotărât și un vânzător hotărât, într-o tranzacție în care ambele părți sunt libere de orice constrângere de a cumpăra sau a vinde și dețin un nivel rezonabil de cunoștințe cu privire la faptele relevante".
             </p>
 
             <p style="margin-bottom: 10px; text-indent: 3rem; font-weight: bold;">8. Data evaluarii</p>
@@ -410,9 +410,10 @@
             </p>
 
             <p style="margin-bottom: 10px; text-indent: 3rem; font-weight: bold;">9. Inspectia proprietatii</p>
-            <p style="margin-bottom: 10px;text-align: justify;">nspectia proprietatii s-a efectuat de catre evaluator {{ valuation.evaluator.get_full_name }} la data de {{valuation.inspection_date|date:"d.m.Y"}} in prezenta proprietarei {{valuation.assigned_to}}. Cu ocazia inspectiei proprietatii nu au fost identificate diferente intre situatia scriptica si cea faptica.</p>
+            <p style="margin-bottom: 10px;text-align: justify;">Inspectia proprietatii s-a efectuat de catre evaluator {{ valuation.evaluator.get_full_name }} la data de {{valuation.inspection_date|date:"d.m.Y"}} in prezenta proprietarei {{valuation.assigned_to}}. Cu ocazia inspectiei proprietatii nu au fost identificate diferente intre situatia scriptica si cea faptica.</p>
 
-            <p style="margin-bottom: 10px; text-indent: 3rem; font-weight: bold;">10. Prezentul raport de evaluare a fost intocmit folosind urmatoarele documente furnizate de client</p>
+            <p style="margin-bottom: 10px; text-indent: 3rem; font-weight: bold;">10. Documente furnizate</p>
+            <p style="text-align: justify;">Prezentul raport de evaluare a fost intocmit folosind urmatoarele documente furnizate de catre client:</p>
             <p style="margin-bottom: 10px;">
                 {% for si in source %}
                     {% if forloop.last %}
@@ -576,9 +577,7 @@
         </div>
 
         <div class="presentation">
-            <h2 style="margin-bottom: 10px; padding: 0; text-align: center; font-size: 24px;">III. Prezentarea Datelor</h2>
-            <p style="margin-bottom: 10px;">Date despre aria de piata, oras, vecinatati si localizare</p>
-
+            <h2 style="margin-bottom: 10px; padding: 0; text-align: center; font-size: 24px;">III. Prezentarea datelor</h2>
             <p style="margin-bottom: 10px; text-indent: 3rem; font-weight: bold;">1. Informatii generale</p>
             <p style="margin-bottom: 10px;text-align: justify;">Proprietatea este amplasta pe {{valuation.address}} din orasul {{valuation.city.name}}, in zona {{valuation.area.name}}, zona {{ valuation.urbana }} {{ valuation.locatie }} a localitatii.</p>
 
@@ -637,7 +636,7 @@
             <p style="margin-bottom: 10px;text-align: justify;">Conform Extrasului de Carte Funciara pus la dispozitie, proprietatea {{ pdata.get_charges_display }} {% if pdata.charges == 'yes' %}de sarcini in favoarea {{ pdata.sarcini }}{% else %}de sarcini{% endif %}. La data evaluarii proprietatea este considerata libera de sarcini. </p>
 
             <p style="margin-bottom: 10px; text-indent: 3rem; font-weight: bold;">9. Utilizarea actuala</p>
-            <p style="margin-bottom: 10px;text-align: justify;">La data inspectiei proprietatea avea utilizare rezidentiala si era {{ pdata.get_current_use_display|lower }} de proprietar.</p>
+            <p style="margin-bottom: 10px;text-align: justify;">La data inspectiei proprietatea avea utilizare rezidentiala si era {{ pdata.get_current_use_display|lower }}.</p>
 
             <p style="margin-bottom: 10px; text-indent: 3rem; font-weight: bold;">10. Identificare</p>
             <p style="margin-bottom: 10px;text-align: justify;">Indentificarea imobilului s-a realizat pe baza documentelor puse la dispozitie, cu ajutorul {{pdata.identification|get_identification}}</p>
@@ -646,14 +645,14 @@
             <p style="margin-bottom: 10px;text-align: justify;">{% if pdata.access_text %}{{pdata.access_text|safe}}{% else %}Din punct de vedere juridic accesul la proprietate pietonal si auto se face {{pdata.access}}. Imobilul se afla in zona {{valuation.locatie}} a intravilanului munincipiului Bucuresti, fiind reprezentat de un bloc cu regim de inaltime {{valuation.height}}. Apartamentului ii revin cote din partile comune si dependintele imobilului conform extrasului de carte funciara prezentat evaluatorului.{% endif %}</p>
 
             <p style="margin-bottom: 10px; text-indent: 3rem; font-weight: bold;">12. Constructia</p>
-            <p style="margin-bottom: 5px;">{% if const.conform_text %}{{const.conform_text}}{% else %}Conform {{const.conform}}, constructia are un regim de inaltime {{ valuation.height }} si a fost edificata in anul {{ valuation.construction_year }}{% endif %}</p>
+            <p style="margin-bottom: 5px;">{% if const.conform_text %}{{const.conform_text}}{% else %}Conform {{const.conform|lower}}, constructia are un regim de inaltime {{ valuation.height }} si a fost edificata in anul {{ valuation.construction_year }}{% endif %}</p>
             <p style="margin-bottom: 5px;"><b>Structura</b> – {{ const.structure.type }}</p>
             <p style="margin-bottom: 5px;"><b>Fundatii</b> – {{ const.foundation.type }}</p>
             <p style="margin-bottom: 5px;"><b>Inchideri</b> – {{ const.closure.type }}</p>
             <p style="margin-bottom: 5px;"><b>Compartimentari</b> – {{ const.subcompartment.type }}</p>
             <p style="margin-bottom: 15px;"><b>Acoperis</b> – {{ const.roof.type }}</p>
 
-            <p style="margin-bottom: 5px; font-weight: bold;">Finisajele interioare sunt medii si constau in:</p>
+            <p style="margin-bottom: 5px; font-weight: bold;">{% if const.interior_finishes %}{% else %}Finisajele interioare sunt {{const.finish|lower}} si constau in:{% endif %}</p>
             <p style="margin-bottom: 5px;"><b>Pardoseli</b> – {{const.pardoseli|safe}}</p>
             <p style="margin-bottom: 5px;"><b>Pereti</b> – {{ const.walls|safe }}</p>
             <p style="margin-bottom: 5px;"><b>Tamplaria interioara</b> – {{ const.interior_carpentry }}</p>
@@ -674,8 +673,12 @@
                 {{const.dotari|safe}}
             </p>
 
+            <div>
+                <pdf:nextpage />
+            </div>
+
             <p style="margin: 10px 0;text-align: justify;"><b>Suprafete</b> - {{const.suprafete|safe}}</p>
-            <table border="1" width="60%">
+            <table border="1" width="60%" style="margin: 0 auto">
                 <tr valign="middel">
                     <th style="padding-top: 5px;">Nr.crt.</th>
                     <th style="padding-top: 5px;">Denumire incapere</th>
@@ -723,7 +726,7 @@
         </div>
 
         <div class="analysis">
-            <h2 style="margin-bottom: 10px; padding: 0; text-align: center; font-size: 24px;">IV. Analiza Pietei Imobiliare</h2>
+            <h2 style="margin-bottom: 10px; padding: 0; text-align: center; font-size: 24px;">IV. Analiza pietei imobiliare</h2>
             <p style="margin-bottom: 5px;font-weight: bold;">Contextul general al pietei imobiliare</p>
 
             <p style="text-align: justify;">Dupa o crestere economica importanta, de 7% in 2017, economia romaneasca a evoluat in perioada 2018- 2019 spre o crestere sustenabila pe termen lung estimata de analisti in jurul valorii de 3%. Cresterea economica a ramas robusta, de peste 4% in 2018 si aproximativ 4% in 2019, dar in scadere fata de anii precedenti. Aceasta tendinta este de asteptat sa continue si pe termen lung, in timp ce pe termen scurt nivelul de incertitudine extrem de ridicat de pe pietele internationale face imposibila estimarea realista a unor tendinte.</p>
@@ -750,7 +753,7 @@
             {% if market.ac %}
                 <p style="text-align: justify;">{{market.ac|safe}}</p>
             {% else %}
-                <p style="text-align: justify;">Cererea pentru proprietati de tipul celei analizate s-a observat a fi formata din familii cu un nivel de venituri {{market.zona_type}}</p>
+                <p style="text-align: justify;">Cererea pentru proprietati de tipul celei analizate s-a observat a fi formata din familii cu un nivel de venituri {{market.get_zona_type_display}}</p>
                 <p style="text-align: justify;">Populatia zonei este formata din persoane cu un nivel mediu si ridicat de educatie, ceea ce contribuie la mentinerea unui mediu de siguranta si confort al rezidentilor.</p>
                 <p style="text-align: justify;margin-bottom: 10px;">Zona in care este situata proprietatea beneficiaza de suprafete acoperite de parcuri si alte amenajari urbanistice destinate petrecerii in conditii optime a timpului liber, ceea ce contribuie la confortul locuitorilor, crescand atractivitatea zonei. De asemenea, apropierea de centre administrative, comerciale, educationale si de sanatate publica, precum si existenta unei retele eficiente de transport in comun determina o atractivitate ridicata a proprietatilor rezidentiale din zona.</p>
             {% endif %}
@@ -807,7 +810,7 @@
         <div class="cmbu">
             <h2 style="margin-bottom: 10px; padding: 0; text-align: center; font-size: 24px;">V. Cea mai buna utilizare (CMBU)</h2>
 
-            <p style="margin-bottom: 10px; text-align:justify;">Ca si valoarea de piata, cea mai buna utilizare este un concept de piata. Conceptul de cea mai buna utilizare reprezinta alternativa de utilizare a proprietatii selectata din diferite variante posibile care va constitui baza de pornire si va genera ipotezele de lucru necesare aplicarii abordarilor de evaluare.  <br>
+            <p style="margin-bottom: 10px; text-align:justify;">Ca si valoarea {% if summary.purpose.id == 3 %}justa{% else %}de piata{% endif %}, cea mai buna utilizare este un concept de piata. Conceptul de cea mai buna utilizare reprezinta alternativa de utilizare a proprietatii selectata din diferite variante posibile care va constitui baza de pornire si va genera ipotezele de lucru necesare aplicarii abordarilor de evaluare.  <br>
 
             Cea mai buna utilizare este definita de Standardele Internationale de Evaluare (SEV) ca fiind "utilizarea care, din perspectiva unui participant de pe piata, are ca rezultat cea mai mare valoare a unui activ". <br>
 
@@ -850,7 +853,7 @@
             <h2 style="margin-bottom: 10px; padding: 0; text-align: center; font-size: 24px;">VI. Evaluarea proprietatii imobiliare</h2>
             <p style="margin-bottom: 10px;font-weight: bold;">Metodologia de evaluare</p>
             <p style="margin-bottom: 10px;text-align: justify;">
-                Pentru determinarea valorii de piata a unei proprietati imobiliare de tipul celei de fata, Standardele Internationale de Evaluare prevad posibilitatea utilizarii a mai multor abordari de evaluare si anume: abordarea prin piata, abordarea prin venit si abordarea prin cost. <br>
+                Pentru determinarea valorii {% if summary.purpose.id == 3 %}justa{% else %}de piata{% endif %} a unei proprietati imobiliare de tipul celei de fata, Standardele Internationale de Evaluare prevad posibilitatea utilizarii a mai multor abordari de evaluare si anume: abordarea prin piata, abordarea prin venit si abordarea prin cost. <br>
 
                 Evaluatorilor nu li se cere sa utilizeze mai multe metode pentru evaluarea unui activ, mai ales atunci cand evaluatorul are un grad mare de incredere in precizia si credibilitatea unei singure metode. Cu toate acestea, evaluatorii ar trebui sa ia in considerare mai multe abordari si metode, si ar trebui sa foloseasca nu doar o singura abordare sau metoda de evaluare pentru a obtine o indicatie asupra valorii, in special, atunci cand datele de intrare concrete sau observabile sunt insuficiente pentru ca o singura metoda sa conduca la o concluzie credibila. <br>
 
@@ -859,7 +862,7 @@
 
             <p style="margin-bottom: 10px;font-weight: bold;text-align: center;font-size: 18px;">Abordarea prin piata</p>
             <p style="text-align: justify; margin-bottom: 10px;">
-                Premisa majora a abordarii prin piata este aceea ca valoarea de piata a unei proprietati imobiliare este in relatie directa cu preturile/ofertele unor proprietati competitive si comparabile. Aceasta abordare utilizeaza analiza pietei in vederea identificarii de tranzactii ale unor proprietati similare si compararii acestora cu subiectul de evaluat. Astfel, valorile si informatiile referitoare la tranzactiile si ofertele de imobile similare sunt analizate, comparate si corectate in functie de asemanari si diferentieri. <br>
+                Premisa majora a abordarii prin piata este aceea ca valoarea {% if summary.purpose.id == 3 %}justa{% else%}de piata{% endif %} a unei proprietati imobiliare este in relatie directa cu preturile/ofertele unor proprietati competitive si comparabile. Aceasta abordare utilizeaza analiza pietei in vederea identificarii de tranzactii ale unor proprietati similare si compararii acestora cu subiectul de evaluat. Astfel, valorile si informatiile referitoare la tranzactiile si ofertele de imobile similare sunt analizate, comparate si corectate in functie de asemanari si diferentieri. <br>
 
                 Potrivit GEV630, prin informatii despre preturile bunurilor comparabile se inteleg informatii privind preturile activelor similare care au fost tranzactionate sau oferite spre vanzare pe piata, cu conditia ca relevanta acestor informatii sa fie clar stabilita si analizata critic. Elaborarea rapoartelor de evaluare prin utilizarea partiala sau exclusiva a ofertelor de piata, avand ca obiect bunuri imobile comparabile, este conforma cu prezentele Standarde de evaluare. <br>
 
@@ -871,9 +874,9 @@
 
                 Pentru a aplica aceasta abordare, evaluatorii analizeaza tranzactii comparabile in scopul determinarii caracteristicilor diferite de cele ale proprietatii subiect. <br>
 
-                Ca surse de informatii s-au folosit ofertele de vanzare de proprietati similare din zona studiata existente in ziarele/revistele de specialitate, din paginile de web ale diferitelor firme imobiliare precum si din baza de date proprie aferenta departamentelor de evaluare respectiv de tranzactii imobiliare. Proprietatile selectate pentru analiza imobilului sunt comparabilele 1,2,3,4 si 8(vezi Anexa 4). Trebuie precizat faptul ca, pentru toate proprietatile comparabile, s-a considerat ca dreptul de proprietate transmis este integral, iar conditiile de vanzare – plata cash. <br>
+                Ca surse de informații s-au folosit ofertele de vanzare de proprietăți similare din zona studiată existente în ziarele/revistele de specialitate, din paginile de web ale diferitelor firme imobiliare precum și din baza de date proprie aferentă departamentelor de evaluare respectiv de tranzactii imobiliare (vezi Anexa 2). Trebuie precizat faptul că, pentru toate proprietățile comparabile, s-a considerat că dreptul de proprietate transmis este integral, iar condițiile de vânzare – plata cash.  <br>
 
-                In acest raport de evaluare tehnicile cantitative folosite pentru estimarea ajustarilor sunt analiza pe perechi de date, analiza datelor secundare.
+                Grila datelor de piata pentru proprietatile comparabile este prezentată mai jos. 
             </p>
 
             <table border="1" id="grid-table">
@@ -1654,9 +1657,13 @@
                 </tr>
             </table>
             <br>
-            <p style="margin: 15px 0;font-weight: bold;text-align: center;font-size: 16px;">Valoare de piata: {{sub_prop.estimated_value|thousand_separator}} EUR</p>
+            <p style="margin: 15px 0;font-weight: bold;text-align: center;font-size: 16px;">Valoare {% if summary.purpose.id == 3 %}justa{% else %}de piata{% endif %}: {{sub_prop.estimated_value|thousand_separator}} EUR</p>
             <br>
 
+            <div>
+                <pdf:nextpage />
+            </div>
+            
             <p style="margin-bottom: 10px;font-weight: bold;text-align: center;font-size: 18px;">Abordarea prin venit</p>
             <p style="text-align: justify; margin-bottom: 10px;">
                 S-a utilizat metoda bazata pe capitalizarea veniturilor. Aceasta presupune ca un imobil, in functie de caracteristicile sale constructive si de localizare, constituie un potential venit pe termen indelungat prin inchiriere etc. Cu alte cuvinte, proprietatea are o valoare de randament.<br>
@@ -1679,7 +1686,7 @@
 
                 In continuare, am estimat mutiplicatorul chiriei brute pentru proprietatile comparabile utilizate in abordarea prin piata impartind chiria bruta anuala la pretul solicitat de catre vanzator (pretul solicitat a fost ajustat cu marja de negociere). <br>
 
-                Din analiza pietei, am identificat o chirie lunara cuprinsa intre {% if comp_mvb%}{{comp_mvb|get_range }}{% endif %} euro/mp/luna pentru proprietati comparabile. Pentru determinarea multiplicatorului chirie brute am estimat o chirie de {% if comp_mvb%}{{comp_mvb|get_range }}{% endif %} euro/luna/mp pentru toate comparabilele luate in considerare. Totodata, pentru proprietatea subiect am estimat o chirie lunara de {% if sub_mvb %}{{sub_mvb.sub_rent_sqm}}{% endif %} euro/mp/luna. <br>
+                Din analiza pietei, am identificat o chirie lunara cuprinsa intre {% if comp_mvb%}{{comp_mvb|get_rounded_range }}{% endif %} euro/mp/luna pentru proprietati comparabile. Pentru determinarea multiplicatorului chirie brute am estimat o chirie de {% if comp_mvb%}{{comp_mvb|get_range }}{% endif %} euro/luna/mp pentru toate comparabilele luate in considerare. Totodata, pentru proprietatea subiect am estimat o chirie lunara de {% if sub_mvb %}{{sub_mvb.sub_rent_sqm}}{% endif %} euro/mp/luna. <br>
 
                 In tabelul urmator sunt prezentate calculele privind multiplicatorul chiriei brute:
             </p>
@@ -1748,7 +1755,7 @@
             <br>
 
             <p style="text-align: justify; margin-bottom: 10px;">
-                In continuare, pentru determinarea valorii de piata a proprietatii subiect am selectat multiplicatorul chirie brute din tabelul de mai sus. In cazul de fata, am ales multiplicatorul comparabilei {{sub_prop|get_corresponding_letter}} deoarece prezinta caracteristicile cele mai apropiate de cele ale proprietatii subiect. <br>
+                In continuare, pentru determinarea valorii {% if summary.purpose.id %}justa{% else %}de piata{% endif %} a proprietatii subiect am selectat multiplicatorul chirie brute din tabelul de mai sus. In cazul de fata, am ales multiplicatorul comparabilei {{sub_prop|get_corresponding_letter}} deoarece prezinta caracteristicile cele mai apropiate de cele ale proprietatii subiect. <br>
 
                 Pornind de la o chirie lunara {% if sub_mvb %}{{sub_mvb.sub_rent_sqm}}{% endif %} euro/mp/luna, aplicarea metodei capitalizarii directe pe baza multiplului venitului brut potenital conduce la o valoare a proprietatii evaluate calculata astfel: V = VBP * MVBP.
             </p>
@@ -1781,7 +1788,11 @@
             <p style="text-align: center;margin-bottom: 10px;font-weight: bold;">Valoare de venit {{ sub_mvb.vpcd_rotund|thousand_separator }} EUR</p>
             <br>
 
-            <p style="margin-bottom: 15px;text-align: center;font-weight: bold;font-size: 16px;">1. Analiza rezultatelor si concluzia asupra valorii</p>
+            <div>
+                <pdf:nextpage />
+            </div>
+
+            <p style="margin-bottom: 15px;text-align: center;font-weight: bold;font-size: 16px;">Analiza rezultatelor si concluzia asupra valorii</p>
 
             <p>Prezentarea rezultatelor:</p>
             <table>
@@ -1848,14 +1859,18 @@
                 </tr>
             </table>
 
-            <p style="margin-top: 20px;text-align: justify;">Valoarea de piata a fost stabilita utilizand abordarea prin piata datorita urmatoarelor considerente:</p>
+            <p style="margin-top: 20px;text-align: justify;">Valoarea {% if summary.purpose.id == 3 %}justa{% else %}de piata{% endif %} a fost stabilita utilizand abordarea prin piata datorita urmatoarelor considerente:</p>
             <p style="margin-bottom: 10px;">- valoarea obtinuta prin abordarea prin piata este cea mai adecvata si precisa intrucat la baza aplicarii abordarii au existat numai informatii de pe piata.</p>
 
-            <p style="margin-bottom: 10px;text-align: justify;">Pentru determinarea valorii de piata a proprietatii analizate am ales abordarea prin piata ca fiind cea mai relevanta in acest caz. Avand in vedere cantitatea, calitatea informatiilor detinute ca urmare a analizelor, adecvarea abordarilor prezentate si conditiile limitative expuse in prezentul raport de evaluare, evaluatorul opineaza ca valoarea de piata a proprietatii imobiliare supuse evaluarii asa cum se prezenta la data inspectiei, este estimata prin aborarea prin piata la:</p>
+            <p style="margin-bottom: 10px;text-align: justify;">Pentru determinarea valorii {% if summary.purpose.id == 3 %}justa{% else %}de piata{% endif %} a proprietatii analizate am ales abordarea prin piata ca fiind cea mai relevanta in acest caz. Avand in vedere cantitatea, calitatea informatiilor detinute ca urmare a analizelor, adecvarea abordarilor prezentate si conditiile limitative expuse in prezentul raport de evaluare, evaluatorul opineaza ca valoarea {% if summary.purpose.id == 3 %}justa{% else %}de piata{% endif %} a proprietatii imobiliare supuse evaluarii asa cum se prezenta la data inspectiei, este estimata prin aborarea prin piata la:</p>
             <p style="text-align: center;font-weight: bold;font-size: 16px;">{{sub_prop.estimated_value|thousand_separator}} EUR</p>
             <br>
 
-            <p style="margin-bottom: 10px;font-weight: bold;text-align: center;font-size: 16px;">Riscul de garantie (Guarantee risk)</p>
+            <div>
+                <pdf:nextpage />
+            </div>
+            
+            <p style="margin-bottom: 10px;font-weight: bold;text-align: center;font-size: 16px;">Riscul de garantie</p>
             {% if market.guarantee_risk %}
                 <p style="margin-bottom: 10px;text-align: justify;">{{market.guarantee_risk|safe}}</p>
             {% else %}

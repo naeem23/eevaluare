@@ -133,7 +133,6 @@ def add_summary(request, id):
             data = form.save(commit=False)
             data.ref_no = valuation
             data.save()
-            # data.approach.set() to-do
 
             # save summary value 
             if summary_value:
@@ -146,33 +145,19 @@ def add_summary(request, id):
                         mv.field_value = mv_value[mi]
                         mv.save()
                         mi += 1
-
-                iv_name = request.POST.getlist('field_name_iv[]')
-                iv_value = request.POST.getlist('field_value_iv[]')
-                ii = 0
-                for iv in summary_value:
-                    if iv.approache == 'income':
-                        iv.field_name = iv_name[ii]
-                        iv.field_value = iv_value[ii] 
-                        iv.save()
-                        ii += 1
             else:
                 mv_name = request.POST.getlist('field_name_mv[]')
                 mv_value = request.POST.getlist('field_value_mv[]')
                 for n, v in zip(mv_name, mv_value):
                     if v != None:
-                        models.SummaryValue.objects.create(summary=data, field_name=n, field_value=v, approache="market")
-
-                iv_name = request.POST.getlist('field_name_iv[]')
-                iv_value = request.POST.getlist('field_value_iv[]')
-                for name, val in zip(iv_name, iv_value):
-                    if val != None:
-                        models.SummaryValue.objects.create(summary=data, field_name=name, field_value=val, approache="income")
+                        models.SummaryValue.objects.create(summary=data, field_name=n, field_value=v)
                         
             if request.POST.get("pre_url") == 'details':
                 return redirect('dashboard:details', id=valuation.id)
             else:
                 return redirect('valuation:add_construction', id=id)
+        else:
+            print('form invalid')
     else:
         if summary:
             form = forms.AddValuationSummary(instance=summary)
@@ -246,6 +231,7 @@ def add_construction(request, id):
             data = form.save(commit=False)
             data.ref_no = valuation
             data.conform_text = form.cleaned_data.get('conform_text') if request.POST.get('show_conform') == '1' else None 
+            data.interior_finishes = form.cleaned_data.get('interior_finishes') if request.POST.get('show_finish') == '1' else None
             data.exterior_finishes = form.cleaned_data.get('exterior_finishes') if request.POST.get('show_ef') == '1' else None
             data.save()
             data.utilities.set(form.cleaned_data['utilities'])

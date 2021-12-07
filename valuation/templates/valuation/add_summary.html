@@ -73,6 +73,9 @@
             border :#E0E0E0 1px solid;
             color: white;  
         }
+        #edit_pt {
+            cursor: pointer;
+        }
     </style>
 {% endblock stylesheets %}
 
@@ -154,9 +157,8 @@
                     <form method="POST" id="summary-form">
                         {% csrf_token %}
 
-                        {% for error in form.non_field_errors %}
-                            <p class="text-danger">{{error}}</p>
-                        {% endfor %}
+                        {{ form.errors }}
+                        {{ form.non_field_errors }}
                         
                         {% if 'details' in pre_url %}
                         <input type="hidden" name="pre_url" value="details">
@@ -173,7 +175,7 @@
                             </div>
                         </div>
                         
-                        <div class="row mb-4">
+                        <div class="row">
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="id_purpose">Scopul Evaluarii <span class="required-label">*</span></label>
@@ -208,6 +210,26 @@
                         </div>
 
                         <div class="row">
+                            <div class="col-md-8">
+                                <div class="form-group">
+                                    <label for="id_purpose_text">Scopul Evaluarii <i class="fas fa-pencil-alt text-info ml-2" id="edit_pt"></i></label>
+                                    {% if summary.purpose_text %}
+                                        <p class="text-light pt" style="display: none;">Estimarea valorii <span id="justa">de piata</span> a proprietatii imobiliare in vederea <span id="purpose">garantarii unui imprumut bancar</span>.</p>
+
+                                        <input type="hidden" name="show_pt" id="show_pt" value="1">
+                                        <textarea name="purpose_text" id="id_purpose_text" rows="2" class="form-control">{{summary.purpose_text}}</textarea>
+                                    {% else %}
+                                        <p class="text-light pt">Estimarea valorii <span id="justa">de piata</span> a proprietatii imobiliare in vederea <span id="purpose">garantarii unui imprumut bancar</span>.</p>
+
+                                        <input type="hidden" name="show_pt" id="show_pt" value="0">
+                                        <textarea name="purpose_text" id="id_purpose_text" rows="2" style="display: none;" class="form-control">Estimarea valorii de piata a proprietatii imobiliare in vederea garantarii unui imprumut bancar.</textarea>
+                                    {% endif %}
+                                    <small class="form-text text-danger pt_error"></small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
                             <div class="col-md-12">
                                 <div class="form-check">
                                     <label class="form-check-label">
@@ -233,20 +255,18 @@
 
                             {% if summary_value %}
                                 {% for sv in summary_value %}
-                                    {% if sv.approache == 'market' %}
-                                        <div class="col-md-3">
-                                            <div class="form-group">
-                                                <input type="text" name="field_name_mv[]" value="{{sv.field_name}}" class="form-control">
-                                                <div class="input-group">
-                                                    <input type="number" name="field_value_mv[]" class="form-control market_value" step="0.01" value="{{sv.field_value}}" min="0.00">
-                                                    <div class="input-group-append">
-                                                        <span class="input-group-text">EUR</span>
-                                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <input type="text" name="field_name_mv[]" value="{{sv.field_name}}" class="form-control">
+                                            <div class="input-group">
+                                                <input type="number" name="field_value_mv[]" class="form-control market_value" step="0.01" value="{{sv.field_value}}" min="0.00">
+                                                <div class="input-group-append">
+                                                    <span class="input-group-text">EUR</span>
                                                 </div>
-                                                <small class="text-danger form-text mv_error"></small>
                                             </div>
+                                            <small class="text-danger form-text mv_error"></small>
                                         </div>
-                                    {% endif %}
+                                    </div>
                                 {% endfor %}
                             {% else %}
                                 {% if above_parking %}
@@ -325,76 +345,6 @@
                                     <small class="form-text text-danger aiav_error"></small>
                                 </div>
                             </div>
-
-                            {% if summary_value %}
-                                {% for sv in summary_value %}
-                                    {% if sv.approache == 'income' %}
-                                        <div class="col-md-3">
-                                            <div class="form-group">
-                                                <input type="text" name="field_name_iv[]" value="{{sv.field_name}}" class="form-control">
-                                                <div class="input-group">
-                                                    <input type="number" name="field_value_iv[]" class="form-control income_value" step="0.01" min="0.00" value="{{sv.field_value}}">
-                                                    <div class="input-group-append">
-                                                        <span class="input-group-text">EUR</span>
-                                                    </div>
-                                                </div>
-                                                <small class="text-danger form-text iv_error"></small>
-                                            </div>
-                                        </div>
-                                    {% endif %}
-                                {% endfor %}
-                            {% else %}
-                                {% if above_parking %}
-                                    {% for i in above_parking|myrange %}
-                                    <div class="col-md-3">
-                                        <div class="form-group">
-                                            <input type="text" name="field_name_iv[]" value="Parcare suprateran" class="form-control" >
-                                            <div class="input-group">
-                                                <input type="number" name="field_value_iv[]" class="form-control income_value" step="0.01" value="0.00" min="0.00">
-                                                <div class="input-group-append">
-                                                    <span class="input-group-text">EUR</span>
-                                                </div>
-                                            </div>
-                                            <small class="form-text text-danger iv_error"></small>
-                                        </div>
-                                    </div>
-                                    {% endfor %}
-                                {% endif %}
-
-                                {% if below_parking %}
-                                    {% for i in below_parking|myrange %}
-                                    <div class="col-md-3">
-                                        <div class="form-group">
-                                            <input type="text" name="field_name_iv[]" value="Parcare subteran" class="form-control" >
-                                            <div class="input-group">
-                                                <input type="number" name="field_value_iv[]" class="form-control income_value" step="0.01" value="0.00" min="0.00">
-                                                <div class="input-group-append">
-                                                    <span class="input-group-text">EUR</span>
-                                                </div>
-                                            </div>
-                                            <small class="form-text text-danger iv_error"></small>
-                                        </div>
-                                    </div>
-                                    {% endfor %}
-                                {% endif %}
-
-                                {% if boxa %}
-                                    {% for i in boxa|myrange %}
-                                    <div class="col-md-3">
-                                        <div class="form-group">
-                                            <input type="text" name="field_name_iv[]" value="Boxa" class="form-control" >
-                                            <div class="input-group">
-                                                <input type="number" name="field_value_iv[]" class="form-control income_value" step="0.01" value="0.00" min="boxa">
-                                                <div class="input-group-append">
-                                                    <span class="input-group-text">EUR</span>
-                                                </div>
-                                            </div>
-                                            <small class="text-danger form-text iv_error"></small>
-                                        </div>
-                                    </div>
-                                    {% endfor %}
-                                {% endif %}
-                            {% endif %}
                         </div>
                     </form>
                 </div>
@@ -679,25 +629,59 @@
         }
         // ========================= re-order photos ==========================
 
+        // change purpose text on change purpose 
+        $('#id_purpose').change(function () {
+            var purpose = this.value;
+            if (purpose=='1') {
+                $('#purpose').text('garantarii unui imprumut bancar');
+            } else if (purpose == '2') {
+                $('#purpose').text('asistentei clientului la vanzarea proprietatii');
+            } else if (purpose == '3') {
+                $('#justa').text('justa');
+                $('#purpose').text('raportarii financiare');
+            }
+        });
+
+        // edit purpose text 
+        $("#edit_pt").on('click', function() {
+            let show = $('#show_pt').val();
+            $('#show_pt').val(show=='0' ? '1' : '0');
+            $('.pt').toggle();
+            let text = $(".pt").text();
+            $('textarea#id_purpose_text').text(text);
+            $('#id_purpose_text').toggle();
+        });    
+
         // submit form
         $("#finish").click(function (e) {
             e.preventDefault();
             var valued_property = $('#id_valued_property').val();
             var purpose = $("#id_purpose").val();
+            var show_pt = $('#show_pt').val()
+            var purpose_text = $('#id_purpose_text').val();
+
             var market_approach = ($("#market_approach").is(':checked')) ? true : false;
             var amav = $("#id_amav").val();
             var income_approach = ($("#income_approach").is(':checked')) ? true : false;
             var aiav = $("#id_aiav").val();
-            var mv = false;
+            var mv = true;
             $(".market_value").each(function () {
-                let input = $(this).val();
-                mv = (input == 0.00) ? false : true;
+                let input = parseFloat($(this).val());
+                if (input >= 0.00) {
+                    $(this).removeClass('required');
+                    $('.mv_error').text('');
+                } else {
+                    mv = false;
+                    $(this).addClass('required');
+                    $('.mv_error').text('This field is required');
+                }
             });
 
-            if(valued_property.length > 0 && purpose.length > 0 && ((market_approach == true && amav > 0) || market_approach == false) && ((income_approach == true && aiav > 0) || income_approach == false) && ((market_approach == true && mv == true) || (market_approach==false))) {
-                summaryDz.processQueue();
+            if(valued_property.length > 0 && purpose.length > 0 && ((show_pt == '1' && purpose_text.length > 0) || show_pt == '0') && ((market_approach == true && amav > 0) || market_approach == false) && ((income_approach == true && aiav > 0) || income_approach == false) && ((market_approach == true && mv == true) || (market_approach==false))) {
+                // summaryDz.processQueue();
                 $("#summary-form").submit();
             } else {
+                console.log('else')
                 if (valued_property.length < 1) {
                     $('#id_valued_property').addClass('required');
                     $('.valued_property_error').text('This field is required');
@@ -712,6 +696,14 @@
                 } else {
                     $('#id_purpose').removeClass('required');
                     $('.purpose_error').text('');
+                }
+
+                if(show_pt == '1' && purpose_text.length < 1) { 
+                    $('#id_purpose_text').addClass('required')
+                    $(".pt_error").text('This field is required')
+                } else {
+                    $('#id_purpose_text').removeClass('required')
+                    $(".pt_error").text('')
                 }
                 
                 if (market_approach == true && amav < 1) {
@@ -728,14 +720,6 @@
                 } else {
                     $('#id_aiav').removeClass('required');
                     $('.aiav_error').text('');
-                }
-                
-                if (mv == false) {
-                    $('.market_value').addClass('required');
-                    $('.mv_error').text('This field is required');
-                } else {
-                    $('.market_value').removeClass('required');
-                    $('.mv_error').text('');
                 }
             }
         });
