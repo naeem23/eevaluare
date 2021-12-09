@@ -164,8 +164,7 @@ def get_market_value(summary):
         summary_value = models.SummaryValue.objects.filter(summary=summary)
         market_value = summary.amav
         for sv in summary_value:
-            if sv.approache == 'market':
-                market_value += sv.field_value
+            market_value += sv.field_value
     except:
         market_value = 0.00
     return market_value
@@ -174,7 +173,7 @@ def get_market_value(summary):
 @register.filter(name="get_market_value_ron")
 def get_market_value_ron(obj, summary):
     market_val = get_market_value(summary)
-    market_val = market_val * summary.fer
+    market_val = Decimal(market_val) * summary.fer
     return market_val
     
 
@@ -250,3 +249,15 @@ def get_pret_mp_util(obj):
 def thousand_separator(num):
     num = round(num,0)
     return '{:,}'.format(num).replace(',','.')
+
+
+
+
+# milton
+@register.filter
+def to_char(value):
+    return chr(65+value)
+
+@register.filter
+def to_plus(value):
+    return 100065+value

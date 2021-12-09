@@ -17,14 +17,18 @@ urlpatterns = [
 
     path('test/', views.test, name="test"),
 
+
     # milton
     path('add-anexa1/<int:id>/', views.add_anexa1, name="add_anexa1"),
     path('add-anexa2/<int:id>/', views.add_anexa2, name="add_anexa2"),
     path('add-anexa3/<int:id>/', views.add_anexa3, name="add_anexa3"),
     path('add-anexa4/<int:id>/', views.add_anexa4, name="add_anexa4"),
+    path('delete/file-model/', views.delete_file_model, name="delete_file_model"), # ajax to delete file
     path('delete/file/', views.delete_file, name="delete_file"), # ajax to delete file
+    path('delete/custom-image-db/', views.delete_image_db, name="delete_image_db"), # ajax to delete file
+    path('delete/custom-field/', views.delete_custom_row, name="delete_custom_row"), # ajax to delete file
     path('screenshot/file/', views.screenshot_html, name="screenshot_html"), # ajax to screen shot
-
+    
     # api call
     path('api/get-city/', views.get_city, name="get_city"),
     path('api/search-comparable/', views.search_comparable, name='search_comparable'),

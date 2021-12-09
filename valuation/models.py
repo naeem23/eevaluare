@@ -145,6 +145,37 @@ class Compartimentare(models.Model):
 	def __str__(self):
 		return str(self.id)
 
+#milton
+class InhabitedBuildingType(models.Model):
+	type = models.CharField(max_length=255)
+	def __str__(self):
+		return self.type
+
+class InchideriType(models.Model):
+	type = models.CharField(max_length=255)
+	def __str__(self):
+		return self.type
+
+class InteriorCarpentry(models.Model):
+	type = models.CharField(max_length=255)
+	def __str__(self):
+		return self.type
+
+class ExteriorCarpentry(models.Model):
+	type = models.CharField(max_length=255)
+	def __str__(self):
+		return self.type
+
+class Wall(models.Model):
+	type = models.CharField(max_length=255)
+	def __str__(self):
+		return self.type
+
+class Window(models.Model):
+	type = models.CharField(max_length=255)
+	def __str__(self):
+		return self.type
+
 
 # ==================== valuated property table =======================
 # ====================================================================
@@ -201,6 +232,11 @@ class CompartimentareValue(models.Model):
 	ref_no = models.ForeignKey(ValuatedProperty, on_delete=models.CASCADE)
 	attr_id = models.ForeignKey(Compartimentare, on_delete=models.CASCADE)
 	attr_value = models.CharField(max_length=10, blank=True, null=True) 
+	# milton
+	floor = models.ForeignKey(FloorType, on_delete=models.SET_NULL, null=True, blank=True)
+	wall = models.ForeignKey(Wall, on_delete=models.SET_NULL, null=True, blank=True)
+	window = models.ForeignKey(Window, on_delete=models.SET_NULL, null=True, blank=True)
+	interior_carpentry = models.ForeignKey(InteriorCarpentry, on_delete=models.SET_NULL, null=True, blank=True)
 
 	def __str__(self):
 		return str(self.id)
@@ -593,6 +629,7 @@ class PropertyFiles(models.Model):
 		return basename
 
 
+
 # ========================== anexa table =============================
 # ==================================================================== 
 
@@ -605,8 +642,18 @@ class ScreenShot(models.Model):
 	def __str__(self):
 		return self.name
 
+class FileModel(models.Model):
+	name = models.CharField(max_length=100, blank=True, null=True)
+	file = models.FileField(upload_to='file/%Y/%m/%d', blank=True)
+
+	def __str__(self):
+		return self.name
+
 class Anexa1(models.Model):
 	ref_no = models.ForeignKey(ValuatedProperty, on_delete=models.CASCADE)
+	custom_id = models.CharField(max_length=100, blank=True, null=True)
+	custom_name = models.CharField(max_length=100, blank=True, null=True)
+	blob = models.TextField(max_length=1000, blank=True, null=True)
 	file = models.FileField(upload_to='anexa1/%Y/%m/%d', blank=True)
 	image = models.ImageField(upload_to='anexa1/%Y/%m/%d', blank=True)
 
@@ -616,6 +663,7 @@ class Anexa1(models.Model):
 class Anexa2(models.Model):
 	ref_no = models.ForeignKey(ValuatedProperty, on_delete=models.CASCADE)
 	compare_no =  models.ForeignKey(ComparableProperty, blank=True, null=True, on_delete=models.CASCADE)
+	chapter_name = models.CharField(max_length=255, blank=True, null=True)
 	link = models.URLField(max_length=255, blank=True, null=True)
 	file = models.FileField(upload_to='anexa2/%Y/%m/%d', blank=True)
 	optional_text = models.TextField(max_length=400, blank=True, null=True)
@@ -626,6 +674,10 @@ class Anexa2(models.Model):
 class Anexa3(models.Model):
 	ref_no = models.ForeignKey(ValuatedProperty, on_delete=models.CASCADE)
 	image = models.FileField(upload_to='anexa3/%Y/%m/%d', blank=True)
+	
+	custom_id = models.CharField(max_length=100, blank=True, null=True)
+	custom_name = models.CharField(max_length=100, blank=True, null=True)
+	custom_image = models.ImageField(upload_to='anexa1/%Y/%m/%d', blank=True, null=True)
 
 	def __str__(self):
 		return str(self.ref_no.id)
@@ -635,3 +687,47 @@ class Anexa4(models.Model):
 	file = models.FileField(upload_to='anexa4/%Y/%m/%d', blank=True)
 	def __str__(self):
 		return str(self.ref_no.id)
+
+
+# ======================== inspection form table ==========================
+# ==================================================================== 
+class InspectionData(models.Model):
+	ref_no = models.ForeignKey(ValuatedProperty, on_delete = models.SET_NULL, null=True, blank=True)
+	property_estimated_by_client = models.CharField(max_length=100, null = True, blank=True)
+	contact_number = models.CharField(max_length=20, null=True, blank=True)
+	requested_credit = models.CharField(max_length=100, null=True, blank=True)
+	area = models.CharField(max_length=100, null=True, blank=True)
+	neighborhood = models.CharField(max_length=100, null=True, blank=True)
+	access_paved_road = models.BooleanField(default=False)
+	details = models.TextField(null=True, blank=True)
+	access_description = models.TextField(null=True, blank=True)
+	urban_transport = models.ManyToManyField(Transport)
+	local_height_regime = models.CharField(max_length=55, null=True, blank=True)	
+	structure_type = models.ForeignKey(StructureType, on_delete = models.SET_NULL, null=True, blank=True)
+	foundation = models.ForeignKey(FoundationType, on_delete = models.SET_NULL, blank=True, null=True)
+	construction_year = models.CharField(max_length=10, null=True, blank=True)
+	renovation_year = models.CharField(max_length=10, null=True, blank=True)
+	plan_type = models.ForeignKey(FloorType, on_delete=models.SET_NULL, null=True, blank=True) #Plansee
+	inchideri = models.ForeignKey(ClouserType, on_delete=models.SET_NULL, null=True, blank=True) #Inchideri
+	inhabited_building = models.ForeignKey(InhabitedBuildingType, on_delete=models.SET_NULL, null=True, blank=True)
+	evaluator = models.IntegerField(default=0)
+	compartimentari = models.ForeignKey(SubcompartmentType, on_delete=models.SET_NULL, null=True, blank=True)
+	acoperis = models.ForeignKey(RoofType, on_delete=models.SET_NULL, null=True, blank=True) #Acoperis
+	interior_carpentry = models.ForeignKey(InteriorCarpentry, on_delete = models.SET_NULL, null=True, blank=True)
+	exterior_carpentry = models.ForeignKey(ExteriorCarpentry, on_delete = models.SET_NULL, null=True, blank=True)
+	invelitoare_type = models.ForeignKey(InvelitoareType, on_delete = models.SET_NULL, null=True, blank=True)
+	heating_system = models.ForeignKey(HeatingSystem, on_delete = models.SET_NULL, null=True, blank=True)
+	utilities_imobil = models.ManyToManyField(Utility, related_name='imobil')
+	utilities_apartament = models.ManyToManyField(Utility, related_name='apartment')
+
+	additional_details_utility = models.TextField(null=True, blank=True)
+	
+	additional_equipment = models.ManyToManyField(AdditionalEquipment)
+
+	additional_details_equipment = models.TextField(null=True, blank=True)
+
+	parking_space = models.TextField(null=True, blank=True)
+	garaj = models.TextField(null=True, blank=True) 
+	boxa = models.TextField(null=True, blank=True)
+	def __str__(self):
+ 		return ref_no

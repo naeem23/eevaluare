@@ -9,3 +9,4 @@ urlpatterns = [
     path('room/<int:id>/', views.chat_room, name="chat_room"),
 
 ]+ static(settings.MEDIA_URL,document_root = settings.MEDIA_ROOT)
+ 

@@ -5,10 +5,10 @@
 <!-- Specific Page CSS goes HERE  -->
 {% block stylesheets %}
     {% load static %}
+    {% load my_filters %}
     <!--  dropzone file upload -->
     <script src="{% static 'dashboard/js/dropzone.js' %}"></script>
     <link rel="stylesheet" href="{% static 'dashboard/css/dropzone.css' %}">
-    <script src="{% static 'dashboard/js/html2canvas.min.js' %}" defer></script>
     
 <script src=
 "https://cdn.jsdelivr.net/npm/html2canvas@1.0.0-rc.5/dist/html2canvas.min.js">
@@ -94,12 +94,15 @@
                         <i class="flaticon-right-arrow"></i>
                     </li>
                     <li class="nav-item">
-                        <a href="">Anexa2</a>
+                        <a href="">Anexa2 - Proprietati comparabile</a>
                     </li>
                 </ul>
             </div>
 
             <div class="card">
+                <div class="card-header">
+                    <div class="card-title">Proprietati comparabile la vanzare</div>
+                </div>
                 <div class="card-header">
                     <div class="card-title">Select comparable property</div>
                 </div>
@@ -120,56 +123,186 @@
                     </div>
                 </div>
 
+                {% if segment %}
                 <!-- form for each comparable table start -->
-                {% for property in comparable_propertys %}
-                    <section class="form-{{property.id}} form-box" style="display: none;">
-                        
-                        <div class="card-header">
-                            <div class="card-title">Please fill up ID-{{property.id}}</div>
-                        </div>
-                        <div class="card-body">
-                            <div class="form-group">
-                                <label for="link-{{property.id}}">Link</label>
-                                <input id="link-{{property.id}}"class="form-control link-box w-100" type="text" name="link" />
+                    {% for seg in segment %}
+                        <section class="form-{{seg.compare_no.id}} form-box" style="display: none;">
+                            
+                            <div class="card-header">
+                                <div class="card-title">Please fill up ID-{{seg.compare_no.id}}</div>
                             </div>
-                        </div>
-                                                
-                        <div class="card-header">
-                            <div class="card-title">More uploads</div>
-                        </div>
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <form method="POST" action="#" class="dropzone dz-clickable" id="anexaPhotos" name="dropzoneForm" enctype="multipart/form-data">
-                                        {% csrf_token %}
-                                        <input type="hidden" name="pid" value="{{ property.id }}">
-                                        <input type="hidden" name="order" id="anexa-order" value="">
-                                        <input type="hidden" name="refer_to" value="anexa">
-                                        <div class="dz-message" data-dz-message="">
-                                            <div class="icon">
-                                                <i class="flaticon-file"></i>
-                                            </div>
-                                            <h4 class="message">Drag and Drop files here</h4>
-                                        </div>
-                                    </form>
+                            <div class="card-body">
+                                <div class="form-group">
+                                    <label for="link-{{seg.compare_no.id}}">Link</label>
+                                    <input id="link-{{seg.compare_no.id}}"class="form-control link-box w-100" type="text" value="{{seg.link}}" name="link" />
                                 </div>
                             </div>
-                        </div>
-                        <div class="card-body">
-                            <div class="form-group">
-                                <label for="optional-{{property.id}}">Optional Text</label>
-                                <textarea id="optional-{{property.id}}"class="w-100 form-control" id="optional_text" name="optional"></textarea>
+                                                    
+                            <div class="card-header">
+                                <div class="card-title">uploads</div>
                             </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        {% if seg.file %}
+                                            <h5>Previous uploaded</h5>
+                                            <div class="form-group">                                                
+                                                <img src="{{seg.file.url}}" style="width: 50%;">
+                                            </div>
+                                            <br>
+                                            <br>
+                                            <h5>New upload</h5>
+                                        {% endif %}
+                                        <form method="POST" action="#" class="dropzone dz-clickable" id="anexaPhotos" name="dropzoneForm" enctype="multipart/form-data">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="pid" value="{{ seg.compare_no.id }}">
+                                            <input type="hidden" name="order" id="anexa-order" value="">
+                                            <input type="hidden" name="refer_to" value="anexa">
+                                            <div class="dz-message" data-dz-message="">
+                                                <div class="icon">
+                                                    <i class="flaticon-file"></i>
+                                                </div>
+                                                <h4 class="message">Drag and Drop files here</h4>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="form-group">
+                                    <label for="optional-{{seg.compare_no.id}}">Optional Text</label>
+                                    <textarea id="optional-{{seg.compare_no.id}}"class="w-100" id="optional_text" name="optional" value="">{{seg.optional_text}}</textarea>
+                                </div>
+                            </div>
+                        </section>
+                    {% endfor %}
+                {% else %}
+                    {% for property in comparable_propertys %}
+                        <section class="form-{{property.id}} form-box" style="display: none;">
+                            
+                            <div class="card-header">
+                                <div class="card-title">Please fill up ID-{{property.id}}</div>
+                            </div>
+                            <div class="card-body">
+                                <div class="form-group">
+                                    <label for="link-{{property.id}}">Link</label>
+                                    <input id="link-{{property.id}}"class="form-control link-box w-100" type="text" value="" name="link" />
+                                </div>
+                            </div>
+                                                    
+                            <div class="card-header">
+                                <div class="card-title">More uploads</div>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <form method="POST" action="#" class="dropzone dz-clickable" id="anexaPhotos" name="dropzoneForm" enctype="multipart/form-data">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="pid" value="{{ property.id }}">
+                                            <input type="hidden" name="order" id="anexa-order" value="">
+                                            <input type="hidden" name="refer_to" value="anexa">
+                                            <div class="dz-message" data-dz-message="">
+                                                <div class="icon">
+                                                    <i class="flaticon-file"></i>
+                                                </div>
+                                                <h4 class="message">Drag and Drop files here</h4>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="form-group">
+                                    <label for="optional-{{property.id}}">Optional Text</label>
+                                    <textarea id="optional-{{property.id}}"class="w-100 form-control" id="optional_text" name="optional"></textarea>
+                                </div>
+                            </div>
+                        </section>
+                    {% endfor %}
+                {% endif %}
+
+            </div>
+            
+            <!-- part only for pdf report -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">Proprietati comparabile la inchiriere</div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <form id="tableForm">
+                                {% for property in comparable_propertys %}
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" value="{{forloop.counter0|to_char}}" name="tableRadio" id="radio-{{forloop.counter0|to_char}}">
+                                        <label class="form-check-label" for="radio-{{forloop.counter0|to_char}}">
+                                            {{forloop.counter0|to_char}}
+                                         </label>
+                                    </div>
+                                {% endfor %}
+                            </form>
                         </div>
-                    </section>
-                {% endfor %}
+                    </div>
+                </div>
+
+                
+                <!-- form for each comparable table start -->
+                    {% for property in comparable_propertys %}
+                        <section class="form-{{forloop.counter0|to_char}} form-box" style="display: none;">
+                            
+                            <div class="card-header">
+                                <div class="card-title">Please fill up {{forloop.counter0|to_char}}</div>
+                            </div>
+                            <div class="card-body">
+                                <div class="form-group">
+                                    <label for="link-{{forloop.counter0|to_char}}">Link</label>
+                                    <input id="link-{{forloop.counter0|to_char}}"class="form-control link-box w-100" type="text" value="" name="link" />
+                                </div>
+                            </div>
+                                                    
+                            <div class="card-header">
+                                <div class="card-title">More uploads</div>
+                            </div> 
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <form method="POST" action="#" class="dropzone dz-clickable" id="anexaPhotos" name="dropzoneForm" enctype="multipart/form-data">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="pid" value="{{forloop.counter0|to_plus}}">
+                                            <input type="hidden" name="order" id="anexa-order" value="">
+                                            <input type="hidden" name="refer_to" value="anexa">
+                                            <div class="dz-message" data-dz-message="">
+                                                <div class="icon">
+                                                    <i class="flaticon-file"></i>
+                                                </div>
+                                                <h4 class="message">Drag and Drop files here</h4>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="form-group">
+                                    <label for="optional-{{forloop.counter0|to_char}}">Optional Text</label>
+                                    <textarea id="optional-{{forloop.counter0|to_char}}"class="w-100" id="optional_text" name="optional"></textarea>
+                                </div>
+                            </div>
+                        </section>
+                    {% endfor %}
+
+                <!-- part only for pdf report -->
+
+
+
                 <!-- form for each comparable table end -->
                 <div class="card-header">
                     <button id="btnTable" class="btn btn-primary">Next</button>
                 </div>
             </div>
+
+
         </div>
-    </div>
+    </div> 
 
 
 {% endblock content %}
@@ -250,6 +383,9 @@
             if(no_empty_link==true){
                 // all form data in json DS
                 var formData = {};
+                // extra form data in json DS
+                var extra_formData = {};
+
                 var pid = {"ok":-1};                
                 {% for property in comparable_propertys %}
                     var property_id = {{property.id}};
@@ -257,7 +393,14 @@
                     var optional = $("#optional-"+property_id).val();
                     formData[property_id] = [link,optional];
                 {% endfor %}
-                
+
+                {% for property in comparable_propertys %}
+                    var extra_id ="{{forloop.counter0|to_char}}";
+                    var link = $("#link-"+extra_id).val();
+                    var optional = $("#optional-"+extra_id).val();
+                    extra_formData[extra_id] = [link,optional];
+                {% endfor %}                
+                console.log(extra_formData);
                 // send form data through ajax
                 $.ajax({
                     type: "POST",
@@ -266,6 +409,7 @@
                     headers: {'X-CSRFToken': '{{ csrf_token }}'},
                     data:{
                         "formData": JSON.stringify(formData),
+                        "extra_formData": JSON.stringify(extra_formData),
                         "pid": -1,
                     },
                     success:function(data){
@@ -281,6 +425,13 @@
 
         // dropzone file pass
         let file_order = {};
+
+        {% if segment %}
+            {% for seg in segment %}
+                file_order[String({{seg.compare_no.id}})]=1;
+            {% endfor %}
+            console.log(file_order);
+        {% endif %}
         // dropzone file pass
 
         // upload photos

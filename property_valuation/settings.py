@@ -29,7 +29,6 @@ INSTALLED_APPS = [
 
     'authentication',
     'dashboard',
-    'valuationform',
     'valuation',
     'asachat',
 
@@ -81,7 +80,7 @@ WSGI_APPLICATION = 'property_valuation.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'property_valuation',
+        'NAME': 'eevaluare',
         'USER': 'root',
         'PASSWORD': '',
         'HOST': 'localhost',

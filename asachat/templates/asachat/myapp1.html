@@ -28,13 +28,20 @@
                 });
             });
               $(function(){
-                $('#btnHangup').on('click',function(){
+                $('#btnHangup').click(function(){
                     console.log("hangup");
-                    // abstruct ====
-                    // apiObj == Null then close the tab
-                    apiObj.executeCommand('hangup');
-                    // location.reload();
-                    window.close();
+                    if(apiObj!=null){
+                        console.log(apiObj);
+                        // abstruct ====
+                        // apiObj == Null then close the tab
+                        apiObj.executeCommand('hangup');
+                        // location.reload();
+                        window.close();
+                    }
+                    else{
+                        console.log("Call is not initiated yet!");
+                        // inspectionDataRetrive();
+                    }
                 });
             });
               $(function(){
@@ -64,6 +71,254 @@
 
         </div>
         <video style="visibility: hidden;" id="video" autoplay="autoplay"></video>
+
+        <div class="container mb-4">
+            <div class="card">
+                <form id="inspectionForm" method="POST">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label for="id_estimated_client">Property Estimated By Client<span class="required-label">*</span></label>
+                                <input id="id_estimated_client" class="form-control" type="number" min="0" name=""/>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="id_contact_number">Contact Number<span class="required-label">*</span></label>
+                                <input id="id_contact_number" class="form-control" type="text" name=""/>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="id_requested_credit">Requested Credit<span class="required-label">*</span></label>
+                                <input id="id_requested_credit" class="form-control" type="" name=""/>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="id_neighborhood">Neighborhood<span class="required-label">*</span></label>
+                                <input id="id_neighborhood" class="form-control" type="" name=""/>
+                            </div>
+                            <!-- mark -->
+                            <div class="col-md-6">
+                                <label for="id_access_paved_road">Access Paved Road<span class="required-label">*</span></label>
+                                <select id="id_access_paved_road" class="form-control" type="" name="">
+                                    <option>Yes</option>
+                                    <option>No</option>
+                                </select>
+                            </div>
+                            <div class="col-md-12">
+                                <label for="id_area">Area<span class="required-label">*</span></label>
+                                <input id="id_area" class="form-control" type="" name=""/>
+                            </div>
+                            <div class="col-md-12">
+                                <label for="id_details">Details<span class="required-label">*</span></label>
+                                <textarea id="id_details" class="form-control" type="" name=""> </textarea>
+                            </div>    
+                            <div class="col-md-12">
+                                <label for="id_access_description">Access Description<span class="required-label">*</span></label>
+                                <textarea id="id_access_description" class="form-control" type="" name=""></textarea>
+                            </div>
+                            <div class="col-md-12">
+                                <label for="id_urban_transport">Urban Transport<span class="required-label">*</span></label>
+                                {% for transport in urban_transport %}
+                                    <div class="form-check form-check-inline">
+                                        <label for="{{transport.id}}">{{transport.name}}</label>
+                                        <input class="transport form-check-input" type="checkbox" id="{{transport.id}}" value="{{transport.name}}">
+                                    </div>
+                               {% endfor %}
+                            </div>
+                            <div class="col-md-6">
+                                <label for="id_structure_type">Structure Type<span class="required-label">*</span></label><br>
+                                <select id="id_structure_type" class="form-select" aria-label="Default select example">
+                                    {% for structure in structure_type %}
+                                        <option>{{structure.type}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="id_foundation">Foundation<span class="required-label">*</span></label><br>
+                                <select id="id_foundation" class="form-select" aria-label="Default select example">
+                                    {% for found in foundation %}
+                                        <option selected>{{found.type}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-12">
+                                <label for="id_local_height_regime">Local Height Regime<span class="required-label">*</span></label>
+                                <input id="id_local_height_regime" class="form-control" type="" name=""/>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="id_construction_year">Construction Year<span class="required-label">*</span></label>
+                                <input id="id_construction_year" class="form-control" type="" name=""/>
+                            </div>
+                            <div class="col-md-6"> 
+                                <label for="id_renovation_year">Renovation Year<span class="required-label">*</span></label>
+                                <input id="id_renovation_year" class="form-control" type="" name=""/>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="id_plan_type">Plan Type<span class="required-label">*</span></label><br>
+                                <select id="id_plan_type" class="form-select" aria-label="Default select example">
+                                    {% for plan in plan_type %}
+                                        <option>{{plan.type}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="id_inchideri">Inchideri<span class="required-label">*</span></label><br>
+                                <select id="id_inchideri" class="form-select" aria-label="Default select example">
+                                    {% for inch in inchideri %}
+                                        <option>{{inch.type}}</option>
+                                    {% endfor %} 
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="id_inhabited_building">Inhabited uilding<span class="required-label">*</span></label><br>
+                                <select id="id_inhabited_building" class="form-select" aria-label="Default select example">
+                                    {% for inhabit in inhabited_building %}
+                                        <option selected>{{inhabit.type}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="id_elevator">Elevator<span class="required-label">*</span></label><br>
+                                <input type="number" id="id_elevator" name="">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="id_compartimentari">Compartimentari<span class="required-label">*</span></label><br> 
+                                <select id="id_compartimentari" class="form-select compartimentari" aria-label="Default select example">
+                                    {% for com in compartimentari %}
+                                        <option>{{com.type}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="id_acoperis">Acoperis<span class="required-label">*</span></label><br>
+                                <select id="id_acoperis" class="form-select" aria-label="Default select example">
+                                    {% for roof in roof_type %}
+                                        <option>{{roof.type}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="id_interior_carpentry">Interior Carpentry<span class="required-label">*</span></label><br>
+                                <select id="id_interior_carpentry" class="form-select" aria-label="Default select example">
+                                    {% for interior in interior_carpentry %}
+                                        <option>{{interior.type}}</option>
+                                    {% endfor %} 
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="id_exterior_carpentry">Exterior Carpentry<span class="required-label">*</span></label><br>
+                                <select id="id_exterior_carpentry" class="form-select" aria-label="Default select example">
+                                    {% for exterior in exterior_carpentry %}
+                                        <option>{{exterior.type}}</option>
+                                    {% endfor %} 
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="id_invelitoare_type">Invelitoare Type<span class="required-label">*</span></label><br>
+                                <select id="id_invelitoare_type" class="form-select" aria-label="Default select example">
+                                    {% for invel in invelitoare_type %}
+                                        <option>{{invel.type}}</option>
+                                    {% endfor %} 
+                                </select>
+                            </div> 
+                            <div class="col-md-6">
+                                <label for="id_underfloor_heating">Underfloor Heating<span class="required-label">*</span></label><br>
+                                <select id="id_underfloor_heating" class="form-select" aria-label="Default select example">
+                                    <option>Yes</option>
+                                    <option>No</option>
+                                </select>
+                            </div>                            
+                            <div class="col-md-6">
+                                <label for="id_heating_system">Heating System<span class="required-label">*</span></label><br>
+                                <select id="id_heating_system" class="form-select" aria-label="Default select example">
+                                    {% for heating in heating_system %}
+                                        <option>{{heating.type}}</option>
+                                    {% endfor %} 
+                                </select>
+                            </div>
+                            <div class="col-md-12">
+                                <label for="id_utilities_imobil">Utilities mobil<span class="required-label">*</span></label>
+                                {% for imobil in utilities_imobil %}
+                                    <div class="form-check form-check-inline">
+                                        <label for="{{imobil.id}}">{{imobil.name}}</label>
+                                        <input class="imobil form-check-input" type="checkbox" id="{{imobil.id}}"value="{{imobil.name}}">
+                                    </div>
+                                {% endfor %}
+                            </div>
+                            <div class="col-md-12">
+                                <label for="id_utilities_apartament">Utilities Apartament<span class="required-label">*</span></label>
+                                {% for apartment in utilities_apartament %}
+                                    <div class="form-check form-check-inline">
+                                        <label for="{{apartment.id}}">{{apartment.name}}</label>
+                                        <input class="apartment form-check-input" type="checkbox" id="{{apartment.id}}" value="{{apartment.name}}">
+                                    </div> 
+                                {% endfor %}
+                            </div>
+                            <div class="col-md-12">
+                                <label for="id_additional_details_utility">Additional Details Utility<span class="required-label">*</span></label>
+                                <textarea id="id_additional_details_utility" class="form-control" type="" name=""> </textarea>
+                            </div>
+                            <div class="col-md-12">
+                                <label for="id_additional_equipment">Additional Equipment<span class="required-label">*</span></label>
+                                {% for equipment in additional_equipment%}
+                                    <div id="id_additional_equipment" class="form-check form-check-inline">
+                                        <input class="form-check-input" type="checkbox" id="{{equipment.id}}" value="{{equipment.name}}">
+                                        <label class="form-check-label" for="{{equipment.id}}"></label>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                            <div class="col-md-12">  
+                                <label for="id_additional_details_equipment">Additional Details Equipment<span class="required-label">*</span></label>
+                                <textarea id="id_additional_details_equipment" class="form-control" type="" name=""> </textarea>
+                            </div>
+                            <div class="col-md-12">
+                                <label for="id_parking_space">Parking Space<span class="required-label">*</span></label>
+                                <input class="form-control" type="number" id="id_parking_space_number" placeholder="">
+                                <div class="form-group">
+                                    <select id="id_parking_space_select" class="form-select" aria-label="Default select example">
+                                        <option>Subteran</option>
+                                        <option>Suprateran</option>
+                                        <option>Subteran</option>
+                                        <option>Suprateran Acoperit</option>
+                                        <option>Garaj</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <textarea id="id_parking_space_textarea" class="form-control"></textarea>
+                                </div> 
+                            </div> 
+
+                            <div class="col-md-12">
+                                <label for="id_garaj">Garaj<span class="required-label">*</span></label>
+                                <input class="form-control" type="number" id="id_garaj_number" placeholder="">
+                                <div class="form-group">
+                                    <textarea id="id_garaj_textarea" class="form-control"></textarea>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <label for="id_boxa">Boxa<span class="required-label">*</span></label>
+                                <input class="form-control" type="number" id="id_boxa_number" placeholder="">
+                                <div class="form-group">
+                                    <textarea id="id_boxa_textarea" class="form-control"></textarea>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <label for="id_detalii">Detalii<span class="required-label">*</span></label>
+                                <input class="form-control" type="number" id="id_detalii_number" placeholder="">
+                                <div class="form-group">
+                                    <textarea id="id_detalii_textarea" class="form-control"></textarea>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <label for="id_static_text">Detalii<span class="required-label">*</span></label>
+                                <input class="form-control" type="number" id="id_static_text_number" placeholder="">
+                                <div class="form-group">
+                                    <textarea id="id_static_text_textarea" class="form-control"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+        </div>
 
     </body>
     <script type="text/javascript">
@@ -220,6 +475,91 @@ function ScreenShot(){
                 };
             }());
             // screen recorder
+
+            // ============ Insepction Form ============
+            function inspectionDataRetrive(){
+                var estimated_client = $('#id_estimated_client').val();
+                var contact_number = $('#id_contact_number').val();
+                var requested_credit = $('#id_requested_credit').val();
+                var neighborhood = $('#id_neighborhood').val();
+                var access_paved_road = $('#id_access_paved_road :selected').val();
+                var area = $('#id_area').val();
+                var details = $('#id_details').val();
+                var access_description = $('#id_access_description').val();
+                var urban_transport = $('.transport:checked');
+                var structure_type = $('#id_structure_type :selected').val();
+                var foundation = $('#id_foundation :selected').val();
+                var local_height_regime = $('#id_local_height_regime').val();
+                var construction_year = $('#id_construction_year').val();
+                var renovation_year = $('#id_renovation_year').val();
+                var plan_type = $('#id_plan_type :selected').val();
+                var inchideri = $('#id_inchideri :selected').val();
+                var inhabited_building = $('#id_inhabited_building :selected').val();
+                var evaluator = $('#id_evaluator').val();
+                var compartimentari = $('#id_compartimentari').val();
+                var acoperis = $('#id_acoperis').val();
+                var interior_carpentry = $('#id_interior_carpentry').val();
+                var exterior_carpentry = $('#id_exterior_carpentry').val();
+                var invelitoare_type = $('#id_invelitoare_type').val();
+                var heating_system = $('#id_heating_system').val();
+                var utilities_imobil = $('#id_utilities_imobil').val();
+                var utilities_apartament = $('#id_utilities_apartament').val();
+                var additional_details_utility = $('#id_additional_details_utility').val();
+                var additional_equipment = $('#id_additional_equipment').val();
+                var additional_details_equipment = $('#id_additional_details_equipment').val();
+                var parking_space_number = $('#id_parking_space_number').val();
+                var parking_space_select = $('#id_parking_space_number :selected').val();
+                var parking_space_textarea = $('#id_parking_space_textarea').val();
+                var garaj_number = $('#id_garaj_number').val();
+                var garaj_textarea = $('#id_garaj_textarea').val();
+                var boxa_number = $('#id_boxa_number').val();
+                var boxa_textarea = $('#id_boxa_textarea').val();
+
+                inspectionForm_data = {};
+                inspectionForm_data["estimated_client"]= estimated_client;
+                inspectionForm_data["contact_number"] = contact_number;
+                inspectionForm_data["requested_credit"] = requested_credit;
+                inspectionForm_data["neighborhood"] = neighborhood;
+                inspectionForm_data["access_paved_road"] = access_paved_road;
+                inspectionForm_data["area"] = area;
+                inspectionForm_data["details"] = details; 
+                inspectionForm_data["access_description"] = access_description;
+                inspectionForm_data["urban_transport"] = urban_transport; 
+                inspectionForm_data["structure_type"] = structure_type; 
+                inspectionForm_data["foundation"] = foundation;
+                inspectionForm_data["local_height_regime"] = local_height_regime;
+                inspectionForm_data["construction_year"] = construction_year;
+                inspectionForm_data["renovation_year"] = renovation_year;
+                inspectionForm_data["plan_type"] = plan_type;
+                inspectionForm_data["inchideri"] = inchideri;
+                inspectionForm_data["inhabited_building"] = inhabited_building;
+                inspectionForm_data["evaluator"] = evaluator;
+                inspectionForm_data["compartimentari"] = compartimentari;
+                inspectionForm_data["acoperis"] = acoperis;
+                inspectionForm_data["interior_carpentry"] = interior_carpentry;
+                inspectionForm_data["exterior_carpentry"] = exterior_carpentry;
+                inspectionForm_data["invelitoare_type"] = invelitoare_type;
+                inspectionForm_data["heating_system"] = heating_system;
+                inspectionForm_data["utilities_imobil"] = utilities_imobil;
+
+                console.log(inspectionForm_data); 
+
+                $.ajax({
+                    type: "POST",
+                    url: "{% url 'asachat:chat_room' valuation.id %}",
+                    dataType: "json",
+                    data: {
+                        "csrfmiddlewaretoken":"{{csrf_token}}",
+                        "inspectionForm_data": inspectionForm_data,
+                    }
+                    success: function(){
+                        
+                    }
+                })
+
+            }
+            // ============ Insepction Form ============
+
 
     </script>
 </html>

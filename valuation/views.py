@@ -899,6 +899,7 @@ def edit_comparable(request, id):
     return render(request, template, context)
 
 
+
 # ==========================================================
 # ====================== anexa data ========================
 # ==========================================================
@@ -907,6 +908,7 @@ from io import BytesIO
 from PIL import Image
 from django.core.files.base import ContentFile
 import random
+import pyautogui 
 from django.conf import settings
 from django.db.models import Q
 from pathlib import Path
@@ -915,10 +917,21 @@ import os
 def add_anexa1(request, id):
     template_name = 'valuation/add_anexa1.html'
     valuation = get_object_or_404(models.ValuatedProperty, id=id)
-        
-    if request.method == 'POST':
+    anexa1 = models.Anexa1.objects.filter(ref_no = valuation)
+    total_custom = models.Anexa1.objects.filter(ref_no = valuation).exclude(custom_id=None).count()
+
+    if request.method=="POST":
+        # custom name and image store
+        files = list(json.loads(request.POST.get('file')).values())
+        names = list(json.loads(request.POST.get('location')).values())
+        ids = list(json.loads(request.POST.get('location')).keys())
+        ln = len(files)
+        for i in range(0,ln):
+            if names[i] and files[i]!="exists":
+                anexa1 = models.Anexa1.objects.create(ref_no=valuation,custom_id = i,custom_name = names[i],blob=files[i]) 
+
+        # screenshot image store
         img_id = json.loads(request.POST['image'])
-        print(img_id)
         for img in img_id:
             ss = models.ScreenShot.objects.get(name=str(img))
             anexa1 = models.Anexa1.objects.create(ref_no=valuation,image=ss.image)
@@ -927,7 +940,8 @@ def add_anexa1(request, id):
         return JsonResponse(response, safe=False)
 
     context = {
-        'segment': 'anexa1',
+        'segment': anexa1,
+        'total_custom': total_custom,
         "valuation": valuation,
     }
 
@@ -938,13 +952,14 @@ def add_anexa2(request, id):
     template_name = 'valuation/add_anexa2.html'
     
     valuation = get_object_or_404(models.ValuatedProperty, id=id)
-    comparable_table = get_object_or_404(models.ComparableTable, ref_no=valuation)
-    
-    # converting "[*,*,*,..]" text value to tuple for query
-    s = "".join(comparable_table.comparable.split())
-    s = s.replace(']', '')
-    s = s.replace('[', '')
-    table_set = s.split(',')
+
+    anexa2 = models.Anexa2.objects.filter(ref_no = valuation)
+
+    comparable_table = models.ComparableTable.objects.filter(ref_no=valuation)
+
+    table_set = []
+    for ct in comparable_table:
+        table_set.append(ct.comparable.id)
 
     comparable_propertys = models.ComparableProperty.objects.filter(id__in=table_set)
 
@@ -952,19 +967,40 @@ def add_anexa2(request, id):
         
         pid = json.loads(request.POST["pid"])
         if pid!=-1:
-            # files in each form
-            comparable_property = models.ComparableProperty.objects.get(id=request.POST["pid"])
-            files = [request.FILES.get('file[%d]' % i) for i in range(0, len(request.FILES))]
-            i = 0
-            while i<len(files):
-                anexa2 = models.Anexa2.objects.create(ref_no=valuation, compare_no=comparable_property, file = files[i])
-                i+=1
+            print(request.POST["pid"])
+            if request.POST["pid"]>="100065":
+                # second chapter 
+                extra_compare = list(request.POST["pid"])
+                ch = chr(int(extra_compare[-2] + extra_compare[-1]))
+
+                files = [request.FILES.get('file[%d]' % i) for i in range(0, len(request.FILES))]
+                i = 0
+                while i<len(files):
+                    print("filter", models.Anexa2.objects.filter(ref_no=valuation, chapter_name=ch))
+                    print("ch->", ch)
+                    if models.Anexa2.objects.get(ref_no=valuation, chapter_name=ch):
+                        print("exists")
+                        obj = models.Anexa2.objects.get(ref_no=valuation, chapter_name=ch)
+                        obj.file = files[i]
+                        obj.save()
+                    else:
+                        anexa2 = models.Anexa2.objects.create(ref_no=valuation,chapter_name = ch, file=files[i])
+                    i+=1
+            else:
+                print("kone duke?")
+                # files in each form
+                comparable_property = models.ComparableProperty.objects.get(id=request.POST["pid"])
+                files = [request.FILES.get('file[%d]' % i) for i in range(0, len(request.FILES))]
+                i = 0
+                while i<len(files):
+                    anexa2 = models.Anexa2.objects.get_or_create(ref_no=valuation, compare_no=comparable_property, file=files[i])
+                    i+=1
         else:
             # data in each form
-            form_data = json.loads(request.POST["formData"])
+            form_data = json.loads(request.POST.get("formData"))
+            extra_formData = json.loads(request.POST.get("extra_formData"))
             for key, value in form_data.items():
                 comparable_property = models.ComparableProperty.objects.get(id=key)
-                print(models.Anexa2.objects.filter(ref_no=valuation, compare_no=comparable_property).all())
                 if models.Anexa2.objects.filter(ref_no=valuation, compare_no=comparable_property).exists():
                     for m in models.Anexa2.objects.filter(ref_no=valuation, compare_no=comparable_property).all():
                         m.link=value[0]
@@ -976,38 +1012,83 @@ def add_anexa2(request, id):
                     anexa2.optional_text=value[1]
                     anexa2.save()
 
+            for key, value in extra_formData.items():
+                print(key, value)
+                extra_compare = key
+                if models.Anexa2.objects.filter(ref_no=valuation, chapter_name=extra_compare).exists():
+                    for m in models.Anexa2.objects.filter(ref_no=valuation, chapter_name=extra_compare):
+                        print("age", m.link)
+                        m.link=value[0]
+                        print("pore", m.link)
+                        m.optional_text=value[1]
+                        m.save()
+                else:
+                    print("ene??")
+                    anexa2 = models.Anexa2.objects.create(ref_no=valuation, chapter_name=extra_compare)
+                    anexa2.link=value[0]
+                    anexa2.optional_text=value[1]
+                    anexa2.save()
+
             response = {'status': 1, 'message': "ok"}
             return JsonResponse(response, safe=False)
 
     context = {
-        'segment': 'anexa2',
+        'segment': anexa2,
         "valuation":valuation,
         "comparable_propertys":comparable_propertys,
     }
 
     return render(request, template_name, context)
 
+from valuation.utils import get_image_from_data_url
+from collections import defaultdict
 @login_required(login_url='/signin/')
 def add_anexa3(request, id):
     template_name = 'valuation/add_anexa3.html'
     valuation = get_object_or_404(models.ValuatedProperty,id=id)
     anexa3 = models.Anexa3.objects.filter(ref_no = valuation)
+    total_custom_objects = models.Anexa3.objects.filter(ref_no = valuation).exclude(custom_id=None)
+    custom_data = defaultdict(list)
+
+    for custom in total_custom_objects:
+        a = custom.custom_id
+        if custom_data[a]:
+            custom_data[a].append(custom.custom_image.url)
+        else:
+            custom_data[a] = [custom.custom_name, custom.custom_image.url]
+
+    total_custom = total_custom_objects.count()
 
     if request.method == 'POST':
-        img_id = json.loads(request.POST['image'])
 
-        for img_url in anexa3:
-            if img_url.image.url not in img_id:
-                obj = models.Anexa3.objects.get(ref_no=valuation, image = img_url.image)
-                obj.delete()
-                print("delete")
+        # custom name and image store
+        files = list(json.loads(request.POST.get('file')).values())
+        names = list(json.loads(request.POST.get('location')).values())
+
+        print(len(files))
+        ln = len(names)
+        for i in range(0, ln):
+            lln = len(files[i])
+            for j in range(0,lln):
+                if files[i]!="exists":
+                    if len(files[i][j])>100:
+                        img = f'myimg{random.randint(1000,9999)}.png'
+                        image = get_image_from_data_url(files[i][j])
+                        obj = models.Anexa3.objects.create(ref_no=valuation,custom_id = i, custom_name = names[i])
+                        obj.custom_image = image[0]
+                        obj.save()
+                    else:
+                        obj = models.Anexa3.objects.create(ref_no=valuation,custom_id = i, custom_name = names[i])
+                        obj.custom_image = str(files[i][j].split('/',2)[2])
+                        obj.save()
 
         response = {'status': 1, 'message': "ok"}
         return JsonResponse(response, safe=False)
 
     context = {
-        'segment': 'anexa3',
+        'segment': dict(custom_data), 
         "valuation": valuation,
+        'total_custom': total_custom,
         "objects": anexa3,
     }
 
@@ -1025,16 +1106,52 @@ def add_anexa4(request, id):
             anexa1 = models.Anexa4.objects.create(ref_no=valuation, file = files[i])
             i+=1
         return redirect('dashboard:details', id=id)
-        
+
     context = {
         'segment': 'anexa4',
         "valuation": valuation,
     }
     return render(request, template_name, context)
 
+def delete_image_db(request):
+    if request.method == "POST":
+        row_no = request.POST.get('row_no') 
+        img_id = request.POST.get('img_id')
+        img_link = img_id.split('/',4)[4]
+        obj = models.Anexa3.objects.filter(custom_id=row_no, custom_image=img_link)
+        obj.delete()
+
+        response = {'status': 1, 'message': "ok"}
+        return JsonResponse(response)
+
+def delete_custom_row(request):
+    if request.method == "POST":
+        class_name = request.POST['class_name']
+        row_no = request.POST['row_no']
+        if class_name == "anexa1":
+            obj = models.Anexa1.objects.filter(custom_id=row_no)
+            obj.delete()
+
+        elif class_name == "anexa3":
+            obj = models.Anexa3.objects.filter(custom_id=row_no)
+            obj.delete()
+
+    response = {'status': 1, 'message': row_no}
+    return JsonResponse(response)
+
 import datetime
 now = datetime.datetime.now()
 import time
+
+def delete_file_model(request):
+    file_name = request.POST["file_name"]
+    print(file_name)
+    obj = get_object_or_404(models.FileModel,name=file_name)
+    idd = obj.id
+    if obj:
+        obj.delete()
+
+    return JsonResponse({"status": idd,"message":"ok"})
 
 def delete_file(request):
     class_name = request.POST.get("class_name")
@@ -1088,6 +1205,7 @@ def screenshot_html(request):
     }
 
     return JsonResponse(response)
+
 
 
 # ========================== edit initial form ============================

@@ -5,10 +5,10 @@
 <!-- Specific Page CSS goes HERE  -->
 {% block stylesheets %}
     {% load static %}
+
     <!--  dropzone file upload -->
     <script src="{% static 'dashboard/js/dropzone.js' %}"></script>
     <link rel="stylesheet" href="{% static 'dashboard/css/dropzone.css' %}">
-    <script src="{% static 'dashboard/js/html2canvas.min.js' %}" defer></script>
     
 <script src=
 "https://cdn.jsdelivr.net/npm/html2canvas@1.0.0-rc.5/dist/html2canvas.min.js">
@@ -94,7 +94,7 @@
                         <i class="flaticon-right-arrow"></i>
                     </li>
                     <li class="nav-item">
-                        <a href="{% url 'valuation:add_anexa3' valuation.id %}">Anexa3</a>
+                        <a href="{% url 'valuation:add_anexa3' valuation.id %}">Anexa3 - Fotografi</a>
                     </li>
                 </ul>
             </div>
@@ -105,14 +105,70 @@
                     <div class="card-title">More uploads</div>
                 </div>
                 <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-12" id="gellary">
+                    <div class="row" id="gellary">
                         {% for obj in objects %}
-                                {% if obj.image %}<img class="shoot-img" src="{{ obj.image.url }}" id="{{obj.image.url}}" style="width: 30%; margin: 8px;" onclick="image_selection('{{obj.image.url}}')">{% endif %}
+                            {% if obj.image and obj.custom_name == None %}
+                                <div class="col-md-3">
+                                    <img class="shoot-img" src="{{ obj.image.url }}" id="{{obj.image.url}}" style="width: 100%; margin: 8px;" onclick="image_selection('{{obj.image.url}}')">
+                                </div> 
+                            {% endif %}
+
                         {% endfor %}
+                    </div>
+                </div>
+            </div> 
+            <div class="card">
+                <div class="card-body custom-field" id="customField">
+                    <div class="row">
+                        
+                        <div class="col-md-1 mb-2">
+                            <div class="form-group">
+                                <button type="button" class="btn btn-icon btn-round btn-primary" id="add_cf" data-toggle="tooltip" data-placement="top" title="Add New">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="col-md-11 mb-2">
+                            <h3 style="margin-top: 14px;">Any other custom fields that needs location screenshot</h3>
                         </div>
                     </div>
                 </div>
+                <div class="card-body custom-field" id="customField">
+                    
+                {% for key, values in segment.items %}
+                        <div class="row">
+                            <div class="col-md-4 mb-2">
+                                <div class="form-group">
+                                    <input type="text" class="form-control cfn" id="cfn_{{key}}" name="cf_name[]" placeholder="*custom field e.g. Loc de parcare NC 12345" required="" value="{{values.0}}">
+                                </div>
+                            </div>
+                            <div class="col-md-7 mb-2">
+                                <div class="row">
+                                    <div class="col-12 form-group">
+                                        <textarea onclick="pasteImage(this.id,'pasteImage_{{key}}')" id="pasteArea_{{key}}" class="paste-area" placeholder="Paste Image Here"></textarea>
+                                    </div>
+                                    {% for v in values %}
+                                        {% if forloop.counter > 1  %} 
+                                            <div class="col-md-3" id="pastedDiv_{{key}}">
+                                                <img id = "pastedImage_{{key}}" class="w-100" src="http://127.0.0.1:8000{{v}}" ></img>
+                                                <a onclick="removeImageDB(this);">remove</a>
+                                            </div>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            <div class="col-md-1 mb-2">
+                                <div class="form-group">
+                                    <button type="button" class="btn btn-icon btn-round btn-danger remove_cf" name="{{key}}"  data-toggle="tooltip" data-placement="top" title="Delete">
+                                        <i class="fas fa-minus"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                {% endfor %}
+                </div>
+
+
                 <div class="card-header">
                     <button id="btnTable" class="btn btn-primary">Next</button>
                 </div>
@@ -127,18 +183,175 @@
 {% block javascripts %}
     <script type="text/javascript">
         var selected_image = [];
+        var drag_selected_image = [];
+        var selected_image_url = [];
         // gellary image selection
         function image_selection(url){
             var img = document.getElementById(url);
             console.log(url);
-            if(img.style.border==''){
+            var clone = img;
+
+            if(img.style.border == ''){
+
+                drag_selected_image.push(clone);
+                selected_image_url.push(url);
                 img.style.border = '2px solid red';
             }
             else{
-                img.style.border = '';                
+
+                drag_selected_image.pop(clone);
+                selected_image_url.pop(url);
+                img.style.border = '';              
             }
         }
         // gellary image selection
+
+        // custom image remove from DB
+        function removeImageDB(image){
+            var img = image.parentNode.querySelector('img');
+            var img_id = img.src;
+            var ccf_id = img.id.split('_')[1];
+            $.ajax({
+                type: "POST",
+                url: "{% url 'valuation:delete_image_db' %}",
+                headers: {"X-CSRFToken": '{{csrf_token}}'},
+                data:{
+                    "img_id":img_id,
+                    "row_no":ccf_id,        
+                },
+                success: function(response){
+                    console.log(response);
+                    if(response.status == 1){
+                        console.log("awse");
+                        image.parentNode.remove();
+                    }
+                },
+            })
+        }
+        // custom image remove from DB
+        
+        // custom image remove
+        function customImageRemove(){
+            var ccf_id = this.parentNode.id.split('_')[1];
+            var img = this.parentNode.querySelector('img');
+            console.log(img);
+            var gellary = document.getElementById('gellary');
+            // div create: binding img tag to col3
+            var div3 = document.createElement('div');
+            div3.classList.add("col-md-3");
+            div3.appendChild(img);
+
+            gellary.appendChild(div3);
+
+            console.log(file_order);
+            console.log(img);
+            if(img.id==""){
+                delete file_order[ccf_id];
+            }
+            else{
+                file_order[ccf_id].pop(img.id);
+                if(file_order[ccf_id].length==0){
+                    delete file_order[ccf_id];
+                }
+            }
+
+            this.parentNode.remove();
+        }
+        // custom image remove
+
+        // uploaded file pass
+        let file_order = {};
+        let location_name_order = {};
+        // uploaed file pass
+
+        // paste image
+        function pasteImage(idd, imdd){
+            var ccf_id = idd.split('_')[1];
+            document.getElementById(idd).addEventListener('paste', function (event) {
+                console.log(this,'--', ccf_id);
+                var items = (event.clipboardData  || event.originalEvent.clipboardData).items;
+                console.log(JSON.stringify(items)); // will give you the mime types
+                var blob = null;
+                for (var i = 0; i < items.length; i++){
+                    if (items[i].type.indexOf("image") === 0) {
+                        blob = items[i].getAsFile();
+                    }
+                }
+                // load image if there is a pasted image
+                if(blob !== null) {
+                    var reader = new FileReader();
+                    reader.onload = function(event) {
+
+                        // div create: binding img and a tag
+                        var div = document.createElement('div');
+                        div.id = "pastedDiv_"+ccf_id;
+                        div.classList.add("col-md-3");
+                        var img = document.createElement('img');
+                        img.src = event.target.result;
+                        img.id = ""
+                        img.style.width = "100%";
+                        div.appendChild(img);
+
+                        // a create: remove image
+                        var a = document.createElement('a');
+                        a.innerText = "remove";
+                        a.style.display = "block";
+                        a.onclick = customImageRemove;
+                        div.appendChild(a);
+                        
+                        document.getElementById(idd).parentNode.parentNode.appendChild(div);
+                        console.log("blob",file_order[ccf_id]);
+                        if(file_order[ccf_id]===undefined){
+                            file_order[ccf_id] = []
+                            file_order[ccf_id].push(event.target.result);
+                        }
+                        else{
+                            file_order[ccf_id].push(event.target.result);                            
+                        }
+                    };
+                    reader.readAsDataURL(blob);
+
+                    // clearing clipboard
+                    var textarea = document.createElement("textarea");
+                    textarea.textContent = "X";
+                    textarea.style.position = "fixed"; // Prevent scrolling to bottom of page in MS Edge.
+                    document.body.appendChild(textarea);
+                    textarea.select();
+                    document.execCommand("copy"); 
+                    document.body.removeChild(textarea);
+                }
+
+                if(drag_selected_image.length>0){
+                    console.log(ccf_id);
+                    var parent = document.getElementById(idd).parentNode.parentNode;
+                    var temp = event.target.result;
+                    for(var i=0;i<drag_selected_image.length;i++){
+                        // div create: binding img and a tag
+                        var div = document.createElement('div');
+                        div.id = "pastedDiv_"+ccf_id;
+                        div.classList.add("col-md-3");
+                        document.getElementById(selected_image_url[i]).style.border = '';
+                        drag_selected_image[i].parentNode.remove();
+                        div.appendChild(drag_selected_image[i]);
+
+                        // a create: remove image
+                        var a = document.createElement('a');
+                        a.innerText = "remove";
+                        a.style.display = "block";
+                        a.onclick = customImageRemove;
+                        div.appendChild(a);
+
+                        parent.appendChild(div);
+                    }
+                    // console.log(document.getElementsByClassName('shoot-img'));
+                    file_order[ccf_id] = selected_image_url;
+                     console.log("kire", selected_image_url);
+                    drag_selected_image = [];
+                    selected_image_url = [];
+                }
+            });
+        }
+        // paste image
 
         $('#btnTable').click(function(){
             var images = document.getElementsByClassName('shoot-img');
@@ -148,19 +361,70 @@
                 }
             }
             console.log(selected_image);
-            if(selected_image.length>0){
+
+            // location_name_order checking
+            var loc_input = $('.cfn');
+            for(var i=0; i< loc_input.length; i++){
+                var lidd = $(loc_input[i]).attr('id').split('_')[1];
+                var value = $(loc_input[i]).val();
+                if(value){
+                    location_name_order[lidd] = value;
+                }
+                else{
+                    delete location_name_order[lidd]; 
+                }
+            }
+
+            // keys of file and name field for *custom field
+            var file_keys = Object.keys(file_order);
+            var location_name_keys = Object.keys(location_name_order);
+
+            console.log("file", file_keys);
+            console.log("loc", location_name_keys);
+
+            let file_difference = file_keys.filter(x => location_name_keys.indexOf(x)==-1);
+            let loc_difference = location_name_keys.filter(x => file_keys.indexOf(x)==-1);
+
+            // differen between two array
+            console.log("di", );
+            let difference = file_difference.concat(loc_difference);
+
+            if(difference.length>0){
+                var content = {};
+                var state = "danger";
+                content.message = 'Please fil up '+ difference +' custom fields properly !';
+                content.title = 'Error!'; 
+ 
+                content.icon = 'fa fa-bell';
+                $.notify(content,{
+                    type: state,
+                    placement: {
+                        from: 'top',
+                        align: 'right'
+                    },
+                    time: 1000,
+                    delay: 0,
+                });
+                 // closing notification
+                setTimeout(function(){
+                    $('.close').trigger('click');
+                }, 4000);
+            }
+            else if(selected_image.length==0){ 
+                /// abstract to skip the selected_image.length==0 condition
                 $.ajax({
                     type:"POST",
                     url:"{% url 'valuation:add_anexa3' valuation.id %}",
                     dataType:'json',
                     data:{
                         "csrfmiddlewaretoken": '{{ csrf_token }}',
-                        "image": JSON.stringify(selected_image), 
+                        "file": JSON.stringify(file_order),
+                        "location": JSON.stringify(location_name_order),
                     },
                     success:function(data){
-                         if(data.status==1){
-                            window.location = "{% url 'valuation:add_anexa4' valuation.id %}";
-                        }
+                        // if(data.status==1){
+                        //     window.location = "{% url 'valuation:add_anexa4' valuation.id %}";
+                        // }
                     },
 
                 })
@@ -188,6 +452,93 @@
             }
 
         })
+
+        var cf_id = Number('{{total_custom}}');;
+        // if custom objects exists
+        if(cf_id>0){
+            {% for key, value in segment.items %}
+                file_order[{{key}}] = "exists";                
+            {% endfor %}
+        }
+        // if custom objects exists
+
+         // ========================== manage custom field =========================== 
+        $(document).ready(function(){
+            var maxField = 100;
+            var addButton = $('#add_cf');
+            var wrapper = document.getElementById('customField');
+            //Once add button is clicked
+            $(addButton).click(function(){
+                if(cf_id < maxField){
+ 
+                    var field =  `
+                    <div class="row">
+                        <div class="col-md-4 mb-2">
+                            <div class="form-group">
+                                <input type="text" class="form-control cfn" id="cfn_`+cf_id+`" name="cf_name[]" placeholder="*custom field e.g. Loc de parcare NC 12345" required="">
+                            </div>
+                        </div>
+                        <div class="col-md-7 mb-2">
+                            <div class="row">
+                                <div class="col-12 form-group">
+                                    <textarea id="pasteArea_`+cf_id+`" class="paste-area" placeholder="Paste Image Here"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-1 mb-2">
+                            <div class="form-group">
+                                <button type="button" class="btn btn-icon btn-round btn-danger remove_cf" name="`+cf_id+`"  data-toggle="tooltip" data-placement="top"  title="Delete">
+                                    <i class="fas fa-minus"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+ `;
+
+                    $(wrapper).append(field);
+                    var aa = "pasteArea_"+cf_id;
+                    var img_view_id = "pastedImage_"+aa[aa.length-1];
+                    // console.log(this.onclick); 
+                    pasteImage(aa, img_view_id);
+
+                }
+                cf_id++;
+            });
+
+            // existing db values
+            $(wrapper).on('click', '.remove_cf', function(e){
+                e.preventDefault();
+                var row_no = this.name;
+                console.log(this.name);
+                delete file_order[row_no];
+                delete location_name_order[row_no];
+                $(this).parents('.row').remove();
+            });            
+
+            //Once remove button is clicked
+            $('.remove_cf').on('click', function(e){
+                e.preventDefault();
+                var row_no = this.name;
+                delete file_order[row_no];
+                delete location_name_order[row_no];
+                console.log(this.name);
+                $.ajax({
+                    type: "POST", 
+                    url: "{% url 'valuation:delete_custom_row' %}",
+                    headers: {'X-CSRFToken': '{{ csrf_token }}'},
+                    data:{
+                        "row_no":row_no,
+                        "class_name": "anexa3",
+                    },
+                    success: function(response){
+                        console.log("at"); 
+                    },
+                })
+
+                delete file_order[this.name];
+                $(this).parents('.row').remove();
+            });
+        });
 
     </script>
 {% endblock javascripts %}  
